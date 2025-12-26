@@ -1,8 +1,10 @@
-anthropic==0.18.1
+anthropic==0.28.0
 python-dotenv==1.0.0
 requests==2.31.0
 tqdm==4.66.4
-typing-extensions==4.11.0
+typing-extensions==4.15.0
+
+
 # email module is part of the Python standard library; no need to install
 # but if you need to install a backport or specific version, you can uncomment the line below
 # email==6.0.0
