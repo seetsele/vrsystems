@@ -222,7 +222,7 @@ class AdaptiveLearningSystem:
         
         # Update domain-specific accuracy
         if claim_type and not had_error:
-            domain = claim_type.value
+            domain = claim_type.value if hasattr(claim_type, 'value') else str(claim_type)
             if domain not in perf.domain_accuracy:
                 perf.domain_accuracy[domain] = 0.5
             
@@ -251,8 +251,9 @@ class AdaptiveLearningSystem:
                     continue  # Skip recently failed providers
             
             # Calculate accuracy
-            if claim_type and claim_type.value in perf.domain_accuracy:
-                accuracy = perf.domain_accuracy[claim_type.value]
+            domain_key = claim_type.value if hasattr(claim_type, 'value') else str(claim_type) if claim_type else None
+            if domain_key and domain_key in perf.domain_accuracy:
+                accuracy = perf.domain_accuracy[domain_key]
             else:
                 total = perf.correct_verdicts + perf.incorrect_verdicts
                 accuracy = perf.correct_verdicts / total if total > 0 else 0.5
@@ -423,7 +424,7 @@ class AdaptiveLearningSystem:
         Over time, this teaches the system which providers
         are best for which types of claims.
         """
-        domain = claim_type.value
+        domain = claim_type.value if hasattr(claim_type, 'value') else str(claim_type)
         
         if provider_name not in self.domain_weights[domain]:
             self.domain_weights[domain][provider_name] = 0.5
@@ -438,7 +439,7 @@ class AdaptiveLearningSystem:
     
     def get_best_providers_for_domain(self, claim_type: ClaimType, top_n: int = 5) -> List[str]:
         """Get the best providers for a specific claim type"""
-        domain = claim_type.value
+        domain = claim_type.value if hasattr(claim_type, 'value') else str(claim_type)
         weights = self.domain_weights.get(domain, {})
         
         if not weights:
@@ -460,8 +461,8 @@ class AdaptiveLearningSystem:
             'feedback_history': [
                 {
                     **asdict(f),
-                    'original_verdict': f.original_verdict.value,
-                    'user_verdict': f.user_verdict.value,
+                    'original_verdict': f.original_verdict.value if hasattr(f.original_verdict, 'value') else str(f.original_verdict),
+                    'user_verdict': f.user_verdict.value if hasattr(f.user_verdict, 'value') else str(f.user_verdict),
                     'timestamp': f.timestamp.isoformat()
                 }
                 for f in self.feedback_history[-1000:]  # Keep last 1000
@@ -469,7 +470,7 @@ class AdaptiveLearningSystem:
             'verdict_cache': {
                 k: {
                     **asdict(v),
-                    'verdict': v.verdict.value,
+                    'verdict': v.verdict.value if hasattr(v.verdict, 'value') else str(v.verdict),
                     'timestamp': v.timestamp.isoformat()
                 }
                 for k, v in list(self.verdict_cache.items())[-10000:]  # Keep last 10k

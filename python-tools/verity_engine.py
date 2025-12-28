@@ -203,16 +203,16 @@ class EnhancedVerificationResult:
     related_claims: List[str]
     fact_check_urls: List[str]
     
+    # Human-readable summary
+    executive_summary: str
+    detailed_explanation: str
+    recommendation: str
+    
     # Metadata
     warnings: List[str]
     limitations: List[str]
     processing_time_ms: float
     timestamp: datetime = field(default_factory=datetime.now)
-    
-    # Human-readable summary
-    executive_summary: str
-    detailed_explanation: str
-    recommendation: str
     
     def to_dict(self) -> Dict:
         return {

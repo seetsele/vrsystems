@@ -350,6 +350,9 @@ class WikipediaProvider(FactCheckProvider):
     
     def __init__(self):
         self.base_url = "https://en.wikipedia.org/w/api.php"
+        self.headers = {
+            'User-Agent': 'VeritySystems/1.0 (https://verity.systems; contact@verity.systems) Python/3.11'
+        }
     
     @property
     def name(self) -> str:
@@ -361,7 +364,7 @@ class WikipediaProvider(FactCheckProvider):
             search_terms = self._extract_search_terms(claim)
             results = []
             
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(headers=self.headers) as session:
                 for term in search_terms[:3]:  # Limit to 3 terms
                     params = {
                         'action': 'query',
@@ -413,10 +416,14 @@ class DuckDuckGoProvider(FactCheckProvider):
     """
     DuckDuckGo Instant Answer API - Completely free, no API key
     Good for quick fact verification
+    Note: Returns Instant Answers only, not full search results
     """
     
     def __init__(self):
         self.base_url = "https://api.duckduckgo.com/"
+        self.headers = {
+            'User-Agent': 'VeritySystems/1.0 (https://verity.systems) Python/3.11'
+        }
     
     @property
     def name(self) -> str:
@@ -572,6 +579,7 @@ class HuggingFaceProvider(FactCheckProvider):
     Hugging Face Inference API - Free tier available
     Uses various NLP models for fact-checking related tasks
     GitHub Education Pack provides additional credits
+    Note: As of 2024, uses router.huggingface.co endpoint
     """
     
     def __init__(self, api_key: Optional[str] = None):
@@ -582,6 +590,8 @@ class HuggingFaceProvider(FactCheckProvider):
             'stance': 'roberta-large-mnli',
             'factuality': 'google/flan-t5-base'  # General reasoning
         }
+        # New HuggingFace router endpoint (2024+)
+        self.base_url = "https://router.huggingface.co/hf-inference/models"
     
     @property
     def name(self) -> str:
@@ -607,7 +617,7 @@ class HuggingFaceProvider(FactCheckProvider):
                     'parameters': {'candidate_labels': ['true', 'false', 'unverifiable']}
                 }
                 
-                url = f"https://api-inference.huggingface.co/models/{self.models['nli']}"
+                url = f"{self.base_url}/{self.models['nli']}"
                 async with session.post(url, headers=headers, json=payload) as response:
                     if response.status == 200:
                         data = await response.json()
@@ -1006,6 +1016,79 @@ class OpenRouterProvider(FactCheckProvider):
         return []
 
 
+class CometAPIProvider(FactCheckProvider):
+    """
+    CometAPI - Access to 500+ AI models through one API
+    GPT-4, Claude, Gemini, Llama, and more via OpenAI-compatible interface
+    Website: https://cometapi.com
+    """
+    
+    def __init__(self, api_key: Optional[str] = None, model: str = 'gpt-4o'):
+        self.api_key = api_key or os.getenv('COMETAPI_API_KEY')
+        self.base_url = os.getenv('COMETAPI_BASE_URL', 'https://api.cometapi.com/v1')
+        self.model = model
+    
+    @property
+    def name(self) -> str:
+        return f"CometAPI ({self.model})"
+    
+    @property
+    def is_available(self) -> bool:
+        return bool(self.api_key)
+    
+    async def check_claim(self, claim: str) -> List[Dict]:
+        if not self.is_available:
+            return []
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                headers = {
+                    'Authorization': f'Bearer {self.api_key}',
+                    'Content-Type': 'application/json'
+                }
+                payload = {
+                    'model': self.model,
+                    'messages': [
+                        {
+                            'role': 'system',
+                            'content': '''You are an expert fact-checker. Analyze the claim and respond with:
+1. VERDICT: TRUE, FALSE, PARTIALLY_TRUE, or UNVERIFIABLE
+2. CONFIDENCE: 0-100%
+3. REASONING: Clear explanation with evidence
+4. SOURCES: What sources would support this conclusion'''
+                        },
+                        {
+                            'role': 'user',
+                            'content': f'Fact-check this claim: "{claim}"'
+                        }
+                    ],
+                    'temperature': 0.2,
+                    'max_tokens': 1000
+                }
+                
+                async with session.post(
+                    f'{self.base_url}/chat/completions',
+                    headers=headers,
+                    json=payload,
+                    timeout=aiohttp.ClientTimeout(total=60)
+                ) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return [{
+                            'source': f'CometAPI ({self.model})',
+                            'analysis': data['choices'][0]['message']['content'],
+                            'usage': data.get('usage', {})
+                        }]
+                    else:
+                        error_text = await response.text()
+                        logger.error(f"CometAPI error ({response.status}): {error_text}")
+        except asyncio.TimeoutError:
+            logger.error(f"CometAPI timeout for model {self.model}")
+        except Exception as e:
+            logger.error(f"CometAPI error: {e}")
+        return []
+
+
 class PolygonProvider(FactCheckProvider):
     """
     Polygon.io API - Financial data verification
@@ -1131,7 +1214,7 @@ class VeritySuperModel:
         self.config = config or {}
         self.security = SecurityManager()
         
-        # Initialize all providers (14 total)
+        # Initialize all providers (16 total)
         self.providers: List[FactCheckProvider] = [
             # Free APIs (no key required)
             WikipediaProvider(),
@@ -1152,6 +1235,10 @@ class VeritySuperModel:
             AzureOpenAIProvider(),    # GitHub Education: $100 Azure credits
             PerplexityProvider(),     # Research queries with citations
             OpenRouterProvider(),     # Free: Gemma 2 9B
+            
+            # CometAPI - 500+ models via single API (GPT-4, Claude, Gemini, etc.)
+            CometAPIProvider(model='gpt-4o'),        # GPT-4o for general verification
+            CometAPIProvider(model='claude-3.5-sonnet'),  # Claude for nuanced analysis
         ]
         
         # Cache for results (simple in-memory, use Redis in production)
@@ -1164,7 +1251,8 @@ class VeritySuperModel:
     def _log_provider_status(self):
         """Log which providers are available"""
         for provider in self.providers:
-            status = "✓ Available" if provider.is_available else "✗ Not configured"
+            # Use ASCII-safe characters for Windows console compatibility
+            status = "[OK] Available" if provider.is_available else "[--] Not configured"
             logger.info(f"  {provider.name}: {status}")
     
     def _get_cache_key(self, claim: str) -> str:

@@ -1,11 +1,12 @@
 # Verity Systems - Docker Compose Configuration
-# Local development with LocalStack for AWS services
+# Local development with LocalStack for AWS services + Comet ML tracking
 
 version: '3.8'
 
 services:
   # ===========================================
   # LOCALSTACK - AWS Services Locally
+  # GitHub Education: LocalStack Pro credits available
   # ===========================================
   localstack:
     image: localstack/localstack:latest
@@ -14,19 +15,24 @@ services:
       - "4566:4566"           # LocalStack Gateway
       - "4510-4559:4510-4559" # External service ports
     environment:
-      - SERVICES=s3,dynamodb,sqs,lambda
-      - DEBUG=1
+      # Core services for Verity
+      - SERVICES=s3,dynamodb,sqs,lambda,secretsmanager,cloudwatch
+      - DEBUG=${LOCALSTACK_DEBUG:-0}
       - DATA_DIR=/var/lib/localstack/data
-      - LAMBDA_EXECUTOR=local
+      - LAMBDA_EXECUTOR=docker-reuse
       - DOCKER_HOST=unix:///var/run/docker.sock
+      # Pro features (if you have LocalStack Pro via GitHub Education)
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:-}
+      - PERSISTENCE=1
     volumes:
       - "./localstack-data:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./python-tools/localstack-init:/etc/localstack/init/ready.d"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
 
   # ===========================================
   # REDIS - Caching Layer
@@ -60,6 +66,10 @@ services:
       - USE_LOCALSTACK=true
       - AWS_ENDPOINT_URL=http://localstack:4566
       - REDIS_URL=redis://redis:6379
+      # Comet ML tracking (get key at comet.com)
+      - COMET_API_KEY=${COMET_API_KEY:-}
+      - COMET_PROJECT_NAME=${COMET_PROJECT_NAME:-verity-fact-checking}
+      - COMET_WORKSPACE=${COMET_WORKSPACE:-verity-systems}
       # Add your API keys here or use .env file
     volumes:
       - ./python-tools:/app/python-tools

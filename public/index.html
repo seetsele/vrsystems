@@ -22,14 +22,21 @@
     <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
     <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>
     
-    <!-- Honeybadger Error Tracking - Replace YOUR_API_KEY with actual key -->
+    <!-- Honeybadger Error Tracking -->
     <script src="https://js.honeybadger.io/v6.8/honeybadger.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-        Honeybadger.configure({
-            apiKey: 'YOUR_HONEYBADGER_API_KEY', // Get from app.honeybadger.io
-            environment: window.location.hostname === 'localhost' ? 'development' : 'production',
-            revision: 'v1.0.0'
-        });
+        // Only configure Honeybadger if a real API key is set
+        const HONEYBADGER_API_KEY = ''; // Set your key from https://app.honeybadger.io
+        if (HONEYBADGER_API_KEY && HONEYBADGER_API_KEY !== '') {
+            Honeybadger.configure({
+                apiKey: HONEYBADGER_API_KEY,
+                environment: window.location.hostname === 'localhost' ? 'development' : 'production',
+                revision: 'v1.0.0'
+            });
+        } else {
+            // Disable Honeybadger in dev/demo mode to prevent console errors
+            window.Honeybadger = { notify: () => {}, setContext: () => {}, resetContext: () => {} };
+        }
     </script>
 </head>
 <body>
@@ -65,25 +72,32 @@
             
             <div class="nav-links">
                 <a href="#features" class="nav-link">Features</a>
+                <a href="verify.html" class="nav-link">Verify</a>
                 <a href="#api" class="nav-link">API</a>
                 <a href="#providers" class="nav-link">Providers</a>
                 <a href="#security" class="nav-link">Security</a>
-                <a href="misinformation-map.html" class="nav-link">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: -2px;">
-                        <circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/>
-                    </svg>
-                    Map
-                </a>
+                <a href="misinformation-map.html" class="nav-link">Map</a>
                 <a href="accuracy-score-guide.html" class="nav-link">Accuracy Guide</a>
                 <a href="API_DOCUMENTATION.md" class="nav-link">Docs</a>
             </div>
             
-            <div class="nav-actions">
+            <div class="nav-actions" id="navActions">
                 <a href="#demo" class="btn btn-ghost">Try Demo</a>
-                <a href="#start" class="btn btn-primary">
+                <a href="auth.html" class="btn btn-ghost" id="loginBtn">Sign In</a>
+                <a href="auth.html?signup=true" class="btn btn-primary" id="signupBtn">
                     Get Started
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <!-- Shown when logged in -->
+                <a href="dashboard.html" class="btn btn-primary" id="dashboardBtn" style="display: none;">
+                    Dashboard
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9"/>
+                        <rect x="14" y="3" width="7" height="5"/>
+                        <rect x="14" y="12" width="7" height="9"/>
+                        <rect x="3" y="16" width="7" height="5"/>
                     </svg>
                 </a>
             </div>
@@ -693,10 +707,11 @@
                             rows="3"
                         ></textarea>
                         <button type="submit" class="btn btn-primary">
-                            <span>Verify Claim</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="M9 12l2 2 4-4"/>
                             </svg>
+                            <span>Verify Claim</span>
                         </button>
                     </div>
                     
@@ -707,6 +722,18 @@
                         <button type="button" class="example-btn" data-claim="Lightning never strikes the same place twice">Lightning myth</button>
                     </div>
                     
+                    <!-- Verification Mode Info -->
+                    <div class="verification-mode-info">
+                        <div class="mode-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            <span>Comprehensive Mode: ~60 second deep analysis</span>
+                        </div>
+                        <p class="mode-description">Cross-references 50+ AI models, academic databases, fact-check organizations, and news archives for maximum accuracy</p>
+                    </div>
+                    
                     <!-- Demo Attempts Display -->
                     <div id="demoAttemptsDisplay" class="demo-attempts-display"></div>
                 </form>
@@ -714,12 +741,92 @@
                 <div class="demo-results" id="demoResults">
                     <div class="results-placeholder">
                         <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <p>Enter a claim above to see verification results</p>
-                        <p class="demo-hint">5 free verifications • Connects to real API when available</p>
+                        <h4>Ready to Verify</h4>
+                        <p>Enter a claim above to start comprehensive fact-checking</p>
+                        <p class="demo-hint">5 free verifications • Industry-leading accuracy • 50+ AI models</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Verify+ Section -->
+    <section class="verify-plus-section" id="verify-plus" style="padding: 6rem 0; background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);">
+        <div class="section-container">
+            <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;">
+                <!-- Left Content -->
+                <div style="padding-right: 2rem;">
+                    <span class="section-badge" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2)); border-color: rgba(99, 102, 241, 0.4);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.15em;">Plus</span> — Bulk Analysis
+                    </span>
+                    <h2 style="font-size: 2.5rem; margin: 1.5rem 0 1rem; line-height: 1.2; background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Verify Entire Documents, Videos & More</h2>
+                    <p style="color: #94a3b8; font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem;">
+                        Upload research papers, PDFs, videos, or paste social media posts. 
+                        We'll automatically extract every claim and verify each one — with detailed reports for each.
+                    </p>
+                    <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; color: #e2e8f0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Bulk verify PDFs, research papers, journals</span>
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; color: #e2e8f0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Extract claims from YouTube videos & audio</span>
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; color: #e2e8f0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Social media post & thread analysis</span>
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; color: #e2e8f0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Comprehensive PDF reports with citations</span>
+                        </li>
+                    </ul>
+                    <a href="verify-plus.html" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1rem; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #22d3ee 100%); box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);">
+                        Try Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.15em;">Plus</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+                
+                <!-- Right Visual -->
+                <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 20px; padding: 2rem; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #6366f1, #22d3ee, #8b5cf6);"></div>
+                    
+                    <!-- Mock interface -->
+                    <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <div style="padding: 0.75rem 1.25rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(34, 211, 238, 0.15)); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 8px; color: #a5b4fc; font-size: 0.85rem; font-weight: 500;">📄 Document</div>
+                        <div style="padding: 0.75rem 1.25rem; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(71, 85, 105, 0.3); border-radius: 8px; color: #64748b; font-size: 0.85rem;">🎬 Video</div>
+                        <div style="padding: 0.75rem 1.25rem; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(71, 85, 105, 0.3); border-radius: 8px; color: #64748b; font-size: 0.85rem;">📱 Social</div>
+                    </div>
+                    
+                    <div style="padding: 1.5rem; background: rgba(15, 23, 42, 0.5); border: 2px dashed rgba(99, 102, 241, 0.3); border-radius: 12px; text-align: center; margin-bottom: 1.5rem;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" style="margin-bottom: 0.75rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+                        <p style="color: #94a3b8; font-size: 0.9rem;">research-paper.pdf</p>
+                        <p style="color: #64748b; font-size: 0.75rem;">2.4 MB • Ready to analyze</p>
+                    </div>
+                    
+                    <!-- Summary stats mock -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 0.75rem; text-align: center;">
+                            <div style="font-size: 1.25rem; font-weight: 700; color: #10b981;">12</div>
+                            <div style="font-size: 0.65rem; color: #64748b;">TRUE</div>
+                        </div>
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 0.75rem; text-align: center;">
+                            <div style="font-size: 1.25rem; font-weight: 700; color: #ef4444;">3</div>
+                            <div style="font-size: 0.65rem; color: #64748b;">FALSE</div>
+                        </div>
+                        <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 8px; padding: 0.75rem; text-align: center;">
+                            <div style="font-size: 1.25rem; font-weight: 700; color: #fbbf24;">2</div>
+                            <div style="font-size: 0.65rem; color: #64748b;">UNSURE</div>
+                        </div>
+                        <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 0.75rem; text-align: center;">
+                            <div style="font-size: 1.25rem; font-weight: 700; color: #6366f1;">17</div>
+                            <div style="font-size: 0.65rem; color: #64748b;">TOTAL</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1077,65 +1184,105 @@ verifyClaim();</code></pre>
         </div>
     </section>
 
-    <!-- GitHub Education Section -->
+    <!-- Pricing Section -->
     <section class="pricing" id="pricing">
         <div class="section-container">
             <div class="section-header">
                 <span class="section-badge">Flexible Plans</span>
                 <h2 class="section-title">Simple, Transparent Pricing</h2>
                 <p class="section-description">
-                    Choose the plan that fits your needs. All plans include access to our full suite of 14 AI providers and fact-checking sources.
+                    Choose the plan that fits your content volume. All plans include access to our full suite of 14 AI providers and fact-checking sources.
                 </p>
             </div>
             
-            <div class="pricing-grid">
+            <div class="pricing-grid pricing-grid-5">
+                <!-- Free Tier -->
                 <div class="pricing-card">
-                    <h3>Starter</h3>
-                    <div class="pricing-amount"><span class="price">Free</span></div>
-                    <p>Perfect for personal use and testing</p>
+                    <h3>Free</h3>
+                    <div class="pricing-amount"><span class="price">$0</span></div>
+                    <p class="pricing-desc">For developers & testing</p>
+                    <div class="pricing-volume">50 verifications/mo</div>
                     <ul class="pricing-features">
-                        <li>100 verifications/month</li>
-                        <li>All 14 AI providers</li>
-                        <li>Basic support</li>
-                        <li>API access</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>All 14 AI providers</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>API access</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Community support</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>~2 posts/month</li>
                     </ul>
-                    <button class="btn btn-outline">Get Started</button>
+                    <button data-tier="free" onclick="VerityPayments.handlePricingClick('free')" class="btn btn-outline">Get Started</button>
                 </div>
                 
+                <!-- Starter Tier -->
+                <div class="pricing-card">
+                    <h3>Starter</h3>
+                    <div class="pricing-amount"><span class="price">$79</span><span class="period">/mo</span></div>
+                    <p class="pricing-desc">For bloggers & freelancers</p>
+                    <div class="pricing-volume">2,500 verifications/mo</div>
+                    <div class="pricing-per-check">$0.032 per check</div>
+                    <ul class="pricing-features">
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>All 14 AI providers</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>API + batch processing</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Email support</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>~10-15 posts/month</li>
+                    </ul>
+                    <button data-tier="starter" onclick="VerityPayments.handlePricingClick('starter')" class="btn btn-outline">Start Free Trial</button>
+                </div>
+                
+                <!-- Professional Tier (Featured) -->
                 <div class="pricing-card featured">
                     <div class="pricing-badge">Most Popular</div>
                     <h3>Professional</h3>
-                    <div class="pricing-amount"><span class="price">$29</span><span class="period">/month</span></div>
-                    <p>For researchers and small teams</p>
+                    <div class="pricing-amount"><span class="price">$199</span><span class="period">/mo</span></div>
+                    <p class="pricing-desc">For teams & agencies</p>
+                    <div class="pricing-volume">15,000 verifications/mo</div>
+                    <div class="pricing-per-check">$0.013 per check</div>
                     <ul class="pricing-features">
-                        <li>10,000 verifications/month</li>
-                        <li>All 14 AI providers</li>
-                        <li>Priority support</li>
-                        <li>API access</li>
-                        <li>Batch processing</li>
-                        <li>Advanced analytics</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>All 14 AI providers</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Priority API access</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Priority support</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Advanced analytics</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>~50-100 posts/month</li>
                     </ul>
-                    <button class="btn btn-primary">Start Free Trial</button>
+                    <button data-tier="professional" onclick="VerityPayments.handlePricingClick('professional')" class="btn btn-primary">Start Free Trial</button>
                 </div>
                 
+                <!-- Business Tier -->
+                <div class="pricing-card">
+                    <h3>Business</h3>
+                    <div class="pricing-amount"><span class="price">$799</span><span class="period">/mo</span></div>
+                    <p class="pricing-desc">For publishers & enterprises</p>
+                    <div class="pricing-volume">75,000 verifications/mo</div>
+                    <div class="pricing-per-check">$0.011 per check</div>
+                    <ul class="pricing-features">
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Everything in Pro</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Dedicated CSM</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>99.9% SLA</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Custom integrations</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>~200-500 posts/month</li>
+                    </ul>
+                    <button data-tier="business" onclick="VerityPayments.handlePricingClick('business')" class="btn btn-outline">Start Free Trial</button>
+                </div>
+                
+                <!-- Enterprise Tier -->
                 <div class="pricing-card">
                     <h3>Enterprise</h3>
                     <div class="pricing-amount"><span class="price">Custom</span></div>
-                    <p>For organizations at scale</p>
+                    <p class="pricing-desc">For platforms at scale</p>
+                    <div class="pricing-volume">300,000+ verifications/mo</div>
+                    <div class="pricing-per-check">Starting at $0.01/check</div>
                     <ul class="pricing-features">
-                        <li>Unlimited verifications</li>
-                        <li>All 14 AI providers</li>
-                        <li>24/7 dedicated support</li>
-                        <li>Custom integrations</li>
-                        <li>SLA guarantee</li>
-                        <li>Private deployment</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Everything in Business</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>24/7 dedicated support</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Private deployment</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Volume discounts</li>
+                        <li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Unlimited scale</li>
                     </ul>
-                    <button class="btn btn-outline">Contact Sales</button>
+                    <button data-tier="enterprise" onclick="VerityPayments.handlePricingClick('enterprise')" class="btn btn-outline">Contact Sales</button>
                 </div>
             </div>
             
             <div class="pricing-note">
-                <p>All plans can be paid with credit card via Stripe. Cancel anytime, no questions asked.</p>
+                <p>All plans include 14-day free trial. Pay with credit card via Stripe. Cancel anytime.</p>
+                <p class="pricing-benchmark">📊 Average blog post has 15-25 factual claims • Top-performing teams verify everything before publication</p>
             </div>
         </div>
     </section>
@@ -1255,6 +1402,7 @@ verifyClaim();</code></pre>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="assets/js/verity-client.js"></script>
     <script src="assets/js/verity-api-client.js"></script>
+    <script src="assets/js/stripe-payments.js"></script>
     <script src="assets/js/main-v2.js"></script>
     
     <script>
@@ -1519,6 +1667,36 @@ verifyClaim();`
                 terminalOutput.classList.add('show');
             }, 1500);
         }
+        
+        // Auth state detection - show/hide navigation buttons based on login status
+        function updateNavAuthState() {
+            const user = localStorage.getItem('verity_user');
+            const signInBtn = document.querySelector('.nav-actions .btn-outline[href="auth.html"]');
+            const getStartedBtn = document.querySelector('.nav-actions .btn-primary[href="auth.html?signup=true"]');
+            const dashboardBtn = document.querySelector('.nav-actions .btn-primary[href="dashboard.html"]');
+            
+            if (user) {
+                // User is logged in - show Dashboard, hide Sign In/Get Started
+                if (signInBtn) signInBtn.style.display = 'none';
+                if (getStartedBtn) getStartedBtn.style.display = 'none';
+                if (dashboardBtn) dashboardBtn.style.display = 'inline-flex';
+            } else {
+                // User is not logged in - show Sign In/Get Started, hide Dashboard
+                if (signInBtn) signInBtn.style.display = 'inline-flex';
+                if (getStartedBtn) getStartedBtn.style.display = 'inline-flex';
+                if (dashboardBtn) dashboardBtn.style.display = 'none';
+            }
+        }
+        
+        // Check auth state on page load
+        updateNavAuthState();
+        
+        // Listen for storage changes (e.g., logout from another tab)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'verity_user') {
+                updateNavAuthState();
+            }
+        });
     </script>
 </body>
 </html>

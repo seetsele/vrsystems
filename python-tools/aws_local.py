@@ -2,6 +2,11 @@
 Verity Systems - AWS LocalStack Integration
 Local AWS development for S3, DynamoDB, Lambda, and SQS
 
+Supports three modes:
+1. Moto mocks (no Docker needed) - set USE_AWS_MOCKS=true
+2. LocalStack (Docker) - set USE_LOCALSTACK=true  
+3. Real AWS - set both to false
+
 GitHub Education: LocalStack Pro credits available
 Use for: Testing AWS integrations locally without charges
 """
@@ -20,7 +25,8 @@ logger = logging.getLogger('VerityLocalStack')
 
 # Configuration
 LOCALSTACK_ENDPOINT = os.getenv('AWS_ENDPOINT_URL', 'http://localhost:4566')
-USE_LOCALSTACK = os.getenv('USE_LOCALSTACK', 'true').lower() == 'true'
+USE_LOCALSTACK = os.getenv('USE_LOCALSTACK', 'false').lower() == 'true'
+USE_AWS_MOCKS = os.getenv('USE_AWS_MOCKS', 'true').lower() == 'true'
 AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
 
 # Bucket and table names
@@ -29,9 +35,28 @@ S3_BUCKET_REPORTS = 'verity-reports'
 DYNAMODB_CACHE_TABLE = 'verity-claim-cache'
 SQS_VERIFICATION_QUEUE = 'verity-verification-queue'
 
+# Initialize mocks if needed
+_mocks_initialized = False
+
+def _ensure_mocks_started():
+    """Start moto mocks if USE_AWS_MOCKS is enabled"""
+    global _mocks_initialized
+    if USE_AWS_MOCKS and not USE_LOCALSTACK and not _mocks_initialized:
+        try:
+            from aws_mock_server import start_mock_aws_services
+            start_mock_aws_services()
+            _mocks_initialized = True
+            logger.info("✅ AWS mocks initialized")
+        except ImportError:
+            logger.warning("aws_mock_server not available")
+        except Exception as e:
+            logger.warning(f"Could not start AWS mocks: {e}")
+
 
 def get_aws_config() -> Dict[str, Any]:
-    """Get AWS configuration - LocalStack for dev, real AWS for prod"""
+    """Get AWS configuration - Mocks, LocalStack for dev, real AWS for prod"""
+    _ensure_mocks_started()
+    
     if USE_LOCALSTACK:
         return {
             'endpoint_url': LOCALSTACK_ENDPOINT,
@@ -39,6 +64,7 @@ def get_aws_config() -> Dict[str, Any]:
             'aws_secret_access_key': 'test',
             'region_name': AWS_REGION
         }
+    # For mocks or real AWS, just use region
     return {
         'region_name': AWS_REGION
     }

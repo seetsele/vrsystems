@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Plus - Bulk Claim Verification | Verity Systems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/verify-plus.css">
+</head>
+<body class="dashboard-body">
+    <div class="page-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="sidebar-logo">
+                <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="url(#sideGrad)" stroke-width="2" fill="none"/>
+                    <path d="M12 20L17 25L28 14" stroke="url(#sideGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+                </svg>
+                <span class="logo-text">verity<span class="dot">.</span></span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+            <a href="verify-plus.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
+            <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
+            <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+            <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
+            <a href="billing.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+            <div class="nav-divider"></div>
+            <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Back to Home</a>
+        </nav>
+        <div class="sidebar-plan">
+            <div class="plan-info"><span class="plan-name">Business</span><span class="plan-badge pro">PRO</span></div>
+            <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" style="width: 35%"></div></div><span class="usage-text">175 / 500 verifications</span></div>
+            <a href="billing.html" class="upgrade-btn">Upgrade to Enterprise</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="mobile-header">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+            <span class="mobile-logo">verity<span class="dot">.</span></span>
+            <div class="mobile-user">JD</div>
+        </header>
+
+        <div class="page-content">
+            <!-- Page Hero -->
+            <div class="page-hero pro-hero">
+                <div class="hero-content">
+                    <div class="hero-badge enterprise-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.15em;">Plus</span> — Bulk Analysis
+                    </div>
+                    <h1>Verify Multiple Claims at Once</h1>
+                    <p>Upload documents, videos, articles, or research papers. We'll extract every claim, verify each one, and generate comprehensive reports.</p>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">AI Models</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Claim Extraction</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-number">PDF</span>
+                        <span class="stat-label">& Video Support</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="document" id="modeDocument">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span>Document</span>
+                    <small>PDF, DOCX, Papers</small>
+                </button>
+                <button class="mode-btn" data-mode="video" id="modeVideo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                    <span>Video</span>
+                    <small>YouTube, MP4, Clips</small>
+                </button>
+                <button class="mode-btn" data-mode="social" id="modeSocial">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+                    <span>Social Media</span>
+                    <small>Posts, Threads</small>
+                </button>
+                <button class="mode-btn" data-mode="article" id="modeArticle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>
+                    <span>Article/URL</span>
+                    <small>News, Blogs</small>
+                </button>
+                <button class="mode-btn" data-mode="batch" id="modeBatch">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+                    <span>Batch Text</span>
+                    <small>Multiple Claims</small>
+                </button>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="upload-section" id="uploadSection">
+                <!-- Document Upload -->
+                <div class="upload-panel active" data-mode="document" id="documentPanel">
+                    <div class="upload-zone" id="documentDropZone">
+                        <div class="upload-icon">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <path d="M14 2v6h6"/>
+                                <path d="M12 18v-6"/>
+                                <path d="M9 15h6"/>
+                            </svg>
+                        </div>
+                        <h3>Upload Research Paper, PDF, or Document</h3>
+                        <p>Drag & drop files here, or <span class="upload-link">browse</span></p>
+                        <div class="upload-formats">
+                            <span class="format-tag">PDF</span>
+                            <span class="format-tag">DOCX</span>
+                            <span class="format-tag">DOC</span>
+                            <span class="format-tag">TXT</span>
+                            <span class="format-tag">RTF</span>
+                        </div>
+                        <p class="upload-hint">Max file size: 100MB • We'll extract all verifiable claims automatically</p>
+                        <input type="file" class="file-input" id="documentFile" accept=".pdf,.doc,.docx,.txt,.rtf" hidden>
+                    </div>
+                    <div class="file-preview-zone" id="documentPreview"></div>
+                </div>
+
+                <!-- Video Upload -->
+                <div class="upload-panel" data-mode="video" id="videoPanel">
+                    <div class="upload-tabs">
+                        <button class="upload-tab active" data-tab="url">Video URL</button>
+                        <button class="upload-tab" data-tab="file">Upload File</button>
+                    </div>
+                    <div class="tab-content active" data-tab="url">
+                        <div class="url-input-section">
+                            <div class="url-input-wrapper large">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                                <input type="url" id="videoUrl" placeholder="Paste YouTube, Vimeo, or video URL...">
+                            </div>
+                            <div class="supported-platforms">
+                                <span>Supported:</span>
+                                <img src="https://img.icons8.com/color/24/youtube-play.png" alt="YouTube" title="YouTube">
+                                <img src="https://img.icons8.com/color/24/vimeo.png" alt="Vimeo" title="Vimeo">
+                                <img src="https://img.icons8.com/ios-filled/24/22d3ee/tiktok--v1.png" alt="TikTok" title="TikTok">
+                                <span class="more-platforms">+12 more</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-content" data-tab="file">
+                        <div class="upload-zone" id="videoDropZone">
+                            <div class="upload-icon">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                            </div>
+                            <h3>Upload Video File</h3>
+                            <p>Drag & drop video here, or <span class="upload-link">browse</span></p>
+                            <div class="upload-formats">
+                                <span class="format-tag">MP4</span>
+                                <span class="format-tag">MOV</span>
+                                <span class="format-tag">AVI</span>
+                                <span class="format-tag">WEBM</span>
+                            </div>
+                            <p class="upload-hint">Max file size: 2GB • Audio will be transcribed and claims extracted</p>
+                            <input type="file" class="file-input" id="videoFile" accept="video/*" hidden>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div class="upload-panel" data-mode="social" id="socialPanel">
+                    <div class="url-input-section">
+                        <div class="url-input-wrapper large">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+                            <input type="url" id="socialUrl" placeholder="Paste social media post URL (Twitter/X, Facebook, Instagram, TikTok, Reddit...)">
+                        </div>
+                        <div class="supported-platforms">
+                            <span>Supported:</span>
+                            <img src="https://img.icons8.com/ios-filled/24/22d3ee/twitter.png" alt="Twitter/X" title="Twitter/X">
+                            <img src="https://img.icons8.com/color/24/facebook-new.png" alt="Facebook" title="Facebook">
+                            <img src="https://img.icons8.com/color/24/instagram-new.png" alt="Instagram" title="Instagram">
+                            <img src="https://img.icons8.com/color/24/reddit.png" alt="Reddit" title="Reddit">
+                            <img src="https://img.icons8.com/ios-filled/24/22d3ee/tiktok--v1.png" alt="TikTok" title="TikTok">
+                            <span class="more-platforms">+8 more</span>
+                        </div>
+                    </div>
+                    <div class="social-options">
+                        <label class="check-option"><input type="checkbox" id="socialThread" checked><span>Include entire thread/replies</span></label>
+                        <label class="check-option"><input type="checkbox" id="socialImages"><span>Analyze attached images</span></label>
+                        <label class="check-option"><input type="checkbox" id="socialComments"><span>Scan top comments for claims</span></label>
+                    </div>
+                </div>
+
+                <!-- Article/URL -->
+                <div class="upload-panel" data-mode="article" id="articlePanel">
+                    <div class="url-input-section">
+                        <div class="url-input-wrapper large">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            <input type="url" id="articleUrl" placeholder="Paste article, news, or blog URL...">
+                        </div>
+                    </div>
+                    <div class="article-options">
+                        <label class="check-option"><input type="checkbox" id="articleHeadline" checked><span>Verify headline separately</span></label>
+                        <label class="check-option"><input type="checkbox" id="articleQuotes" checked><span>Extract and verify quotes</span></label>
+                        <label class="check-option"><input type="checkbox" id="articleStats"><span>Verify statistics and numbers</span></label>
+                        <label class="check-option"><input type="checkbox" id="articleImages"><span>Analyze article images</span></label>
+                    </div>
+                </div>
+
+                <!-- Batch Text -->
+                <div class="upload-panel" data-mode="batch" id="batchPanel">
+                    <div class="batch-input-section">
+                        <h3>Enter Multiple Claims</h3>
+                        <p>Enter one claim per line. We'll verify each claim individually and provide a summary report.</p>
+                        <textarea id="batchClaims" class="batch-textarea" placeholder="The Earth is approximately 4.5 billion years old.
+Vaccines cause autism.
+The Great Wall of China is visible from space.
+Humans use only 10% of their brain.
+Climate change is primarily caused by human activity.
+...add as many claims as you need"></textarea>
+                        <div class="batch-stats">
+                            <span id="claimCount">0 claims detected</span>
+                            <span id="charCount">0 / 50,000 characters</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Options -->
+            <div class="analysis-options-section">
+                <h4><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Analysis Settings</h4>
+                <div class="options-grid pro-options">
+                    <label class="option-card">
+                        <input type="checkbox" id="optResearchGrade" checked>
+                        <div class="option-content">
+                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+                            <div class="option-text"><strong>Research-Grade Analysis</strong><span>Statistical analysis & citations</span></div>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" id="optAllProviders" checked>
+                        <div class="option-content">
+                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                            <div class="option-text"><strong>All 50+ AI Providers</strong><span>Maximum consensus accuracy</span></div>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" id="optBiasDetection" checked>
+                        <div class="option-content">
+                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                            <div class="option-text"><strong>Bias & Propaganda Scan</strong><span>Detect manipulation techniques</span></div>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" id="optDeepfake">
+                        <div class="option-content">
+                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                            <div class="option-text"><strong>Deepfake Detection</strong><span>AI-generated content analysis</span></div>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" id="optNumericVerify" checked>
+                        <div class="option-content">
+                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></div>
+                            <div class="option-text"><strong>Numeric Verification</strong><span>Validate statistics & numbers</span></div>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" id="optGenerateReport" checked>
+                        <div class="option-content">
+                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
+                            <div class="option-text"><strong>Generate PDF Report</strong><span>Downloadable analysis document</span></div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Start Analysis Button -->
+            <div class="start-analysis-section">
+                <button class="btn-analyze-pro" id="startAnalysisBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>Start Bulk Verification</span>
+                </button>
+                <p class="analysis-note">Estimated time: <span id="estimatedTime">2-5 minutes</span> depending on content size</p>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <!-- Progress -->
+                <div class="analysis-progress-pro" id="analysisProgress">
+                    <div class="progress-header">
+                        <div class="progress-spinner-pro"></div>
+                        <div class="progress-info">
+                            <h3 id="progressTitle">Analyzing Content...</h3>
+                            <p id="progressSubtitle">Extracting claims from document</p>
+                        </div>
+                    </div>
+                    <div class="progress-details">
+                        <div class="progress-stat">
+                            <span class="stat-value" id="claimsFound">0</span>
+                            <span class="stat-label">Claims Found</span>
+                        </div>
+                        <div class="progress-stat">
+                            <span class="stat-value" id="claimsVerified">0</span>
+                            <span class="stat-label">Verified</span>
+                        </div>
+                        <div class="progress-stat">
+                            <span class="stat-value" id="timeRemaining">--</span>
+                            <span class="stat-label">Time Remaining</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-pro">
+                        <div class="progress-fill-pro" id="progressFill"></div>
+                    </div>
+                    <div class="current-claim" id="currentClaim">
+                        <span class="claim-label">Currently verifying:</span>
+                        <span class="claim-text" id="currentClaimText">Initializing...</span>
+                    </div>
+                </div>
+
+                <!-- Summary Report -->
+                <div class="summary-report" id="summaryReport" style="display: none;">
+                    <div class="report-header">
+                        <div class="report-title">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                            <div>
+                                <h2>Verification Report</h2>
+                                <p id="reportSubtitle">Analysis completed</p>
+                            </div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn-action" id="downloadReportBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download PDF</button>
+                            <button class="btn-action" id="shareReportBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/></svg>Share</button>
+                        </div>
+                    </div>
+
+                    <!-- Summary Stats -->
+                    <div class="summary-stats-grid">
+                        <div class="summary-stat true">
+                            <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="trueCount">0</span>
+                                <span class="stat-label">Verified True</span>
+                            </div>
+                        </div>
+                        <div class="summary-stat false">
+                            <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="falseCount">0</span>
+                                <span class="stat-label">Verified False</span>
+                            </div>
+                        </div>
+                        <div class="summary-stat uncertain">
+                            <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="uncertainCount">0</span>
+                                <span class="stat-label">Uncertain</span>
+                            </div>
+                        </div>
+                        <div class="summary-stat total">
+                            <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="totalClaims">0</span>
+                                <span class="stat-label">Total Claims</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Verdict -->
+                    <div class="overall-verdict" id="overallVerdict">
+                        <div class="verdict-circle-large">
+                            <svg class="verdict-ring-large" viewBox="0 0 200 200">
+                                <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"/>
+                                <circle id="overallRing" cx="100" cy="100" r="90" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="565" stroke-dashoffset="565"/>
+                            </svg>
+                            <div class="verdict-score-large" id="overallScore">--</div>
+                        </div>
+                        <div class="verdict-details-large">
+                            <h3>Overall Content Reliability</h3>
+                            <p id="overallSummary">Comprehensive analysis of all claims in the content.</p>
+                            <div class="verdict-tags" id="overallTags"></div>
+                        </div>
+                    </div>
+
+                    <!-- Claims List -->
+                    <div class="claims-list-section">
+                        <div class="section-header">
+                            <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Individual Claims Analysis</h3>
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" data-filter="all">All</button>
+                                <button class="filter-tab" data-filter="true">True</button>
+                                <button class="filter-tab" data-filter="false">False</button>
+                                <button class="filter-tab" data-filter="uncertain">Uncertain</button>
+                            </div>
+                        </div>
+                        <div class="claims-list" id="claimsList">
+                            <!-- Claims will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/verify-plus.js"></script>
+</body>
+</html>

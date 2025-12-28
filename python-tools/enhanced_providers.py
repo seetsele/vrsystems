@@ -64,11 +64,15 @@ class GeminiProvider:
     
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.getenv('GOOGLE_AI_API_KEY')
-        self.base_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+        self.base_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
     
     @property
     def name(self) -> str:
         return "Google Gemini Pro"
+
+    @property
+    def provider_type(self) -> str:
+        return "ai"
     
     @property
     def is_available(self) -> bool:
@@ -151,6 +155,10 @@ class MistralProvider:
     @property
     def name(self) -> str:
         return "Mistral AI"
+
+    @property
+    def provider_type(self) -> str:
+        return "ai"
     
     @property
     def is_available(self) -> bool:
@@ -232,6 +240,10 @@ class TogetherAIProvider:
     @property
     def name(self) -> str:
         return "Together AI"
+
+    @property
+    def provider_type(self) -> str:
+        return "ai"
     
     @property
     def is_available(self) -> bool:
@@ -301,6 +313,10 @@ class CohereProvider:
     @property
     def name(self) -> str:
         return "Cohere"
+
+    @property
+    def provider_type(self) -> str:
+        return "ai"
     
     @property
     def is_available(self) -> bool:
@@ -333,7 +349,7 @@ class CohereProvider:
                 
                 # Main analysis with Command
                 chat_payload = {
-                    'model': 'command-r-plus',
+                    'model': 'command-r',
                     'message': f'''Fact-check this claim with rigorous analysis:
 
 CLAIM: "{claim}"
@@ -356,9 +372,20 @@ Be precise and cite specific facts.''',
                         data = await response.json()
                         return [{
                             'source': 'Cohere Command',
-                            'model': 'command-r-plus',
+                            'model': 'command-r',
                             'analysis': data.get('text', '')
                         }]
+                    else:
+                        # Try fallback model if command-r-plus fails
+                        chat_payload['model'] = 'command'
+                        async with session.post(f"{self.base_url}/chat", headers=headers, json=chat_payload) as resp2:
+                            if resp2.status == 200:
+                                data = await resp2.json()
+                                return [{
+                                    'source': 'Cohere Command',
+                                    'model': 'command',
+                                    'analysis': data.get('text', '')
+                                }]
         except Exception as e:
             logger.error(f"Cohere API error: {e}")
         return []
@@ -378,6 +405,10 @@ class DeepSeekProvider:
     @property
     def name(self) -> str:
         return "DeepSeek AI"
+
+    @property
+    def provider_type(self) -> str:
+        return "ai"
     
     @property
     def is_available(self) -> bool:
@@ -458,6 +489,10 @@ class TavilyProvider:
     @property
     def name(self) -> str:
         return "Tavily Search"
+
+    @property
+    def provider_type(self) -> str:
+        return "search"
     
     @property
     def is_available(self) -> bool:
@@ -514,6 +549,10 @@ class ExaProvider:
     @property
     def name(self) -> str:
         return "Exa Search"
+
+    @property
+    def provider_type(self) -> str:
+        return "search"
     
     @property
     def is_available(self) -> bool:
@@ -576,6 +615,10 @@ class BraveSearchProvider:
     @property
     def name(self) -> str:
         return "Brave Search"
+
+    @property
+    def provider_type(self) -> str:
+        return "search"
     
     @property
     def is_available(self) -> bool:

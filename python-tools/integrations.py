@@ -7,6 +7,7 @@ Tools Integrated:
 - New Relic: Application Performance Monitoring (APM)
 - ConfigCat: Feature flags for gradual rollouts
 - Doppler: Secrets management (configuration)
+- Comet ML: ML experiment tracking and model comparison
 - Simple Analytics: Privacy-first analytics (frontend)
 - Astra Security: Security scanning (external)
 - BrowserStack: Cross-browser testing (CI/CD)
@@ -25,6 +26,43 @@ from dotenv import load_dotenv
 load_dotenv()
 
 logger = logging.getLogger('VerityIntegrations')
+
+# ============================================================
+# COMET ML - ML Experiment Tracking
+# ============================================================
+
+_comet_integration = None
+
+def configure_comet_integration():
+    """Initialize Comet ML for experiment tracking"""
+    global _comet_integration
+    
+    try:
+        from comet_integration import configure_comet, is_comet_enabled
+        
+        if configure_comet():
+            _comet_integration = True
+            logger.info("✅ Comet ML experiment tracking initialized")
+            return True
+        return False
+    except ImportError:
+        logger.warning("Comet integration module not available")
+        return False
+    except Exception as e:
+        logger.error(f"Failed to configure Comet ML: {e}")
+        return False
+
+
+def get_comet_tracker():
+    """Get Comet ML metrics tracker"""
+    if not _comet_integration:
+        return None
+    
+    try:
+        from comet_integration import get_metrics_tracker
+        return get_metrics_tracker()
+    except:
+        return None
 
 # ============================================================
 # HONEYBADGER - Error Tracking
@@ -335,6 +373,7 @@ def initialize_all_integrations():
         'honeybadger': configure_honeybadger(),
         'newrelic': configure_newrelic(),
         'configcat': configure_configcat(),
+        'comet_ml': configure_comet_integration(),
     }
     
     enabled = [k for k, v in results.items() if v]

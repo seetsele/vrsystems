@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing & Subscription - Verity Systems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        .current-plan-card { background: linear-gradient(135deg, rgba(34, 211, 238, 0.12) 0%, rgba(99, 102, 241, 0.12) 100%); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: var(--radius-xl); padding: 2rem; margin-bottom: 2.5rem; position: relative; overflow: hidden; }
+        .current-plan-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #22d3ee, #6366f1, #a855f7); }
+        .plan-card-content { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; }
+        .plan-header h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        .plan-badge { background: var(--gradient-primary); padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .plan-badge.free { background: rgba(255,255,255,0.1); }
+        .plan-badge.pro { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .plan-badge.enterprise { background: linear-gradient(135deg, #f59e0b, #f97316); }
+        .plan-description { color: var(--text-muted); margin-bottom: 1.5rem; }
+        .usage-overview { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .usage-item { flex: 1; min-width: 200px; }
+        .usage-item label { display: block; font-size: 0.8rem; color: var(--text-faint); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .usage-bar-container { background: rgba(0,0,0,0.3); border-radius: 10px; height: 10px; overflow: hidden; margin-bottom: 0.35rem; }
+        .usage-bar-fill { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .usage-bar-fill.low { background: linear-gradient(90deg, var(--success), #4ade80); }
+        .usage-bar-fill.medium { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+        .usage-bar-fill.high { background: linear-gradient(90deg, var(--danger), #f87171); }
+        .usage-text { font-size: 0.85rem; color: var(--text-secondary); }
+        .usage-text strong { color: var(--text-primary); }
+        .plan-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+        .btn-upgrade { background: var(--gradient-primary); color: #fff; padding: 1rem 2rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(34, 211, 238, 0.25); font-family: inherit; font-size: 1rem; }
+        .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(34, 211, 238, 0.35); }
+        .btn-manage { background: transparent; border: 1px solid var(--border-medium); color: var(--text-secondary); padding: 0.75rem 1.5rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 500; transition: all 0.2s; font-family: inherit; }
+        .btn-manage:hover { background: rgba(255,255,255,0.05); }
+        .pricing-section { margin-bottom: 2.5rem; }
+        .pricing-section h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        .pricing-section h2 svg { color: var(--accent-indigo); }
+        .pricing-section > p { color: var(--text-muted); margin-bottom: 2rem; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .plan-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 2rem; position: relative; transition: all 0.3s; display: flex; flex-direction: column; }
+        .plan-card:hover { border-color: var(--border-medium); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+        .plan-card.popular { border-color: rgba(99, 102, 241, 0.5); }
+        .plan-card.popular::before { content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 0.35rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+        .plan-card.current { border-color: rgba(34, 211, 238, 0.5); }
+        .plan-card-header { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.5rem; }
+        .plan-card-header h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .plan-price { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .plan-price span { font-size: 1rem; font-weight: 400; color: var(--text-muted); }
+        .plan-card-header p { color: var(--text-muted); font-size: 0.9rem; }
+        .plan-features { flex: 1; margin-bottom: 1.5rem; }
+        .plan-features li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.6rem 0; color: var(--text-secondary); font-size: 0.9rem; }
+        .plan-features li svg { color: var(--success); flex-shrink: 0; margin-top: 2px; }
+        .plan-features li.unavailable { color: var(--text-faint); }
+        .plan-features li.unavailable svg { color: var(--text-faint); }
+        .btn-plan { width: 100%; padding: 0.875rem; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: inherit; font-size: 0.95rem; }
+        .btn-plan.primary { background: var(--gradient-primary); border: none; color: #fff; box-shadow: 0 4px 15px rgba(34, 211, 238, 0.2); }
+        .btn-plan.primary:hover { box-shadow: 0 8px 20px rgba(34, 211, 238, 0.3); transform: translateY(-1px); }
+        .btn-plan.secondary { background: transparent; border: 1px solid var(--border-medium); color: var(--text-primary); }
+        .btn-plan.secondary:hover { background: rgba(255,255,255,0.05); }
+        .btn-plan.current { background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); color: var(--accent-cyan); cursor: default; }
+        .billing-history { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 2rem; }
+        .section-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); }
+        .section-header h2 { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .section-header h2 svg { color: var(--accent-cyan); }
+        .invoice-item { display: grid; grid-template-columns: 1fr auto auto auto; gap: 2rem; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border-subtle); transition: background 0.2s; }
+        .invoice-item:hover { background: rgba(255,255,255,0.02); }
+        .invoice-item:last-child { border-bottom: none; }
+        .invoice-date { font-weight: 500; }
+        .invoice-date span { display: block; font-size: 0.8rem; color: var(--text-muted); font-weight: 400; }
+        .invoice-amount { font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+        .invoice-status { padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .invoice-status.paid { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .invoice-status.pending { background: rgba(234, 179, 8, 0.15); color: var(--warning); }
+        .btn-download { background: transparent; border: 1px solid var(--border-medium); color: var(--text-secondary); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s; font-family: inherit; }
+        .btn-download:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+        .payment-method { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; }
+        .payment-card-display { display: flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; }
+        .card-icon { width: 50px; height: 32px; background: linear-gradient(135deg, #1a1f35, #2d3555); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .card-info { flex: 1; }
+        .card-info strong { display: block; margin-bottom: 0.25rem; }
+        .card-info span { color: var(--text-muted); font-size: 0.85rem; }
+        .btn-update-card { background: transparent; border: 1px solid var(--border-medium); color: var(--text-secondary); padding: 0.65rem 1.25rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 500; transition: all 0.2s; font-family: inherit; }
+        .btn-update-card:hover { background: rgba(255,255,255,0.05); }
+        .empty-invoices { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+        .empty-invoices svg { margin-bottom: 1rem; opacity: 0.5; }
+        @media (max-width: 768px) {
+            .plan-card-content { grid-template-columns: 1fr; }
+            .plan-actions { flex-direction: row; }
+            .invoice-item { grid-template-columns: 1fr 1fr; gap: 1rem; }
+            .invoice-item > *:nth-child(3), .invoice-item > *:nth-child(4) { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="page-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="sidebar-logo">
+                <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="url(#sideGrad)" stroke-width="2" fill="none"/>
+                    <path d="M12 20L17 25L28 14" stroke="url(#sideGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+                </svg>
+                <span class="logo-text">verity<span class="dot">.</span></span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+            <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
+            <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
+            <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+            <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
+            <a href="billing.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+            <a href="settings.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+            <div class="nav-divider"></div>
+            <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a>
+        </nav>
+        <div class="sidebar-plan">
+            <div class="plan-info"><span class="plan-name">Starter</span><span class="plan-badge">FREE</span></div>
+            <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" id="usageFill" style="width: 0%"></div></div><span class="usage-text"><span id="usageCount">0</span> / <span id="usageLimit">50</span> verifications</span></div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="mobile-header">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+            <span class="mobile-logo">verity<span class="dot">.</span></span>
+            <div class="mobile-user">JD</div>
+        </header>
+
+        <div class="page-content">
+            <div class="page-hero">
+                <div class="page-hero-content">
+                    <div class="page-hero-text">
+                        <h1><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing & Subscription</h1>
+                        <p>Manage your subscription, view invoices, and update payment methods.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="current-plan-card">
+                <div class="plan-card-content">
+                    <div class="plan-details">
+                        <div class="plan-header">
+                            <h2><span id="currentPlanName">Starter</span> <span class="plan-badge free" id="currentPlanBadge">FREE</span></h2>
+                        </div>
+                        <p class="plan-description" id="currentPlanDesc">Perfect for trying out Verity's fact-checking capabilities.</p>
+                        <div class="usage-overview">
+                            <div class="usage-item">
+                                <label>Verifications Used</label>
+                                <div class="usage-bar-container"><div class="usage-bar-fill low" id="verificationsBar" style="width: 0%"></div></div>
+                                <span class="usage-text"><strong id="verificationsUsed">0</strong> / <span id="verificationsLimit">50</span> this month</span>
+                            </div>
+                            <div class="usage-item">
+                                <label>Billing Period</label>
+                                <div class="usage-bar-container"><div class="usage-bar-fill low" id="periodBar" style="width: 50%"></div></div>
+                                <span class="usage-text">Resets <strong id="resetDate">in 15 days</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="plan-actions">
+                        <button class="btn-upgrade" onclick="scrollToPricing()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            Upgrade Plan
+                        </button>
+                        <button class="btn-manage" onclick="openPortal()">Manage Subscription</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pricing-section" id="pricingSection">
+                <h2><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Choose Your Plan</h2>
+                <p>Select the perfect plan for your fact-checking needs.</p>
+                
+                <!-- Top Row: 3 Cards -->
+                <div class="pricing-grid-top">
+                    <div class="plan-card" id="freeCard">
+                        <div class="plan-card-header">
+                            <h3>Free</h3>
+                            <div class="plan-price">$0<span>/month</span></div>
+                            <p>Try Verity risk-free</p>
+                        </div>
+                        <ul class="plan-features">
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 verifications/month</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Single claim verification</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Basic confidence scores</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Email support</li>
+                            <li class="unavailable"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Bulk verification</li>
+                        </ul>
+                        <button class="btn-plan current" id="freeBtn">Current Plan</button>
+                    </div>
+                    <div class="plan-card" id="starterCard">
+                        <div class="plan-card-header">
+                            <h3>Starter</h3>
+                            <div class="plan-price">$79<span>/month</span></div>
+                            <p>For individuals & freelancers</p>
+                        </div>
+                        <ul class="plan-features">
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>2,500 verifications/month</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Bulk verification (up to 10)</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Source verification</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>API access</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Email support</li>
+                        </ul>
+                        <button class="btn-plan primary" id="starterBtn" onclick="selectPlan('starter')">Upgrade to Starter</button>
+                    </div>
+                    <div class="plan-card popular" id="proCard">
+                        <div class="plan-card-header">
+                            <h3>Professional</h3>
+                            <div class="plan-price">$199<span>/month</span></div>
+                            <p>For teams & researchers</p>
+                        </div>
+                        <ul class="plan-features">
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>15,000 verifications/month</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Bulk verification (up to 50)</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Deep analysis & citations</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority processing</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
+                        </ul>
+                        <button class="btn-plan primary" id="proBtn" onclick="selectPlan('pro')">Upgrade to Professional</button>
+                    </div>
+                </div>
+                
+                <!-- Bottom Row: 2 Cards Centered -->
+                <div class="pricing-grid-bottom">
+                    <div class="plan-card" id="businessCard">
+                        <div class="plan-card-header">
+                            <h3>Business</h3>
+                            <div class="plan-price">$799<span>/month</span></div>
+                            <p>For organizations at scale</p>
+                        </div>
+                        <ul class="plan-features">
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>75,000 verifications/month</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited bulk verification</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All 50+ AI providers</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom integrations</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated support</li>
+                        </ul>
+                        <button class="btn-plan primary" id="businessBtn" onclick="selectPlan('business')">Upgrade to Business</button>
+                    </div>
+                    <div class="plan-card" id="enterpriseCard">
+                        <div class="plan-card-header">
+                            <h3>Enterprise</h3>
+                            <div class="plan-price">Custom</div>
+                            <p>For large-scale deployments</p>
+                        </div>
+                        <ul class="plan-features">
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited verifications</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>White-label solution</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>On-premise deployment</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated account manager</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA guarantee & 24/7 support</li>
+                        </ul>
+                        <button class="btn-plan primary" id="enterpriseBtn" onclick="selectPlan('enterprise')">Contact Sales</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="billing-history">
+                <div class="section-header">
+                    <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Billing History</h2>
+                </div>
+                <div id="invoicesList">
+                    <div class="empty-invoices">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <p>No billing history yet. Your invoices will appear here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-method">
+                <div class="section-header">
+                    <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Payment Method</h2>
+                </div>
+                <div class="payment-card-display" id="paymentDisplay">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    </div>
+                    <div class="card-info">
+                        <strong id="cardDisplay">No payment method</strong>
+                        <span id="cardExpiry">Add a card to upgrade</span>
+                    </div>
+                    <button class="btn-update-card" onclick="updatePaymentMethod()">Add Card</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function loadBillingData() {
+            const stats = JSON.parse(localStorage.getItem('verity_stats') || '{}');
+            const plan = localStorage.getItem('verity_plan') || 'free';
+            const limits = { free: 50, starter: 2500, pro: 15000, business: 75000, enterprise: 999999 };
+            const used = stats.verifications_used || 0;
+            const limit = limits[plan];
+            const pct = Math.min((used / limit) * 100, 100);
+            
+            document.getElementById('verificationsUsed').textContent = used;
+            document.getElementById('verificationsLimit').textContent = limit === 999999 ? '∞' : limit.toLocaleString();
+            document.getElementById('verificationsBar').style.width = pct + '%';
+            document.getElementById('verificationsBar').className = 'usage-bar-fill ' + (pct < 50 ? 'low' : pct < 80 ? 'medium' : 'high');
+            
+            // Update sidebar
+            document.getElementById('usageCount').textContent = used;
+            document.getElementById('usageLimit').textContent = limit === 999999 ? '∞' : limit.toLocaleString();
+            document.getElementById('usageFill').style.width = pct + '%';
+            
+            // Reset date
+            const now = new Date();
+            const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+            const daysUntil = Math.ceil((nextMonth - now) / (1000 * 60 * 60 * 24));
+            document.getElementById('resetDate').textContent = `in ${daysUntil} days`;
+            document.getElementById('periodBar').style.width = ((30 - daysUntil) / 30 * 100) + '%';
+            
+            updatePlanDisplay(plan);
+        }
+        
+        function updatePlanDisplay(plan) {
+            const names = { free: 'Free', starter: 'Starter', pro: 'Professional', business: 'Business', enterprise: 'Enterprise' };
+            const prices = { free: '$0', starter: '$79', pro: '$199', business: '$799', enterprise: 'Custom' };
+            const descs = { 
+                free: 'Try Verity risk-free with 50 verifications per month.',
+                starter: 'Perfect for individuals and freelancers.',
+                pro: 'Enhanced features for teams and researchers.',
+                business: 'Full power of Verity for organizations at scale.',
+                enterprise: 'Custom solution for large-scale deployments.'
+            };
+            
+            document.getElementById('currentPlanName').textContent = names[plan];
+            document.getElementById('currentPlanDesc').textContent = descs[plan];
+            const badge = document.getElementById('currentPlanBadge');
+            badge.textContent = plan === 'free' ? 'FREE' : prices[plan] + '/mo';
+            badge.className = 'plan-badge ' + (plan === 'free' ? 'free' : 'pro');
+            
+            // Update plan cards
+            ['free', 'starter', 'pro', 'business', 'enterprise'].forEach(p => {
+                const btn = document.getElementById(p + 'Btn');
+                const card = document.getElementById(p + 'Card');
+                if (!btn || !card) return;
+                
+                if (p === plan) {
+                    btn.textContent = 'Current Plan';
+                    btn.className = 'btn-plan current';
+                    btn.onclick = null;
+                    card.classList.add('current');
+                } else {
+                    card.classList.remove('current');
+                    const planOrder = ['free', 'starter', 'pro', 'business', 'enterprise'];
+                    const currentIdx = planOrder.indexOf(plan);
+                    const targetIdx = planOrder.indexOf(p);
+                    
+                    if (targetIdx < currentIdx) {
+                        btn.textContent = 'Downgrade';
+                        btn.className = 'btn-plan secondary';
+                    } else {
+                        const btnTexts = { starter: 'Upgrade to Starter', pro: 'Upgrade to Professional', business: 'Upgrade to Business', enterprise: 'Contact Sales' };
+                        btn.textContent = btnTexts[p] || 'Select Plan';
+                        btn.className = 'btn-plan primary';
+                    }
+                    btn.onclick = () => selectPlan(p);
+                }
+            });
+            
+            // Sidebar plan display
+            document.querySelector('.sidebar-plan .plan-name').textContent = names[plan];
+            document.querySelector('.sidebar-plan .plan-badge').textContent = plan === 'free' ? 'FREE' : prices[plan];
+        }
+        
+        function selectPlan(plan) {
+            if (plan === 'enterprise') {
+                alert('Our sales team will contact you shortly to discuss your Enterprise needs.');
+                return;
+            }
+            if (confirm(`Switch to the ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan?`)) {
+                localStorage.setItem('verity_plan', plan);
+                loadBillingData();
+            }
+        }
+        
+        function scrollToPricing() {
+            document.getElementById('pricingSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function openPortal() { alert('Subscription management portal would open here.'); }
+        function updatePaymentMethod() { alert('Payment method update modal would open here.'); }
+        
+        document.getElementById('mobileMenuToggle')?.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+        document.addEventListener('DOMContentLoaded', loadBillingData);
+    </script>
+</body>
+</html>

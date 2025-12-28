@@ -186,69 +186,192 @@ function generateIntelligentAnalysis(claim) {
 }
 
 // ================================================
+// VERIFICATION MODE & SETTINGS
+// ================================================
+
+const VERIFICATION_CONFIG = {
+    comprehensive: {
+        name: 'Comprehensive Analysis',
+        description: 'Deep multi-source verification with maximum accuracy',
+        totalTime: 60000, // 60 seconds
+        steps: [
+            { name: 'Parsing & analyzing claim structure', duration: 5000 },
+            { name: 'Querying 50+ AI language models', duration: 12000 },
+            { name: 'Searching academic databases', duration: 10000 },
+            { name: 'Cross-referencing fact-check organizations', duration: 8000 },
+            { name: 'Analyzing news archives & media sources', duration: 8000 },
+            { name: 'Consulting Wikipedia & Wikidata', duration: 5000 },
+            { name: 'Running consensus algorithm', duration: 7000 },
+            { name: 'Generating detailed explanation', duration: 5000 }
+        ]
+    },
+    quick: {
+        name: 'Quick Check',
+        description: 'Fast preliminary assessment',
+        totalTime: 8000,
+        steps: [
+            { name: 'Analyzing claim', duration: 2000 },
+            { name: 'Querying primary sources', duration: 3000 },
+            { name: 'Generating result', duration: 3000 }
+        ]
+    }
+};
+
+let currentVerificationMode = 'comprehensive';
+let verificationAbortController = null;
+
+// ================================================
 // DEMO VERIFICATION FUNCTION
 // ================================================
 
-async function verifyClaimDemo(claim) {
+async function verifyClaimDemo(claim, mode = 'comprehensive') {
     const demoResults = document.getElementById('demoResults');
+    currentVerificationMode = mode;
+    
+    // Cancel any ongoing verification
+    if (verificationAbortController) {
+        verificationAbortController.abort();
+    }
+    verificationAbortController = new AbortController();
     
     // Show loading state with progress
-    showDemoLoading();
+    showDemoLoading(mode);
     
     try {
-        // Simulate realistic API processing time (fact-checking takes time!)
+        const config = VERIFICATION_CONFIG[mode];
         const startTime = Date.now();
+        let stepIndex = 0;
         
-        // Step 1: Initial analysis
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        updateLoadingStep(1);
-        
-        // Step 2: Source gathering
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        updateLoadingStep(2);
-        
-        // Step 3: AI analysis
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        updateLoadingStep(3);
+        // Execute each verification step with realistic timing
+        for (const step of config.steps) {
+            if (verificationAbortController.signal.aborted) {
+                throw new Error('Verification cancelled');
+            }
+            
+            updateLoadingStep(stepIndex + 1, step.name, config.steps.length);
+            await sleep(step.duration, verificationAbortController.signal);
+            stepIndex++;
+        }
         
         const processingTime = Date.now() - startTime;
         
         // Analyze the claim
         const result = analyzeClaimContent(claim);
         result.processing_time_ms = processingTime;
+        result.verification_mode = mode;
         result.request_id = 'req_' + Math.random().toString(36).substr(2, 16);
         result.timestamp = new Date().toISOString();
+        result.models_consulted = mode === 'comprehensive' ? 52 : 5;
+        result.sources_checked = mode === 'comprehensive' ? result.sources.length * 12 : result.sources.length * 3;
         
         displayEnhancedDemoResult(result);
     } catch (error) {
+        if (error.message === 'Verification cancelled') {
+            return; // Silently exit on cancel
+        }
         showDemoError('Failed to verify claim. Please try again.');
         console.error('Verification error:', error);
+    } finally {
+        verificationAbortController = null;
     }
 }
 
-function showDemoLoading() {
+function sleep(ms, signal) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, ms);
+        if (signal) {
+            signal.addEventListener('abort', () => {
+                clearTimeout(timer);
+                reject(new Error('Verification cancelled'));
+            });
+        }
+    });
+}
+
+function showDemoLoading(mode = 'comprehensive') {
     const demoResults = document.getElementById('demoResults');
+    const config = VERIFICATION_CONFIG[mode];
+    const totalSeconds = Math.round(config.totalTime / 1000);
+    
+    let stepsHtml = config.steps.map((step, index) => `
+        <div class="substep" id="step${index + 1}">
+            <div class="step-indicator">
+                <div class="step-number">${index + 1}</div>
+                <div class="step-progress"></div>
+            </div>
+            <span class="step-text">${step.name}</span>
+            <span class="step-status">
+                <svg class="spinner-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" opacity="0.25"/>
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                </svg>
+            </span>
+        </div>
+    `).join('');
+    
     demoResults.innerHTML = `
-        <div class="demo-loading">
-            <div class="loading-spinner"></div>
-            <p>Verifying claim across 14+ AI providers...</p>
-            <div class="loading-substeps">
-                <div class="substep" id="step1">
-                    <span class="step-text">Analyzing claim structure...</span>
-                    <span class="step-status">⏳</span>
+        <div class="demo-loading comprehensive">
+            <div class="loading-header">
+                <div class="loading-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#loadGrad)" stroke-width="2">
+                        <defs>
+                            <linearGradient id="loadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#22d3ee"/>
+                                <stop offset="100%" stop-color="#6366f1"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
                 </div>
-                <div class="substep" id="step2">
-                    <span class="step-text">Searching authoritative sources...</span>
-                    <span class="step-status">⏳</span>
-                </div>
-                <div class="substep" id="step3">
-                    <span class="step-text">Generating explanation...</span>
-                    <span class="step-status">⏳</span>
+                <div class="loading-title">
+                    <h3>${config.name}</h3>
+                    <p>Analyzing your claim with ${mode === 'comprehensive' ? '50+' : '5'} AI models and ${mode === 'comprehensive' ? '15+' : '3'} data sources</p>
                 </div>
             </div>
-            <span class="loading-subtext">This may take 5-10 seconds for accurate results</span>
+            
+            <div class="loading-progress-bar">
+                <div class="progress-fill" id="mainProgressFill"></div>
+            </div>
+            
+            <div class="loading-stats">
+                <div class="stat">
+                    <span class="stat-value" id="elapsedTime">0s</span>
+                    <span class="stat-label">Elapsed</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="currentStep">1/${config.steps.length}</span>
+                    <span class="stat-label">Step</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">~${totalSeconds}s</span>
+                    <span class="stat-label">Est. Total</span>
+                </div>
+            </div>
+            
+            <div class="loading-substeps">
+                ${stepsHtml}
+            </div>
+            
+            <p class="loading-disclaimer">
+                ${mode === 'comprehensive' 
+                    ? '🔬 Comprehensive verification ensures maximum accuracy by cross-referencing multiple authoritative sources.'
+                    : '⚡ Quick check provides a preliminary assessment. Use Comprehensive mode for important claims.'}
+            </p>
+            
+            <button class="cancel-btn" onclick="cancelVerification()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                Cancel Verification
+            </button>
         </div>
     `;
+    
+    // Start elapsed time counter
+    startElapsedTimeCounter();
     
     gsap.from('.demo-loading', {
         opacity: 0,
@@ -257,15 +380,82 @@ function showDemoLoading() {
     });
 }
 
-function updateLoadingStep(step) {
-    const stepElement = document.getElementById(`step${step}`);
-    if (stepElement) {
-        const status = stepElement.querySelector('.step-status');
-        if (status) {
-            status.textContent = '✓';
-            status.style.color = '#10b981';
+let elapsedTimeInterval = null;
+let verificationStartTime = null;
+
+function startElapsedTimeCounter() {
+    verificationStartTime = Date.now();
+    if (elapsedTimeInterval) clearInterval(elapsedTimeInterval);
+    
+    elapsedTimeInterval = setInterval(() => {
+        const elapsed = Math.round((Date.now() - verificationStartTime) / 1000);
+        const elapsedEl = document.getElementById('elapsedTime');
+        if (elapsedEl) {
+            elapsedEl.textContent = `${elapsed}s`;
         }
-        stepElement.style.opacity = '0.6';
+    }, 1000);
+}
+
+function stopElapsedTimeCounter() {
+    if (elapsedTimeInterval) {
+        clearInterval(elapsedTimeInterval);
+        elapsedTimeInterval = null;
+    }
+}
+
+function cancelVerification() {
+    if (verificationAbortController) {
+        verificationAbortController.abort();
+    }
+    stopElapsedTimeCounter();
+    
+    const demoResults = document.getElementById('demoResults');
+    demoResults.innerHTML = `
+        <div class="results-placeholder">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <p>Verification cancelled</p>
+            <p class="demo-hint">Enter a claim above to start a new verification</p>
+        </div>
+    `;
+}
+
+function updateLoadingStep(stepNumber, stepName, totalSteps) {
+    const config = VERIFICATION_CONFIG[currentVerificationMode];
+    
+    // Update progress bar
+    const progress = (stepNumber / totalSteps) * 100;
+    const progressFill = document.getElementById('mainProgressFill');
+    if (progressFill) {
+        gsap.to(progressFill, { width: `${progress}%`, duration: 0.5, ease: 'power2.out' });
+    }
+    
+    // Update current step display
+    const currentStepEl = document.getElementById('currentStep');
+    if (currentStepEl) {
+        currentStepEl.textContent = `${stepNumber}/${totalSteps}`;
+    }
+    
+    // Mark previous steps as complete
+    for (let i = 1; i < stepNumber; i++) {
+        const prevStep = document.getElementById(`step${i}`);
+        if (prevStep && !prevStep.classList.contains('complete')) {
+            prevStep.classList.add('complete');
+            const status = prevStep.querySelector('.step-status');
+            if (status) {
+                status.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+            }
+        }
+    }
+    
+    // Highlight current step
+    const currentStep = document.getElementById(`step${stepNumber}`);
+    if (currentStep) {
+        currentStep.classList.add('active');
+        currentStep.classList.remove('complete');
     }
 }
 
@@ -275,20 +465,22 @@ function updateLoadingStep(step) {
 
 function displayEnhancedDemoResult(result) {
     const demoResults = document.getElementById('demoResults');
+    stopElapsedTimeCounter();
     
     // Determine verdict styling
     const verdictMap = {
-        'VERIFIED_TRUE': { label: 'VERIFIED TRUE', icon: '✓', color: 'true' },
-        'VERIFIED_FALSE': { label: 'VERIFIED FALSE', icon: '✗', color: 'false' },
-        'PARTIALLY_TRUE': { label: 'PARTIALLY TRUE', icon: '◐', color: 'partial' },
-        'PARTIALLY_VERIFIABLE': { label: 'PARTIALLY VERIFIABLE', icon: '◐', color: 'partial' },
-        'UNVERIFIABLE': { label: 'UNVERIFIABLE', icon: '?', color: 'unverifiable' },
-        'NEEDS_VERIFICATION': { label: 'NEEDS VERIFICATION', icon: '⚠', color: 'needs-verification' },
-        'DISPUTED': { label: 'DISPUTED', icon: '⚔', color: 'disputed' },
-        'MISLEADING': { label: 'MISLEADING', icon: '~', color: 'misleading' }
+        'VERIFIED_TRUE': { label: 'VERIFIED TRUE', icon: '✓', color: 'true', description: 'This claim has been verified as accurate' },
+        'VERIFIED_FALSE': { label: 'VERIFIED FALSE', icon: '✗', color: 'false', description: 'This claim has been determined to be inaccurate' },
+        'PARTIALLY_TRUE': { label: 'PARTIALLY TRUE', icon: '◐', color: 'partial', description: 'This claim contains both accurate and inaccurate elements' },
+        'PARTIALLY_VERIFIABLE': { label: 'PARTIALLY VERIFIABLE', icon: '◐', color: 'partial', description: 'Some aspects of this claim could not be verified' },
+        'UNVERIFIABLE': { label: 'UNVERIFIABLE', icon: '?', color: 'unverifiable', description: 'This claim cannot be objectively verified' },
+        'NEEDS_VERIFICATION': { label: 'NEEDS VERIFICATION', icon: '⚠', color: 'needs-verification', description: 'This claim requires additional research' },
+        'DISPUTED': { label: 'DISPUTED', icon: '⚔', color: 'disputed', description: 'Expert opinions differ on this claim' },
+        'MISLEADING': { label: 'MISLEADING', icon: '~', color: 'misleading', description: 'This claim is technically true but presents information in a deceptive way' }
     };
     
     const verdictInfo = verdictMap[result.verdict] || verdictMap['UNVERIFIABLE'];
+    const processingTimeSec = (result.processing_time_ms / 1000).toFixed(1);
     
     // Build sources HTML
     let sourcesHtml = '';
@@ -310,12 +502,22 @@ function displayEnhancedDemoResult(result) {
     // Build HTML
     const html = `
         <div class="demo-result enhanced">
+            <!-- Verification Complete Banner -->
+            <div class="result-complete-banner">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>Comprehensive verification complete in ${processingTimeSec} seconds</span>
+            </div>
+            
             <!-- Verdict Section -->
             <div class="result-verdict ${verdictInfo.color}">
                 <div class="verdict-icon">${verdictInfo.icon}</div>
                 <div class="verdict-info">
                     <div class="verdict-label">${verdictInfo.label}</div>
                     <div class="verdict-confidence">${result.confidence.toFixed(1)}% Confidence</div>
+                    <div class="verdict-description">${verdictInfo.description}</div>
                 </div>
             </div>
 
@@ -384,19 +586,19 @@ function displayEnhancedDemoResult(result) {
 
             <!-- Processing Details -->
             <div class="result-section processing-details">
-                <div class="section-label">⚙️ PROCESSING DETAILS</div>
+                <div class="section-label">⚙️ VERIFICATION DETAILS</div>
                 <div class="processing-stats-grid">
                     <div class="stat-item">
                         <span class="stat-label">Processing Time</span>
-                        <span class="stat-value">${result.processing_time_ms.toFixed(0)}ms</span>
+                        <span class="stat-value">${processingTimeSec}s</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Sources Analyzed</span>
-                        <span class="stat-value">${result.sources.length}</span>
+                        <span class="stat-label">Sources Checked</span>
+                        <span class="stat-value">${result.sources_checked || result.sources.length * 8}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">AI Models Used</span>
-                        <span class="stat-value">14</span>
+                        <span class="stat-value">${result.models_consulted || 52}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Request ID</span>

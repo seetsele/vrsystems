@@ -397,12 +397,11 @@ class RealTimePipeline:
         claim: str,
         session: aiohttp.ClientSession
     ) -> Optional[Dict]:
-        """Execute a single provider"""
+        """Execute a single provider - only pass claim, not session (most providers don't need it)"""
         return await self.execute_with_retry(
             provider_name,
             provider_func,
-            claim,
-            session
+            claim  # Only pass claim, not session
         )
     
     async def batch_verify(

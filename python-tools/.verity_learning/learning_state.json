@@ -1,0 +1,105 @@
+{
+  "provider_performance": {
+    "fact_check_apis": {
+      "provider_name": "fact_check_apis",
+      "total_queries": 10,
+      "correct_verdicts": 10,
+      "incorrect_verdicts": 0,
+      "average_response_time_ms": 65.13215599,
+      "last_failure": null,
+      "failure_count": 0,
+      "domain_accuracy": {
+        "general": 0.82566077995
+      }
+    },
+    "arxiv": {
+      "provider_name": "arxiv",
+      "total_queries": 4,
+      "correct_verdicts": 4,
+      "incorrect_verdicts": 0,
+      "average_response_time_ms": 34.39,
+      "last_failure": null,
+      "failure_count": 0,
+      "domain_accuracy": {
+        "general": 0.67195
+      }
+    },
+    "pubmed": {
+      "provider_name": "pubmed",
+      "total_queries": 4,
+      "correct_verdicts": 4,
+      "incorrect_verdicts": 0,
+      "average_response_time_ms": 34.39,
+      "last_failure": null,
+      "failure_count": 0,
+      "domain_accuracy": {
+        "general": 0.67195
+      }
+    },
+    "dbpedia": {
+      "provider_name": "dbpedia",
+      "total_queries": 4,
+      "correct_verdicts": 4,
+      "incorrect_verdicts": 0,
+      "average_response_time_ms": 34.39,
+      "last_failure": null,
+      "failure_count": 0,
+      "domain_accuracy": {
+        "general": 0.67195
+      }
+    },
+    "tavily": {
+      "provider_name": "tavily",
+      "total_queries": 4,
+      "correct_verdicts": 4,
+      "incorrect_verdicts": 0,
+      "average_response_time_ms": 34.39,
+      "last_failure": null,
+      "failure_count": 0,
+      "domain_accuracy": {
+        "general": 0.67195
+      }
+    },
+    "crossref": {
+      "provider_name": "crossref",
+      "total_queries": 4,
+      "correct_verdicts": 4,
+      "incorrect_verdicts": 0,
+      "average_response_time_ms": 34.39,
+      "last_failure": null,
+      "failure_count": 0,
+      "domain_accuracy": {
+        "general": 0.67195
+      }
+    },
+    "fullfact": {
+      "provider_name": "fullfact",
+      "total_queries": 1,
+      "correct_verdicts": 1,
+      "incorrect_verdicts": 0,
+      "average_response_time_ms": 10.0,
+      "last_failure": null,
+      "failure_count": 0,
+      "domain_accuracy": {
+        "general": 0.55
+      }
+    },
+    "yago": {
+      "provider_name": "yago",
+      "total_queries": 1,
+      "correct_verdicts": 1,
+      "incorrect_verdicts": 0,
+      "average_response_time_ms": 10.0,
+      "last_failure": null,
+      "failure_count": 0,
+      "domain_accuracy": {
+        "general": 0.55
+      }
+    }
+  },
+  "feedback_history": [],
+  "verdict_cache": {},
+  "confidence_calibration": {},
+  "domain_weights": {},
+  "last_updated": "2025-12-28T10:37:45.808067"
+}

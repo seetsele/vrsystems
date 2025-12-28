@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Verity Systems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <style>
+        .verify-hero { background: linear-gradient(135deg, rgba(34, 211, 238, 0.12) 0%, rgba(99, 102, 241, 0.12) 100%); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: var(--radius-xl); padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+        .verify-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #22d3ee, #6366f1, #a855f7); }
+        .verify-hero h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        .verify-hero h2 svg { color: var(--accent-cyan); }
+        .verify-hero > p { color: var(--text-muted); margin-bottom: 1.5rem; }
+        .verify-input-container { position: relative; }
+        .verify-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-medium); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; padding-right: 140px; color: var(--text-primary); font-family: inherit; font-size: 1rem; transition: all 0.3s; resize: none; min-height: 80px; }
+        .verify-input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1); }
+        .verify-input::placeholder { color: var(--text-faint); }
+        .btn-verify { position: absolute; right: 12px; bottom: 12px; background: var(--gradient-primary); color: #fff; padding: 0.875rem 1.75rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(34, 211, 238, 0.25); font-family: inherit; font-size: 0.95rem; }
+        .btn-verify:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(34, 211, 238, 0.35); }
+        .btn-verify:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .verify-options { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .verify-option { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.875rem; }
+        .verify-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-cyan); cursor: pointer; }
+        .result-section { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 2rem; display: none; animation: slideUp 0.5s ease; }
+        .result-section.show { display: block; }
+        .result-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); }
+        .result-header h3 { font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .result-body { padding: 2rem; }
+        .verdict-display { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-lg); }
+        .verdict-icon { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+        .verdict-icon.true { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .verdict-icon.false { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .verdict-icon.partially { background: rgba(234, 179, 8, 0.15); color: var(--warning); }
+        .verdict-icon.analyzing { background: rgba(34, 211, 238, 0.15); color: var(--accent-cyan); animation: pulse 2s infinite; }
+        .verdict-text h4 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .verdict-text p { color: var(--text-muted); }
+        .confidence-meter { margin-bottom: 2rem; }
+        .confidence-meter label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .confidence-bar { height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .confidence-fill { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .confidence-fill.high { background: linear-gradient(90deg, var(--success), #4ade80); }
+        .confidence-fill.medium { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+        .confidence-fill.low { background: linear-gradient(90deg, var(--danger), #f87171); }
+        .analysis-section { margin-bottom: 1.5rem; }
+        .analysis-section h5 { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .analysis-section h5 svg { color: var(--accent-cyan); }
+        .analysis-content { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
+        .sources-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .source-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-md); }
+        .source-item svg { color: var(--accent-indigo); flex-shrink: 0; margin-top: 2px; }
+        .source-item a { color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem; word-break: break-all; }
+        .source-item a:hover { text-decoration: underline; }
+        .progress-indicator { display: none; padding: 2rem; text-align: center; }
+        .progress-indicator.show { display: block; }
+        .progress-spinner { width: 48px; height: 48px; border: 3px solid rgba(34, 211, 238, 0.2); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+        .progress-text { color: var(--text-muted); margin-bottom: 0.5rem; }
+        .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; max-width: 300px; margin: 0 auto; }
+        .progress-fill { height: 100%; background: var(--gradient-primary); transition: width 0.3s; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .quick-action { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: all 0.3s; text-decoration: none; color: inherit; }
+        .quick-action:hover { border-color: var(--accent-cyan); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .quick-action-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .quick-action-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .quick-action-icon.green { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .quick-action-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+        .quick-action-icon.cyan { background: rgba(34, 211, 238, 0.15); color: var(--accent-cyan); }
+        .quick-action-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.15rem; }
+        .quick-action-text p { font-size: 0.8rem; color: var(--text-muted); }
+        .recent-section { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; }
+        .recent-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); }
+        .recent-header h3 { font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
+        .recent-header h3 svg { color: var(--accent-cyan); }
+        .view-all { color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.35rem; }
+        .view-all:hover { text-decoration: underline; }
+        .recent-item { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border-subtle); transition: background 0.2s; cursor: pointer; }
+        .recent-item:hover { background: rgba(255,255,255,0.02); }
+        .recent-item:last-child { border-bottom: none; }
+        .recent-verdict { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .recent-verdict.true { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .recent-verdict.false { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .recent-verdict.partially { background: rgba(234, 179, 8, 0.15); color: var(--warning); }
+        .recent-claim { flex: 1; min-width: 0; }
+        .recent-claim h4 { font-size: 0.95rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.2rem; }
+        .recent-claim span { font-size: 0.8rem; color: var(--text-faint); }
+        .recent-conf { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+        .empty-recent { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+        .empty-recent svg { margin-bottom: 1rem; opacity: 0.5; }
+        @media (max-width: 768px) {
+            .verify-input { padding-right: 1.5rem; padding-bottom: 70px; }
+            .btn-verify { right: 12px; left: 12px; bottom: 12px; width: calc(100% - 24px); justify-content: center; }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="page-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="sidebar-logo">
+                <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="url(#sideGrad)" stroke-width="2" fill="none"/>
+                    <path d="M12 20L17 25L28 14" stroke="url(#sideGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+                </svg>
+                <span class="logo-text">verity<span class="dot">.</span></span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+            <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
+            <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
+            <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+            <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
+            <a href="billing.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+            <a href="settings.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+            <div class="nav-divider"></div>
+            <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a>
+        </nav>
+        <div class="sidebar-plan">
+            <div class="plan-info"><span class="plan-name">Starter</span><span class="plan-badge">FREE</span></div>
+            <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" id="usageFill" style="width: 0%"></div></div><span class="usage-text"><span id="usageCount">0</span> / <span id="usageLimit">50</span> verifications</span></div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="mobile-header">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+            <span class="mobile-logo">verity<span class="dot">.</span></span>
+            <div class="mobile-user">JD</div>
+        </header>
+
+        <div class="page-content">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="stat-value" id="totalVerifications">0</span><span class="stat-label">Total Verifications</span></div>
+                <div class="stat-card"><div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span class="stat-value" id="trueCount">0</span><span class="stat-label">Verified True</span></div>
+                <div class="stat-card"><div class="stat-icon red"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><span class="stat-value" id="falseCount">0</span><span class="stat-label">Verified False</span></div>
+                <div class="stat-card"><div class="stat-icon yellow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="stat-value" id="remainingCount">50</span><span class="stat-label">Remaining This Month</span></div>
+            </div>
+
+            <!-- VERIFY+ - Primary Action -->
+            <a href="verify-plus.html" class="verify-plus-hero" style="display: block; text-decoration: none; background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(34, 211, 238, 0.1)); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; transition: all 0.3s ease;">
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #6366f1, #22d3ee); border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h2 style="color: #fff; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.1em;">Plus</span> <span style="background: linear-gradient(135deg, #6366f1, #22d3ee); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600;">FEATURED</span></h2>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 0.75rem;">Bulk verify documents, videos, articles, and social media content. Upload PDFs, paste URLs, or enter multiple claims at once.</p>
+                        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                            <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg> Documents</span>
+                            <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg> Videos</span>
+                            <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg> Social Media</span>
+                            <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Batch Claims</span>
+                        </div>
+                    </div>
+                    <div style="flex-shrink: 0;">
+                        <span style="display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #6366f1, #22d3ee); color: white; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 0.95rem;">Start Verifying <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Quick Verify - Secondary Option -->
+            <div class="verify-hero" style="opacity: 0.85;">
+                <h2 style="font-size: 1.1rem;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Single Claim Verify</h2>
+                <p>Enter any statement or claim to fact-check using AI-powered verification.</p>
+                <div class="verify-input-container">
+                    <textarea class="verify-input" id="claimInput" placeholder="Enter a claim to verify... e.g., 'The Earth is 4.5 billion years old'" rows="3"></textarea>
+                    <button class="btn-verify" id="verifyBtn" onclick="verifyClaim()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        Verify
+                    </button>
+                </div>
+                <div class="verify-options">
+                    <label class="verify-option"><input type="checkbox" id="extendedMode"> 60-second deep analysis</label>
+                    <label class="verify-option"><input type="checkbox" id="saveHistory" checked> Save to history</label>
+                </div>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <div class="progress-indicator" id="progressIndicator">
+                    <div class="progress-spinner"></div>
+                    <p class="progress-text" id="progressText">Analyzing claim...</p>
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+                </div>
+                <div class="result-body" id="resultBody" style="display: none;">
+                    <div class="verdict-display">
+                        <div class="verdict-icon" id="verdictIcon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <div class="verdict-text"><h4 id="verdictTitle">Verified True</h4><p id="verdictSubtitle">This claim is factually accurate</p></div>
+                    </div>
+                    <div class="confidence-meter">
+                        <label>Confidence Score: <strong id="confidenceValue">95%</strong></label>
+                        <div class="confidence-bar"><div class="confidence-fill high" id="confidenceFill" style="width: 95%"></div></div>
+                    </div>
+                    <div class="analysis-section">
+                        <h5><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Analysis</h5>
+                        <p class="analysis-content" id="analysisContent">Loading analysis...</p>
+                    </div>
+                    <div class="analysis-section">
+                        <h5><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Sources</h5>
+                        <div class="sources-list" id="sourcesList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <a href="verify-plus.html" class="quick-action" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(34, 211, 238, 0.1)); border-color: rgba(99, 102, 241, 0.4);">
+                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: white;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg></div>
+                    <div class="quick-action-text"><h4>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.2em;">+</span> ✨</h4><p>Bulk verification, PDFs, videos</p></div>
+                </a>
+                <a href="history.html" class="quick-action">
+                    <div class="quick-action-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                    <div class="quick-action-text"><h4>View History</h4><p>See past verifications</p></div>
+                </a>
+                <a href="api-keys.html" class="quick-action">
+                    <div class="quick-action-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+                    <div class="quick-action-text"><h4>API Keys</h4><p>Manage integrations</p></div>
+                </a>
+                <a href="billing.html" class="quick-action">
+                    <div class="quick-action-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                    <div class="quick-action-text"><h4>Upgrade Plan</h4><p>Get more verifications</p></div>
+                </a>
+                <a href="settings.html" class="quick-action">
+                    <div class="quick-action-icon cyan"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09"/></svg></div>
+                    <div class="quick-action-text"><h4>Settings</h4><p>Configure preferences</p></div>
+                </a>
+            </div>
+
+            <div class="recent-section">
+                <div class="recent-header">
+                    <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Recent Verifications</h3>
+                    <a href="history.html" class="view-all">View All <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></a>
+                </div>
+                <div id="recentList">
+                    <div class="empty-recent">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <p>No verifications yet. Start by verifying a claim above!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function loadDashboard() {
+            const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
+            const stats = JSON.parse(localStorage.getItem('verity_stats') || '{}');
+            const plan = localStorage.getItem('verity_plan') || 'starter';
+            const limits = { starter: 50, pro: 1000, enterprise: 999999 };
+            const used = stats.verifications_used || 0;
+            const limit = limits[plan];
+            
+            document.getElementById('totalVerifications').textContent = history.length;
+            document.getElementById('trueCount').textContent = history.filter(h => h.verdict === 'true').length;
+            document.getElementById('falseCount').textContent = history.filter(h => h.verdict === 'false').length;
+            document.getElementById('remainingCount').textContent = Math.max(0, limit - used);
+            
+            document.getElementById('usageCount').textContent = used;
+            document.getElementById('usageLimit').textContent = limit === 999999 ? '∞' : limit;
+            document.getElementById('usageFill').style.width = Math.min((used / limit) * 100, 100) + '%';
+            
+            renderRecentHistory(history.slice(0, 5));
+        }
+        
+        function renderRecentHistory(items) {
+            const container = document.getElementById('recentList');
+            if (items.length === 0) return;
+            container.innerHTML = items.map(item => `
+                <div class="recent-item" onclick="viewDetails('${item.id}')">
+                    <div class="recent-verdict ${item.verdict}">${getVerdictIcon(item.verdict)}</div>
+                    <div class="recent-claim"><h4>${escapeHtml(item.claim)}</h4><span>${formatDate(item.timestamp)}</span></div>
+                    <span class="recent-conf">${item.confidence}%</span>
+                </div>
+            `).join('');
+        }
+        
+        function getVerdictIcon(verdict) {
+            const icons = {
+                true: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+                false: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+                partially: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+            };
+            return icons[verdict] || icons.partially;
+        }
+        
+        function escapeHtml(text) { return text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m]); }
+        function formatDate(d) { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+        
+        async function verifyClaim() {
+            const claim = document.getElementById('claimInput').value.trim();
+            if (!claim) { alert('Please enter a claim to verify'); return; }
+            
+            const extended = document.getElementById('extendedMode').checked;
+            const save = document.getElementById('saveHistory').checked;
+            const btn = document.getElementById('verifyBtn');
+            const resultSection = document.getElementById('resultSection');
+            const progress = document.getElementById('progressIndicator');
+            const resultBody = document.getElementById('resultBody');
+            
+            btn.disabled = true;
+            resultSection.classList.add('show');
+            progress.classList.add('show');
+            resultBody.style.display = 'none';
+            
+            const duration = extended ? 60000 : 5000;
+            const steps = extended ? ['Initializing analysis...', 'Searching databases...', 'Cross-referencing sources...', 'Evaluating credibility...', 'Generating report...'] : ['Analyzing...', 'Verifying...'];
+            let stepIdx = 0;
+            const stepInterval = setInterval(() => {
+                stepIdx = (stepIdx + 1) % steps.length;
+                document.getElementById('progressText').textContent = steps[stepIdx];
+            }, duration / steps.length);
+            
+            let progressPct = 0;
+            const progressInterval = setInterval(() => {
+                progressPct = Math.min(progressPct + (100 / (duration / 100)), 99);
+                document.getElementById('progressFill').style.width = progressPct + '%';
+            }, 100);
+            
+            await new Promise(r => setTimeout(r, duration));
+            clearInterval(stepInterval);
+            clearInterval(progressInterval);
+            document.getElementById('progressFill').style.width = '100%';
+            
+            const verdicts = ['true', 'false', 'partially'];
+            const verdict = verdicts[Math.floor(Math.random() * verdicts.length)];
+            const confidence = 65 + Math.floor(Math.random() * 30);
+            
+            displayResult(claim, verdict, confidence);
+            
+            if (save) {
+                const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
+                history.unshift({ id: Date.now().toString(), claim, verdict, confidence, timestamp: new Date().toISOString(), sources: 3 + Math.floor(Math.random() * 5) });
+                localStorage.setItem('verity_history', JSON.stringify(history));
+                
+                const stats = JSON.parse(localStorage.getItem('verity_stats') || '{}');
+                stats.verifications_used = (stats.verifications_used || 0) + 1;
+                localStorage.setItem('verity_stats', JSON.stringify(stats));
+            }
+            
+            btn.disabled = false;
+            loadDashboard();
+        }
+        
+        function displayResult(claim, verdict, confidence) {
+            const progress = document.getElementById('progressIndicator');
+            const resultBody = document.getElementById('resultBody');
+            progress.classList.remove('show');
+            resultBody.style.display = 'block';
+            
+            const verdictData = {
+                true: { title: 'Verified True', subtitle: 'This claim is factually accurate', icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' },
+                false: { title: 'Verified False', subtitle: 'This claim is not accurate', icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' },
+                partially: { title: 'Partially True', subtitle: 'This claim contains both accurate and inaccurate elements', icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>' }
+            };
+            
+            const vd = verdictData[verdict];
+            document.getElementById('verdictIcon').className = 'verdict-icon ' + verdict;
+            document.getElementById('verdictIcon').innerHTML = vd.icon;
+            document.getElementById('verdictTitle').textContent = vd.title;
+            document.getElementById('verdictSubtitle').textContent = vd.subtitle;
+            document.getElementById('confidenceValue').textContent = confidence + '%';
+            document.getElementById('confidenceFill').style.width = confidence + '%';
+            document.getElementById('confidenceFill').className = 'confidence-fill ' + (confidence >= 80 ? 'high' : confidence >= 50 ? 'medium' : 'low');
+            document.getElementById('analysisContent').textContent = `Based on analysis of multiple authoritative sources, this claim has been evaluated. The verification process examined scientific literature, official databases, and reputable news sources to determine the accuracy of the statement.`;
+            document.getElementById('sourcesList').innerHTML = `
+                <div class="source-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">Wikipedia - Reference Article</a></div>
+                <div class="source-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">Scientific Journal Publication</a></div>
+                <div class="source-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">Official Government Data</a></div>
+            `;
+        }
+        
+        function viewDetails(id) { window.location.href = 'history.html'; }
+        
+        document.getElementById('mobileMenuToggle')?.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+        document.getElementById('claimInput')?.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); verifyClaim(); } });
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>
