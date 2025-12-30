@@ -1,0 +1,1000 @@
+/* =================================================================
+   VERITY SYSTEMS - SHARED CSS
+   Universal loading screen, responsive utilities, touch targets
+   ================================================================= */
+
+/* Premium font import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ================================
+   CSS CUSTOM PROPERTIES (ROOT)
+   ================================ */
+:root {
+    /* Colors */
+    --verity-cyan: #22d3ee;
+    --verity-purple: #6366f1;
+    --verity-gradient: linear-gradient(135deg, var(--verity-cyan), var(--verity-purple));
+    --verity-gold: #fbbf24;
+    --verity-green: #10b981;
+    --verity-red: #ef4444;
+    --verity-bg: #050505;
+    --verity-card: rgba(255, 255, 255, 0.03);
+    --verity-border: rgba(255, 255, 255, 0.1);
+
+    /* Typography tokens (Inter + Sora – free stack) */
+    --font-sans: 'Inter', 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-heading: 'Sora', 'Inter', 'Space Grotesk', sans-serif;
+    --font-size-base: 16px;
+    --easing-pop: cubic-bezier(0.16, 1, 0.3, 1);
+    --motion-fast: 160ms;
+    
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+    
+    /* Touch-friendly minimum sizes */
+    --touch-target-min: 44px;
+    --touch-target-comfortable: 48px;
+    
+    /* Safe areas for notched devices */
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+    
+    /* Responsive breakpoints (reference) */
+    /* Mobile: < 480px */
+    /* Mobile Large: 480px - 767px */
+    /* Tablet: 768px - 1023px */
+    /* Desktop: 1024px - 1279px */
+    /* Desktop Large: >= 1280px */
+}
+
+/* ================================
+   UNIVERSAL LOADING SCREEN
+   Logo with heartbeat animation
+   ================================ */
+.verity-loading-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--verity-bg, #050505);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.verity-loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.verity-loading-logo {
+    animation: verity-heartbeat 1.2s ease-in-out infinite;
+}
+
+.verity-loading-text {
+    margin-top: 1.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: var(--verity-gradient, linear-gradient(135deg, var(--verity-cyan), var(--verity-purple)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: verity-fade-in 0.5s ease 0.3s forwards;
+}
+
+.verity-loading-dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 1rem;
+}
+
+.verity-loading-dots span {
+    width: 8px;
+    height: 8px;
+    background: var(--verity-cyan);
+    border-radius: 50%;
+    animation: verity-bounce 1.4s ease-in-out infinite;
+}
+
+.verity-loading-dots span:nth-child(2) {
+    animation-delay: 0.16s;
+}
+
+.verity-loading-dots span:nth-child(3) {
+    animation-delay: 0.32s;
+}
+
+@keyframes verity-heartbeat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.15); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.1); }
+    56% { transform: scale(1); }
+}
+
+@keyframes verity-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes verity-bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* ================================
+   MOBILE-FIRST BASE STYLES
+   ================================ */
+
+/* Ensure proper box sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Smooth scrolling with reduced motion respect */
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    
+    .verity-loading-logo,
+    .verity-loading-dots span {
+        animation: none;
+    }
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* Safe area padding for notched devices */
+body {
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
+    padding-left: var(--safe-area-left);
+    padding-right: var(--safe-area-right);
+}
+
+/* Better text rendering & premium font */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* ================================
+   TOUCH-FRIENDLY INTERACTIONS
+   Minimum 44x44px touch targets
+   ================================ */
+
+/* Buttons */
+.btn, 
+button, 
+[role="button"],
+.touch-target {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+}
+
+/* Links in navigation */
+nav a, 
+.nav-link,
+.menu-item {
+    min-height: var(--touch-target-min);
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+/* Form elements */
+input, 
+select, 
+textarea,
+button {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+}
+
+/* Remove tap highlight on mobile */
+button, a, input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ================================
+   GRADIENT OUTLINE BUTTON
+   Cyan/Purple gradient border effect
+   ================================ */
+.btn-outline-gradient {
+    position: relative;
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.btn-outline-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    padding: 2px;
+    background: linear-gradient(135deg, var(--verity-cyan, #22d3ee), var(--verity-purple, #6366f1));
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.btn-outline-gradient:hover {
+    background: rgba(34, 211, 238, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(34, 211, 238, 0.2);
+}
+
+.btn-outline-gradient:hover::before {
+    background: linear-gradient(135deg, var(--verity-cyan, #22d3ee), var(--verity-purple, #6366f1));
+}
+
+.btn-outline-gradient:active {
+    transform: translateY(-1px);
+}
+
+/* ================================
+   RESPONSIVE IMAGES & MEDIA
+   ================================ */
+img, video, svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ================================
+   RESPONSIVE TYPOGRAPHY
+   ================================ */
+
+/* Fluid typography for headings */
+h1, .h1 {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    line-height: 1.2;
+}
+
+h2, .h2 {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    line-height: 1.25;
+}
+
+/* Premium logo and hero utilities */
+.logo-text {
+    font-weight: 800;
+    background: var(--verity-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    letter-spacing: -0.25px;
+}
+
+.hero-title {
+    font-weight: 800;
+    text-shadow: 0 6px 30px rgba(4,9,20,0.45);
+}
+
+.gradient-text {
+    font-weight: 700;
+    background: var(--verity-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Accessibility: fallback for low-contrast gradient situations */
+.verity-low-contrast .gradient-text,
+.verity-low-contrast .logo-text,
+.verity-low-contrast .info-value.plan {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: initial !important;
+    color: #ffffff !important;
+    text-shadow: 0 6px 24px rgba(0,0,0,0.45) !important;
+}
+
+/* Micro-interaction polish */
+.btn-primary {
+    padding: 0.9rem 1.6rem;
+    transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 14px 50px rgba(34, 211, 238, 0.18);
+}
+
+/* Slightly tighter hero letter-spacing for premium feel */
+.hero-title .title-line { letter-spacing: -1.25px; }
+
+/* Small improvement for focus outlines */
+:focus { outline-offset: 4px; }
+:focus-visible { outline: 3px solid rgba(34,211,238,0.14); }
+h3, .h3 {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    line-height: 1.3;
+}
+
+h4, .h4 {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    line-height: 1.35;
+}
+
+/* Body text */
+body {
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    line-height: 1.6;
+}
+
+/* ================================
+   RESPONSIVE CONTAINERS
+   ================================ */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+@media (min-width: 480px) {
+    .container {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        padding: 0 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        padding: 0 3rem;
+    }
+}
+
+/* ================================
+   RESPONSIVE GRID UTILITIES
+   ================================ */
+.grid {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Auto-fit responsive grid */
+.grid-auto {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Fixed column grids that adapt */
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+.grid-4 { grid-template-columns: 1fr; }
+
+@media (min-width: 480px) {
+    .grid-2, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 768px) {
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ================================
+   RESPONSIVE FLEX UTILITIES
+   ================================ */
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 1rem; }
+.gap-lg { gap: 1.5rem; }
+
+/* Stack on mobile, row on larger screens */
+.flex-responsive {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .flex-responsive {
+        flex-direction: row;
+    }
+}
+
+/* ================================
+   RESPONSIVE SPACING
+   ================================ */
+.p-responsive {
+    padding: 1rem;
+}
+
+.py-responsive {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .p-responsive {
+        padding: 1.5rem;
+    }
+    
+    .py-responsive {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .p-responsive {
+        padding: 2rem;
+    }
+    
+    .py-responsive {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+    }
+}
+
+/* ================================
+   MOBILE NAVIGATION HELPERS
+   ================================ */
+
+/* Hamburger menu icon */
+.mobile-menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: var(--touch-target-comfortable);
+    height: var(--touch-target-comfortable);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.mobile-menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle span:nth-child(2) {
+    margin: 6px 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Hide on desktop */
+@media (min-width: 768px) {
+    .mobile-menu-toggle {
+        display: none;
+    }
+}
+
+/* Mobile menu overlay */
+.mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Mobile menu content */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(300px, 80vw);
+    height: 100vh;
+    background: var(--verity-bg, #050505);
+    border-left: 1px solid var(--verity-border, rgba(255,255,255,0.1));
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    padding: calc(var(--safe-area-top) + 4rem) 1.5rem var(--safe-area-bottom);
+    overflow-y: auto;
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+}
+
+.mobile-menu a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: background 0.2s;
+    min-height: var(--touch-target-min);
+}
+
+.mobile-menu a:hover,
+.mobile-menu a:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ================================
+   RESPONSIVE CARDS
+   ================================ */
+.card-responsive {
+    background: var(--verity-card);
+    border: 1px solid var(--verity-border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .card-responsive {
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .card-responsive {
+        padding: 2rem;
+        border-radius: 24px;
+    }
+}
+
+/* ================================
+   RESPONSIVE BUTTONS
+   ================================ */
+.btn-responsive {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+}
+
+@media (min-width: 480px) {
+    .btn-responsive {
+        width: auto;
+        min-width: 160px;
+    }
+}
+
+/* Button group that stacks on mobile */
+.btn-group-responsive {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+@media (min-width: 480px) {
+    .btn-group-responsive {
+        flex-direction: row;
+        width: auto;
+    }
+    
+    .btn-group-responsive .btn {
+        width: auto;
+    }
+}
+
+/* ================================
+   FORM RESPONSIVE UTILITIES
+   ================================ */
+.form-group-responsive {
+    margin-bottom: 1.25rem;
+}
+
+.form-input-responsive {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 16px; /* Prevents iOS zoom */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--verity-border);
+    border-radius: 12px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.form-input-responsive:focus {
+    outline: none;
+    border-color: var(--verity-cyan);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+}
+
+@media (min-width: 768px) {
+    .form-input-responsive {
+        padding: 1rem 1.25rem;
+    }
+}
+
+/* ================================
+   RESPONSIVE TABLES
+   ================================ */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+    min-width: 600px;
+}
+
+/* Card-style table on mobile */
+.table-cards {
+    display: block;
+}
+
+.table-cards thead {
+    display: none;
+}
+
+.table-cards tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.table-cards tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--verity-card);
+    border: 1px solid var(--verity-border);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.table-cards td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--verity-border);
+}
+
+.table-cards td:last-child {
+    border-bottom: none;
+}
+
+.table-cards td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+@media (min-width: 768px) {
+    .table-cards {
+        display: table;
+    }
+    
+    .table-cards thead {
+        display: table-header-group;
+    }
+    
+    .table-cards tbody {
+        display: table-row-group;
+    }
+    
+    .table-cards tr {
+        display: table-row;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+    }
+    
+    .table-cards td {
+        display: table-cell;
+        border-bottom: 1px solid var(--verity-border);
+    }
+    
+    .table-cards td::before {
+        display: none;
+    }
+}
+
+/* ================================
+   HIDE/SHOW UTILITIES
+   ================================ */
+.hide-mobile {
+    display: none !important;
+}
+
+.show-mobile {
+    display: block !important;
+}
+
+@media (min-width: 768px) {
+    .hide-mobile {
+        display: block !important;
+    }
+    
+    .show-mobile {
+        display: none !important;
+    }
+    
+    .hide-tablet {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hide-tablet {
+        display: block !important;
+    }
+    
+    .hide-desktop {
+        display: none !important;
+    }
+}
+
+/* ================================
+   TEXT UTILITIES
+   ================================ */
+.text-center-mobile {
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .text-center-mobile {
+        text-align: left;
+    }
+}
+
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ================================
+   SCROLLBAR STYLING
+   ================================ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Hide scrollbar on mobile but keep functionality */
+@media (max-width: 767px) {
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* ================================
+   PULL TO REFRESH INDICATOR
+   ================================ */
+.pull-to-refresh {
+    position: fixed;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--verity-bg);
+    border: 2px solid var(--verity-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: top 0.3s ease;
+    z-index: 9998;
+}
+
+.pull-to-refresh.visible {
+    top: calc(var(--safe-area-top) + 20px);
+}
+
+.pull-to-refresh svg {
+    width: 20px;
+    height: 20px;
+    color: var(--verity-cyan);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ================================
+   BOTTOM NAVIGATION (MOBILE)
+   ================================ */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(5, 5, 5, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--verity-border);
+    padding: 0.5rem 0.5rem calc(0.5rem + var(--safe-area-bottom));
+    display: flex;
+    justify-content: space-around;
+    z-index: 100;
+}
+
+.bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-size: 0.7rem;
+    min-height: var(--touch-target-min);
+    transition: color 0.2s;
+}
+
+.bottom-nav a svg {
+    width: 24px;
+    height: 24px;
+}
+
+.bottom-nav a.active,
+.bottom-nav a:hover {
+    color: var(--verity-cyan);
+}
+
+@media (min-width: 768px) {
+    .bottom-nav {
+        display: none;
+    }
+}
+
+/* Add padding to body when bottom nav is present */
+body.has-bottom-nav {
+    padding-bottom: calc(70px + var(--safe-area-bottom));
+}
+
+@media (min-width: 768px) {
+    body.has-bottom-nav {
+        padding-bottom: var(--safe-area-bottom);
+    }
+}
+
+/* ================================
+   LANDSCAPE ORIENTATION FIXES
+   ================================ */
+@media (max-height: 500px) and (orientation: landscape) {
+    .verity-loading-screen {
+        flex-direction: row;
+        gap: 2rem;
+    }
+    
+    .verity-loading-text {
+        margin-top: 0;
+    }
+    
+    /* Reduce hero heights in landscape */
+    .hero-section,
+    .hero {
+        min-height: auto;
+        padding-top: 4rem;
+        padding-bottom: 2rem;
+    }
+}
+
+/* ================================
+   PRINT STYLES
+   ================================ */
+@media print {
+    .verity-loading-screen,
+    .mobile-menu,
+    .mobile-menu-overlay,
+    .mobile-menu-toggle,
+    .bottom-nav {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+}

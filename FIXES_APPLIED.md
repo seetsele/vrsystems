@@ -7,6 +7,41 @@ All major UI/UX issues have been identified and fixed across the Verity Systems 
 
 ## ✅ FIXES APPLIED
 
+### X. **Desktop Renderer: Typography, Motion & Component Polish** ✓
+
+**Date:** 2025-12-30
+
+**Problem:** Desktop app felt clunky and visually inconsistent with the website; typography and motion were not optimized for a polished native desktop experience. Accessibility flags (contrast, missing landmark headings) were present in the renderer.
+
+**Solution:**
+- Added an Eden-inspired font stack and improved type scale for desktop (`--font-family`, `--font-heading`) with variable/modern font fallbacks.
+- Introduced micro-typography tokens (`--font-feature-settings`, larger base font-size) and improved font smoothing for crisp rendering.
+- Added design tokens for motion (`--easing-pop`, `--motion-duration-xs`) and tuned transitions for buttons, cards, sidebar, and modals for buttery micro-interactions.
+- Polished sidebar nav with animated left indicator, gradient active state, hover transforms, and subtle elevation.
+- Added modal overlay & modal open animations (fade + pop), improved focus outlines and accessibility-friendly close control styling.
+- Increased contrast and adjusted `nav-badge` and `status-text` colors/weights to resolve contrast violations.
+- Added a visually-hidden page H1 and explicit banner/main roles (`role="banner"`, `role="main"`) to resolve landmark and heading violations.
+
+**Files Modified:**
+- `desktop-app/renderer/styles.css` (typography tokens, motion tokens, nav, modal, headings, button polish)
+- `desktop-app/renderer/index.html` (inserted visually-hidden H1, `role="banner"` on titlebar)
+
+**Artifacts & Tests:**
+- Visual diffs / screenshots: `reports/screenshots/desktop-renderer-fonts-after.png`, `desktop-renderer-nav-after.png`, `desktop-renderer-modal-preview.png`
+- Accessibility: `reports/axe-desktop-renderer.json`, `reports/axe-desktop-renderer-postfix.json`, `reports/axe-desktop-renderer-final.json` (final run: 0 violations)
+
+**Notes:** Further iterations planned: explore licensed font options (GT America / Eden-specific fonts) if you have licensing available; if not, we can adopt a best-fit free alternative and refine letterspacing/weights.
+
+### Typography: Inter + Sora (site-wide) — 2025-12-31
+- Adopted a free, Eden-inspired stack using **Inter** + **Sora** across the public site and desktop renderer for a cleaner, high-quality UI feel.
+- Files changed:
+  - `public/customer-portal.html` (local font stack + refined headings and button motion)
+  - `public/assets/css/shared.css` (imported Sora and added typography tokens)
+- Visual diffs: `reports/screenshots/customer-portal-typography-after.png`
+- Accessibility: `reports/axe-customer-portal-typography.json` (0 automated violations)
+
+
+
 ### 1. **Pricing Cards - Proper Borders & Styling** ✓
 
 **Problem:** Pricing cards lacked proper visual distinction, borders were too thin, and styling was inconsistent.
@@ -342,6 +377,45 @@ Featured: 2px solid rgba(0, 217, 255, 0.6-0.8)
    - Add copy-to-clipboard for results
    - Implement result export (PDF/JSON)
    - Add favorites/history for claims
+
+---
+
+### 11. **Dashboard & Pricing - QA Completed (Dec 30, 2025)** ✓
+
+**Work done:**
+- Added `id="main-content"` and `role="main"` to page main landmarks and `skip-link` anchors to both `dashboard.html` and `pricing.html`.
+- Re-ran file-based accessibility checks and captured before/after screenshots (reports saved under `reports/`).
+- **Artifacts:** `reports/screenshots/dashboard-after.png`, `reports/screenshots/pricing-after.png`, and corresponding scan JSON files in `reports/`.
+
+**Result:** Landmark-related violations (missing main) were addressed; the pages now include clear main landmarks and skip links for keyboard users.
+
+---
+
+### 12. **Billing & Verify-Plus - Port & QA Completed (Dec 30, 2025)** ✓
+
+**Work done:**
+- Updated `billing.html` and `verify-plus.html`:
+  - Updated `<meta name="viewport">` to include `user-scalable=yes`.
+  - Added `<a href="#main-content" class="skip-link">Skip to main content</a>` for keyboard users.
+  - Added `id="main-content"` and `role="main"` to the main landmarks.
+- Captured file-based screenshots and re-ran local accessibility checks (artifacts saved under `reports/` and `reports/screenshots/`).
+- **Artifacts:** `reports/screenshots/billing-after.png`, `reports/screenshots/verify-plus-after.png`, and corresponding scan JSON files in `reports/`.
+
+**Result:** Basic landmark and viewport accessibility issues addressed for these pages; pages now expose clear main landmarks and keyboard skip links.
+
+---
+
+### 13. **Tools, History, Verify, API Keys - Port & QA (Dec 30, 2025)** ✓
+
+**Work done:**
+- Ported and improved accessibility on the following pages:
+  - `tools.html` — Added viewport update, skip-link, wrapped main landmark (`<main id="main-content" role="main">`), and closed it before the footer.
+  - `history.html` — Added viewport update, skip-link, and `id="main-content" role="main"` on the existing `<main>`.
+  - `verify.html` — Added viewport update, skip-link, and `id="main-content" role="main"` on the existing `<main>`.
+  - `api-keys.html` — Added viewport update, skip-link, and `id="main-content" role="main"` on the existing `<main>`.
+- Captured file-based screenshots and verified artifacts saved in `reports/screenshots/`.
+
+**Result:** These pages now include clear main landmarks and keyboard skip links; viewport meta now permits pinch-to-zoom on mobile.
 
 ---
 

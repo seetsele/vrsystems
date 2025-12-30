@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Portal | Verity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23050505' width='100' height='100' rx='20'/%3E%3Cpath fill='none' stroke='%2322d3ee' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' d='M25 50 L40 65 L75 30'/%3E%3C/svg%3E">
+    
+    <style>
+                .btn-lg {
+                    font-size: 1.15rem !important;
+                    padding: 1.1rem 2.2rem !important;
+                    border-radius: 9999px !important;
+                }
+                .nav-gradient-text {
+                    font-weight: 600;
+                    background: linear-gradient(135deg, var(--cyan, #22d3ee), var(--purple, #6366f1));
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+
+                /* Skip link for keyboard users */
+                .skip-link {
+                    position: absolute;
+                    left: -9999px;
+                    top: auto;
+                    width: 1px;
+                    height: 1px;
+                    overflow: hidden;
+                }
+                .skip-link:focus {
+                    left: 1rem;
+                    top: 1rem;
+                    width: auto;
+                    height: auto;
+                    background: rgba(255,255,255,0.06);
+                    color: #fff;
+                    padding: 0.5rem 0.75rem;
+                    border-radius: 6px;
+                    z-index: 99999;
+                }
+
+                /* Visible focus ring for interactive controls */
+                .btn:focus, .btn-outline:focus, .btn-ghost:focus, a:focus {
+                    outline: 3px solid rgba(34,211,238,0.12);
+                    outline-offset: 3px;
+                    box-shadow: 0 4px 20px rgba(34,211,238,0.06);
+                }
+
+        :root {
+            --cyan: #22d3ee;
+            --purple: #6366f1;
+            --gradient-primary: linear-gradient(135deg, var(--cyan), var(--purple));
+            --gold: #fbbf24;
+            --green: #10b981;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            background: #050505;
+            color: #fff;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Background effects */
+        .bg-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+        }
+        
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--cyan);
+            top: -100px;
+            right: -100px;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--purple);
+            bottom: -50px;
+            left: -50px;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon svg { width: 24px; height: 24px; color: white; }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.25px;
+        }
+        .info-value.plan {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: transform var(--motion-fast) var(--easing-pop), box-shadow var(--motion-fast) var(--easing-pop), background 200ms ease;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            color: white;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.12);
+            will-change: transform;
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 18px 48px rgba(99,102,241,0.18);
+            outline: none;
+        }
+        
+        .btn:focus-visible { outline: 2px solid rgba(139,92,246,0.14); outline-offset: 2px; }
+        
+        /* Main Content */
+        .main {
+            padding: 5rem 2rem 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page-title {
+            font-family: var(--font-heading);
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.06;
+        }
+        
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+        
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: rgba(34, 211, 238, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .card-title svg {
+            width: 24px;
+            height: 24px;
+            color: var(--cyan);
+        }
+        
+        /* Subscription Card */
+        .subscription-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .info-item {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+        
+        .info-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .info-value.plan {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--green);
+        }
+        
+        .badge-warning {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--gold);
+        }
+        
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+        }
+        
+        /* Actions */
+        .card-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--cyan);
+            background: rgba(34, 211, 238, 0.1);
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+            border: 1px solid transparent;
+        }
+        
+        .btn-danger:hover {
+            border-color: var(--red);
+            background: rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Invoice Table */
+        .invoice-list {
+            margin-top: 1rem;
+        }
+        
+        .invoice-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .invoice-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .invoice-date {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .invoice-amount {
+            font-weight: 600;
+            color: var(--cyan);
+        }
+        
+        .invoice-status {
+            font-size: 0.85rem;
+        }
+        
+        .invoice-action a {
+            color: var(--cyan);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .invoice-action a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        /* Loading State */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.75rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        .modal-close:hover {
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main {
+                padding: 7rem 1rem 2rem;
+            }
+            
+            .page-title {
+                font-size: 1.75rem;
+            }
+            
+            .invoice-item {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .subscription-info {
+                grid-template-columns: 1fr;
+            }
+
+            /* Header compactness on mobile */
+            .header { padding: 0.75rem 1rem; }
+            .header-actions { gap: 0.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .header-actions a { padding: 0.5rem 0.9rem; font-size: 0.95rem; white-space: nowrap; }
+
+            /* Hero stacks for narrow viewports */
+            .hero-container { display: flex; flex-direction: column; gap: 1.25rem; padding: 2rem 1rem; }
+            .hero-content { order: 2; }
+            .hero-visual { order: 1; margin-top: 0; width: 100%; }
+            .hero-visual .demo-terminal { width: 100%; transform: none; }
+            .title-line { display:block; font-size: clamp(1.6rem, 6vw, 2.25rem); }
+        }
+
+        /* Gradient Text Fix */
+        .logo-text,
+        .info-value.plan {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hero typography parity with homepage */
+        .hero-title {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            margin-bottom: 1.25rem; /* slightly tighter for portal */
+            letter-spacing: -1px; /* less aggressive than homepage - improves legibility */
+            text-shadow: 0 6px 30px rgba(4,9,20,0.45);
+        }
+
+        .title-line {
+            display: block;
+        }
+
+        .gradient-text {
+            font-weight: 700;
+            background: var(--gradient-primary, linear-gradient(135deg, var(--cyan), var(--purple)));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Hero content tweaks */
+        .hero-description {
+            font-size: 1.125rem;
+            color: rgba(255,255,255,0.88);
+            max-width: 560px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-actions .btn { margin-right: 0.75rem; }
+
+        /* Demo terminal subtle entrance */
+        .hero-visual { transition: transform 0.35s ease, opacity 0.35s ease; }
+
+        /* Floating card hover refinement */
+        .floating-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .floating-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+
+        /* Cursor Glow (hero) */
+        .cursor-glow {
+            position: fixed;
+            width: 220px;
+            height: 220px;
+            margin-left: -110px;
+            margin-top: -110px;
+            pointer-events: none;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(34,211,238,0.08) 0%, rgba(99,102,241,0.025) 40%, transparent 70%);
+            filter: blur(40px);
+            z-index: 50;
+            opacity: 0.9;
+            transition: opacity 0.2s ease;
+        }
+
+        /* Hide cursor glow on small screens to save perf */
+        @media (max-width: 768px) {
+            .cursor-glow { display: none !important; }
+        }
+
+        /* Loading Screen Heartbeat Animation */
+        .verity-loading-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw; height: 100vh;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+        .verity-loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .verity-loading-logo {
+            animation: heartbeat 1.2s infinite;
+            display: block;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .verity-loading-logo { animation: none !important; }
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            10% { transform: scale(1.08); }
+            20% { transform: scale(0.98); }
+            30% { transform: scale(1.12); }
+            40% { transform: scale(0.96); }
+            50% { transform: scale(1.08); }
+            60% { transform: scale(1); }
+        }
+        /* Hide loading text and dots */
+        .verity-loading-text, .verity-loading-dots { display: none !important; }
+    </style>
+    <!-- Site Dark Styles -->
+    <link rel="stylesheet" href="assets/css/styles-dark.css">
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="assets/css/shared.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <!-- Loading Screen - Unified Verity Heartbeat -->
+    <div id="loadingScreen" class="verity-loading-screen">
+        <svg class="verity-loading-logo" role="img" aria-labelledby="loadingTitle" width="80" height="80" viewBox="-26 -28 52 52" fill="none">
+            <title id="loadingTitle">Loading Verity</title>
+            <defs>
+                <linearGradient id="loadingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#22d3ee"/>
+                    <stop offset="100%" stop-color="#6366f1"/>
+                </linearGradient>
+            </defs>
+            <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#loadingGradient)" stroke-width="3.5" fill="none"/>
+            <path d="M-6,0 L-2,4 L6,-5" stroke="url(#loadingGradient)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById('loadingScreen');
+        if (!el) return;
+        const hide = () => {
+            el.classList.add('hidden');
+            el.setAttribute('aria-hidden', 'true');
+            setTimeout(() => el.remove(), 420);
+        };
+        if (document.readyState === 'complete') {
+            hide();
+        } else {
+            window.addEventListener('load', hide);
+            // fallback in case `load` doesn't fire (e.g., during dev proxy hiccups)
+            setTimeout(hide, 1500);
+        }
+    });
+    </script>
+
+    <div class="bg-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+    
+    <header class="header">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" role="img" aria-labelledby="logoTitle" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <title id="logoTitle">Verity logo</title>
+                    <path d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <span class="logo-text">Verity</span>
+        </a>
+        <div class="header-actions">
+            <a href="verify.html" class="btn btn-outline-gradient btn-lg" id="tryDemoBtn" aria-label="Open demo">Try Demo</a>
+            <a href="auth.html" class="btn btn-ghost btn-lg" id="loginBtn">Sign In</a>
+            <a href="waitlist.html" class="btn btn-primary btn-lg" id="signupBtn" style="margin-left: 0.5rem;">Join Waitlist</a>
+            <a href="billing.html" class="btn btn-ghost btn-lg">Billing</a>
+            <a href="dashboard.html" class="btn btn-primary btn-lg" id="dashboardBtn">Dashboard</a>
+        </div>
+    </header>
+
+    <section class="hero" id="hero" role="region" aria-label="Customer portal hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>Billing • Invoices • Account Security</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    <span class="title-line text-split">Customer Portal</span>
+                    <span class="title-line gradient-text text-split">Manage billing with confidence</span>
+                </h1>
+
+                <p class="hero-description">View invoices, update payment methods, and manage your subscription settings — all in one secure place.</p>
+
+                <div class="hero-actions">
+                    <a href="#subscriptionCard" class="btn btn-primary btn-lg" style="margin-right:0.75rem;">Manage Billing</a>
+                    <a href="verify.html" class="btn btn-outline-gradient btn-lg" aria-label="Open demo">Try Demo</a>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="demo-terminal" role="region" aria-label="Demo terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="terminal-title">verity-cli</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">
+                            <span class="prompt">$</span>
+                            <span class="command">verity billing-info --customer you@example.com</span>
+                        </div>
+                        <div class="terminal-output">
+                            <div class="output-line">
+                                <span class="label">Retrieving invoices...</span>
+                                <span class="spinner"></span>
+                            </div>
+                            <div class="output-result">
+                                <div class="result-header">
+                                    <span class="verdict true">Subscription Active</span>
+                                    <span class="confidence">Next bill in 12 days</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="floating-card card-1" role="region" aria-label="Invoices feature">
+                    <span class="card-icon">🧾</span>
+                    <span class="card-text">Invoices</span>
+                </div>
+                <div class="floating-card card-2" role="region" aria-label="Security feature">
+                    <span class="card-icon">🔒</span>
+                    <span class="card-text">Secure</span>
+                </div>
+                <div class="floating-card card-3" role="region" aria-label="Performance feature">
+                    <span class="card-icon">⚡</span>
+                    <span class="card-text">Fast</span>
+                </div>
+                
+                <svg class="verity-shield logo-float" role="img" aria-labelledby="shieldTitle" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+                    <title id="shieldTitle">Security shield</title>
+                    <defs>
+                        <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00d9ff"/>
+                            <stop offset="100%" stop-color="#6366f1"/>
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </feMerge>
+                    </defs>
+                    <path fill="none" stroke="url(#shieldGrad)" stroke-width="3" d="M100 20 L180 60 L180 130 Q100 200 100 200 Q20 200 20 130 L20 60 Z" filter="url(#glow)"/>
+                    <g opacity="0.8">
+                        <polyline fill="none" stroke="url(#shieldGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="85,120 100,140 130,100"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dev OAuth Debug Banner (visible when localStorage.lastOauthError exists) -->
+    <div id="oauthDevBanner" role="status" aria-live="polite" aria-atomic="true" style="position:fixed;left:16px;bottom:16px;background:#071017;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;z-index:2000;display:none;align-items:center;gap:8px;flex-direction:column;max-width:420px;">
+        <div style="display:flex;align-items:center;gap:8px;width:100%;justify-content:space-between;">
+            <div style="font-size:0.95rem;color:#fff;font-weight:700;">OAuth error recorded</div>
+            <div style="display:flex;gap:8px;">
+                <button id="oauthBannerShow" class="btn btn-outline" style="font-size:0.85rem;">Show</button>
+                <button id="oauthBannerCopy" class="btn btn-outline" style="font-size:0.85rem;">Copy</button>
+                <button id="oauthBannerOpenAuth" class="btn btn-ghost" style="font-size:0.85rem;">Open Auth</button>
+                <button id="oauthBannerClose" class="btn btn-ghost" style="font-size:0.85rem;">Dismiss</button>
+            </div>
+        </div>
+        <div id="oauthBannerDetails" style="display:none;margin-top:8px;white-space:pre-wrap;color:#f0f0f0;font-size:0.85rem;max-height:220px;overflow:auto;border-top:1px dashed rgba(255,255,255,0.03);padding-top:8px;width:100%;"></div>
+    </div>
+
+    <main id="main" class="main" tabindex="-1">
+        <h1 class="page-title">Customer Portal</h1>
+        <p class="page-subtitle">Manage your subscription, payment methods, and billing history</p>
+        
+        <!-- Security Badge -->
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; padding: 0.75rem 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; width: fit-content;">
+            <svg viewBox="0 0 24 24" role="img" aria-labelledby="secBadgeTitle" width="20" height="20" fill="none" stroke="#10b981" stroke-width="2">
+                <title id="secBadgeTitle">Security badge</title>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
+            </svg>
+            <span style="color: #10b981; font-weight: 500; font-size: 0.9rem;">Secured with AES-256 Encryption</span>
+            <a href="security.html" style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-left: 0.5rem;">Learn more</a>
+        </div>
+        
+        <!-- Email Lookup -->
+        <div class="card" id="emailCard">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    Access Your Account
+                </h2>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="customerEmail">Enter your email to access the customer portal</label>
+                <input type="email" class="form-input" id="customerEmail" placeholder="you@example.com">
+            </div>
+            <button class="btn btn-primary" onclick="lookupCustomer()">Access Portal</button>
+        </div>
+        
+        <!-- Subscription Details (hidden initially) -->
+        <div class="card" id="subscriptionCard" style="display: none;">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Your Subscription
+                </h2>
+                <span class="badge badge-active" id="subStatusBadge">Active</span>
+            </div>
+            <div class="subscription-info">
+                <div class="info-item">
+                    <div class="info-label">Current Plan</div>
+                    <div class="info-value plan" id="planName">Professional</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Monthly Price</div>
+                    <div class="info-value" id="planPrice">$199</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Next Billing Date</div>
+                    <div class="info-value" id="nextBilling">Jan 30, 2025</div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn btn-outline" onclick="openStripePortal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;vertical-align:middle" aria-hidden="true" focusable="false">
+                        <rect x="1" y="4" width="22" height="16" rx="2"/>
+                        <line x1="1" y1="10" x2="23" y2="10"/>
+                    </svg>
+                    Update Payment Method
+                </button>
+                <button class="btn btn-outline" onclick="openStripePortal()">Change Plan</button>
+                <button class="btn btn-danger" onclick="showCancelModal()">Cancel Subscription</button>
+            </div>
+        </div>
+        
+        <!-- Billing History -->
+        <div class="card" id="invoicesCard" style="display: none;">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    Billing History
+                </h2>
+            </div>
+            <div class="invoice-list" id="invoiceList">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading invoices...
+                </div>
+            </div>
+        </div>
+        
+        <!-- No Subscription Message -->
+        <div class="card" id="noSubCard" style="display: none;">
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+                <h3>No Active Subscription</h3>
+                <p>You don't have an active subscription yet.</p>
+                <a href="checkout.html?plan=pro" class="btn btn-primary" style="margin-top:1rem;display:inline-block;">
+                    Subscribe Now
+                </a>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Cancel Modal -->
+    <div class="modal-overlay" id="cancelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Cancel Subscription</h3>
+                <button class="modal-close" onclick="closeCancelModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">
+                Are you sure you want to cancel your subscription? You'll continue to have access until the end of your current billing period.
+            </p>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-ghost" onclick="closeCancelModal()" style="flex:1;">Keep Subscription</button>
+                <button class="btn btn-danger" onclick="cancelSubscription()" style="flex:1;">Yes, Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : '';
+        
+        async function lookupCustomer() {
+            const email = document.getElementById('customerEmail').value.trim();
+            if (!email) {
+                alert('Please enter your email address');
+                return;
+            }
+            
+            const btn = event.target;
+            btn.textContent = 'Looking up...';
+            btn.disabled = true;
+            
+            try {
+                // Get subscriptions
+                const subResponse = await fetch(`${API_BASE}/api/customer/${encodeURIComponent(email)}/subscriptions`);
+                const subData = await subResponse.json();
+                
+                // Get invoices
+                const invResponse = await fetch(`${API_BASE}/api/customer/${encodeURIComponent(email)}/invoices`);
+                const invData = await invResponse.json();
+                
+                if (subData.subscriptions && subData.subscriptions.length > 0) {
+                    currentCustomer = { email, customer_id: subData.customer_id };
+                    displaySubscription(subData.subscriptions[0]);
+                    displayInvoices(invData.invoices || []);
+                    document.getElementById('emailCard').style.display = 'none';
+                    document.getElementById('subscriptionCard').style.display = 'block';
+                    document.getElementById('invoicesCard').style.display = 'block';
+                } else {
+                    document.getElementById('emailCard').style.display = 'none';
+                    document.getElementById('noSubCard').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Demo mode - show fake data
+                showDemoData();
+            } finally {
+                btn.textContent = 'Access Portal';
+                btn.disabled = false;
+            }
+        }
+        
+        function showDemoData() {
+            document.getElementById('emailCard').style.display = 'none';
+            document.getElementById('subscriptionCard').style.display = 'block';
+            document.getElementById('invoicesCard').style.display = 'block';
+            
+            // Demo subscription
+            document.getElementById('planName').textContent = 'Professional';
+            document.getElementById('planPrice').textContent = '$199/mo';
+            document.getElementById('nextBilling').textContent = formatDate(new Date(Date.now() + 30*24*60*60*1000));
+            
+            // Demo invoices
+            const invoiceList = document.getElementById('invoiceList');
+            invoiceList.innerHTML = `
+                <div class="invoice-item">
+                    <div class="invoice-date">${formatDate(new Date())}</div>
+                    <div class="invoice-amount">$199.00</div>
+                    <div class="invoice-status"><span class="badge badge-active">Paid</span></div>
+                    <div class="invoice-action"><a href="#" rel="noopener noreferrer">Download</a></div>
+                </div>
+                <div class="invoice-item">
+                    <div class="invoice-date">${formatDate(new Date(Date.now() - 30*24*60*60*1000))}</div>
+                    <div class="invoice-amount">$199.00</div>
+                    <div class="invoice-status"><span class="badge badge-active">Paid</span></div>
+                    <div class="invoice-action"><a href="#">Download</a></div>
+                </div>
+                <div class="invoice-item">
+                    <div class="invoice-date">${formatDate(new Date(Date.now() - 60*24*60*60*1000))}</div>
+                    <div class="invoice-amount">$199.00</div>
+                    <div class="invoice-status"><span class="badge badge-active">Paid</span></div>
+                    <div class="invoice-action"><a href="#">Download</a></div>
+                </div>
+            `;
+        }
+        
+        function displaySubscription(sub) {
+            const planNames = {
+                'price_1Sjywy6YaKfH2eTgCyEPbDRx': 'Starter',
+                'price_1Sjywz6YaKfH2eTg7lYwcjia': 'Pro',
+                'price_1Sjyx36YaKfH2eTgxSRpspI9': 'Professional',
+                'price_1Sjyx46YaKfH2eTgftmyLznS': 'Business',
+                'price_1Sjyx56YaKfH2eTgiOl1f11J': 'Business+',
+                'price_1Sjyx76YaKfH2eTgDIpsHitY': 'Enterprise'
+            };
+            const planPrices = {
+                'price_1Sjywy6YaKfH2eTgCyEPbDRx': '$49',
+                'price_1Sjywz6YaKfH2eTg7lYwcjia': '$99',
+                'price_1Sjyx36YaKfH2eTgxSRpspI9': '$199',
+                'price_1Sjyx46YaKfH2eTgftmyLznS': '$599',
+                'price_1Sjyx56YaKfH2eTgiOl1f11J': '$799',
+                'price_1Sjyx76YaKfH2eTgDIpsHitY': '$2,999'
+            };
+            
+            const priceId = sub.items[0]?.price_id;
+            document.getElementById('planName').textContent = planNames[priceId] || 'Premium';
+            document.getElementById('planPrice').textContent = planPrices[priceId] || '$--';
+            document.getElementById('nextBilling').textContent = formatDate(new Date(sub.current_period_end * 1000));
+            
+            const badge = document.getElementById('subStatusBadge');
+            if (sub.cancel_at_period_end) {
+                badge.className = 'badge badge-warning';
+                badge.textContent = 'Canceling';
+            } else if (sub.status === 'active') {
+                badge.className = 'badge badge-active';
+                badge.textContent = 'Active';
+            } else {
+                badge.className = 'badge badge-danger';
+                badge.textContent = sub.status;
+            }
+        }
+        
+        function displayInvoices(invoices) {
+            const list = document.getElementById('invoiceList');
+            
+            if (!invoices.length) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <p>No invoices yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = invoices.map(inv => `
+                <div class="invoice-item">
+                    <div class="invoice-date">${formatDate(new Date(inv.created * 1000))}</div>
+                    <div class="invoice-amount">$${(inv.amount_paid / 100).toFixed(2)}</div>
+                    <div class="invoice-status">
+                        <span class="badge ${inv.status === 'paid' ? 'badge-active' : 'badge-warning'}">${inv.status}</span>
+                    </div>
+                    <div class="invoice-action">
+                        ${inv.invoice_pdf ? `<a href="${inv.invoice_pdf}" target="_blank" rel="noopener noreferrer">Download</a>` : 
+                          inv.hosted_invoice_url ? `<a href="${inv.hosted_invoice_url}" target="_blank" rel="noopener noreferrer">View</a>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        }
+        
+        async function openStripePortal() {
+            const email = document.getElementById('customerEmail').value.trim() || 
+                          currentCustomer?.email ||
+                          JSON.parse(localStorage.getItem('verity_user') || '{}').email;
+                          
+            if (!email) {
+                alert('Please enter your email first');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/customer-portal`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_email: email,
+                        return_url: window.location.href
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.portal_url) {
+                    window.location.href = data.portal_url;
+                } else {
+                    throw new Error(data.detail || 'Failed to create portal session');
+                }
+            } catch (error) {
+                console.error('Portal error:', error);
+                alert('Unable to open billing portal. Please try again or contact support.');
+            }
+        }
+        
+        function showCancelModal() {
+            document.getElementById('cancelModal').classList.add('active');
+        }
+        
+        function closeCancelModal() {
+            document.getElementById('cancelModal').classList.remove('active');
+        }
+        
+        async function cancelSubscription() {
+            // For now, redirect to Stripe portal for cancellation
+            closeCancelModal();
+            openStripePortal();
+        }
+    </script>
+
+    <!-- GSAP & Hero Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <!-- Shared site utilities (auth UI, header adjustments) -->
+    <script src="assets/js/shared.js"></script>
+
+    <!-- Portal-specific hero animations (stagger title lines, terminal, floating cards) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap === 'undefined') return;
+
+            // Fine-tuned timings for a premium, snappier feel
+            gsap.from('.hero-badge', { opacity: 0, y: 16, duration: 0.6, delay: 0.15, ease: 'power3.out' });
+            gsap.from('.title-line', { opacity: 0, y: 28, duration: 0.75, stagger: 0.10, delay: 0.28, ease: 'power3.out' });
+            gsap.from('.hero-description', { opacity: 0, y: 14, duration: 0.65, delay: 0.62, ease: 'power3.out' });
+            gsap.from('.hero-actions', { opacity: 0, y: 14, duration: 0.6, delay: 0.8, ease: 'power3.out' });
+            gsap.from('.hero-stats', { opacity: 0, y: 14, duration: 0.6, delay: 0.95, ease: 'power3.out' });
+            gsap.from('.demo-terminal', { opacity: 0, x: 30, duration: 0.8, delay: 0.48, ease: 'power3.out' });
+            gsap.from('.floating-card', { opacity: 0, scale: 0.92, duration: 0.5, stagger: 0.12, delay: 0.75, ease: 'back.out(1.1)' });
+        });
+    </script>
+
+    <script>
+        // OAuth dev banner helper - show if there's a persisted last OAuth error
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const last = localStorage.getItem('lastOauthError');
+                if (!last) return;
+                const banner = document.getElementById('oauthDevBanner');
+                if (!banner) return;
+                banner.style.display = 'flex';
+                const details = document.getElementById('oauthBannerDetails');
+                document.getElementById('oauthBannerShow').addEventListener('click', () => {
+                    details.style.display = (details.style.display === 'block') ? 'none' : 'block';
+                    details.textContent = last;
+                });
+                document.getElementById('oauthBannerCopy').addEventListener('click', () => {
+                    navigator.clipboard?.writeText(last).then(()=>alert('Copied OAuth details'), ()=>alert('Copy failed'));
+                });
+                document.getElementById('oauthBannerOpenAuth').addEventListener('click', () => {
+                    window.location.href = 'auth.html';
+                });
+                document.getElementById('oauthBannerClose').addEventListener('click', () => { banner.style.display = 'none'; });
+            } catch (ex) { console.warn('oauth banner helper error', ex); }
+        });
+    </script>
+</body>
+</html>
