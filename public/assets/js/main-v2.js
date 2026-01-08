@@ -22,9 +22,9 @@ window.addEventListener('load', () => {
 // ================================================
 
 const DEMO_CONFIG = {
-    maxAttempts: 5,  // Increased for better demo experience
+    maxAttempts: 5,
     apiBase: (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) 
-        ? 'http://localhost:8081' 
+        ? 'http://localhost:8000' 
         : 'https://veritysystems-production.up.railway.app',
     apiTimeout: 30000
 };
@@ -339,7 +339,7 @@ async function verifyWithApi(claim) {
     const timeoutId = setTimeout(() => controller.abort(), DEMO_CONFIG.apiTimeout);
     
     try {
-        const response = await fetch(`${DEMO_CONFIG.apiBase}/v1/verify`, {
+        const response = await fetch(`${DEMO_CONFIG.apiBase}/verify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -347,9 +347,7 @@ async function verifyWithApi(claim) {
             },
             body: JSON.stringify({
                 claim: claim,
-                include_sources: true,
-                include_reasoning: true,
-                detail_level: 'comprehensive'
+                detailed: true
             }),
             signal: controller.signal
         });
