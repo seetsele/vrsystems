@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Real-Time Stream Monitor - Track how claims spread in real-time across the internet. Detect virality patterns and identify origins.">
+    <title>Real-Time Stream | Verity Tools</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --tool-color: #fbbf24; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #030712; color: #fff; min-height: 100vh; line-height: 1.6; }
+        nav { position: fixed; top: 0; left: 0; right: 0; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, #22d3ee, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+        .tool-header { text-align: center; margin-bottom: 3rem; }
+        .tool-icon-large { width: 80px; height: 80px; margin: 0 auto 1.5rem; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.05)); border: 1px solid rgba(251, 191, 36, 0.3); position: relative; }
+        .tool-icon-large::after { content: ''; position: absolute; width: 12px; height: 12px; background: #ef4444; border-radius: 50%; top: 8px; right: 8px; animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+        .tool-header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 3rem; font-weight: 800; margin-bottom: 0.75rem; background: linear-gradient(135deg, #fff, var(--tool-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tool-header p { font-size: 1.25rem; color: rgba(255,255,255,0.6); max-width: 600px; margin: 0 auto; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .feature-tag { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); padding: 0.75rem 1.25rem; border-radius: 12px; text-align: center; font-weight: 500; color: var(--tool-color); }
+        .analysis-container { background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 2rem; }
+        .input-section { margin-bottom: 1.5rem; }
+        .input-label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.75rem; color: rgba(255,255,255,0.8); }
+        .analysis-textarea { width: 100%; min-height: 150px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; color: #fff; font-family: inherit; font-size: 1rem; resize: vertical; }
+        .analysis-textarea:focus { outline: none; border-color: var(--tool-color); }
+        .analyze-btn { width: 100%; padding: 1rem 2rem; background: linear-gradient(135deg, var(--tool-color), #ef4444); border: none; border-radius: 12px; color: #000; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: transform 0.2s; }
+        .analyze-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3); }
+        .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .results-container { display: none; margin-top: 2rem; }
+        .results-container.show { display: block; }
+        .result-card { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; }
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .result-title { font-size: 1.1rem; font-weight: 600; }
+        .velocity-badge { padding: 0.5rem 1rem; border-radius: 100px; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .velocity-badge.high { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .velocity-badge.medium { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .velocity-badge.low { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .result-summary { font-size: 1rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; }
+        .spread-indicators { display: grid; gap: 0.75rem; margin-top: 1rem; }
+        .spread-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 8px; border-left: 3px solid var(--tool-color); }
+        .spread-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+        .spread-icon.critical { background: rgba(239, 68, 68, 0.2); }
+        .spread-icon.high { background: rgba(251, 191, 36, 0.2); }
+        .spread-icon.medium { background: rgba(34, 211, 238, 0.2); }
+        .spread-icon.low { background: rgba(16, 185, 129, 0.2); }
+        .spread-detail { flex: 1; }
+        .spread-type { font-weight: 600; font-size: 0.9rem; color: rgba(255,255,255,0.9); }
+        .spread-desc { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+        .score-display { display: flex; gap: 1.5rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); }
+        .score-item { flex: 1; text-align: center; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 12px; }
+        .score-value { font-size: 2rem; font-weight: 700; }
+        .score-value.high { color: #f87171; }
+        .score-value.medium { color: #fbbf24; }
+        .score-value.low { color: #34d399; }
+        .score-label { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.25rem; }
+        .processing-time { text-align: right; font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 1rem; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: #22d3ee; text-decoration: none; font-size: 0.9rem; margin-bottom: 2rem; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spin { animation: spin 1s linear infinite; }
+        footer { text-align: center; padding: 3rem 2rem; color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+        footer a { color: #22d3ee; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="../index.html" class="logo">Verity</a>
+        <ul class="nav-links">
+            <li><a href="../verify.html">Verify</a></li>
+            <li><a href="../tools.html">Tools</a></li>
+            <li><a href="../ultimate-suite.html" style="color: #fbbf24;">Ultimate Suite</a></li>
+            <li><a href="../api-docs.html">API</a></li>
+        </ul>
+    </nav>
+    
+    <main class="main-container">
+        <a href="../tools.html" class="back-link">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Back to Tools
+        </a>
+        
+        <div class="tool-header">
+            <div class="tool-icon-large">⚡</div>
+            <h1>Real-Time Stream</h1>
+            <p>Monitor how claims spread in real-time across the internet. Track virality patterns and identify origins.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-tag">📡 Live Tracking</div>
+            <div class="feature-tag">📈 Spread Analysis</div>
+            <div class="feature-tag">🔍 Origin Detection</div>
+            <div class="feature-tag">⚠️ Debunk Alerts</div>
+        </div>
+        
+        <div class="analysis-container">
+            <div class="input-section">
+                <label class="input-label">Enter content to track spread patterns</label>
+                <textarea class="analysis-textarea" id="content-input" placeholder="Enter a claim, post, or content to analyze its spread patterns and virality...
+
+Example: A viral TikTok claims that putting garlic in your ear cures ear infections. The video has been shared millions of times."></textarea>
+            </div>
+            
+            <button class="analyze-btn" id="analyze-btn" onclick="analyzeContent()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Track Spread
+            </button>
+            
+            <div class="results-container" id="results">
+                <div class="result-card">
+                    <div class="result-header">
+                        <span class="result-title">Spread Analysis</span>
+                        <span class="velocity-badge" id="velocity-badge">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            <span id="velocity-text">--</span>
+                        </span>
+                    </div>
+                    <div class="result-summary" id="result-summary">Analysis results will appear here...</div>
+                    <div class="spread-indicators" id="spread-indicators"></div>
+                    <div class="score-display">
+                        <div class="score-item">
+                            <div class="score-value" id="credibility-score">--</div>
+                            <div class="score-label">Credibility Score</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-value" id="spread-risk" style="color: var(--tool-color);">--</div>
+                            <div class="score-label">Spread Risk</div>
+                        </div>
+                    </div>
+                    <div class="processing-time" id="processing-time"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>© 2024-2026 Verity Systems Inc. | <a href="../ultimate-suite.html">Ultimate Suite</a> • <a href="../api-docs.html">API Docs</a></p>
+    </footer>
+    
+    <script>
+        const API_BASE = 'https://veritysystems-production.up.railway.app';
+        
+        async function analyzeContent() {
+            const content = document.getElementById('content-input').value.trim();
+            if (!content) { alert('Please enter content to track'); return; }
+            
+            const btn = document.getElementById('analyze-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="spin"><circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="32"/></svg> Tracking...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/tools/realtime-stream`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                const result = await response.json();
+                displayResults(result);
+            } catch (error) {
+                document.getElementById('result-summary').innerHTML = '⚠️ Tracking failed.';
+                document.getElementById('results').classList.add('show');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Track Spread';
+        }
+        
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            const velocityBadge = document.getElementById('velocity-badge');
+            const velocityText = document.getElementById('velocity-text');
+            const summary = document.getElementById('result-summary');
+            const spreadIndicators = document.getElementById('spread-indicators');
+            
+            const velocity = result.spread_velocity || 'medium';
+            velocityBadge.className = 'velocity-badge ' + velocity;
+            velocityText.textContent = velocity.toUpperCase() + ' VELOCITY';
+            
+            summary.innerHTML = result.summary || 'Analysis complete';
+            
+            // Credibility and spread scores
+            const score = result.score || 50;
+            const credScore = document.getElementById('credibility-score');
+            credScore.textContent = score;
+            credScore.className = 'score-value ' + (score >= 60 ? 'low' : score >= 35 ? 'medium' : 'high');
+            
+            const spreadRisk = 100 - score;
+            document.getElementById('spread-risk').textContent = spreadRisk + '%';
+            
+            // Indicators
+            spreadIndicators.innerHTML = '';
+            if (result.indicators && result.indicators.length > 0) {
+                result.indicators.forEach(indicator => {
+                    const div = document.createElement('div');
+                    div.className = 'spread-item';
+                    div.innerHTML = `
+                        <div class="spread-icon ${indicator.severity || 'medium'}">
+                            ${indicator.severity === 'critical' ? '🚨' : indicator.severity === 'high' ? '⚠️' : indicator.severity === 'low' ? '✓' : '⚡'}
+                        </div>
+                        <div class="spread-detail">
+                            <div class="spread-type">${indicator.type?.replace(/_/g, ' ').toUpperCase() || 'Indicator'}</div>
+                            <div class="spread-desc">${indicator.detail || ''}</div>
+                        </div>
+                    `;
+                    spreadIndicators.appendChild(div);
+                });
+            }
+            
+            document.getElementById('processing-time').textContent = `Tracked in ${result.processing_time_ms || 0}ms`;
+            resultsDiv.classList.add('show');
+        }
+    </script>
+</body>
+</html>

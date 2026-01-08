@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Image Forensics - Detect AI-generated images, manipulated photos, and deepfakes with advanced forensic analysis.">
+    <title>Image Forensics | Verity Tools</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --tool-color: #8b5cf6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #030712; color: #fff; min-height: 100vh; line-height: 1.6; }
+        nav { position: fixed; top: 0; left: 0; right: 0; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, #22d3ee, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+        .nav-links a:hover { color: #22d3ee; }
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+        .tool-header { text-align: center; margin-bottom: 3rem; }
+        .tool-icon-large { width: 80px; height: 80px; margin: 0 auto 1.5rem; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .tool-header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 3rem; font-weight: 800; margin-bottom: 0.75rem; background: linear-gradient(135deg, #fff, var(--tool-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tool-header p { font-size: 1.25rem; color: rgba(255,255,255,0.6); max-width: 600px; margin: 0 auto; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .feature-tag { background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); padding: 0.75rem 1.25rem; border-radius: 12px; text-align: center; font-weight: 500; color: var(--tool-color); }
+        .analysis-container { background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 2rem; margin-bottom: 2rem; }
+        .input-section { margin-bottom: 1.5rem; }
+        .input-label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.75rem; color: rgba(255,255,255,0.8); }
+        .analysis-textarea { width: 100%; min-height: 150px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; color: #fff; font-family: inherit; font-size: 1rem; resize: vertical; }
+        .analysis-textarea:focus { outline: none; border-color: var(--tool-color); }
+        .analyze-btn { width: 100%; padding: 1rem 2rem; background: linear-gradient(135deg, var(--tool-color), #22d3ee); border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s; }
+        .analyze-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
+        .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .results-container { display: none; margin-top: 2rem; }
+        .results-container.show { display: block; }
+        .result-card { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; }
+        .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .result-title { font-size: 1.1rem; font-weight: 600; }
+        .score-badge { padding: 0.5rem 1rem; border-radius: 100px; font-weight: 700; font-size: 1rem; }
+        .score-badge.high { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .score-badge.medium { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .score-badge.low { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .result-summary { font-size: 1rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; }
+        .findings-list { list-style: none; }
+        .finding-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .finding-item:last-child { border-bottom: none; }
+        .finding-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; }
+        .finding-icon.high { background: rgba(239, 68, 68, 0.2); }
+        .finding-icon.medium { background: rgba(251, 191, 36, 0.2); }
+        .finding-icon.low { background: rgba(16, 185, 129, 0.2); }
+        .finding-detail { flex: 1; }
+        .finding-type { font-weight: 600; font-size: 0.9rem; color: rgba(255,255,255,0.9); }
+        .finding-desc { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+        .processing-time { text-align: right; font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 1rem; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: #22d3ee; text-decoration: none; font-size: 0.9rem; margin-bottom: 2rem; }
+        .back-link:hover { text-decoration: underline; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spin { animation: spin 1s linear infinite; }
+        footer { text-align: center; padding: 3rem 2rem; color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+        footer a { color: #22d3ee; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="../index.html" class="logo">Verity</a>
+        <ul class="nav-links">
+            <li><a href="../verify.html">Verify</a></li>
+            <li><a href="../tools.html">Tools</a></li>
+            <li><a href="../ultimate-suite.html" style="color: #fbbf24;">Ultimate Suite</a></li>
+            <li><a href="../api-docs.html">API</a></li>
+        </ul>
+    </nav>
+    
+    <main class="main-container">
+        <a href="../tools.html" class="back-link">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Back to Tools
+        </a>
+        
+        <div class="tool-header">
+            <div class="tool-icon-large">🖼️</div>
+            <h1>Image Forensics</h1>
+            <p>Detect AI-generated images, manipulated photos, and deepfakes with advanced forensic analysis.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-tag">🤖 AI Detection</div>
+            <div class="feature-tag">📊 Metadata Analysis</div>
+            <div class="feature-tag">🔍 Reverse Search</div>
+            <div class="feature-tag">✂️ Manipulation Check</div>
+        </div>
+        
+        <div class="analysis-container">
+            <div class="input-section">
+                <label class="input-label">Enter image URL or describe the image to analyze</label>
+                <textarea class="analysis-textarea" id="content-input" placeholder="Paste an image URL or describe the image content you want to analyze for authenticity...
+
+Example: An image circulating on social media claims to show a celebrity at a controversial event. The image appears to have unusual lighting and the background looks AI-generated."></textarea>
+            </div>
+            
+            <button class="analyze-btn" id="analyze-btn" onclick="analyzeContent()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Analyze Image
+            </button>
+            
+            <div class="results-container" id="results">
+                <div class="result-card">
+                    <div class="result-header">
+                        <span class="result-title">Forensic Analysis Results</span>
+                        <span class="score-badge" id="score-badge">--</span>
+                    </div>
+                    <div class="result-summary" id="result-summary">Analysis results will appear here...</div>
+                    <ul class="findings-list" id="findings-list"></ul>
+                    <div class="processing-time" id="processing-time"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>© 2024-2026 Verity Systems Inc. | <a href="../ultimate-suite.html">Ultimate Suite</a> • <a href="../api-docs.html">API Docs</a></p>
+    </footer>
+    
+    <script>
+        const API_BASE = 'https://veritysystems-production.up.railway.app';
+        
+        async function analyzeContent() {
+            const content = document.getElementById('content-input').value.trim();
+            if (!content) { alert('Please enter content to analyze'); return; }
+            
+            const btn = document.getElementById('analyze-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="spin"><circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="32"/></svg> Analyzing...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/tools/image-forensics`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                const result = await response.json();
+                displayResults(result);
+            } catch (error) {
+                document.getElementById('result-summary').innerHTML = '⚠️ Analysis failed. Please try again.';
+                document.getElementById('results').classList.add('show');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Analyze Image';
+        }
+        
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            const scoreBadge = document.getElementById('score-badge');
+            const summary = document.getElementById('result-summary');
+            const findingsList = document.getElementById('findings-list');
+            const processingTime = document.getElementById('processing-time');
+            
+            const score = result.score || 50;
+            scoreBadge.textContent = `${score}/100`;
+            scoreBadge.className = 'score-badge ' + (score >= 60 ? 'high' : score >= 35 ? 'medium' : 'low');
+            summary.innerHTML = result.summary || 'Analysis complete';
+            
+            findingsList.innerHTML = '';
+            if (result.findings && result.findings.length > 0) {
+                result.findings.forEach(finding => {
+                    const li = document.createElement('li');
+                    li.className = 'finding-item';
+                    li.innerHTML = `
+                        <div class="finding-icon ${finding.severity || 'medium'}">${finding.severity === 'high' ? '⚠️' : finding.severity === 'low' ? '✓' : '⚡'}</div>
+                        <div class="finding-detail">
+                            <div class="finding-type">${finding.type?.replace(/_/g, ' ').toUpperCase() || 'Finding'}</div>
+                            <div class="finding-desc">${finding.detail || ''}</div>
+                        </div>
+                    `;
+                    findingsList.appendChild(li);
+                });
+            }
+            
+            processingTime.textContent = `Analyzed in ${result.processing_time_ms || 0}ms`;
+            resultsDiv.classList.add('show');
+        }
+    </script>
+</body>
+</html>

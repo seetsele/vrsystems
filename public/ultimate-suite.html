@@ -1117,100 +1117,69 @@
     </footer>
     
     <script>
-        // Engine configurations
+        // API Configuration
+        const API_BASE = 'https://veritysystems-production.up.railway.app';
+        
+        // Engine configurations with API endpoints
         const engines = {
             social: {
                 name: 'Social Media Analyzer',
                 color: '#ec4899',
-                analyzeTime: 1200,
-                getResult: (input) => {
-                    const hasViral = input.toLowerCase().includes('viral');
-                    const hasFollowers = input.match(/\d+k?\s*followers/i);
-                    const hasNewAccount = input.toLowerCase().includes('created last month') || input.toLowerCase().includes('new account');
-                    
-                    let score = 50;
-                    let findings = [];
-                    
-                    if (hasViral) { score -= 15; findings.push('viral spread detected'); }
-                    if (hasFollowers) { score += 10; findings.push('high follower count'); }
-                    if (hasNewAccount) { score -= 25; findings.push('⚠️ new account created recently'); }
-                    
-                    return {
-                        score: Math.max(10, Math.min(90, score)),
-                        summary: `🔴 ${findings.length > 0 ? findings.join(', ') : 'No suspicious patterns detected'}`
-                    };
-                }
+                endpoint: '/tools/social-media'
             },
             image: {
                 name: 'Image Forensics',
                 color: '#8b5cf6',
-                analyzeTime: 800,
-                getResult: () => ({
-                    score: 75,
-                    summary: '🟢 No images detected in input. Text-only analysis.'
-                })
+                endpoint: '/tools/image-forensics'
             },
             source: {
                 name: 'Source Credibility',
                 color: '#10b981',
-                analyzeTime: 1000,
-                getResult: (input) => {
-                    const hasTweet = input.toLowerCase().includes('tweet');
-                    const hasStudy = input.toLowerCase().includes('study');
-                    
-                    if (hasTweet && !hasStudy) {
-                        return { score: 25, summary: '🔴 <strong>LOW CREDIBILITY:</strong> Social media post without linked peer-reviewed source.' };
-                    }
-                    if (hasStudy) {
-                        return { score: 60, summary: '🟡 <strong>UNVERIFIED:</strong> Claims a study exists but no citation provided.' };
-                    }
-                    return { score: 50, summary: '🟡 Source credibility could not be fully assessed.' };
-                }
+                endpoint: '/tools/source-credibility'
             },
             statistics: {
                 name: 'Statistics Validator',
                 color: '#3b82f6',
-                analyzeTime: 900,
-                getResult: (input) => {
-                    const hasCure = input.toLowerCase().includes('cure');
-                    const hasCancer = input.toLowerCase().includes('cancer');
-                    
-                    if (hasCure && hasCancer) {
-                        return { score: 15, summary: '🔴 <strong>RED FLAG:</strong> "Cure cancer" claims require extraordinary evidence. No verified studies support coffee as cancer cure.' };
-                    }
-                    return { score: 70, summary: '🟢 No statistical claims requiring validation.' };
-                }
+                endpoint: '/tools/statistics-validator'
             },
             research: {
                 name: 'Research Assistant',
                 color: '#f97316',
-                analyzeTime: 1500,
-                getResult: (input) => {
-                    const hasCoffee = input.toLowerCase().includes('coffee');
-                    const hasCancer = input.toLowerCase().includes('cancer');
-                    
-                    if (hasCoffee && hasCancer) {
-                        return { score: 35, summary: '🟡 <strong>MIXED EVIDENCE:</strong> Studies show coffee may reduce risk of some cancers, but NO evidence supports "curing" cancer. Claim is misleading.' };
-                    }
-                    return { score: 60, summary: '📚 Research query completed. See detailed report.' };
-                }
+                endpoint: '/tools/research-assistant'
             },
             stream: {
                 name: 'Real-Time Stream',
                 color: '#f43f5e',
-                analyzeTime: 1100,
-                getResult: (input) => {
-                    const hasViral = input.toLowerCase().includes('viral');
-                    
-                    if (hasViral) {
-                        return { score: 30, summary: '🔴 <strong>VIRAL PATTERN:</strong> Claim spreading rapidly. Similar debunked claims traced to health misinformation networks.' };
-                    }
-                    return { score: 65, summary: '⚡ No unusual spread patterns detected.' };
-                }
+                endpoint: '/tools/realtime-stream'
             }
         };
         
         let isAnalyzing = false;
+        
+        async function callToolAPI(endpoint, content) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error(`Error calling ${endpoint}:`, error);
+                return {
+                    score: 50,
+                    summary: `⚠️ Analysis unavailable: ${error.message}`,
+                    error: true
+                };
+            }
+        }
         
         async function runUltimateAnalysis() {
             if (isAnalyzing) return;
@@ -1229,42 +1198,50 @@
             // Hide master score
             document.getElementById('master-score').classList.remove('show');
             
-            // Reset all engines
+            // Reset all engines to analyzing state
             document.querySelectorAll('.engine-card').forEach(card => {
                 card.classList.remove('active', 'analyzing', 'complete');
-                card.querySelector('.engine-status').className = 'engine-status ready';
-                card.querySelector('.engine-status').textContent = 'Ready';
-                card.querySelector('.engine-result').className = 'engine-result empty';
-                card.querySelector('.engine-result').innerHTML = 'Awaiting input...';
+                card.classList.add('active', 'analyzing');
+                card.querySelector('.engine-status').className = 'engine-status analyzing';
+                card.querySelector('.engine-status').textContent = 'Analyzing...';
+                card.querySelector('.engine-result').className = 'engine-result';
+                card.querySelector('.engine-result').innerHTML = 'Querying AI...';
             });
             
             let totalScore = 0;
             let engineCount = 0;
             
-            // Run each engine with staggered timing
-            for (const [engineId, engine] of Object.entries(engines)) {
+            // Run all engines in parallel for speed
+            const promises = Object.entries(engines).map(async ([engineId, engine]) => {
+                const result = await callToolAPI(engine.endpoint, input);
+                return { engineId, result };
+            });
+            
+            const results = await Promise.all(promises);
+            
+            // Update UI with results
+            for (const { engineId, result } of results) {
                 const card = document.querySelector(`[data-engine="${engineId}"]`);
-                card.classList.add('active', 'analyzing');
-                card.querySelector('.engine-status').className = 'engine-status analyzing';
-                card.querySelector('.engine-status').textContent = 'Analyzing...';
-                card.querySelector('.engine-result').className = 'engine-result';
-                card.querySelector('.engine-result').innerHTML = 'Processing...';
                 
-                await new Promise(resolve => setTimeout(resolve, engine.analyzeTime));
-                
-                const result = engine.getResult(input);
-                totalScore += result.score;
-                engineCount++;
-                
-                card.classList.remove('analyzing');
-                card.classList.add('complete');
-                card.querySelector('.engine-status').className = 'engine-status complete';
-                card.querySelector('.engine-status').textContent = 'Complete';
-                card.querySelector('.engine-result').innerHTML = result.summary;
+                if (result && !result.error) {
+                    totalScore += result.score || 50;
+                    engineCount++;
+                    
+                    card.classList.remove('analyzing');
+                    card.classList.add('complete');
+                    card.querySelector('.engine-status').className = 'engine-status complete';
+                    card.querySelector('.engine-status').textContent = 'Complete';
+                    card.querySelector('.engine-result').innerHTML = result.summary || 'Analysis complete';
+                } else {
+                    card.classList.remove('analyzing');
+                    card.querySelector('.engine-status').className = 'engine-status error';
+                    card.querySelector('.engine-status').textContent = 'Error';
+                    card.querySelector('.engine-result').innerHTML = result?.summary || '⚠️ Service unavailable';
+                }
             }
             
             // Calculate and show master score
-            const masterScore = Math.round(totalScore / engineCount);
+            const masterScore = engineCount > 0 ? Math.round(totalScore / engineCount) : 50;
             const scoreEl = document.getElementById('score-value');
             const verdictEl = document.getElementById('score-verdict');
             
@@ -1294,6 +1271,7 @@
         style.textContent = `
             @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
             .spin { animation: spin 1s linear infinite; }
+            .engine-status.error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
         `;
         document.head.appendChild(style);
     </script>
