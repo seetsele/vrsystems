@@ -68,6 +68,9 @@ class Config:
     # CORS
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
     
+    # Allowed Hosts (for TrustedHostMiddleware)
+    ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "veritysystems.app,www.veritysystems.app,vrsystemss.vercel.app,localhost,veritysystems-production.up.railway.app").split(",")
+    
     # API Keys (for demo mode)
     API_KEYS = set(os.getenv("API_KEYS", "demo-key-12345,test-key-67890").split(","))
     
@@ -307,7 +310,7 @@ app.add_middleware(
 if Config.ENV == "production":
     app.add_middleware(
         TrustedHostMiddleware, 
-        allowed_hosts=["*.verity.systems", "localhost"]
+        allowed_hosts=Config.ALLOWED_HOSTS
     )
 
 
