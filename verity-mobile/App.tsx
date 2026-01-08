@@ -21,14 +21,15 @@ import AuthScreen from './src/screens/AuthScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Eden.so + Dieter Rams color palette
+// Modern amber/gold editorial color palette
 const colors = {
   bg: '#0a0a0b',
   surface: '#111113',
   border: 'rgba(255,255,255,0.06)',
   text: '#fafafa',
-  textMuted: '#888888',
-  textSubtle: '#555555',
+  textMuted: '#a3a3a3',
+  textSubtle: '#525252',
+  accent: '#f59e0b',
 };
 
 const DarkTheme = {

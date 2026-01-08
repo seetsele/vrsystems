@@ -7,21 +7,21 @@ import { useApp } from '../context/AppContext';
 
 const { width, height } = Dimensions.get('window');
 
-// Premium Eden.so + Dieter Rams inspired color palette
+// Premium Amber/Gold editorial color palette
 const colors = {
-  bg: '#08080a',
-  bgGradient: '#0c0c0e',
-  surface: '#111114',
-  surfaceElevated: '#16161a',
-  surfaceHover: '#1a1a1f',
-  border: 'rgba(255,255,255,0.08)',
+  bg: '#0a0a0b',
+  bgGradient: '#0d0d0e',
+  surface: '#111113',
+  surfaceElevated: '#18181b',
+  surfaceHover: '#1c1c20',
+  border: 'rgba(255,255,255,0.06)',
   borderSubtle: 'rgba(255,255,255,0.04)',
-  borderAccent: 'rgba(255,255,255,0.12)',
+  borderAccent: 'rgba(245,158,11,0.2)',
   text: '#fafafa',
-  textMuted: '#8b8b8b',
-  textSubtle: '#5a5a5a',
-  accent: '#ffffff',
-  accentMuted: '#d0d0d0',
+  textMuted: '#a3a3a3',
+  textSubtle: '#525252',
+  accent: '#f59e0b',
+  accentMuted: '#fbbf24',
 };
 
 // Floating Shield Animation
@@ -102,9 +102,9 @@ function VerityLogo() {
       <Svg width={150} height={45} viewBox="0 0 300 80">
         <Defs>
           <SvgGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <Stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-            <Stop offset="60%" stopColor="#e0e0e0" stopOpacity="1" />
-            <Stop offset="100%" stopColor="#888888" stopOpacity="1" />
+            <Stop offset="0%" stopColor="#f59e0b" stopOpacity="1" />
+            <Stop offset="50%" stopColor="#fbbf24" stopOpacity="1" />
+            <Stop offset="100%" stopColor="#fcd34d" stopOpacity="1" />
           </SvgGradient>
         </Defs>
         <SvgText
@@ -120,11 +120,11 @@ function VerityLogo() {
       </Svg>
       
       {/* Shield mark with gradient */}
-      <Svg width={22} height={26} viewBox="0 0 100 120" style={{ marginTop: 14, opacity: 0.45 }}>
+      <Svg width={22} height={26} viewBox="0 0 100 120" style={{ marginTop: 14, opacity: 0.65 }}>
         <Defs>
           <SvgGradient id="shieldMarkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <Stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-            <Stop offset="100%" stopColor="#666666" stopOpacity="0.6" />
+            <Stop offset="0%" stopColor="#f59e0b" stopOpacity="0.9" />
+            <Stop offset="100%" stopColor="#d97706" stopOpacity="0.7" />
           </SvgGradient>
         </Defs>
         <Path 
