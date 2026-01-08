@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — Verity</title>
+    <meta name="description" content="Learn about Verity's mission to combat misinformation with transparent, AI-powered fact-checking.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #111113;
+            --bg-elevated: #18181b;
+            --border: rgba(255,255,255,0.06);
+            --border-hover: rgba(255,255,255,0.12);
+            --text-primary: #fafafa;
+            --text-secondary: #a3a3a3;
+            --text-muted: #525252;
+            --amber: #f59e0b;
+            --amber-soft: rgba(245, 158, 11, 0.12);
+            --green: #10b981;
+            --violet: #8b5cf6;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        ::selection { background: rgba(245, 158, 11, 0.3); color: #fff; }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.35rem;
+            letter-spacing: -0.03em;
+        }
+        
+        .logo svg { width: 32px; height: 36px; }
+        
+        .nav-center { display: flex; gap: 2.5rem; }
+        
+        .nav-center a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 450;
+            transition: color 0.2s;
+            position: relative;
+        }
+        
+        .nav-center a:hover, .nav-center a.active { color: var(--text-primary); }
+        
+        .nav-center a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--amber);
+            border-radius: 1px;
+        }
+        
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
+        
+        .btn-ghost {
+            padding: 0.55rem 1rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .btn-ghost:hover { color: var(--text-primary); }
+        
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.35rem;
+            background: var(--text-primary);
+            color: var(--bg-dark);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 550;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover { background: #e5e5e5; transform: translateY(-1px); }
+        
+        /* Hero */
+        .hero {
+            padding: 160px 2rem 100px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--amber-soft);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--amber);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero h1 em { font-style: italic; color: var(--amber); }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        
+        /* Mission Section */
+        .mission-section {
+            padding: 80px 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        
+        .mission-card {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .mission-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+        }
+        
+        .mission-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            background: var(--amber-soft);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+        
+        .mission-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .mission-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+        
+        /* Story Section */
+        .story-section {
+            padding: 100px 2rem;
+            background: linear-gradient(180deg, transparent, rgba(245, 158, 11, 0.02), transparent);
+        }
+        
+        .story-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .story-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .story-header h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        
+        .story-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+        }
+        
+        .story-content p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .story-content p:last-child { margin-bottom: 0; }
+        
+        .story-content strong { color: var(--text-primary); }
+        
+        /* Values */
+        .values-section {
+            padding: 100px 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .values-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .values-header h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 400;
+        }
+        
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .value-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+        
+        .value-card:hover {
+            border-color: var(--border-hover);
+        }
+        
+        .value-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .value-card h4 span { font-size: 1.25rem; }
+        
+        .value-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+        
+        /* Stats */
+        .stats-section {
+            padding: 80px 2rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .stats-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+        
+        .stat-item h3 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2.75rem;
+            font-weight: 500;
+            color: var(--amber);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-item p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        /* CTA */
+        .cta-section {
+            padding: 100px 2rem;
+            text-align: center;
+        }
+        
+        .cta-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .cta-container h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-container p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 2rem;
+            background: var(--amber);
+            color: #000;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .cta-btn:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.25);
+        }
+        
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 2rem;
+        }
+        
+        .footer-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .footer-logo svg { width: 24px; height: 28px; }
+        
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover { color: var(--text-primary); }
+        
+        .footer-right {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        @media (max-width: 900px) {
+            .nav-center { display: none; }
+            .mission-grid { grid-template-columns: 1fr; }
+            .values-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 600px) {
+            .footer-container { flex-direction: column; gap: 1.5rem; text-align: center; }
+            .footer-left { flex-direction: column; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index-v2-test.html" class="logo">
+                <svg viewBox="0 0 100 120">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f59e0b"/>
+                            <stop offset="100%" stop-color="#fbbf24"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="none" stroke="url(#logoGrad)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/>
+                    <polyline fill="none" stroke="url(#logoGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/>
+                </svg>
+                Verity
+            </a>
+            
+            <div class="nav-center">
+                <a href="index-v2-test.html">Home</a>
+                <a href="verify-v2-test.html">Verify</a>
+                <a href="pricing-v2-test.html">Pricing</a>
+                <a href="api-docs-v2-test.html">API</a>
+                <a href="about-v2-test.html" class="active">About</a>
+            </div>
+            
+            <div class="nav-right">
+                <a href="auth-v2-test.html" class="btn-ghost">Sign In</a>
+                <a href="dashboard-v2-test.html" class="btn-primary">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <span class="hero-badge">Our Mission</span>
+        <h1>Building a world where<br><em>truth is verifiable</em></h1>
+        <p>We're on a mission to make fact-checking transparent, accessible, and trustworthy. No black boxes, no hidden agendas—just clear evidence and honest answers.</p>
+    </section>
+
+    <!-- Mission Cards -->
+    <section class="mission-section">
+        <div class="mission-grid">
+            <div class="mission-card">
+                <div class="mission-icon">🔍</div>
+                <h3>Transparent</h3>
+                <p>Every verification shows its sources. You see exactly where information comes from, so you can trust the result.</p>
+            </div>
+            <div class="mission-card">
+                <div class="mission-icon">🤝</div>
+                <h3>Honest</h3>
+                <p>When AI models disagree or sources conflict, we tell you. Uncertainty is clearly flagged, never hidden.</p>
+            </div>
+            <div class="mission-card">
+                <div class="mission-icon">⚡</div>
+                <h3>Accessible</h3>
+                <p>Professional fact-checking shouldn't require a research team. We make it available to everyone, everywhere.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Story -->
+    <section class="story-section">
+        <div class="story-container">
+            <div class="story-header">
+                <h2>Why we built Verity</h2>
+            </div>
+            <div class="story-content">
+                <p>In an age of viral misinformation and AI-generated content, verifying truth has never been more important—or more difficult. Traditional fact-checking is slow, manual, and often inaccessible to those who need it most.</p>
+                
+                <p><strong>We believe technology should help solve this problem, not make it worse.</strong></p>
+                
+                <p>Verity was built on a simple principle: fact-checking should be transparent. When you ask "Is this true?", you deserve to see exactly how we reached our answer. Not a black-box verdict, but a clear trail of evidence from authoritative sources.</p>
+                
+                <p>We aggregate results from 40+ AI models and data sources, cross-validate findings, and explicitly flag uncertainty when sources disagree. Because the only thing worse than misinformation is false confidence in bad information.</p>
+                
+                <p><strong>Our goal isn't to tell you what to think—it's to give you the tools to verify for yourself.</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values -->
+    <section class="values-section">
+        <div class="values-header">
+            <h2>Our values</h2>
+        </div>
+        <div class="values-grid">
+            <div class="value-card">
+                <h4><span>📖</span> Show Your Work</h4>
+                <p>Every claim we verify comes with a complete audit trail. Sources, models consulted, confidence scores—it's all there.</p>
+            </div>
+            <div class="value-card">
+                <h4><span>🎯</span> Accuracy Over Speed</h4>
+                <p>We'd rather say "uncertain" than give a confident wrong answer. Precision matters more than quick responses.</p>
+            </div>
+            <div class="value-card">
+                <h4><span>🔒</span> Privacy First</h4>
+                <p>Your queries are processed and deleted. We don't store verification history or sell data. Ever.</p>
+            </div>
+            <div class="value-card">
+                <h4><span>🌍</span> Accessible to All</h4>
+                <p>Free tier for individuals, discounts for nonprofits and educators. Truth shouldn't be behind a paywall.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-section">
+        <div class="stats-container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>40+</h3>
+                    <p>AI Models & Sources</p>
+                </div>
+                <div class="stat-item">
+                    <h3>9</h3>
+                    <p>Verification Points</p>
+                </div>
+                <div class="stat-item">
+                    <h3>15+</h3>
+                    <p>AI Providers</p>
+                </div>
+                <div class="stat-item">
+                    <h3>99.9%</h3>
+                    <p>Uptime SLA</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2>Ready to verify with confidence?</h2>
+            <p>Join the movement for transparent, trustworthy fact-checking.</p>
+            <a href="verify-v2-test.html" class="cta-btn">
+                Start Verifying
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-left">
+                <a href="index-v2-test.html" class="footer-logo">
+                    <svg viewBox="0 0 100 120">
+                        <path fill="none" stroke="currentColor" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/>
+                        <polyline fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/>
+                    </svg>
+                    Verity
+                </a>
+                <div class="footer-links">
+                    <a href="index-v2-test.html">Home</a>
+                    <a href="api-docs-v2-test.html">API</a>
+                    <a href="pricing-v2-test.html">Pricing</a>
+                    <a href="mailto:support@veritysystems.app">Contact</a>
+                </div>
+            </div>
+            <div class="footer-right">© 2026 Verity Systems</div>
+        </div>
+    </footer>
+</body>
+</html>

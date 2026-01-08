@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Verity</title>
+    <meta name="description" content="Your Verity dashboard - manage verifications, API keys, and usage.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #111113;
+            --bg-elevated: #18181b;
+            --bg-sidebar: #0d0d0e;
+            --border: rgba(255,255,255,0.06);
+            --border-hover: rgba(255,255,255,0.12);
+            --text-primary: #fafafa;
+            --text-secondary: #a3a3a3;
+            --text-muted: #525252;
+            --amber: #f59e0b;
+            --amber-soft: rgba(245, 158, 11, 0.12);
+            --green: #10b981;
+            --green-soft: rgba(16, 185, 129, 0.12);
+            --red: #ef4444;
+            --red-soft: rgba(239, 68, 68, 0.12);
+            --violet: #8b5cf6;
+            --violet-soft: rgba(139, 92, 246, 0.12);
+            --blue: #3b82f6;
+            --blue-soft: rgba(59, 130, 246, 0.12);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        ::selection { background: rgba(245, 158, 11, 0.3); color: #fff; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+            letter-spacing: -0.03em;
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+        }
+        
+        .sidebar-logo svg { width: 28px; height: 32px; }
+        
+        .sidebar-nav { flex: 1; }
+        
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 450;
+            border-radius: 8px;
+            transition: all 0.15s;
+            margin-bottom: 2px;
+        }
+        
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.04);
+        }
+        
+        .nav-link.active {
+            color: var(--text-primary);
+            background: var(--amber-soft);
+        }
+        
+        .nav-link svg { width: 18px; height: 18px; opacity: 0.7; }
+        .nav-link.active svg { opacity: 1; }
+        
+        .sidebar-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+        
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--amber), var(--violet));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .user-info h4 {
+            font-size: 0.9rem;
+            font-weight: 550;
+        }
+        
+        .user-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2.5rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 10, 11, 0.6);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+        
+        .header-actions { display: flex; gap: 0.75rem; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+        
+        .btn-primary {
+            background: var(--amber);
+            color: #000;
+        }
+        
+        .btn-primary:hover { background: #d97706; }
+        
+        /* Content */
+        .content {
+            padding: 2rem 2.5rem;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        
+        .stat-card h4 {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stat-card h4 span {
+            font-size: 1rem;
+        }
+        
+        .stat-value {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .stat-change.down { color: var(--red); }
+        
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .panel-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .panel-header a {
+            font-size: 0.8rem;
+            color: var(--amber);
+            text-decoration: none;
+        }
+        
+        .panel-header a:hover { text-decoration: underline; }
+        
+        /* Activity List */
+        .activity-list {
+            padding: 0.5rem 0;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            transition: background 0.15s;
+        }
+        
+        .activity-item:hover { background: rgba(255,255,255,0.02); }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+        
+        .activity-icon.true { background: var(--green-soft); }
+        .activity-icon.false { background: var(--red-soft); }
+        .activity-icon.partial { background: var(--amber-soft); }
+        
+        .activity-content { flex: 1; min-width: 0; }
+        
+        .activity-content h4 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .activity-content p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .activity-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        
+        .activity-badge.true { background: var(--green-soft); color: var(--green); }
+        .activity-badge.false { background: var(--red-soft); color: var(--red); }
+        .activity-badge.partial { background: var(--amber-soft); color: var(--amber); }
+        
+        /* API Key */
+        .api-key-section { padding: 1.5rem; }
+        
+        .api-key-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .api-key-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        
+        .api-key-value {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .api-key-value code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            flex: 1;
+        }
+        
+        .api-key-value button {
+            padding: 0.4rem 0.6rem;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .api-key-value button:hover {
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+        
+        .usage-bar {
+            margin-top: 1rem;
+        }
+        
+        .usage-bar-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .usage-bar-header span { color: var(--text-muted); }
+        .usage-bar-header strong { color: var(--text-primary); }
+        
+        .usage-bar-track {
+            height: 6px;
+            background: var(--bg-dark);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .usage-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--amber), var(--green));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 450;
+            transition: all 0.15s;
+        }
+        
+        .quick-action:hover {
+            border-color: var(--border-hover);
+            transform: translateX(4px);
+        }
+        
+        .quick-action span { font-size: 1.1rem; }
+        
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="index-v2-test.html" class="sidebar-logo">
+            <svg viewBox="0 0 100 120">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#f59e0b"/>
+                        <stop offset="100%" stop-color="#fbbf24"/>
+                    </linearGradient>
+                </defs>
+                <path fill="none" stroke="url(#logoGrad)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/>
+                <polyline fill="none" stroke="url(#logoGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/>
+            </svg>
+            Verity
+        </a>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Overview</div>
+                <a href="#" class="nav-link active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    Dashboard
+                </a>
+                <a href="verify-v2-test.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Verify Claim
+                </a>
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    History
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Developer</div>
+                <a href="api-docs-v2-test.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    API Docs
+                </a>
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    API Keys
+                </a>
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    Usage
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="pricing-v2-test.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    Billing
+                </a>
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Settings
+                </a>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">JD</div>
+                <div class="user-info">
+                    <h4>John Doe</h4>
+                    <p>Pro Plan</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <header class="header">
+            <h1>Dashboard</h1>
+            <div class="header-actions">
+                <button class="btn btn-ghost">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    Feedback
+                </button>
+                <a href="verify-v2-test.html" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    New Verification
+                </a>
+            </div>
+        </header>
+        
+        <div class="content">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4><span>✓</span> Verifications</h4>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-change">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+                        +12.5% this month
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h4><span>📊</span> Accuracy Rate</h4>
+                    <div class="stat-value">94.3%</div>
+                    <div class="stat-change">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+                        +2.1% from avg
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h4><span>⚡</span> API Calls</h4>
+                    <div class="stat-value">8,432</div>
+                    <div class="stat-change down">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+                        -3.2% this week
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h4><span>⏱️</span> Avg Response</h4>
+                    <div class="stat-value">1.2s</div>
+                    <div class="stat-change">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+                        -0.3s faster
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grid -->
+            <div class="dashboard-grid">
+                <!-- Recent Activity -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Recent Verifications</h3>
+                        <a href="#">View all →</a>
+                    </div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon true">✓</div>
+                            <div class="activity-content">
+                                <h4>"The Earth is approximately 4.5 billion years old"</h4>
+                                <p>2 minutes ago • Quick Check</p>
+                            </div>
+                            <span class="activity-badge true">True</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon false">✗</div>
+                            <div class="activity-content">
+                                <h4>"Humans only use 10% of their brain"</h4>
+                                <p>15 minutes ago • Deep Research</p>
+                            </div>
+                            <span class="activity-badge false">False</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon partial">~</div>
+                            <div class="activity-content">
+                                <h4>"Coffee is the most traded commodity"</h4>
+                                <p>1 hour ago • Quick Check</p>
+                            </div>
+                            <span class="activity-badge partial">Partial</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon true">✓</div>
+                            <div class="activity-content">
+                                <h4>"Mount Everest is the tallest mountain"</h4>
+                                <p>3 hours ago • Quick Check</p>
+                            </div>
+                            <span class="activity-badge true">True</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon false">✗</div>
+                            <div class="activity-content">
+                                <h4>"The Great Wall is visible from space"</h4>
+                                <p>5 hours ago • Deep Research</p>
+                            </div>
+                            <span class="activity-badge false">False</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div>
+                    <!-- API Key -->
+                    <div class="panel" style="margin-bottom: 1.5rem;">
+                        <div class="panel-header">
+                            <h3>API Access</h3>
+                            <a href="api-docs-v2-test.html">Docs →</a>
+                        </div>
+                        <div class="api-key-section">
+                            <div class="api-key-card">
+                                <div class="api-key-label">Your API Key</div>
+                                <div class="api-key-value">
+                                    <code>vr_sk_****************************3xF9</code>
+                                    <button onclick="copyKey()" title="Copy">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="usage-bar">
+                                <div class="usage-bar-header">
+                                    <span>Monthly Usage</span>
+                                    <strong>8,432 / 10,000</strong>
+                                </div>
+                                <div class="usage-bar-track">
+                                    <div class="usage-bar-fill" style="width: 84.32%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div class="quick-actions">
+                            <a href="verify-v2-test.html" class="quick-action">
+                                <span>🔍</span> Verify a claim
+                            </a>
+                            <a href="api-docs-v2-test.html" class="quick-action">
+                                <span>📖</span> Read API docs
+                            </a>
+                            <a href="#" class="quick-action">
+                                <span>📊</span> Export history
+                            </a>
+                            <a href="pricing-v2-test.html" class="quick-action">
+                                <span>⚡</span> Upgrade plan
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function copyKey() {
+            navigator.clipboard.writeText('vr_sk_live_xxxxxxxxxxxxxxxxxxxx3xF9');
+            alert('API key copied to clipboard!');
+        }
+    </script>
+</body>
+</html>

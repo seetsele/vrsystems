@@ -1,13 +1,16 @@
 ﻿# Verity Systems API - Production Dependencies
-# Minimal, focused requirements
+# Updated January 2026
 
 # Core Framework
-fastapi>=0.109.0
-uvicorn[standard]>=0.27.0
-pydantic>=2.6.0
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.10.0
 
 # HTTP Client
-httpx>=0.26.0
+httpx>=0.28.0
 
 # Environment
-python-dotenv>=1.0.0
+python-dotenv>=1.0.1
+
+# Security
+python-jose[cryptography]>=3.3.0
