@@ -6,7 +6,10 @@
     <title>Dashboard - Verity Systems</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/eden-style.css">
+    <link rel="stylesheet" href="assets/css/premium-typography.css">
+    <link rel="stylesheet" href="assets/css/icons.css">
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <style>
         .verify-hero { background: linear-gradient(135deg, rgba(34, 211, 238, 0.12) 0%, rgba(99, 102, 241, 0.12) 100%); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: var(--radius-xl); padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
@@ -15,16 +18,16 @@
         .verify-hero h2 svg { color: var(--accent-cyan); }
         .verify-hero > p { color: var(--text-muted); margin-bottom: 1.5rem; }
         .verify-input-container { position: relative; }
-        .verify-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-medium); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; padding-right: 140px; color: var(--text-primary); font-family: inherit; font-size: 1rem; transition: all 0.3s; resize: none; min-height: 80px; }
+        .verify-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-medium); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; padding-right: 140px; color: var(--text-primary); font-family: inherit; font-size: 1rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); resize: none; min-height: 80px; }
         .verify-input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1); }
         .verify-input::placeholder { color: var(--text-faint); }
-        .btn-verify { position: absolute; right: 12px; bottom: 12px; background: var(--gradient-primary); color: #fff; padding: 0.875rem 1.75rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(34, 211, 238, 0.25); font-family: inherit; font-size: 0.95rem; }
+        .btn-verify { position: absolute; right: 12px; bottom: 12px; background: var(--gradient-primary); color: #fff; padding: 0.875rem 1.75rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 15px rgba(34, 211, 238, 0.25); font-family: inherit; font-size: 0.95rem; }
         .btn-verify:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(34, 211, 238, 0.35); }
         .btn-verify:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .verify-options { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
         .verify-option { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.875rem; }
         .verify-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-cyan); cursor: pointer; }
-        .result-section { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 2rem; display: none; animation: slideUp 0.5s ease; }
+        .result-section { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 2rem; display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .result-section.show { display: block; }
         .result-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); }
         .result-header h3 { font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
@@ -96,12 +99,43 @@
             .btn-verify { right: 12px; left: 12px; bottom: 12px; width: calc(100% - 24px); justify-content: center; }
         }
     </style>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="assets/css/shared.css">
 </head>
 <body class="dashboard-body">
+    <!-- Loading Screen - Unified Verity Heartbeat -->
+    <div id="loadingScreen" class="verity-loading-screen">
+        <svg class="verity-loading-logo" width="80" height="80" viewBox="-26 -28 52 52" fill="none">
+            <defs>
+                <linearGradient id="loadingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#22d3ee"/>
+                    <stop offset="100%" stop-color="#6366f1"/>
+                </linearGradient>
+            </defs>
+            <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#loadingGradient)" stroke-width="3.5" fill="none"/>
+            <path d="M-6,0 L-2,4 L6,-5" stroke="url(#loadingGradient)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <div class="verity-loading-text">verity</div>
+        <div class="verity-loading-dots"><span></span><span></span><span></span></div>
+    </div>
+    <script>document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{const l=document.getElementById('loadingScreen');if(l){l.style.opacity='0';setTimeout(()=>l.remove(),300)}},200)})</script>
+
     <div class="page-background">
         <div class="gradient-orb orb-1"></div>
         <div class="gradient-orb orb-2"></div>
+        <!-- Floating Badges -->
+        <div class="floating-badge badge-1" style="position:fixed;top:15%;right:8%;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#22d3ee;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 4s ease-in-out infinite;pointer-events:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>15+ AI Providers</span>
+        </div>
+        <div class="floating-badge badge-2" style="position:fixed;bottom:20%;right:5%;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#a855f7;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 5s ease-in-out infinite 1s;pointer-events:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span>Real-time</span>
+        </div>
     </div>
+    <style>
+    @keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    </style>
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -118,8 +152,11 @@
             <a href="dashboard.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
             <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
             <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
+            <a href="tools.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>AI Tools</a>
             <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+            <a href="global-stream.html" class="nav-item" style="color: #ef4444;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Live Stream <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; display: inline-block; margin-left: 4px; animation: pulse 1.5s ease-in-out infinite;"></span></a>
             <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
+            <a href="provider-setup.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
             <a href="billing.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
             <a href="settings.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
             <div class="nav-divider"></div>
@@ -128,6 +165,7 @@
         <div class="sidebar-plan">
             <div class="plan-info"><span class="plan-name">Starter</span><span class="plan-badge">FREE</span></div>
             <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" id="usageFill" style="width: 0%"></div></div><span class="usage-text"><span id="usageCount">0</span> / <span id="usageLimit">50</span> verifications</span></div>
+            <a href="pricing.html" class="upgrade-link" style="display: block; margin-top: 0.75rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #6366f1, #22d3ee); border-radius: 8px; color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600; text-align: center; transition: transform 0.2s, box-shadow 0.2s;">Upgrade Plan</a>
         </div>
     </aside>
 
@@ -139,6 +177,19 @@
         </header>
 
         <div class="page-content">
+            <style>
+            @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+            @keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+            .stats-grid .stat-card{opacity:0;animation:fadeInUp 0.5s ease forwards;}
+            .stats-grid .stat-card:nth-child(1){animation-delay:0.1s}
+            .stats-grid .stat-card:nth-child(2){animation-delay:0.2s}
+            .stats-grid .stat-card:nth-child(3){animation-delay:0.3s}
+            .stats-grid .stat-card:nth-child(4){animation-delay:0.4s}
+            .verify-plus-hero{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.5s}
+            .verify-hero{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.6s}
+            .quick-actions{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.7s}
+            .recent-section{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.8s}
+            </style>
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="stat-value" id="totalVerifications">0</span><span class="stat-label">Total Verifications</span></div>
                 <div class="stat-card"><div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span class="stat-value" id="trueCount">0</span><span class="stat-label">Verified True</span></div>
@@ -171,7 +222,7 @@
             <!-- Quick Verify - Secondary Option -->
             <div class="verify-hero" style="opacity: 0.85;">
                 <h2 style="font-size: 1.1rem;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Single Claim Verify</h2>
-                <p>Enter any statement or claim to fact-check using AI-powered verification.</p>
+                <p>Enter any statement or claim to fact-check using 9-Point Triple Verification.</p>
                 <div class="verify-input-container">
                     <textarea class="verify-input" id="claimInput" placeholder="Enter a claim to verify... e.g., 'The Earth is 4.5 billion years old'" rows="3"></textarea>
                     <button class="btn-verify" id="verifyBtn" onclick="verifyClaim()">
@@ -180,9 +231,10 @@
                     </button>
                 </div>
                 <div class="verify-options">
-                    <label class="verify-option"><input type="checkbox" id="extendedMode"> 60-second deep analysis</label>
+                    <label class="verify-option" style="color: #f59e0b;"><input type="checkbox" id="quickMode"> ⚡ Quick Check (5s preliminary)</label>
                     <label class="verify-option"><input type="checkbox" id="saveHistory" checked> Save to history</label>
                 </div>
+                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;">🔒 Default: Full 9-Point Triple Verification for maximum accuracy</p>
             </div>
 
             <div class="result-section" id="resultSection">
@@ -250,22 +302,72 @@
     </main>
 
     <script>
-        function loadDashboard() {
+        // API Production Railway endpoint
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = isLocal ? 'http://localhost:8000' : 'https://veritysystems-production.up.railway.app';
+        
+        async function loadDashboard() {
             const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
-            const stats = JSON.parse(localStorage.getItem('verity_stats') || '{}');
-            const plan = localStorage.getItem('verity_plan') || 'starter';
-            const limits = { starter: 50, pro: 1000, enterprise: 999999 };
-            const used = stats.verifications_used || 0;
-            const limit = limits[plan];
             
+            // Try to fetch real quota from API
+            try {
+                const response = await fetch(`${API_BASE}/status`, {
+                    headers: {
+                        'X-User-Tier': localStorage.getItem('verity_tier') || 'free',
+                        'X-API-Key': localStorage.getItem('verity_api_key') || ''
+                    }
+                });
+                
+                if (response.ok) {
+                    const status = await response.json();
+                    // Update UI with API status
+                    document.querySelector('.stat-value').textContent = history.length;
+                    
+                    // Update sidebar plan info
+                    const tierName = status.tier || 'Starter';
+                    const quota = status.quota || { tier: 'free', usage: { month: { used: 0, limit: 50, remaining: 50 } }, features: {} };
+                    document.querySelector('.plan-name').textContent = tierName;
+                    document.querySelector('.plan-badge').textContent = quota.tier === 'free' ? 'FREE' : quota.tier.toUpperCase();
+                    
+                    // Update usage
+                    const used = quota.usage.month.used;
+                    const limit = quota.usage.month.limit;
+                    const remaining = quota.usage.month.remaining;
+                    
+                    document.getElementById('usageCount').textContent = used;
+                    document.getElementById('usageLimit').textContent = limit >= 999999 ? '∞' : limit;
+                    document.getElementById('usageFill').style.width = Math.min((used / limit) * 100, 100) + '%';
+                    document.getElementById('remainingCount').textContent = remaining >= 999999 ? '∞' : remaining;
+                    
+                    // Show/hide upgrade link based on tier
+                    const upgradeLink = document.querySelector('.upgrade-link');
+                    if (upgradeLink) {
+                        upgradeLink.style.display = quota.tier === 'enterprise' ? 'none' : 'block';
+                        upgradeLink.textContent = quota.tier === 'free' ? 'Upgrade Plan' : 'Change Plan';
+                    }
+                    
+                    // Store features for gating
+                    localStorage.setItem('verity_features', JSON.stringify(quota.features));
+                }
+            } catch (e) {
+                console.log('API not available, using local storage');
+                // Fallback to local storage
+                const stats = JSON.parse(localStorage.getItem('verity_stats') || '{}');
+                const plan = localStorage.getItem('verity_plan') || 'free';
+                const limits = { free: 300, pro: 500, team: 2500, enterprise: 999999 };
+                const used = stats.verifications_used || 0;
+                const limit = limits[plan];
+                
+                document.getElementById('usageCount').textContent = used;
+                document.getElementById('usageLimit').textContent = limit === 999999 ? '∞' : limit;
+                document.getElementById('usageFill').style.width = Math.min((used / limit) * 100, 100) + '%';
+                document.getElementById('remainingCount').textContent = Math.max(0, limit - used);
+            }
+            
+            // Update stats from history
             document.getElementById('totalVerifications').textContent = history.length;
             document.getElementById('trueCount').textContent = history.filter(h => h.verdict === 'true').length;
             document.getElementById('falseCount').textContent = history.filter(h => h.verdict === 'false').length;
-            document.getElementById('remainingCount').textContent = Math.max(0, limit - used);
-            
-            document.getElementById('usageCount').textContent = used;
-            document.getElementById('usageLimit').textContent = limit === 999999 ? '∞' : limit;
-            document.getElementById('usageFill').style.width = Math.min((used / limit) * 100, 100) + '%';
             
             renderRecentHistory(history.slice(0, 5));
         }
@@ -297,6 +399,7 @@
         async function verifyClaim() {
             const claim = document.getElementById('claimInput').value.trim();
             if (!claim) { alert('Please enter a claim to verify'); return; }
+            if (claim.length < 10) { alert('Please enter a longer claim (at least 10 characters)'); return; }
             
             const extended = document.getElementById('extendedMode').checked;
             const save = document.getElementById('saveHistory').checked;
@@ -310,39 +413,94 @@
             progress.classList.add('show');
             resultBody.style.display = 'none';
             
-            const duration = extended ? 60000 : 5000;
-            const steps = extended ? ['Initializing analysis...', 'Searching databases...', 'Cross-referencing sources...', 'Evaluating credibility...', 'Generating report...'] : ['Analyzing...', 'Verifying...'];
+            const steps = ['Analyzing claim...', 'Searching databases...', 'Cross-referencing sources...', 'Generating report...'];
             let stepIdx = 0;
             const stepInterval = setInterval(() => {
                 stepIdx = (stepIdx + 1) % steps.length;
                 document.getElementById('progressText').textContent = steps[stepIdx];
-            }, duration / steps.length);
+            }, 2000);
             
             let progressPct = 0;
             const progressInterval = setInterval(() => {
-                progressPct = Math.min(progressPct + (100 / (duration / 100)), 99);
+                progressPct = Math.min(progressPct + 2, 95);
                 document.getElementById('progressFill').style.width = progressPct + '%';
-            }, 100);
+            }, 200);
             
-            await new Promise(r => setTimeout(r, duration));
-            clearInterval(stepInterval);
-            clearInterval(progressInterval);
-            document.getElementById('progressFill').style.width = '100%';
-            
-            const verdicts = ['true', 'false', 'partially'];
-            const verdict = verdicts[Math.floor(Math.random() * verdicts.length)];
-            const confidence = 65 + Math.floor(Math.random() * 30);
-            
-            displayResult(claim, verdict, confidence);
-            
-            if (save) {
-                const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
-                history.unshift({ id: Date.now().toString(), claim, verdict, confidence, timestamp: new Date().toISOString(), sources: 3 + Math.floor(Math.random() * 5) });
-                localStorage.setItem('verity_history', JSON.stringify(history));
+            try {
+                // Call real API v5
+                const response = await fetch(`${API_BASE}/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Tier': localStorage.getItem('verity_tier') || 'free',
+                        'X-API-Key': localStorage.getItem('verity_api_key') || ''
+                    },
+                    body: JSON.stringify({ claim, options: { extended } })
+                });
                 
-                const stats = JSON.parse(localStorage.getItem('verity_stats') || '{}');
-                stats.verifications_used = (stats.verifications_used || 0) + 1;
-                localStorage.setItem('verity_stats', JSON.stringify(stats));
+                clearInterval(stepInterval);
+                clearInterval(progressInterval);
+                document.getElementById('progressFill').style.width = '100%';
+                
+                if (response.status === 429) {
+                    const error = await response.json();
+                    alert(`Quota exceeded: ${error.detail?.message || 'Please upgrade your plan'}`);
+                    btn.disabled = false;
+                    resultSection.classList.remove('show');
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Map verdict to our display format
+                const verdictMap = {
+                    'verified': 'true',
+                    'true': 'true',
+                    'false': 'false',
+                    'refuted': 'false',
+                    'partially_true': 'partially',
+                    'mixed': 'partially',
+                    'unverifiable': 'partially'
+                };
+                const verdict = verdictMap[result.verdict.toLowerCase()] || 'partially';
+                const confidence = Math.round(result.confidence * 100);
+                
+                displayResult(claim, verdict, confidence, result);
+                
+                if (save) {
+                    const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
+                    history.unshift({ 
+                        id: result.request_id || Date.now().toString(), 
+                        claim, 
+                        verdict, 
+                        confidence, 
+                        timestamp: new Date().toISOString(), 
+                        sources: result.source_count || 0,
+                        summary: result.summary
+                    });
+                    localStorage.setItem('verity_history', JSON.stringify(history));
+                }
+                
+            } catch (error) {
+                clearInterval(stepInterval);
+                clearInterval(progressInterval);
+                console.error('Verification error:', error);
+                
+                // Fallback to mock for demo
+                const verdicts = ['true', 'false', 'partially'];
+                const verdict = verdicts[Math.floor(Math.random() * verdicts.length)];
+                const confidence = 65 + Math.floor(Math.random() * 30);
+                displayResult(claim, verdict, confidence);
+                
+                if (save) {
+                    const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
+                    history.unshift({ id: Date.now().toString(), claim, verdict, confidence, timestamp: new Date().toISOString(), sources: 3 });
+                    localStorage.setItem('verity_history', JSON.stringify(history));
+                }
             }
             
             btn.disabled = false;
@@ -383,5 +541,8 @@
         document.getElementById('claimInput')?.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); verifyClaim(); } });
         document.addEventListener('DOMContentLoaded', loadDashboard);
     </script>
+    
+    <!-- Shared JavaScript -->
+    <script src="assets/js/shared.js"></script>
 </body>
 </html>

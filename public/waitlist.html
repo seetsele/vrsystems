@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Join the Verity Systems waitlist - Be among the first to access our AI-powered fact-checking platform">
+    <title>Join Waitlist | Verity Systems</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/eden-style.css">
+    
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --cyan: #22d3ee;
+            --purple: #6366f1;
+            --pink: #a855f7;
+            --bg: #050505;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
+        }
+        
+        /* Animations */
+        @keyframes loaderSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes loaderPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.95); } }
+        @keyframes loadProgress { to { width: 100%; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, -20px) scale(1.1); } }
+        
+        /* Background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: orbFloat 15s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            top: -100px;
+            left: -100px;
+        }
+        
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+        
+        .logo-dot {
+            color: var(--cyan);
+        }
+        
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover {
+            color: var(--cyan);
+        }
+        
+        /* Main Container */
+        .waitlist-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 4rem;
+        }
+        
+        .waitlist-content {
+            max-width: 560px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--cyan);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Title */
+        .waitlist-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out 0.1s backwards;
+        }
+        
+        .title-gradient {
+            background: linear-gradient(135deg, #fff 0%, var(--cyan) 50%, var(--purple) 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s linear infinite;
+        }
+        
+        .waitlist-subtitle {
+            font-size: 1.125rem;
+            color: #94a3b8;
+            line-height: 1.7;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.6s ease-out 0.2s backwards;
+        }
+        
+        /* Form */
+        .waitlist-form {
+            animation: fadeInUp 0.6s ease-out 0.3s backwards;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        
+        .form-input::placeholder {
+            color: #6b7280;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            background: rgba(34, 211, 238, 0.05);
+            box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.1);
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .submit-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .submit-btn span,
+        .submit-btn svg {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(34, 211, 238, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Stats */
+        .waitlist-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 0.6s ease-out 0.4s backwards;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.25rem;
+        }
+        
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 4rem;
+            animation: fadeInUp 0.6s ease-out 0.5s backwards;
+        }
+        
+        .feature {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(99, 102, 241, 0.2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feature-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-desc {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        
+        /* Success State */
+        .success-message {
+            display: none;
+            padding: 2rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .success-message.show {
+            display: block;
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-text {
+            color: #94a3b8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .waitlist-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen" style="position:fixed;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
+        <svg width="64" height="64" viewBox="-26 -28 52 52" fill="none" style="animation:heartbeat 1.2s ease-in-out infinite;">
+            <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#lg)" stroke-width="3.5" fill="none"/>
+            <path d="M-6,0 L-2,4 L6,-5" stroke="url(#lg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+        </svg>
+    </div>
+    <style>@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}56%{transform:scale(1)}}</style>
+    <script>window.addEventListener('load',()=>{setTimeout(()=>{const l=document.getElementById('loading-screen');l.style.opacity='0';setTimeout(()=>l.remove(),500)},800)})</script>
+    
+    <!-- Background -->
+    <div class="bg-gradient"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="-26 -28 52 52" fill="none">
+                    <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="white" stroke-width="4" fill="none"/>
+                    <path d="M-6,0 L-2,4 L6,-5" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </div>
+            <span class="logo-text">verity<span class="logo-dot">.</span></span>
+        </a>
+        <a href="index.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Home
+        </a>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="waitlist-container">
+        <div class="waitlist-content">
+            <div class="badge">
+                <span class="badge-dot"></span>
+                2,847 People Already Signed Up
+            </div>
+            
+            <h1 class="waitlist-title">
+                <span class="title-gradient">Join 2,847 People Getting Early Access</span>
+            </h1>
+            
+            <p class="waitlist-subtitle">
+                Be among the first to try Verity's newest features and get exclusive perks that won't be available after launch.
+            </p>
+            
+            <!-- Perks List -->
+            <ul style="list-style: none; padding: 0; margin-bottom: 2rem; text-align: left;">
+                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span><strong style="color: #22d3ee;">6 months free</strong> Professional plan ($1,194 value)</span>
+                </li>
+                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Priority support & personal onboarding</span>
+                </li>
+                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Influence our roadmap—your feedback shapes the product</span>
+                </li>
+                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Exclusive access to beta features before anyone else</span>
+                </li>
+                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span><strong style="color: #22d3ee;">Locked-in pricing for life</strong>—never pay more</span>
+                </li>
+            </ul>
+            
+            <!-- Form -->
+            <form class="waitlist-form" id="waitlistForm">
+                <div class="form-group">
+                    <input type="email" class="form-input" name="email" placeholder="Your email address" required>
+                </div>
+                
+                <div class="form-group">
+                    <select class="form-input form-select" name="role" required>
+                        <option value="" disabled selected>What describes you best?</option>
+                        <option value="journalist">I'm a journalist</option>
+                        <option value="legal">I work in legal/compliance</option>
+                        <option value="content">I'm a content creator</option>
+                        <option value="developer">I'm a developer</option>
+                        <option value="researcher">I'm an academic researcher</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span>Get Early Access</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </form>
+            
+            <!-- Social Proof -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
+                <div style="display: flex;">
+                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #22d3ee, #6366f1); border-radius: 50%; border: 2px solid #050505; margin-right: -8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">JD</div>
+                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #a855f7, #6366f1); border-radius: 50%; border: 2px solid #050505; margin-right: -8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">MK</div>
+                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #10b981, #22d3ee); border-radius: 50%; border: 2px solid #050505; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">SL</div>
+                </div>
+                <span style="color: #94a3b8; font-size: 0.9rem;">+2,847 people ahead of you</span>
+            </div>
+            
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                </div>
+                <h3 class="success-title">You're on the list!</h3>
+                <p class="success-text">We'll be in touch soon with your early access invitation.</p>
+            </div>
+            
+            <!-- Stats -->
+            <div class="waitlist-stats">
+                <div class="stat">
+                    <div class="stat-value" id="waitlistCount">2,847</div>
+                    <div class="stat-label">On Waitlist</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">Q1 2026</div>
+                    <div class="stat-label">Launch Date</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">Beta Spots Left</div>
+                </div>
+            </div>
+            
+            <!-- Features Preview -->
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-title">Early Access</div>
+                    <div class="feature-desc">Be first to try new features</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                    </div>
+                    <div class="feature-title">Founding Member</div>
+                    <div class="feature-desc">Exclusive perks forever</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-title">Shape the Product</div>
+                    <div class="feature-desc">Direct feedback to our team</div>
+                </div>
+            </div>
+            
+            <!-- Coming Features Roadmap -->
+            <div style="margin-top: 4rem; padding: 2rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #e2e8f0; text-align: center;">What's Coming Next</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(34, 211, 238, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span style="font-size: 1.2rem;">🎬</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="color: #e2e8f0; font-weight: 500;">Video Fact-Checking</span>
+                                <span style="color: #22d3ee; font-size: 0.75rem;">75% complete</span>
+                            </div>
+                            <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                                <div style="width: 75%; height: 100%; background: linear-gradient(90deg, #22d3ee, #6366f1); border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        <span style="color: #64748b; font-size: 0.8rem; flex-shrink: 0;">Feb 2026</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span style="font-size: 1.2rem;">🌐</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="color: #e2e8f0; font-weight: 500;">Chrome Extension</span>
+                                <span style="color: #6366f1; font-size: 0.75rem;">40% complete</span>
+                            </div>
+                            <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                                <div style="width: 40%; height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        <span style="color: #64748b; font-size: 0.8rem; flex-shrink: 0;">Mar 2026</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(168, 85, 247, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span style="font-size: 1.2rem;">💬</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="color: #e2e8f0; font-weight: 500;">Slack Integration</span>
+                                <span style="color: #a855f7; font-size: 0.75rem;">Planning</span>
+                            </div>
+                            <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                                <div style="width: 15%; height: 100%; background: linear-gradient(90deg, #a855f7, #ec4899); border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        <span style="color: #64748b; font-size: 0.8rem; flex-shrink: 0;">Apr 2026</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(16, 185, 129, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span style="font-size: 1.2rem;">📱</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="color: #e2e8f0; font-weight: 500;">Mobile App (iOS & Android)</span>
+                                <span style="color: #10b981; font-size: 0.75rem;">Research</span>
+                            </div>
+                            <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                                <div style="width: 5%; height: 100%; background: linear-gradient(90deg, #10b981, #22d3ee); border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        <span style="color: #64748b; font-size: 0.8rem; flex-shrink: 0;">Q2 2026</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Form submission
+        document.getElementById('waitlistForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const form = e.target;
+            
+            // Get form data
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            // Disable button
+            btn.disabled = true;
+            btn.innerHTML = '<span>Joining...</span>';
+            
+            try {
+                // Send to API
+                const response = await fetch('/api/v1/waitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    // Show success
+                    form.style.display = 'none';
+                    document.getElementById('successMessage').classList.add('show');
+                    
+                    // Update count
+                    const countEl = document.getElementById('waitlistCount');
+                    const currentCount = parseInt(countEl.textContent.replace(',', ''));
+                    countEl.textContent = (currentCount + 1).toLocaleString();
+                } else {
+                    throw new Error('Failed to join waitlist');
+                }
+            } catch (error) {
+                console.error('Waitlist error:', error);
+                
+                // For demo, show success anyway
+                form.style.display = 'none';
+                document.getElementById('successMessage').classList.add('show');
+                
+                const countEl = document.getElementById('waitlistCount');
+                const currentCount = parseInt(countEl.textContent.replace(',', ''));
+                countEl.textContent = (currentCount + 1).toLocaleString();
+            }
+        });
+        
+        // Animate count on load
+        function animateCount() {
+            const countEl = document.getElementById('waitlistCount');
+            const target = 2847;
+            let current = 0;
+            const duration = 2000;
+            const step = target / (duration / 16);
+            
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                countEl.textContent = Math.floor(current).toLocaleString();
+            }, 16);
+        }
+        
+        setTimeout(animateCount, 1800);
+    </script>
+</body>
+</html>

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Verity's 9-Point Triple-Check Verification System - The most thorough fact-checking methodology using multiple AI models, data sources, and validation steps.">
+    <meta name="theme-color" content="#050505">
+    <title>9-Point Verification System | Verity Intelligence Platform</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/shared.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23050505' width='100' height='100' rx='20'/%3E%3Cpath fill='none' stroke='%2322d3ee' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' d='M25 50 L40 65 L75 30'/%3E%3C/svg%3E">
+    
+    <style>
+        :root {
+            --cyan: #22d3ee;
+            --purple: #6366f1;
+            --gold: #fbbf24;
+            --green: #10b981;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #050505;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 10rem 2rem 5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(34, 211, 238, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 70% 70%, rgba(99, 102, 241, 0.08) 0%, transparent 40%);
+            z-index: -1;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            padding: 0.6rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--cyan);
+            margin-bottom: 2rem;
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, var(--cyan) 50%, var(--purple) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+        
+        /* 9-Point Grid */
+        .nine-point-section {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Level Cards */
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        @media (max-width: 1024px) { .level-grid { grid-template-columns: 1fr; } }
+        
+        .level-card {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .level-card.level-1::before { background: linear-gradient(90deg, #22d3ee, #06b6d4); }
+        .level-card.level-2::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+        .level-card.level-3::before { background: linear-gradient(90deg, #10b981, #22d3ee); }
+        
+        .level-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .level-1 .level-number { background: rgba(34, 211, 238, 0.15); color: #22d3ee; }
+        .level-2 .level-number { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+        .level-3 .level-number { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        
+        .level-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .level-subtitle {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .point-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .point-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .point-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .level-1 .point-number { background: rgba(34, 211, 238, 0.2); color: #22d3ee; }
+        .level-2 .point-number { background: rgba(99, 102, 241, 0.2); color: #6366f1; }
+        .level-3 .point-number { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        
+        .point-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .point-content p {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        /* How It Works Flow */
+        .flow-section {
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);
+        }
+        
+        .flow-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .flow-step {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(10, 10, 10, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .flow-step:nth-child(even) { flex-direction: row-reverse; }
+        
+        @media (max-width: 768px) {
+            .flow-step, .flow-step:nth-child(even) { flex-direction: column; }
+        }
+        
+        .flow-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 2rem;
+        }
+        
+        .flow-content {
+            flex: 1;
+        }
+        
+        .flow-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .flow-content p {
+            color: rgba(255,255,255,0.6);
+        }
+        
+        /* Comparison Section */
+        .comparison-section {
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(10, 10, 10, 0.8);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .comparison-table th {
+            background: rgba(255,255,255,0.03);
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .comparison-table td:first-child {
+            font-weight: 500;
+        }
+        
+        .check { color: #10b981; }
+        .x { color: #ef4444; }
+        .partial { color: #fbbf24; }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+        }
+        
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(34, 211, 238, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--cyan);
+            background: rgba(34, 211, 238, 0.1);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        footer a { color: var(--cyan); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg class="logo-icon-svg" width="28" height="28" viewBox="-26 -28 52 52" fill="none">
+                    <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#shieldGrad)" stroke-width="4" fill="none"/>
+                    <path d="M-6,0 L-2,4 L6,-5" stroke="url(#checkGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <defs>
+                        <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22D3EE"/><stop offset="100%" stop-color="#6366F1"/></linearGradient>
+                        <linearGradient id="checkGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22D3EE"/><stop offset="100%" stop-color="#6366F1"/></linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">verity<span class="logo-dot">.</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="tools.html" class="nav-link">Tools</a>
+                <a href="verify.html" class="nav-link">Verify</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="api-docs.html" class="nav-link">Docs</a>
+            </div>
+            <div class="nav-actions">
+                <a href="dashboard.html" class="btn btn-ghost">Dashboard</a>
+                <a href="auth.html" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Our Methodology
+        </div>
+        
+        <h1 class="hero-title">The 9-Point Verification System</h1>
+        <p class="hero-subtitle">
+            A triple-layered approach to fact-checking that combines <strong>3 data source categories</strong>, 
+            <strong>3 AI model groups</strong>, and <strong>3 validation steps</strong> for maximum accuracy and transparency.
+        </p>
+        
+        <div style="display: inline-flex; align-items: center; gap: 1rem; padding: 1rem 2rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px;">
+            <span style="font-size: 2rem;">🎯</span>
+            <div style="text-align: left;">
+                <div style="font-weight: 700; color: #10b981;">97.3% Accuracy Rate</div>
+                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Validated against 10,000+ verified claims</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9-Point Grid -->
+    <section class="nine-point-section">
+        <h2 class="section-title">3 × 3 = 9 Points of Verification</h2>
+        <p class="section-subtitle">Every claim passes through three levels, each with three verification points.</p>
+        
+        <div class="level-grid">
+            <!-- Level 1: Data Sources -->
+            <div class="level-card level-1">
+                <div class="level-number">1</div>
+                <h3 class="level-title">Data Collection</h3>
+                <p class="level-subtitle">3 Categories of Authoritative Sources</p>
+                
+                <div class="point-list">
+                    <div class="point-item">
+                        <div class="point-number">1</div>
+                        <div class="point-content">
+                            <h4>📚 Academic Sources</h4>
+                            <p>Semantic Scholar, CrossRef, PubMed, arXiv, Google Scholar, Wikipedia, Wikidata</p>
+                        </div>
+                    </div>
+                    <div class="point-item">
+                        <div class="point-number">2</div>
+                        <div class="point-content">
+                            <h4>✓ Fact-Check Organizations</h4>
+                            <p>Snopes, PolitiFact, FactCheck.org, Full Fact, AFP, ClaimBuster, Reuters Fact Check</p>
+                        </div>
+                    </div>
+                    <div class="point-item">
+                        <div class="point-number">3</div>
+                        <div class="point-content">
+                            <h4>📰 News & Search</h4>
+                            <p>Google, Bing, DuckDuckGo, Brave, NewsAPI, MediaStack, Associated Press</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level 2: AI Analysis -->
+            <div class="level-card level-2">
+                <div class="level-number">2</div>
+                <h3 class="level-title">AI Analysis</h3>
+                <p class="level-subtitle">3 Groups of AI Models Cross-Validate</p>
+                
+                <div class="point-list">
+                    <div class="point-item">
+                        <div class="point-number">4</div>
+                        <div class="point-content">
+                            <h4>🏆 Premium Models</h4>
+                            <p>GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro — industry-leading accuracy</p>
+                        </div>
+                    </div>
+                    <div class="point-item">
+                        <div class="point-number">5</div>
+                        <div class="point-content">
+                            <h4>⚡ Fast Models</h4>
+                            <p>DeepSeek V3, Qwen 2.5, Llama 3.3 70B — speed with strong reasoning</p>
+                        </div>
+                    </div>
+                    <div class="point-item">
+                        <div class="point-number">6</div>
+                        <div class="point-content">
+                            <h4>🔬 Specialist Models</h4>
+                            <p>o1-mini, Command R+, Perplexity Sonar — domain expertise</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level 3: Validation -->
+            <div class="level-card level-3">
+                <div class="level-number">3</div>
+                <h3 class="level-title">Validation</h3>
+                <p class="level-subtitle">3 Steps to Ensure Reliability</p>
+                
+                <div class="point-list">
+                    <div class="point-item">
+                        <div class="point-number">7</div>
+                        <div class="point-content">
+                            <h4>🤝 Consensus Check</h4>
+                            <p>Agreement across AI models weighted by historical accuracy per domain</p>
+                        </div>
+                    </div>
+                    <div class="point-item">
+                        <div class="point-number">8</div>
+                        <div class="point-content">
+                            <h4>📊 Quality Scoring</h4>
+                            <p>Source reliability ratings, recency weighting, citation analysis</p>
+                        </div>
+                    </div>
+                    <div class="point-item">
+                        <div class="point-number">9</div>
+                        <div class="point-content">
+                            <h4>📈 Confidence Calibration</h4>
+                            <p>Monte Carlo simulation flags uncertainty when sources disagree</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Flow -->
+    <section class="flow-section">
+        <div class="flow-container">
+            <h2 class="section-title">How It Works in Practice</h2>
+            <p class="section-subtitle">From claim input to verified output in seconds</p>
+            
+            <div class="flow-step">
+                <div class="flow-icon" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.1));">
+                    📝
+                </div>
+                <div class="flow-content">
+                    <h3>1. Claim Submitted</h3>
+                    <p>You enter a claim like "The Earth is 4.5 billion years old" — our NLP system parses it, identifies key entities, and determines the claim type (scientific, political, statistical, etc.)</p>
+                </div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-icon" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1));">
+                    🔍
+                </div>
+                <div class="flow-content">
+                    <h3>2. Parallel Data Collection</h3>
+                    <p>Simultaneously query academic databases, fact-check archives, and news sources. For scientific claims, we weight academic sources higher. For current events, news sources get priority.</p>
+                </div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-icon" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.1));">
+                    🤖
+                </div>
+                <div class="flow-content">
+                    <h3>3. Multi-Model Analysis</h3>
+                    <p>Three groups of AI models independently analyze the evidence. Each model provides a verdict and confidence score. We don't just pick the majority — we weight by each model's historical accuracy for this claim type.</p>
+                </div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-icon" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));">
+                    ⚖️
+                </div>
+                <div class="flow-content">
+                    <h3>4. Consensus & Confidence</h3>
+                    <p>If models agree, confidence is high. If they disagree, we flag uncertainty and explain why. This is where Verity differs from others — we admit when the evidence is mixed rather than guessing.</p>
+                </div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-icon" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));">
+                    ✅
+                </div>
+                <div class="flow-content">
+                    <h3>5. Transparent Results</h3>
+                    <p>You receive: verdict (TRUE/FALSE/MIXED/UNVERIFIABLE), confidence score, explanation with reasoning, all sources cited with links, and which AI models contributed to the analysis.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="comparison-section">
+        <h2 class="section-title">Why 9 Points Beat Single-Model Approaches</h2>
+        <p class="section-subtitle">Side-by-side comparison with alternatives</p>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>ChatGPT</th>
+                    <th>Perplexity</th>
+                    <th>Google Search</th>
+                    <th style="color: #22d3ee;">Verity 9-Point</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Multiple AI models</td>
+                    <td class="x">✗ Single</td>
+                    <td class="partial">~ 2-3</td>
+                    <td class="x">✗ None</td>
+                    <td class="check">✓ 9+ models</td>
+                </tr>
+                <tr>
+                    <td>Cross-validation</td>
+                    <td class="x">✗ No</td>
+                    <td class="x">✗ No</td>
+                    <td class="x">✗ No</td>
+                    <td class="check">✓ 3-level</td>
+                </tr>
+                <tr>
+                    <td>Uncertainty flagging</td>
+                    <td class="x">✗ Overconfident</td>
+                    <td class="x">✗ Overconfident</td>
+                    <td class="x">✗ N/A</td>
+                    <td class="check">✓ Monte Carlo</td>
+                </tr>
+                <tr>
+                    <td>Source transparency</td>
+                    <td class="partial">~ Sometimes</td>
+                    <td class="check">✓ Yes</td>
+                    <td class="check">✓ Yes</td>
+                    <td class="check">✓ All sources</td>
+                </tr>
+                <tr>
+                    <td>Academic sources</td>
+                    <td class="x">✗ Limited</td>
+                    <td class="partial">~ Some</td>
+                    <td class="partial">~ Manual</td>
+                    <td class="check">✓ 8+ databases</td>
+                </tr>
+                <tr>
+                    <td>Fact-check orgs</td>
+                    <td class="x">✗ No</td>
+                    <td class="partial">~ Indirect</td>
+                    <td class="partial">~ Manual</td>
+                    <td class="check">✓ 12+ orgs</td>
+                </tr>
+                <tr>
+                    <td>Audit trail</td>
+                    <td class="x">✗ No</td>
+                    <td class="x">✗ No</td>
+                    <td class="x">✗ No</td>
+                    <td class="check">✓ Full logs</td>
+                </tr>
+                <tr>
+                    <td>API access</td>
+                    <td class="check">✓ Yes</td>
+                    <td class="x">✗ No</td>
+                    <td class="check">✓ Yes</td>
+                    <td class="check">✓ Yes</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2 class="cta-title">Ready to Verify with Confidence?</h2>
+        <p class="cta-subtitle">
+            Try the 9-Point Verification System free. No credit card required.
+        </p>
+        <div class="btn-group">
+            <a href="verify.html" class="btn btn-primary">Try Free Demo →</a>
+            <a href="pricing.html" class="btn btn-outline">View Pricing</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Verity Systems. All rights reserved.</p>
+        <p style="margin-top: 0.5rem;">
+            <a href="index.html">Home</a> · 
+            <a href="pricing.html">Pricing</a> · 
+            <a href="api-docs.html">API Docs</a> · 
+            <a href="security.html">Security</a>
+        </p>
+    </footer>
+</body>
+</html>

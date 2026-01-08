@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:* https://*; img-src 'self' data: https:;">
+    <title>Verity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+        <div class="bg-noise"></div>
+        <div class="floating-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+            <div class="orb orb-4"></div>
+        </div>
+        <div class="glow-lines">
+            <div class="glow-line line-1"></div>
+            <div class="glow-line line-2"></div>
+            <div class="glow-line line-3"></div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <svg viewBox="0 0 60 60" fill="none">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#06b6d4"/>
+                            <stop offset="50%" stop-color="#8b5cf6"/>
+                            <stop offset="100%" stop-color="#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M30 5 L10 12 L10 32 Q10 48 30 55 Q50 48 50 32 L50 12 Z" stroke="url(#logoGrad)" stroke-width="2.5" fill="none"/>
+                    <path d="M22 30 L28 36 L40 24" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </div>
+            <div class="loader-text">verity<span>.</span></div>
+            <div class="loader-bar"><div class="loader-progress"></div></div>
+            <div class="loader-status">Initializing AI Systems...</div>
+        </div>
+    </div>
+
+    <!-- Custom Titlebar -->
+    <header class="titlebar" id="titlebar">
+        <div class="titlebar-left">
+            <div class="app-logo">
+                <svg viewBox="0 0 60 60" fill="none">
+                    <defs><linearGradient id="tbGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
+                    <path d="M30 8 L12 14 L12 30 Q12 44 30 50 Q48 44 48 30 L48 14 Z" stroke="url(#tbGrad)" stroke-width="2" fill="none"/>
+                    <path d="M23 28 L28 33 L38 23" stroke="url(#tbGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                <span class="app-name">verity<span class="accent">.</span></span>
+            </div>
+        </div>
+        <div class="titlebar-center">
+            <div class="search-bar" id="global-search">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <input type="text" placeholder="Search anything... (Ctrl+K)" id="search-input">
+                <kbd>⌘K</kbd>
+            </div>
+        </div>
+        <div class="titlebar-right">
+            <button class="tb-btn" id="btn-notifications" title="Notifications">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 106 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span class="notif-badge">3</span>
+            </button>
+            <button class="tb-btn" id="btn-sync" title="Sync Status">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="signin-btn" id="signin-btn">Sign In</button>
+            <div class="window-controls">
+                <button class="win-btn minimize" id="btn-min"><svg viewBox="0 0 12 12"><rect y="5" width="12" height="2" fill="currentColor"/></svg></button>
+                <button class="win-btn maximize" id="btn-max"><svg viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></button>
+                <button class="win-btn close" id="btn-close"><svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2L2 10" stroke="currentColor" stroke-width="1.5"/></svg></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="nav" id="nav"></nav>
+            
+            <div class="sidebar-footer">
+                <div class="api-status" id="api-status">
+                    <span class="status-indicator offline"></span>
+                    <span class="status-text">Checking API...</span>
+                </div>
+                <div class="app-version">v3.0.0 Enterprise</div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="main"></main>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container auth-container">
+            <button class="modal-close" id="close-auth">&times;</button>
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <svg viewBox="0 0 60 60" fill="none">
+                        <defs><linearGradient id="authGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
+                        <path d="M30 8 L12 14 L12 30 Q12 44 30 50 Q48 44 48 30 L48 14 Z" stroke="url(#authGrad)" stroke-width="2" fill="none"/>
+                        <path d="M23 28 L28 33 L38 23" stroke="url(#authGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </div>
+                <h2>Welcome to Verity</h2>
+                <p>AI-Powered Truth Verification Platform</p>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="signin">Sign In</button>
+                <button class="auth-tab" data-tab="signup">Create Account</button>
+            </div>
+            <form class="auth-form active" id="signin-form">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="signin-email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signin-pass" placeholder="••••••••" required>
+                </div>
+                <div class="form-row">
+                    <label class="checkbox"><input type="checkbox" checked> Remember me</label>
+                    <a href="#" class="link">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+            </form>
+            <form class="auth-form" id="signup-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signup-name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="signup-email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signup-pass" placeholder="Min. 8 characters" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+            </form>
+            <div class="auth-divider"><span>or continue with</span></div>
+            <div class="social-buttons">
+                <button class="social-btn" data-provider="google"><svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Google</button>
+                <button class="social-btn" data-provider="github"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</button>
+                <button class="social-btn" data-provider="apple"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>Apple</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toasts"></div>
+
+    <!-- Notifications Panel -->
+    <div class="notifications-panel" id="notif-panel">
+        <div class="notif-header">
+            <h3>Notifications</h3>
+            <button class="notif-clear" id="clear-notifs">Clear all</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+            <div class="notif-item">
+                <div class="notif-icon success">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-title">Verification Complete</div>
+                    <div class="notif-desc">Your claim has been analyzed with 94% accuracy</div>
+                    <div class="notif-time">2 minutes ago</div>
+                </div>
+            </div>
+            <div class="notif-item">
+                <div class="notif-icon warning">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2"/><path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-title">Usage Alert</div>
+                    <div class="notif-desc">You've used 80% of your monthly verifications</div>
+                    <div class="notif-time">1 hour ago</div>
+                </div>
+            </div>
+            <div class="notif-item">
+                <div class="notif-icon">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-title">New Feature Available</div>
+                    <div class="notif-desc">Try our new real-time fact-checking stream</div>
+                    <div class="notif-time">Yesterday</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Palette -->
+    <div class="command-palette" id="cmd">
+        <div class="cmd-backdrop"></div>
+        <div class="cmd-container">
+            <div class="cmd-search">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <input type="text" id="cmd-input" placeholder="Type a command or search...">
+            </div>
+            <div class="cmd-results" id="cmd-results"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

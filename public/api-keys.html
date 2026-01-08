@@ -66,10 +66,30 @@
         }
     </style>
 </head>
+<div id="loading-screen" style="position:fixed;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
+    <svg width="64" height="64" viewBox="-26 -28 52 52" fill="none" style="animation:heartbeat 1.2s ease-in-out infinite;">
+        <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#lg)" stroke-width="3.5" fill="none"/>
+        <path d="M-6,0 L-2,4 L6,-5" stroke="url(#lg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+    </svg>
+</div>
+<style>
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}56%{transform:scale(1)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.keys-section{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.1s}
+.docs-section{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.2s}
+</style>
+<script>window.addEventListener('load',()=>{setTimeout(()=>{const l=document.getElementById('loading-screen');l.style.opacity='0';setTimeout(()=>l.remove(),500)},800)})</script>
 <body class="dashboard-body">
     <div class="page-background">
         <div class="gradient-orb orb-1"></div>
         <div class="gradient-orb orb-2"></div>
+        <!-- Floating Badge -->
+        <div class="floating-badge" style="position:fixed;top:14%;right:6%;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#22d3ee;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 4s ease-in-out infinite;pointer-events:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778"/></svg>
+            <span>Developer API</span>
+        </div>
     </div>
 
     <aside class="sidebar" id="sidebar">
@@ -163,7 +183,7 @@
                     <div class="endpoint-card">
                         <div class="endpoint-header"><span class="method-badge post">POST</span><span class="endpoint-url">/v1/verify</span></div>
                         <p class="endpoint-description">Verify a claim using AI-powered fact-checking</p>
-                        <div class="code-block"><pre>curl -X POST https://api.verity-systems.com/v1/verify \
+                        <div class="code-block"><pre>curl -X POST https://veritysystems-production.up.railway.app/v3/verify \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"claim": "The Earth is 4.5 billion years old"}'</pre></div>
@@ -171,7 +191,7 @@
                     <div class="endpoint-card">
                         <div class="endpoint-header"><span class="method-badge get">GET</span><span class="endpoint-url">/v1/usage</span></div>
                         <p class="endpoint-description">Check your current API usage and quota</p>
-                        <div class="code-block"><pre>curl https://api.verity-systems.com/v1/usage \
+                        <div class="code-block"><pre>curl https://veritysystems-production.up.railway.app/v3/usage \
   -H "Authorization: Bearer YOUR_API_KEY"</pre></div>
                     </div>
                 </div>

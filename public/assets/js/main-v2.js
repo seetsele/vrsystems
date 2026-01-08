@@ -23,7 +23,9 @@ window.addEventListener('load', () => {
 
 const DEMO_CONFIG = {
     maxAttempts: 5,  // Increased for better demo experience
-    apiBase: 'http://localhost:8000',
+    apiBase: (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) 
+        ? 'http://localhost:8081' 
+        : 'https://veritysystems-production.up.railway.app',
     apiTimeout: 30000
 };
 

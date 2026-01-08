@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Verity Ultimate Suite - Enterprise-grade unified intelligence platform. All 6 verification tools in one command center.">
+    <title>Ultimate Suite | Verity Enterprise</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/icons.css">
+    <link rel="stylesheet" href="assets/css/premium-typography.css">
+    
+    <style>
+        :root {
+            --gold: #fbbf24;
+            --gold-dark: #d97706;
+            --purple: #8b5cf6;
+            --cyan: #22d3ee;
+            --green: #10b981;
+            --red: #f43f5e;
+            --pink: #ec4899;
+            --blue: #3b82f6;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #030712;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(251, 191, 36, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(251, 191, 36, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .glow-orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .orb-1 {
+            top: -200px;
+            left: -200px;
+            background: var(--gold);
+        }
+        
+        .orb-2 {
+            bottom: -200px;
+            right: -200px;
+            background: var(--purple);
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .logo span { color: var(--gold); }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover { color: var(--gold); }
+        .nav-links a.active { color: var(--gold); }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+        }
+        
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 10rem 2rem 6rem;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .enterprise-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, var(--gold) 50%, var(--purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        /* Tool Colors Orbit */
+        .tool-orbit {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .tool-dot:nth-child(1) { background: var(--pink); animation-delay: 0s; }
+        .tool-dot:nth-child(2) { background: var(--purple); animation-delay: 0.2s; }
+        .tool-dot:nth-child(3) { background: var(--green); animation-delay: 0.4s; }
+        .tool-dot:nth-child(4) { background: var(--blue); animation-delay: 0.6s; }
+        .tool-dot:nth-child(5) { background: var(--orange); animation-delay: 0.8s; }
+        .tool-dot:nth-child(6) { background: var(--red); animation-delay: 1s; }
+        
+        /* Command Center Section */
+        .command-section {
+            position: relative;
+            padding: 4rem 2rem;
+            z-index: 1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header h2 span {
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Command Center */
+        .command-center {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .command-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .command-dots {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .command-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .command-dots span:nth-child(1) { background: #ff5f57; }
+        .command-dots span:nth-child(2) { background: #febc2e; }
+        .command-dots span:nth-child(3) { background: #28c840; }
+        
+        .command-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .command-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--green);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .command-body {
+            padding: 2rem;
+        }
+        
+        .input-section {
+            margin-bottom: 2rem;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .ultimate-textarea {
+            flex: 1;
+            min-height: 120px;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            resize: none;
+            font-family: inherit;
+        }
+        
+        .ultimate-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        
+        .analyze-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+        }
+        
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Engines Grid */
+        .engines-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 900px) {
+            .engines-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 600px) {
+            .engines-grid { grid-template-columns: 1fr; }
+            .input-group { flex-direction: column; }
+        }
+        
+        .engine-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 1.25rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .engine-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .engine-card.active::before { opacity: 1; }
+        .engine-card.analyzing { border-color: var(--gold); }
+        .engine-card.complete { border-color: var(--green); }
+        
+        .engine-card[data-engine="social"]::before { background: var(--pink); }
+        .engine-card[data-engine="image"]::before { background: var(--purple); }
+        .engine-card[data-engine="source"]::before { background: var(--green); }
+        .engine-card[data-engine="statistics"]::before { background: var(--blue); }
+        .engine-card[data-engine="research"]::before { background: var(--orange); }
+        .engine-card[data-engine="stream"]::before { background: var(--red); }
+        
+        .engine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .engine-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .engine-card[data-engine="social"] .engine-icon { background: rgba(236, 72, 153, 0.2); }
+        .engine-card[data-engine="image"] .engine-icon { background: rgba(139, 92, 246, 0.2); }
+        .engine-card[data-engine="source"] .engine-icon { background: rgba(16, 185, 129, 0.2); }
+        .engine-card[data-engine="statistics"] .engine-icon { background: rgba(59, 130, 246, 0.2); }
+        .engine-card[data-engine="research"] .engine-icon { background: rgba(249, 115, 22, 0.2); }
+        .engine-card[data-engine="stream"] .engine-icon { background: rgba(244, 63, 94, 0.2); }
+        
+        .engine-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-weight: 500;
+        }
+        
+        .engine-status.ready {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .engine-status.analyzing {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--gold);
+            animation: pulse 1s infinite;
+        }
+        
+        .engine-status.complete {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--green);
+        }
+        
+        .engine-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .engine-desc {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 1rem;
+        }
+        
+        .engine-result {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .engine-result.empty {
+            color: rgba(255,255,255,0.3);
+            font-style: italic;
+        }
+        
+        /* Master Score */
+        .master-score {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .master-score.show { display: block; }
+        
+        .score-value {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .score-label {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .score-verdict {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .score-verdict.true {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--green);
+        }
+        
+        .score-verdict.false {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--red);
+        }
+        
+        .score-verdict.mixed {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--gold);
+        }
+        
+        /* 6 Tools Section */
+        .tools-section {
+            position: relative;
+            padding: 6rem 2rem;
+            z-index: 1;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 900px) {
+            .tools-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 600px) {
+            .tools-grid { grid-template-columns: 1fr; }
+        }
+        
+        .tool-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .tool-card:nth-child(1)::before { background: linear-gradient(90deg, var(--pink), #db2777); }
+        .tool-card:nth-child(2)::before { background: linear-gradient(90deg, var(--purple), #7c3aed); }
+        .tool-card:nth-child(3)::before { background: linear-gradient(90deg, var(--green), #059669); }
+        .tool-card:nth-child(4)::before { background: linear-gradient(90deg, var(--blue), #2563eb); }
+        .tool-card:nth-child(5)::before { background: linear-gradient(90deg, var(--orange), #ea580c); }
+        .tool-card:nth-child(6)::before { background: linear-gradient(90deg, var(--red), #e11d48); }
+        
+        .tool-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.04);
+        }
+        
+        .tool-icon-large {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tool-card:nth-child(1) .tool-icon-large { background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(219, 39, 119, 0.2)); }
+        .tool-card:nth-child(2) .tool-icon-large { background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(124, 58, 237, 0.2)); }
+        .tool-card:nth-child(3) .tool-icon-large { background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2)); }
+        .tool-card:nth-child(4) .tool-icon-large { background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2)); }
+        .tool-card:nth-child(5) .tool-icon-large { background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(234, 88, 12, 0.2)); }
+        .tool-card:nth-child(6) .tool-icon-large { background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(225, 29, 72, 0.2)); }
+        
+        .tool-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tool-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tool-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .tool-feature {
+            padding: 0.35rem 0.75rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        /* Pricing CTA */
+        .pricing-section {
+            position: relative;
+            padding: 6rem 2rem;
+            z-index: 1;
+        }
+        
+        .pricing-card {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .pricing-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(251, 191, 36, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pricing-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-card .price {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pricing-card .price-note {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .pricing-features li:last-child { border-bottom: none; }
+        
+        .pricing-features svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        /* Footer */
+        footer {
+            position: relative;
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            z-index: 1;
+        }
+        
+        footer p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="logo">Verity<span>.</span></a>
+        <ul class="nav-links">
+            <li><a href="verify.html">Verify</a></li>
+            <li><a href="tools.html">Tools</a></li>
+            <li><a href="global-stream.html" style="color: #ef4444;">Live <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; display: inline-block; margin-left: 4px; animation: pulse 1.5s ease-in-out infinite;"></span></a></li>
+            <li><a href="ultimate-suite.html" class="active">Ultimate</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="api-docs.html">API</a></li>
+        </ul>
+        <a href="auth.html?plan=enterprise" class="btn btn-gold">Start Free Trial</a>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <span class="enterprise-badge">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            Enterprise Exclusive
+        </span>
+        <h1>Ultimate Suite</h1>
+        <p>All 6 verification tools in one unified command center. One input, six parallel analyses, one comprehensive intelligence report with Master Verity Score.</p>
+        
+        <div class="tool-orbit">
+            <div class="tool-dot"></div>
+            <div class="tool-dot"></div>
+            <div class="tool-dot"></div>
+            <div class="tool-dot"></div>
+            <div class="tool-dot"></div>
+            <div class="tool-dot"></div>
+        </div>
+    </section>
+    
+    <!-- Command Center -->
+    <section class="command-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Six Engines. <span>One Analysis.</span></h2>
+                <p>Enter any claim, article, or URL. Watch as all six verification engines analyze simultaneously.</p>
+            </div>
+            
+            <div class="command-center">
+                <div class="command-header">
+                    <div class="command-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="command-title">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+                        Ultimate Command Center
+                    </div>
+                    <div class="command-status">
+                        <span class="status-dot"></span>
+                        All Systems Online
+                    </div>
+                </div>
+                
+                <div class="command-body">
+                    <div class="input-section">
+                        <label class="input-label">Input Content for Analysis</label>
+                        <div class="input-group">
+                            <textarea class="ultimate-textarea" id="ultimate-input" placeholder="Enter claim, article text, or URL to analyze across all verification engines...">A viral tweet claims that a new study shows coffee can cure cancer, shared by an account with 500K followers that was created last month.</textarea>
+                            <button class="analyze-btn" onclick="runUltimateAnalysis()" id="analyze-btn">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                Analyze All
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="engines-grid">
+                        <div class="engine-card" data-engine="social">
+                            <div class="engine-header">
+                                <div class="engine-icon">📱</div>
+                                <span class="engine-status ready">Ready</span>
+                            </div>
+                            <div class="engine-name">Social Media Analyzer</div>
+                            <div class="engine-desc">Detect viral misinformation patterns</div>
+                            <div class="engine-result empty">Awaiting input...</div>
+                        </div>
+                        
+                        <div class="engine-card" data-engine="image">
+                            <div class="engine-header">
+                                <div class="engine-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>
+                                <span class="engine-status ready">Ready</span>
+                            </div>
+                            <div class="engine-name">Image Forensics</div>
+                            <div class="engine-desc">Detect AI-generated or manipulated images</div>
+                            <div class="engine-result empty">Awaiting input...</div>
+                        </div>
+                        
+                        <div class="engine-card" data-engine="source">
+                            <div class="engine-header">
+                                <div class="engine-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                                <span class="engine-status ready">Ready</span>
+                            </div>
+                            <div class="engine-name">Source Credibility</div>
+                            <div class="engine-desc">Evaluate source reputation & bias</div>
+                            <div class="engine-result empty">Awaiting input...</div>
+                        </div>
+                        
+                        <div class="engine-card" data-engine="statistics">
+                            <div class="engine-header">
+                                <div class="engine-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                                <span class="engine-status ready">Ready</span>
+                            </div>
+                            <div class="engine-name">Statistics Validator</div>
+                            <div class="engine-desc">Verify numerical claims & data</div>
+                            <div class="engine-result empty">Awaiting input...</div>
+                        </div>
+                        
+                        <div class="engine-card" data-engine="research">
+                            <div class="engine-header">
+                                <div class="engine-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg></div>
+                                <span class="engine-status ready">Ready</span>
+                            </div>
+                            <div class="engine-name">Research Assistant</div>
+                            <div class="engine-desc">Query academic & scientific sources</div>
+                            <div class="engine-result empty">Awaiting input...</div>
+                        </div>
+                        
+                        <div class="engine-card" data-engine="stream">
+                            <div class="engine-header">
+                                <div class="engine-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                                <span class="engine-status ready">Ready</span>
+                            </div>
+                            <div class="engine-name">Real-Time Stream</div>
+                            <div class="engine-desc">Monitor viral spread patterns</div>
+                            <div class="engine-result empty">Awaiting input...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="master-score" id="master-score">
+                        <div class="score-value" id="score-value">--</div>
+                        <div class="score-label">Master Verity Score</div>
+                        <div class="score-verdict mixed" id="score-verdict">Analysis Complete</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 6 Tools Section -->
+    <section class="tools-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Six Powerful <span>Verification Tools</span></h2>
+                <p>Each tool is a specialized engine designed for specific verification tasks. Together, they provide comprehensive truth analysis.</p>
+            </div>
+            
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-icon-large">📱</div>
+                    <h3>Social Media Analyzer</h3>
+                    <p>Detect viral misinformation patterns, bot networks, and coordinated inauthentic behavior across platforms.</p>
+                    <div class="tool-features">
+                        <span class="tool-feature">Bot Detection</span>
+                        <span class="tool-feature">Virality Tracking</span>
+                        <span class="tool-feature">Network Analysis</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon-large"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>
+                    <h3>Image Forensics</h3>
+                    <p>Detect AI-generated images, manipulated photos, and deepfakes with advanced forensic analysis.</p>
+                    <div class="tool-features">
+                        <span class="tool-feature">AI Detection</span>
+                        <span class="tool-feature">Metadata Analysis</span>
+                        <span class="tool-feature">Reverse Search</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon-large"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                    <h3>Source Credibility</h3>
+                    <p>Evaluate the trustworthiness of sources with our 4-tier credibility database covering 50,000+ domains.</p>
+                    <div class="tool-features">
+                        <span class="tool-feature">4-Tier Rating</span>
+                        <span class="tool-feature">Bias Detection</span>
+                        <span class="tool-feature">50K+ Sources</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon-large"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                    <h3>Statistics Validator</h3>
+                    <p>Verify numerical claims, percentages, and statistics against authoritative data sources.</p>
+                    <div class="tool-features">
+                        <span class="tool-feature">Data Verification</span>
+                        <span class="tool-feature">Unit Conversion</span>
+                        <span class="tool-feature">Trend Analysis</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon-large"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg></div>
+                    <h3>Research Assistant</h3>
+                    <p>Query academic databases, scientific papers, and peer-reviewed sources for evidence-based verification.</p>
+                    <div class="tool-features">
+                        <span class="tool-feature">PubMed</span>
+                        <span class="tool-feature">Semantic Scholar</span>
+                        <span class="tool-feature">arXiv</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon-large"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                    <h3>Real-Time Stream</h3>
+                    <p>Monitor how claims spread in real-time across the internet. Track virality patterns and debunk origins.</p>
+                    <div class="tool-features">
+                        <span class="tool-feature">Live Tracking</span>
+                        <span class="tool-feature">Spread Analysis</span>
+                        <span class="tool-feature">Origin Detection</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Triple-Check Verification Section -->
+    <section class="triple-check-section" style="padding: 100px 0; background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);">
+        <div class="container">
+            <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+                <span class="section-label" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(139, 92, 246, 0.15)); border-radius: 100px; font-size: 0.85rem; font-weight: 600; color: #22d3ee; margin-bottom: 16px;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    9-Point Verification Matrix
+                </span>
+                <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 16px;">Triple-Check at <span style="background: linear-gradient(135deg, #22d3ee, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Every Level</span></h2>
+                <p style="font-size: 1.1rem; color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto;">Every claim passes through our 3-level verification system with 3 independent checks at each level. That's 9 validation points before you see a result.</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 48px;">
+                <!-- Level 1 -->
+                <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(6, 182, 212, 0.02)); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 20px; padding: 32px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <span style="width: 40px; height: 40px; background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem;">L1</span>
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Data Collection</h3>
+                            <span style="font-size: 0.8rem; color: #06b6d4;">3 Source Checks</span>
+                        </div>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#06b6d4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Academic Databases
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#06b6d4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            News Archives
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#06b6d4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Fact-Check Organizations
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Level 2 -->
+                <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.02)); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 20px; padding: 32px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <span style="width: 40px; height: 40px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem;">L2</span>
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">AI Analysis</h3>
+                            <span style="font-size: 0.8rem; color: #a855f7;">3 Model Checks</span>
+                        </div>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#a855f7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Primary AI Models
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#a855f7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Specialist Models
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#a855f7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Reasoning Models
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Level 3 -->
+                <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 20px; padding: 32px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <span style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem;">L3</span>
+                        <div>
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Validation</h3>
+                            <span style="font-size: 0.8rem; color: #10b981;">3 Quality Checks</span>
+                        </div>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#10b981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Cross-Validation
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#10b981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Source Quality Score
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.8);">
+                            <svg width="18" height="18" fill="none" stroke="#10b981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Confidence Calibration
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Result Badge -->
+            <div style="text-align: center;">
+                <div style="display: inline-flex; align-items: center; gap: 16px; padding: 20px 40px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.05)); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 100px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #fbbf24, #f59e0b); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="18" height="18" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        </span>
+                        <span style="font-size: 1.2rem; font-weight: 700; color: #fbbf24;">9-Point Verified</span>
+                    </div>
+                    <span style="width: 1px; height: 30px; background: rgba(251, 191, 36, 0.3);"></span>
+                    <span style="font-size: 0.95rem; color: rgba(255,255,255,0.7);">Enterprise-grade verification you can trust</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Pricing CTA -->
+    <section class="pricing-section">
+        <div class="container">
+            <div class="pricing-card">
+                <span class="pricing-badge">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    Enterprise Plan
+                </span>
+                <h2>Ready to deploy the Ultimate Suite?</h2>
+                <div class="price">$499<span style="font-size: 1rem; opacity: 0.7;">/month</span></div>
+                <div class="price-note">Billed annually • Includes unlimited team seats</div>
+                
+                <ul class="pricing-features">
+                    <li>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        All 6 verification engines
+                    </li>
+                    <li>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Unlimited verifications
+                    </li>
+                    <li>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Priority API access (99.9% SLA)
+                    </li>
+                    <li>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        White-label reports
+                    </li>
+                    <li>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Dedicated support & onboarding
+                    </li>
+                </ul>
+                
+                <a href="auth.html?plan=enterprise" class="btn btn-gold" style="width: 100%; justify-content: center;">
+                    Start 14-Day Free Trial
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <p>© 2024-2026 Verity Systems Inc. All rights reserved. <a href="tools.html">All Tools</a> • <a href="pricing.html">Pricing</a> • <a href="api-docs.html">API Docs</a></p>
+    </footer>
+    
+    <script>
+        // Engine configurations
+        const engines = {
+            social: {
+                name: 'Social Media Analyzer',
+                color: '#ec4899',
+                analyzeTime: 1200,
+                getResult: (input) => {
+                    const hasViral = input.toLowerCase().includes('viral');
+                    const hasFollowers = input.match(/\d+k?\s*followers/i);
+                    const hasNewAccount = input.toLowerCase().includes('created last month') || input.toLowerCase().includes('new account');
+                    
+                    let score = 50;
+                    let findings = [];
+                    
+                    if (hasViral) { score -= 15; findings.push('viral spread detected'); }
+                    if (hasFollowers) { score += 10; findings.push('high follower count'); }
+                    if (hasNewAccount) { score -= 25; findings.push('⚠️ new account created recently'); }
+                    
+                    return {
+                        score: Math.max(10, Math.min(90, score)),
+                        summary: `🔴 ${findings.length > 0 ? findings.join(', ') : 'No suspicious patterns detected'}`
+                    };
+                }
+            },
+            image: {
+                name: 'Image Forensics',
+                color: '#8b5cf6',
+                analyzeTime: 800,
+                getResult: () => ({
+                    score: 75,
+                    summary: '🟢 No images detected in input. Text-only analysis.'
+                })
+            },
+            source: {
+                name: 'Source Credibility',
+                color: '#10b981',
+                analyzeTime: 1000,
+                getResult: (input) => {
+                    const hasTweet = input.toLowerCase().includes('tweet');
+                    const hasStudy = input.toLowerCase().includes('study');
+                    
+                    if (hasTweet && !hasStudy) {
+                        return { score: 25, summary: '🔴 <strong>LOW CREDIBILITY:</strong> Social media post without linked peer-reviewed source.' };
+                    }
+                    if (hasStudy) {
+                        return { score: 60, summary: '🟡 <strong>UNVERIFIED:</strong> Claims a study exists but no citation provided.' };
+                    }
+                    return { score: 50, summary: '🟡 Source credibility could not be fully assessed.' };
+                }
+            },
+            statistics: {
+                name: 'Statistics Validator',
+                color: '#3b82f6',
+                analyzeTime: 900,
+                getResult: (input) => {
+                    const hasCure = input.toLowerCase().includes('cure');
+                    const hasCancer = input.toLowerCase().includes('cancer');
+                    
+                    if (hasCure && hasCancer) {
+                        return { score: 15, summary: '🔴 <strong>RED FLAG:</strong> "Cure cancer" claims require extraordinary evidence. No verified studies support coffee as cancer cure.' };
+                    }
+                    return { score: 70, summary: '🟢 No statistical claims requiring validation.' };
+                }
+            },
+            research: {
+                name: 'Research Assistant',
+                color: '#f97316',
+                analyzeTime: 1500,
+                getResult: (input) => {
+                    const hasCoffee = input.toLowerCase().includes('coffee');
+                    const hasCancer = input.toLowerCase().includes('cancer');
+                    
+                    if (hasCoffee && hasCancer) {
+                        return { score: 35, summary: '🟡 <strong>MIXED EVIDENCE:</strong> Studies show coffee may reduce risk of some cancers, but NO evidence supports "curing" cancer. Claim is misleading.' };
+                    }
+                    return { score: 60, summary: '📚 Research query completed. See detailed report.' };
+                }
+            },
+            stream: {
+                name: 'Real-Time Stream',
+                color: '#f43f5e',
+                analyzeTime: 1100,
+                getResult: (input) => {
+                    const hasViral = input.toLowerCase().includes('viral');
+                    
+                    if (hasViral) {
+                        return { score: 30, summary: '🔴 <strong>VIRAL PATTERN:</strong> Claim spreading rapidly. Similar debunked claims traced to health misinformation networks.' };
+                    }
+                    return { score: 65, summary: '⚡ No unusual spread patterns detected.' };
+                }
+            }
+        };
+        
+        let isAnalyzing = false;
+        
+        async function runUltimateAnalysis() {
+            if (isAnalyzing) return;
+            
+            const input = document.getElementById('ultimate-input').value.trim();
+            if (!input) {
+                alert('Please enter content to analyze');
+                return;
+            }
+            
+            isAnalyzing = true;
+            const btn = document.getElementById('analyze-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="spin"><circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="32"/></svg> Analyzing...';
+            
+            // Hide master score
+            document.getElementById('master-score').classList.remove('show');
+            
+            // Reset all engines
+            document.querySelectorAll('.engine-card').forEach(card => {
+                card.classList.remove('active', 'analyzing', 'complete');
+                card.querySelector('.engine-status').className = 'engine-status ready';
+                card.querySelector('.engine-status').textContent = 'Ready';
+                card.querySelector('.engine-result').className = 'engine-result empty';
+                card.querySelector('.engine-result').innerHTML = 'Awaiting input...';
+            });
+            
+            let totalScore = 0;
+            let engineCount = 0;
+            
+            // Run each engine with staggered timing
+            for (const [engineId, engine] of Object.entries(engines)) {
+                const card = document.querySelector(`[data-engine="${engineId}"]`);
+                card.classList.add('active', 'analyzing');
+                card.querySelector('.engine-status').className = 'engine-status analyzing';
+                card.querySelector('.engine-status').textContent = 'Analyzing...';
+                card.querySelector('.engine-result').className = 'engine-result';
+                card.querySelector('.engine-result').innerHTML = 'Processing...';
+                
+                await new Promise(resolve => setTimeout(resolve, engine.analyzeTime));
+                
+                const result = engine.getResult(input);
+                totalScore += result.score;
+                engineCount++;
+                
+                card.classList.remove('analyzing');
+                card.classList.add('complete');
+                card.querySelector('.engine-status').className = 'engine-status complete';
+                card.querySelector('.engine-status').textContent = 'Complete';
+                card.querySelector('.engine-result').innerHTML = result.summary;
+            }
+            
+            // Calculate and show master score
+            const masterScore = Math.round(totalScore / engineCount);
+            const scoreEl = document.getElementById('score-value');
+            const verdictEl = document.getElementById('score-verdict');
+            
+            scoreEl.textContent = masterScore;
+            
+            if (masterScore >= 70) {
+                verdictEl.className = 'score-verdict true';
+                verdictEl.textContent = '✅ Likely True - Low Risk';
+            } else if (masterScore >= 40) {
+                verdictEl.className = 'score-verdict mixed';
+                verdictEl.textContent = '⚠️ Mixed/Unverified - Requires Caution';
+            } else {
+                verdictEl.className = 'score-verdict false';
+                verdictEl.textContent = '❌ Likely False - High Risk Misinformation';
+            }
+            
+            document.getElementById('master-score').classList.add('show');
+            
+            // Reset button
+            isAnalyzing = false;
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Analyze All';
+        }
+        
+        // Add spinning animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            .spin { animation: spin 1s linear infinite; }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

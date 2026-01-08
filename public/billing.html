@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/dashboard.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Stripe Publishable Key - Your actual test key
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Sj7QP9HThAyZpOKxFR95a12237CM5DGEISJlABcF5ykowYvOWmhYMOg7xvZJTyS7kJILrgX2FSKjUeCBqd0O51s008SNgAgpD';
+    </script>
     <style>
         .current-plan-card { background: linear-gradient(135deg, rgba(34, 211, 238, 0.12) 0%, rgba(99, 102, 241, 0.12) 100%); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: var(--radius-xl); padding: 2rem; margin-bottom: 2.5rem; position: relative; overflow: hidden; }
         .current-plan-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #22d3ee, #6366f1, #a855f7); }
@@ -92,10 +97,31 @@
         }
     </style>
 </head>
+<div id="loading-screen" style="position:fixed;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
+    <svg width="64" height="64" viewBox="-26 -28 52 52" fill="none" style="animation:heartbeat 1.2s ease-in-out infinite;">
+        <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#lg)" stroke-width="3.5" fill="none"/>
+        <path d="M-6,0 L-2,4 L6,-5" stroke="url(#lg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+    </svg>
+</div>
+<style>
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}56%{transform:scale(1)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.current-plan-card{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.1s}
+.pricing-section{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.2s}
+.billing-history{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.3s}
+</style>
+<script>window.addEventListener('load',()=>{setTimeout(()=>{const l=document.getElementById('loading-screen');l.style.opacity='0';setTimeout(()=>l.remove(),500)},800)})</script>
 <body class="dashboard-body">
     <div class="page-background">
         <div class="gradient-orb orb-1"></div>
         <div class="gradient-orb orb-2"></div>
+        <!-- Floating Badge -->
+        <div class="floating-badge" style="position:fixed;top:14%;right:6%;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#22d3ee;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 4s ease-in-out infinite;pointer-events:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <span>Subscription</span>
+        </div>
     </div>
 
     <aside class="sidebar" id="sidebar">
@@ -115,6 +141,7 @@
             <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
             <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
             <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
+            <a href="provider-setup.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
             <a href="billing.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
             <a href="settings.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
             <div class="nav-divider"></div>
@@ -237,7 +264,7 @@
                         <ul class="plan-features">
                             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>75,000 verifications/month</li>
                             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited bulk verification</li>
-                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All 50+ AI providers</li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All 15+ AI providers</li>
                             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom integrations</li>
                             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated support</li>
                         </ul>
@@ -371,14 +398,166 @@
             document.querySelector('.sidebar-plan .plan-badge').textContent = plan === 'free' ? 'FREE' : prices[plan];
         }
         
-        function selectPlan(plan) {
+        // Stripe Price IDs - Your actual Stripe price IDs
+        const STRIPE_PRICE_IDS = {
+            starter: 'price_1SjCYA9HThAyZpOKDiiLhwm2',
+            pro: 'price_1SjCb99HThAyZpOKiRzqSyIg',
+            business: 'price_1SjClu9HThAyZpOKI9tX9bHO',
+            enterprise: 'contact_sales'
+        };
+        
+        // API endpoint - Production Railway API
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = isLocal ? 'http://localhost:8000' : 'https://veritysystems-production.up.railway.app';
+        
+        async function selectPlan(plan) {
             if (plan === 'enterprise') {
-                alert('Our sales team will contact you shortly to discuss your Enterprise needs.');
+                // Open enterprise contact modal
+                showEnterpriseModal();
                 return;
             }
-            if (confirm(`Switch to the ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan?`)) {
-                localStorage.setItem('verity_plan', plan);
-                loadBillingData();
+            
+            if (plan === 'free') {
+                if (confirm('Switch to the Free plan? This will downgrade your account.')) {
+                    localStorage.setItem('verity_plan', 'free');
+                    loadBillingData();
+                    showNotification('Switched to Free plan', 'success');
+                }
+                return;
+            }
+            
+            // Show loading state
+            const btn = document.getElementById(`${plan === 'pro' ? 'pro' : plan}Btn`);
+            const originalText = btn.textContent;
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+            
+            try {
+                // Get user email from localStorage or prompt
+                const userStr = localStorage.getItem('verity_user');
+                let userEmail = '';
+                
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    userEmail = user.email;
+                }
+                
+                if (!userEmail) {
+                    userEmail = prompt('Please enter your email for billing:');
+                    if (!userEmail) {
+                        throw new Error('Email required for checkout');
+                    }
+                }
+                
+                // Create checkout session
+                const response = await fetch(`${API_BASE}/v1/checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        price_id: STRIPE_PRICE_IDS[plan],
+                        customer_email: userEmail,
+                        success_url: window.location.origin + '/billing.html?success=true&plan=' + plan,
+                        cancel_url: window.location.origin + '/billing.html?canceled=true'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `Payment service error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Redirect to Stripe Checkout
+                if (data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                } else if (data.session_id && window.Stripe) {
+                    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+                    await stripe.redirectToCheckout({ sessionId: data.session_id });
+                } else {
+                    throw new Error('Invalid checkout response');
+                }
+                
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showNotification(error.message || 'Failed to start checkout. Please try again.', 'error');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">&times;</button>
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                background: ${type === 'error' ? 'rgba(239, 68, 68, 0.9)' : type === 'success' ? 'rgba(34, 197, 94, 0.9)' : 'rgba(99, 102, 241, 0.9)'};
+                color: white;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
+        
+        function showEnterpriseModal() {
+            const modal = document.createElement('div');
+            modal.innerHTML = `
+                <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: var(--bg-card, #1a1a2e); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2.5rem; max-width: 500px; width: 90%;">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                            Enterprise Plan
+                        </h3>
+                        <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">Get a custom solution tailored to your organization's needs. Our team will contact you within 24 hours.</p>
+                        <form id="enterpriseForm">
+                            <input type="text" placeholder="Company Name" required style="width: 100%; padding: 0.875rem; margin-bottom: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+                            <input type="email" placeholder="Work Email" required style="width: 100%; padding: 0.875rem; margin-bottom: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+                            <input type="tel" placeholder="Phone Number" style="width: 100%; padding: 0.875rem; margin-bottom: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+                            <textarea placeholder="Tell us about your needs..." rows="3" style="width: 100%; padding: 0.875rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; resize: none;"></textarea>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="button" onclick="this.closest('[style*=fixed]').parentElement.remove()" style="flex: 1; padding: 0.875rem; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; cursor: pointer;">Cancel</button>
+                                <button type="submit" style="flex: 1; padding: 0.875rem; background: linear-gradient(135deg, #f59e0b, #f97316); border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">Contact Sales</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.querySelector('#enterpriseForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                showNotification('Thank you! Our sales team will contact you within 24 hours.', 'success');
+                modal.remove();
+            });
+        }
+        
+        // Handle successful payment return
+        function handlePaymentReturn() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                const plan = urlParams.get('plan');
+                if (plan) {
+                    localStorage.setItem('verity_plan', plan);
+                    showNotification(`Successfully upgraded to ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan!`, 'success');
+                }
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (urlParams.get('canceled') === 'true') {
+                showNotification('Checkout was canceled.', 'info');
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
         
@@ -386,11 +565,43 @@
             document.getElementById('pricingSection').scrollIntoView({ behavior: 'smooth' });
         }
         
-        function openPortal() { alert('Subscription management portal would open here.'); }
-        function updatePaymentMethod() { alert('Payment method update modal would open here.'); }
+        async function openPortal() {
+            try {
+                const response = await fetch(`${API_BASE}/v1/customer-portal`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        return_url: window.location.href
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.portal_url) {
+                        window.location.href = data.portal_url;
+                        return;
+                    }
+                }
+                throw new Error('Portal not available');
+            } catch (error) {
+                showNotification('Subscription portal is not yet configured. Contact support for changes.', 'info');
+            }
+        }
+        
+        async function updatePaymentMethod() {
+            try {
+                // Redirect to Stripe portal for payment method updates
+                await openPortal();
+            } catch (error) {
+                showNotification('Payment method update requires Stripe Customer Portal. Contact support.', 'info');
+            }
+        }
         
         document.getElementById('mobileMenuToggle')?.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
-        document.addEventListener('DOMContentLoaded', loadBillingData);
+        document.addEventListener('DOMContentLoaded', () => {
+            handlePaymentReturn();
+            loadBillingData();
+        });
     </script>
 </body>
 </html>

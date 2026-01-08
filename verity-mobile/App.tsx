@@ -1,0 +1,214 @@
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AppProvider, useApp } from './src/context/AppContext';
+
+// Screens - Companion App (Capture & Monitor)
+import SplashScreen from './src/screens/SplashScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import CaptureScreen from './src/screens/CaptureScreen';
+import QueueScreen from './src/screens/QueueScreen';
+import HistoryScreen from './src/screens/HistoryScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import AuthScreen from './src/screens/AuthScreen';
+
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+// Eden.so + Dieter Rams color palette
+const colors = {
+  bg: '#0a0a0b',
+  surface: '#111113',
+  border: 'rgba(255,255,255,0.06)',
+  text: '#fafafa',
+  textMuted: '#888888',
+  textSubtle: '#555555',
+};
+
+const DarkTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: colors.bg,
+    card: colors.surface,
+    text: colors.text,
+    border: colors.border,
+    primary: colors.text,
+  },
+};
+
+// Minimal tab bar icon - Eden.so inspired
+function TabIcon({ name, focused }: { name: keyof typeof Ionicons.glyphMap; focused: boolean }) {
+  if (focused) {
+    return (
+      <View style={tabStyles.activeIconContainer}>
+        <View style={tabStyles.activeBackground} />
+        <Ionicons name={name} size={20} color={colors.text} />
+      </View>
+    );
+  }
+  return <Ionicons name={name} size={20} color={colors.textSubtle} />;
+}
+
+const tabStyles = StyleSheet.create({
+  activeIconContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 44,
+    height: 28,
+  },
+  activeBackground: {
+    position: 'absolute',
+    width: 44,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+});
+
+// Tab navigator for main companion screens
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused }) => {
+          let iconName: keyof typeof Ionicons.glyphMap;
+          switch (route.name) {
+            case 'Home': iconName = focused ? 'home' : 'home-outline'; break;
+            case 'Queue': iconName = focused ? 'layers' : 'layers-outline'; break;
+            case 'History': iconName = focused ? 'checkmark-done-circle' : 'checkmark-done-circle-outline'; break;
+            case 'Settings': iconName = focused ? 'cog' : 'cog-outline'; break;
+            default: iconName = 'home';
+          }
+          return <TabIcon name={iconName} focused={focused} />;
+        },
+        tabBarActiveTintColor: colors.text,
+        tabBarInactiveTintColor: colors.textSubtle,
+        tabBarStyle: {
+          backgroundColor: colors.bg,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+          paddingBottom: 10,
+          paddingTop: 10,
+          height: 70,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: '500',
+          marginTop: 2,
+          letterSpacing: 0.3,
+        },
+        headerStyle: { 
+          backgroundColor: colors.bg,
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        },
+        headerTintColor: colors.text,
+        headerTitleStyle: { fontWeight: '500', fontSize: 15, letterSpacing: 0.2 },
+      })}
+    >
+      <Tab.Screen 
+        name="Home" 
+        component={HomeScreen} 
+        options={{ 
+          headerShown: false,
+          tabBarLabel: 'Home',
+        }}
+      />
+      <Tab.Screen 
+        name="Queue" 
+        component={QueueScreen} 
+        options={{ title: 'Queue' }}
+      />
+      <Tab.Screen 
+        name="History" 
+        component={HistoryScreen} 
+        options={{ title: 'Completed' }}
+      />
+      <Tab.Screen 
+        name="Settings" 
+        component={SettingsScreen} 
+        options={{ title: 'Settings' }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+// Main app navigator that handles auth state
+function AppNavigator() {
+  const { user } = useApp();
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {!user ? (
+        // Not logged in - show Auth screen
+        <Stack.Screen 
+          name="Auth" 
+          component={AuthScreen}
+          options={{
+            headerShown: false,
+            animationTypeForReplace: 'pop',
+          }}
+        />
+      ) : (
+        // Logged in - show main app
+        <>
+          <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen 
+            name="Capture" 
+            component={CaptureScreen}
+            options={{
+              headerShown: true,
+              title: 'Capture',
+              headerStyle: { backgroundColor: colors.bg },
+              headerTintColor: colors.text,
+              presentation: 'modal',
+            }}
+          />
+        </>
+      )}
+    </Stack.Navigator>
+  );
+}
+
+// Wrapper to provide context to navigator
+function AppWithNavigation() {
+  return (
+    <NavigationContainer theme={DarkTheme}>
+      <StatusBar style="light" />
+      <AppNavigator />
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  if (showSplash) {
+    return (
+      <>
+        <StatusBar style="light" />
+        <SplashScreen onFinish={() => setShowSplash(false)} />
+      </>
+    );
+  }
+
+  return (
+    <SafeAreaProvider>
+      <AppProvider>
+        <AppWithNavigation />
+      </AppProvider>
+    </SafeAreaProvider>
+  );
+}

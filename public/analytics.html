@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Verity Systems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/eden-style.css">
+    <link rel="stylesheet" href="assets/css/premium-typography.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .analytics-header { margin-bottom: 2rem; }
+        .analytics-header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .analytics-header p { color: var(--text-muted); }
+        .time-range-selector { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .time-btn { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.5rem 1rem; color: var(--text-muted); font-family: inherit; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+        .time-btn:hover { border-color: var(--accent-cyan); color: var(--text-primary); }
+        .time-btn.active { background: rgba(34, 211, 238, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 1.5rem; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .stat-card.primary::before { background: var(--gradient-primary); }
+        .stat-card.success::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
+        .stat-card.warning::before { background: linear-gradient(90deg, #eab308, #facc15); }
+        .stat-card.danger::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .stat-label { font-size: 0.8rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .stat-change { display: flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; }
+        .stat-change.up { color: var(--success); }
+        .stat-change.down { color: var(--danger); }
+        .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .chart-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; }
+        .chart-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+        .chart-header h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .chart-header h3 svg { color: var(--accent-cyan); }
+        .chart-body { padding: 1.5rem; }
+        .chart-container { height: 300px; position: relative; }
+        .verdict-breakdown { display: flex; flex-direction: column; gap: 1rem; }
+        .verdict-item { display: flex; align-items: center; gap: 1rem; }
+        .verdict-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .verdict-dot.true { background: var(--success); }
+        .verdict-dot.false { background: var(--danger); }
+        .verdict-dot.partial { background: var(--warning); }
+        .verdict-dot.unknown { background: var(--text-faint); }
+        .verdict-info { flex: 1; }
+        .verdict-info h5 { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.15rem; }
+        .verdict-info span { font-size: 0.8rem; color: var(--text-faint); }
+        .verdict-count { font-size: 1.25rem; font-weight: 600; }
+        .provider-stats { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; }
+        .provider-stats-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+        .provider-stats-header h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .provider-list { max-height: 400px; overflow-y: auto; }
+        .provider-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+        .provider-row:last-child { border-bottom: none; }
+        .provider-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(99, 102, 241, 0.15); color: #6366f1; font-size: 0.75rem; font-weight: 600; }
+        .provider-name { flex: 1; font-size: 0.9rem; font-weight: 500; }
+        .provider-bar { flex: 2; height: 8px; background: rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; }
+        .provider-bar-fill { height: 100%; background: var(--gradient-primary); border-radius: 8px; }
+        .provider-count { font-size: 0.85rem; color: var(--text-muted); min-width: 60px; text-align: right; }
+        .real-time-section { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 2rem; }
+        .real-time-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+        .real-time-header h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .pulse-dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+        .real-time-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; padding: 1.5rem; }
+        .rt-stat { text-align: center; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-lg); }
+        .rt-stat-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .rt-stat-label { font-size: 0.75rem; color: var(--text-faint); text-transform: uppercase; }
+        @media (max-width: 1024px) {
+            .charts-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="page-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="-26 -28 52 52" fill="none">
+                        <defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+                        <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#logoGrad)" stroke-width="3" fill="none"/>
+                        <path d="M-6,0 L-2,4 L6,-5" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </div>
+                <span class="logo-text">Verity</span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg><span>Dashboard</span></a>
+            <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span>Verify</span></a>
+            <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg><span>History</span></a>
+            <a href="analytics.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Analytics</span></a>
+            <div class="nav-divider"></div>
+            <div class="nav-section">Developer</div>
+            <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg><span>API Keys</span></a>
+            <a href="webhooks.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2"/></svg><span>Webhooks</span></a>
+            <a href="api-docs.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>API Docs</span></a>
+            <div class="nav-divider"></div>
+            <a href="export.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Export</span></a>
+            <a href="settings.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg><span>Settings</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <div class="breadcrumb">
+                <a href="/">Home</a>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                <span>Analytics</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="topbar-btn" title="Refresh" onclick="refreshData()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar">VS</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="analytics-header">
+                <h1>Analytics Dashboard</h1>
+                <p>Monitor your verification usage, trends, and provider performance</p>
+            </div>
+
+            <div class="time-range-selector">
+                <button class="time-btn" data-range="1h">1 Hour</button>
+                <button class="time-btn" data-range="24h">24 Hours</button>
+                <button class="time-btn active" data-range="7d">7 Days</button>
+                <button class="time-btn" data-range="30d">30 Days</button>
+                <button class="time-btn" data-range="90d">90 Days</button>
+            </div>
+
+            <!-- Real-time Stats -->
+            <div class="real-time-section">
+                <div class="real-time-header">
+                    <h3>
+                        <div class="pulse-dot"></div>
+                        Real-time Activity
+                    </h3>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">Last updated: <span id="lastUpdate">just now</span></span>
+                </div>
+                <div class="real-time-stats">
+                    <div class="rt-stat">
+                        <div class="rt-stat-value" id="activeVerifications">3</div>
+                        <div class="rt-stat-label">Active Verifications</div>
+                    </div>
+                    <div class="rt-stat">
+                        <div class="rt-stat-value" id="verificationsPerMinute">12</div>
+                        <div class="rt-stat-label">Verifications/Min</div>
+                    </div>
+                    <div class="rt-stat">
+                        <div class="rt-stat-value" id="avgLatency">847<span style="font-size: 0.75rem;">ms</span></div>
+                        <div class="rt-stat-label">Avg Latency</div>
+                    </div>
+                    <div class="rt-stat">
+                        <div class="rt-stat-value" id="activeWebsockets">28</div>
+                        <div class="rt-stat-label">WebSocket Connections</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-label">Total Verifications</div>
+                    <div class="stat-value" id="totalVerifications">12,847</div>
+                    <div class="stat-change up">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                        +23% from last period
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-label">True Verdicts</div>
+                    <div class="stat-value" id="trueVerdicts">5,423</div>
+                    <div class="stat-change up">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                        42.2% of total
+                    </div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-label">False Verdicts</div>
+                    <div class="stat-value" id="falseVerdicts">4,102</div>
+                    <div class="stat-change down">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        31.9% of total
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-label">Avg Confidence</div>
+                    <div class="stat-value" id="avgConfidence">87.3%</div>
+                    <div class="stat-change up">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                        +2.1% improvement
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+                            Verification Trend
+                        </h3>
+                        <select style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.35rem 0.75rem; color: var(--text-primary); font-size: 0.85rem;">
+                            <option>Daily</option>
+                            <option>Hourly</option>
+                            <option>Weekly</option>
+                        </select>
+                    </div>
+                    <div class="chart-body">
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                            Verdict Distribution
+                        </h3>
+                    </div>
+                    <div class="chart-body">
+                        <div class="chart-container">
+                            <canvas id="verdictChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provider Stats -->
+            <div class="provider-stats">
+                <div class="provider-stats-header">
+                    <h3>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                        Provider Usage
+                    </h3>
+                    <a href="provider-setup.html" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.85rem;">Manage Providers</a>
+                </div>
+                <div class="provider-list" id="providerList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Charts
+        const ctx1 = document.getElementById('trendChart').getContext('2d');
+        const ctx2 = document.getElementById('verdictChart').getContext('2d');
+
+        // Trend Chart
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Verifications',
+                    data: [1842, 2100, 1950, 2400, 2150, 1800, 2405],
+                    borderColor: '#22d3ee',
+                    backgroundColor: 'rgba(34, 211, 238, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#22d3ee'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#888' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#888' }
+                    }
+                }
+            }
+        });
+
+        // Verdict Chart
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['True', 'False', 'Partially True', 'Unknown'],
+                datasets: [{
+                    data: [5423, 4102, 2456, 866],
+                    backgroundColor: ['#22c55e', '#ef4444', '#eab308', '#6b7280'],
+                    borderWidth: 0,
+                    spacing: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#888', padding: 16, usePointStyle: true }
+                    }
+                }
+            }
+        });
+
+        // Provider Usage Data
+        const providers = [
+            { name: 'Claude (Anthropic)', usage: 4521, icon: 'CL' },
+            { name: 'GPT-4 (OpenAI)', usage: 3892, icon: 'GP' },
+            { name: 'PolitiFact', usage: 2145, icon: 'PF' },
+            { name: 'Perplexity', usage: 1823, icon: 'PX' },
+            { name: 'Google Fact Check', usage: 1456, icon: 'GF' },
+            { name: 'Snopes', usage: 987, icon: 'SN' },
+            { name: 'FactCheck.org', usage: 756, icon: 'FC' },
+            { name: 'AFP Fact Check', usage: 534, icon: 'AF' }
+        ];
+
+        const maxUsage = Math.max(...providers.map(p => p.usage));
+        const providerList = document.getElementById('providerList');
+        providerList.innerHTML = providers.map(p => `
+            <div class="provider-row">
+                <div class="provider-icon">${p.icon}</div>
+                <div class="provider-name">${p.name}</div>
+                <div class="provider-bar">
+                    <div class="provider-bar-fill" style="width: ${(p.usage / maxUsage) * 100}%"></div>
+                </div>
+                <div class="provider-count">${p.usage.toLocaleString()}</div>
+            </div>
+        `).join('');
+
+        // Time range selector
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                refreshData();
+            });
+        });
+
+        function refreshData() {
+            document.getElementById('lastUpdate').textContent = 'just now';
+            // In real app, fetch new data from API
+        }
+
+        // Update real-time stats periodically
+        setInterval(() => {
+            document.getElementById('activeVerifications').textContent = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('verificationsPerMinute').textContent = Math.floor(Math.random() * 20) + 5;
+            document.getElementById('avgLatency').innerHTML = `${Math.floor(Math.random() * 400) + 600}<span style="font-size: 0.75rem;">ms</span>`;
+        }, 5000);
+
+        // Mobile menu
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

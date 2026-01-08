@@ -22,8 +22,21 @@
     --verity-border: rgba(255, 255, 255, 0.1);
 
     /* Typography tokens (Inter + Sora – free stack) */
-    --font-sans: 'Inter', 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-sans: 'Sora', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-heading: 'Sora', 'Inter', 'Space Grotesk', sans-serif;
+
+}
+
+/* Global typography */
+html, body { font-family: var(--font-sans); font-size: var(--font-size-base); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+h1,h2,h3,h4 { font-family: var(--font-heading); margin: 0 0 0.5rem 0; letter-spacing: -0.02em; color: #ffffff; }
+
+h1 { font-size: 2.75rem; font-weight: 700; line-height: 1.06; }
+
+h2 { font-size: 1.75rem; font-weight: 600; }
+
+h3 { font-size: 1.1rem; font-weight: 600; }
     --font-size-base: 16px;
     --easing-pop: cubic-bezier(0.16, 1, 0.3, 1);
     --motion-fast: 160ms;

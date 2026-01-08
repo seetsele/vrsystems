@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Verity vs Other Tools | Verity Systems</title>
+    <meta name="description" content="Compare Verity's 9-Point AI fact-checking system with ChatGPT, Google, Perplexity, and manual fact-checking. See why Verity delivers superior accuracy.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/eden-style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(34, 211, 238, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #22d3ee, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #a0a0a0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #22d3ee;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22d3ee, #6366f1);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(34, 211, 238, 0.3);
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 5rem 5% 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #22d3ee;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #22d3ee 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.7);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Comparison Grid */
+        .comparison-section {
+            padding: 4rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .compare-card {
+            background: rgba(15, 15, 20, 0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .compare-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .compare-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #22d3ee, #6366f1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .compare-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon.chatgpt { background: linear-gradient(135deg, #10a37f, #0d8a6e); }
+        .card-icon.google { background: linear-gradient(135deg, #4285f4, #ea4335); }
+        .card-icon.perplexity { background: linear-gradient(135deg, #20b2aa, #1a8a82); }
+        .card-icon.manual { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        .compare-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: white;
+        }
+
+        .compare-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #22d3ee;
+        }
+
+        .stat-badge.verity-wins {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .view-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #22d3ee;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        /* Master Comparison Table */
+        .table-section {
+            padding: 4rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(15, 15, 20, 0.6);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.25rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .comparison-table th {
+            background: rgba(34, 211, 238, 0.1);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .comparison-table th:first-child,
+        .comparison-table td:first-child {
+            text-align: left;
+            padding-left: 2rem;
+        }
+
+        .comparison-table td {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(34, 211, 238, 0.03);
+        }
+
+        .feature-name {
+            font-weight: 500;
+        }
+
+        .check {
+            color: #10b981;
+            font-size: 1.2rem;
+        }
+
+        .cross {
+            color: #ef4444;
+            font-size: 1.2rem;
+        }
+
+        .partial {
+            color: #f59e0b;
+            font-size: 0.85rem;
+        }
+
+        .verity-highlight {
+            background: rgba(34, 211, 238, 0.08);
+        }
+
+        .verity-highlight th {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(99, 102, 241, 0.2));
+            color: #22d3ee;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 5rem 5%;
+            background: linear-gradient(180deg, transparent, rgba(34, 211, 238, 0.05));
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .cta-section p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.4);
+        }
+
+        footer a {
+            color: #22d3ee;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .comparison-table { font-size: 0.85rem; }
+            .comparison-table th,
+            .comparison-table td { padding: 0.75rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">Verity</a>
+        <div class="nav-links">
+            <a href="verify.html">Verify</a>
+            <a href="9-point-system.html">How It Works</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="api-docs.html">API</a>
+            <a href="verify.html" class="btn-primary">Try Free</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <span class="hero-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            Comparison Guide
+        </span>
+        <h1>How Does Verity Compare?</h1>
+        <p>See how our 9-Point Triple Verification System stacks up against general-purpose AI tools and traditional fact-checking methods.</p>
+    </section>
+
+    <section class="comparison-section">
+        <h2 class="section-title">Detailed Comparisons</h2>
+        <div class="comparison-grid">
+            <a href="compare/chatgpt.html" class="compare-card">
+                <div class="card-icon chatgpt">🤖</div>
+                <h3>Verity vs ChatGPT</h3>
+                <p>ChatGPT is great for many tasks, but fact-checking isn't its specialty. See why purpose-built verification beats general AI.</p>
+                <div class="card-stats">
+                    <span class="stat-badge verity-wins">Source Citations</span>
+                    <span class="stat-badge verity-wins">Real-time Data</span>
+                </div>
+                <span class="view-link">View comparison →</span>
+            </a>
+
+            <a href="compare/google.html" class="compare-card">
+                <div class="card-icon google">🔍</div>
+                <h3>Verity vs Google Search</h3>
+                <p>Google gives you links. Verity gives you answers with confidence scores and cross-validated sources.</p>
+                <div class="card-stats">
+                    <span class="stat-badge verity-wins">Synthesized Results</span>
+                    <span class="stat-badge verity-wins">Accuracy Scoring</span>
+                </div>
+                <span class="view-link">View comparison →</span>
+            </a>
+
+            <a href="compare/perplexity.html" class="compare-card">
+                <div class="card-icon perplexity">💬</div>
+                <h3>Verity vs Perplexity</h3>
+                <p>Perplexity is a smart search engine. Verity is a dedicated fact-checking system with multi-model consensus.</p>
+                <div class="card-stats">
+                    <span class="stat-badge verity-wins">9-Point Verification</span>
+                    <span class="stat-badge verity-wins">Conflict Detection</span>
+                </div>
+                <span class="view-link">View comparison →</span>
+            </a>
+
+            <a href="compare/manual.html" class="compare-card">
+                <div class="card-icon manual">📋</div>
+                <h3>Verity vs Manual Checking</h3>
+                <p>Professional fact-checkers are thorough but slow. Verity automates the process without sacrificing rigor.</p>
+                <div class="card-stats">
+                    <span class="stat-badge verity-wins">Speed: Seconds vs Hours</span>
+                    <span class="stat-badge verity-wins">Scalability</span>
+                </div>
+                <span class="view-link">View comparison →</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="table-section">
+        <h2 class="section-title">Feature Comparison Matrix</h2>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th class="verity-highlight">Verity</th>
+                    <th>ChatGPT</th>
+                    <th>Google</th>
+                    <th>Perplexity</th>
+                    <th>Manual</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="feature-name">Real-time web access</td>
+                    <td class="verity-highlight"><span class="check">✓</span></td>
+                    <td><span class="partial">Limited</span></td>
+                    <td><span class="check">✓</span></td>
+                    <td><span class="check">✓</span></td>
+                    <td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Source citations</td>
+                    <td class="verity-highlight"><span class="check">✓</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="partial">Links only</span></td>
+                    <td><span class="check">✓</span></td>
+                    <td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Multi-model consensus</td>
+                    <td class="verity-highlight"><span class="check">✓ (40+ models)</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Confidence scoring</td>
+                    <td class="verity-highlight"><span class="check">✓ (0-100)</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="partial">Basic</span></td>
+                    <td><span class="partial">Subjective</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Conflict detection</td>
+                    <td class="verity-highlight"><span class="check">✓</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Batch processing</td>
+                    <td class="verity-highlight"><span class="check">✓</span></td>
+                    <td><span class="partial">Manual</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">API access</td>
+                    <td class="verity-highlight"><span class="check">✓</span></td>
+                    <td><span class="check">✓</span></td>
+                    <td><span class="check">✓</span></td>
+                    <td><span class="check">✓</span></td>
+                    <td><span class="cross">✗</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Fact-check databases</td>
+                    <td class="verity-highlight"><span class="check">✓ (Snopes, PolitiFact, etc.)</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="partial">Search only</span></td>
+                    <td><span class="partial">Limited</span></td>
+                    <td><span class="check">✓</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Processing time</td>
+                    <td class="verity-highlight"><span class="check">~10 seconds</span></td>
+                    <td><span class="check">~5 seconds</span></td>
+                    <td><span class="check">~1 second</span></td>
+                    <td><span class="check">~5 seconds</span></td>
+                    <td><span class="cross">Hours/Days</span></td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Purpose-built for verification</td>
+                    <td class="verity-highlight"><span class="check">✓</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="cross">✗</span></td>
+                    <td><span class="check">✓</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="cta-section">
+        <h2>See the Difference Yourself</h2>
+        <p>Try Verity free and experience 9-Point Triple Verification on any claim.</p>
+        <a href="verify.html" class="btn-primary">Verify a Claim Now →</a>
+    </section>
+
+    <footer>
+        <p>© 2026 Verity Systems. <a href="9-point-system.html">Learn about our methodology</a></p>
+    </footer>
+</body>
+</html>

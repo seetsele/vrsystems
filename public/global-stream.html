@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Intelligence Stream | Verity Systems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23050505' width='100' height='100' rx='20'/%3E%3Cpath fill='none' stroke='%2322d3ee' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' d='M25 50 L40 65 L75 30'/%3E%3C/svg%3E">
+    <style>
+        /* ========== RESET & BASE ========== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #030303;
+            color: #fafafa;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* ========== AMBIENT BACKGROUND ========== */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.5;
+        }
+        
+        .orb-1 {
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.25) 0%, transparent 70%);
+            top: -300px;
+            right: -200px;
+            animation: float1 25s ease-in-out infinite;
+        }
+        
+        .orb-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+            bottom: -200px;
+            left: -150px;
+            animation: float2 30s ease-in-out infinite;
+        }
+        
+        .orb-3 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            top: 40%;
+            left: 30%;
+            animation: float3 35s ease-in-out infinite;
+        }
+        
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-50px, 50px); }
+        }
+        
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, -30px); }
+        }
+        
+        @keyframes float3 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, -40px); }
+        }
+        
+        /* ========== NAVIGATION ========== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(3, 3, 3, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0 2rem;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        
+        .nav-logo svg {
+            width: 36px;
+            height: 36px;
+            filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.4));
+        }
+        
+        .nav-logo span {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #22d3ee 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-link.active {
+            color: #22d3ee;
+            background: rgba(34, 211, 238, 0.1);
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-ghost {
+            color: rgba(255, 255, 255, 0.7);
+            background: transparent;
+        }
+        
+        .btn-ghost:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #22d3ee 0%, #6366f1 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(34, 211, 238, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(34, 211, 238, 0.4);
+        }
+        
+        /* ========== HERO SECTION ========== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 2rem 60px;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        /* ========== 3D GLOBE CANVAS ========== */
+        #globe-canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            max-width: 800px;
+            max-height: 800px;
+            pointer-events: none;
+        }
+        
+        /* ========== HERO CONTENT ========== */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 1.25rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            color: #f87171;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .badge-dot {
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+        
+        .hero-title .line-1 {
+            display: block;
+            color: #fafafa;
+        }
+        
+        .hero-title .line-2 {
+            display: block;
+            background: linear-gradient(90deg, #22d3ee 0%, #6366f1 50%, #8b5cf6 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            from { background-position: 200% center; }
+            to { background-position: -200% center; }
+        }
+        
+        .hero-subtitle {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+        
+        /* Stats Row */
+        .hero-stats {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            padding: 1.5rem 2rem;
+            background: rgba(12, 12, 12, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 12px;
+            color: #22d3ee;
+        }
+        
+        .stat-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .stat-content {
+            text-align: left;
+        }
+        
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fafafa;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .stat-divider {
+            width: 1px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Hero Actions */
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+        
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 14px;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fafafa;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        .scroll-mouse {
+            width: 24px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            position: relative;
+        }
+        
+        .scroll-wheel {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            width: 4px;
+            height: 8px;
+            background: #22d3ee;
+            border-radius: 2px;
+            transform: translateX(-50%);
+            animation: scrollWheel 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes scrollWheel {
+            0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            50% { opacity: 0.3; transform: translateX(-50%) translateY(12px); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+        
+        /* ========== DASHBOARD SECTION ========== */
+        .dashboard-section {
+            position: relative;
+            z-index: 1;
+            padding: 4rem 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fafafa;
+            margin-bottom: 0.75rem;
+        }
+        
+        .section-subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Controls Bar */
+        .controls-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(12, 12, 12, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        
+        .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+        
+        .filter-btn.active {
+            background: rgba(34, 211, 238, 0.1);
+            border-color: rgba(34, 211, 238, 0.3);
+            color: #22d3ee;
+        }
+        
+        .filter-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Stream Grid */
+        .stream-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .panel {
+            background: rgba(12, 12, 12, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .panel:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fafafa;
+        }
+        
+        .panel-title svg {
+            width: 20px;
+            height: 20px;
+            color: #22d3ee;
+        }
+        
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .live-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .panel-body {
+            padding: 1rem 1.5rem;
+            min-height: 400px;
+        }
+        
+        .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+        }
+        
+        .placeholder svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* ========== MAP SECTION ========== */
+        .map-section {
+            padding: 2rem 2rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .map-container {
+            background: rgba(12, 12, 12, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        
+        .map-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .map-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fafafa;
+        }
+        
+        .map-title svg {
+            width: 20px;
+            height: 20px;
+            color: #22d3ee;
+        }
+        
+        .map-legend {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .legend-dot.low { background: #22c55e; }
+        .legend-dot.medium { background: #f59e0b; }
+        .legend-dot.high { background: #ef4444; }
+        
+        .map-visual {
+            position: relative;
+            height: 400px;
+            background: radial-gradient(ellipse at center, rgba(34, 211, 238, 0.03) 0%, transparent 60%);
+        }
+        
+        .map-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .hotspot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .hotspot::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #22d3ee;
+            border-radius: 50%;
+            animation: hotspotPulse 2s ease-out infinite;
+        }
+        
+        .hotspot::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: #22d3ee;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .hotspot.high::before,
+        .hotspot.high::after { background: #ef4444; }
+        
+        @keyframes hotspotPulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        
+        /* ========== TERMINAL SECTION ========== */
+        .terminal-section {
+            padding: 0 2rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .terminal {
+            background: #0d0d0d;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .terminal-dots {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27ca40; }
+        
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .terminal-body {
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+        
+        .term-line {
+            display: flex;
+            gap: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .term-prompt {
+            color: #22d3ee;
+            font-weight: 600;
+        }
+        
+        .term-cmd { color: #fafafa; }
+        .term-time { color: rgba(255, 255, 255, 0.4); min-width: 80px; }
+        .term-line.success { color: #10b981; }
+        .term-line.info { color: #22d3ee; }
+        
+        /* ========== FOOTER ========== */
+        .footer {
+            padding: 3rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .footer-brand svg {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .footer-brand span {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fafafa;
+        }
+        
+        .footer-text {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #22d3ee;
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .stream-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .stream-grid .panel:first-child {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .stat-divider {
+                width: 60px;
+                height: 1px;
+            }
+            
+            .stream-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stream-grid .panel:first-child {
+                grid-column: 1;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .hero-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .nav-actions {
+                display: none;
+            }
+            
+            #globe-canvas {
+                max-width: 350px;
+                max-height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg viewBox="-26 -28 52 52" fill="none">
+                    <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#navGrad)" stroke-width="3.5" fill="rgba(34, 211, 238, 0.05)"/>
+                    <path d="M-6,0 L-2,4 L6,-5" stroke="url(#navGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#22D3EE"/>
+                            <stop offset="100%" stop-color="#6366F1"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Verity</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="verify.html" class="nav-link">Verify</a>
+                <a href="tools.html" class="nav-link">Tools</a>
+                <a href="global-stream.html" class="nav-link active">
+                    <span class="live-dot"></span>
+                    Live Stream
+                </a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="api-docs.html" class="nav-link">API</a>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="auth.html" class="btn btn-ghost">Sign In</a>
+                <a href="waitlist.html" class="btn btn-primary">
+                    Get Started
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- 3D Globe Canvas (Three.js) -->
+        <canvas id="globe-canvas"></canvas>
+
+        <!-- Hero Content -->
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                LIVE GLOBAL MONITORING
+            </div>
+            
+            <h1 class="hero-title">
+                <span class="line-1">Global Intelligence</span>
+                <span class="line-2">Stream</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                Real-time misinformation detection across the world's largest platforms. 
+                Watch as our AI continuously scours the internet, identifying and verifying 
+                trending claims as they spread.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value">2,847</span>
+                        <span class="stat-label">Claims Today</span>
+                    </div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value">127</span>
+                        <span class="stat-label">Active Sources</span>
+                    </div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value">40+</span>
+                        <span class="stat-label">Verification Sources</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-actions">
+                <a href="verify.html" class="btn btn-primary btn-lg">
+                    Start Verifying
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="#dashboard" class="btn btn-secondary btn-lg">
+                    View Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="scroll-mouse">
+                <div class="scroll-wheel"></div>
+            </div>
+            <span>Scroll to explore</span>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard-section" id="dashboard">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Monitoring Dashboard</h2>
+                <p class="section-subtitle">Filter and track claims across platforms in real-time</p>
+            </div>
+            
+            <div class="controls-bar">
+                <div class="filter-row">
+                    <button class="filter-btn active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                        All Sources
+                    </button>
+                    <button class="filter-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        X/Twitter
+                    </button>
+                    <button class="filter-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+                        </svg>
+                        News
+                    </button>
+                    <button class="filter-btn">Facebook</button>
+                    <button class="filter-btn">TikTok</button>
+                    <button class="filter-btn">Reddit</button>
+                </div>
+            </div>
+            
+            <div class="stream-grid">
+                <!-- Trending Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                <polyline points="17 6 23 6 23 12"/>
+                            </svg>
+                            Trending Claims
+                        </div>
+                        <span class="live-badge">
+                            <span class="dot"></span>
+                            Live
+                        </span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                            </svg>
+                            <p>Loading trending claims...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Live Feed Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="live-dot"></span>
+                            Live Verification Feed
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <p>Waiting for live data...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Details Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 16v-4M12 8h.01"/>
+                            </svg>
+                            Verification Details
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/>
+                            </svg>
+                            <p>Select a claim to view details</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section">
+        <div class="container">
+            <div class="map-container">
+                <div class="map-header">
+                    <div class="map-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                        Global Misinformation Heatmap
+                    </div>
+                    <div class="map-legend">
+                        <span class="legend-item"><span class="legend-dot low"></span> Low</span>
+                        <span class="legend-item"><span class="legend-dot medium"></span> Medium</span>
+                        <span class="legend-item"><span class="legend-dot high"></span> High</span>
+                    </div>
+                </div>
+                <div class="map-visual">
+                    <div class="map-grid"></div>
+                    <div class="hotspot" style="left: 22%; top: 32%;"></div>
+                    <div class="hotspot high" style="left: 48%; top: 28%;"></div>
+                    <div class="hotspot" style="left: 72%; top: 38%;"></div>
+                    <div class="hotspot" style="left: 30%; top: 62%;"></div>
+                    <div class="hotspot" style="left: 52%; top: 55%;"></div>
+                    <div class="hotspot" style="left: 82%; top: 68%;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Terminal Section -->
+    <section class="terminal-section">
+        <div class="container">
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                    </div>
+                    <span class="terminal-title">verity-stream-monitor — bash</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="term-line">
+                        <span class="term-prompt">$</span>
+                        <span class="term-cmd">verity stream --live --sources=all --mode=9point</span>
+                    </div>
+                    <div class="term-line info">
+                        <span class="term-time">[00:00:00]</span>
+                        <span>Initializing Verity Global Stream Monitor v3.0...</span>
+                    </div>
+                    <div class="term-line success">
+                        <span class="term-time">[00:00:01]</span>
+                        <span>✓ Connected to 127 data sources across 6 continents</span>
+                    </div>
+                    <div class="term-line success">
+                        <span class="term-time">[00:00:02]</span>
+                        <span>✓ AI verification engines online (18 models active)</span>
+                    </div>
+                    <div class="term-line success">
+                        <span class="term-time">[00:00:02]</span>
+                        <span>✓ 9-Point Triple-Check verification protocol active</span>
+                    </div>
+                    <div class="term-line">
+                        <span class="term-time">[00:00:03]</span>
+                        <span>Streaming live data...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg viewBox="-26 -28 52 52" fill="none" width="32" height="32">
+                    <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#footGrad)" stroke-width="3" fill="none"/>
+                    <path d="M-6,0 L-2,4 L6,-5" stroke="url(#footGrad)" stroke-width="3" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="footGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#22D3EE"/>
+                            <stop offset="100%" stop-color="#6366F1"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Verity Systems</span>
+            </div>
+            <p class="footer-text">Real-time global fact verification powered by AI</p>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+                <a href="api-docs.html">API</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/global-stream.js"></script>
+    
+    <!-- Three.js for 3D Globe -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // 3D Globe with Three.js
+        (function() {
+            const canvas = document.getElementById('globe-canvas');
+            if (!canvas) return;
+            
+            // Scene setup
+            const scene = new THREE.Scene();
+            
+            // Camera
+            const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+            camera.position.z = 3;
+            
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                antialias: true,
+                alpha: true
+            });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x000000, 0);
+            
+            // Resize handler
+            function resize() {
+                const container = canvas.parentElement;
+                const size = Math.min(container.clientWidth, container.clientHeight, 700);
+                renderer.setSize(size, size);
+                canvas.style.width = size + 'px';
+                canvas.style.height = size + 'px';
+            }
+            resize();
+            window.addEventListener('resize', resize);
+            
+            // Create Earth texture procedurally
+            function createEarthTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 2048;
+                canvas.height = 1024;
+                const ctx = canvas.getContext('2d');
+                
+                // Ocean base - dark blue
+                ctx.fillStyle = '#0a1628';
+                ctx.fillRect(0, 0, 2048, 1024);
+                
+                // Add noise for ocean depth variation
+                for (let i = 0; i < 50000; i++) {
+                    const x = Math.random() * 2048;
+                    const y = Math.random() * 1024;
+                    const alpha = Math.random() * 0.1;
+                    ctx.fillStyle = `rgba(34, 211, 238, ${alpha})`;
+                    ctx.fillRect(x, y, 2, 2);
+                }
+                
+                // Continent shapes (simplified)
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.6)';
+                
+                // North America
+                ctx.beginPath();
+                ctx.moveTo(200, 200);
+                ctx.bezierCurveTo(280, 180, 350, 250, 380, 350);
+                ctx.bezierCurveTo(350, 420, 280, 480, 220, 450);
+                ctx.bezierCurveTo(150, 400, 120, 300, 200, 200);
+                ctx.fill();
+                
+                // South America
+                ctx.beginPath();
+                ctx.moveTo(350, 500);
+                ctx.bezierCurveTo(400, 520, 420, 600, 400, 750);
+                ctx.bezierCurveTo(370, 850, 320, 800, 300, 700);
+                ctx.bezierCurveTo(290, 600, 310, 520, 350, 500);
+                ctx.fill();
+                
+                // Europe
+                ctx.beginPath();
+                ctx.moveTo(900, 200);
+                ctx.bezierCurveTo(980, 180, 1050, 220, 1080, 280);
+                ctx.bezierCurveTo(1050, 350, 980, 380, 920, 340);
+                ctx.bezierCurveTo(870, 300, 860, 240, 900, 200);
+                ctx.fill();
+                
+                // Africa
+                ctx.beginPath();
+                ctx.moveTo(950, 380);
+                ctx.bezierCurveTo(1020, 360, 1100, 420, 1120, 520);
+                ctx.bezierCurveTo(1100, 650, 1020, 720, 960, 680);
+                ctx.bezierCurveTo(900, 620, 880, 500, 950, 380);
+                ctx.fill();
+                
+                // Asia
+                ctx.beginPath();
+                ctx.moveTo(1100, 180);
+                ctx.bezierCurveTo(1300, 150, 1500, 200, 1600, 280);
+                ctx.bezierCurveTo(1650, 380, 1600, 450, 1500, 480);
+                ctx.bezierCurveTo(1350, 500, 1200, 450, 1150, 380);
+                ctx.bezierCurveTo(1100, 300, 1080, 220, 1100, 180);
+                ctx.fill();
+                
+                // Australia
+                ctx.beginPath();
+                ctx.moveTo(1550, 580);
+                ctx.bezierCurveTo(1650, 560, 1720, 620, 1700, 700);
+                ctx.bezierCurveTo(1660, 760, 1580, 750, 1530, 700);
+                ctx.bezierCurveTo(1500, 650, 1500, 600, 1550, 580);
+                ctx.fill();
+                
+                // Add glow to continents
+                ctx.shadowColor = 'rgba(34, 211, 238, 0.8)';
+                ctx.shadowBlur = 20;
+                ctx.fillStyle = 'rgba(34, 211, 238, 0.3)';
+                
+                // Re-draw continents with glow
+                // North America glow
+                ctx.beginPath();
+                ctx.moveTo(200, 200);
+                ctx.bezierCurveTo(280, 180, 350, 250, 380, 350);
+                ctx.bezierCurveTo(350, 420, 280, 480, 220, 450);
+                ctx.bezierCurveTo(150, 400, 120, 300, 200, 200);
+                ctx.fill();
+                
+                // South America glow
+                ctx.beginPath();
+                ctx.moveTo(350, 500);
+                ctx.bezierCurveTo(400, 520, 420, 600, 400, 750);
+                ctx.bezierCurveTo(370, 850, 320, 800, 300, 700);
+                ctx.bezierCurveTo(290, 600, 310, 520, 350, 500);
+                ctx.fill();
+                
+                // Europe glow
+                ctx.beginPath();
+                ctx.moveTo(900, 200);
+                ctx.bezierCurveTo(980, 180, 1050, 220, 1080, 280);
+                ctx.bezierCurveTo(1050, 350, 980, 380, 920, 340);
+                ctx.bezierCurveTo(870, 300, 860, 240, 900, 200);
+                ctx.fill();
+                
+                // Africa glow
+                ctx.beginPath();
+                ctx.moveTo(950, 380);
+                ctx.bezierCurveTo(1020, 360, 1100, 420, 1120, 520);
+                ctx.bezierCurveTo(1100, 650, 1020, 720, 960, 680);
+                ctx.bezierCurveTo(900, 620, 880, 500, 950, 380);
+                ctx.fill();
+                
+                // Asia glow
+                ctx.beginPath();
+                ctx.moveTo(1100, 180);
+                ctx.bezierCurveTo(1300, 150, 1500, 200, 1600, 280);
+                ctx.bezierCurveTo(1650, 380, 1600, 450, 1500, 480);
+                ctx.bezierCurveTo(1350, 500, 1200, 450, 1150, 380);
+                ctx.bezierCurveTo(1100, 300, 1080, 220, 1100, 180);
+                ctx.fill();
+                
+                // Australia glow
+                ctx.beginPath();
+                ctx.moveTo(1550, 580);
+                ctx.bezierCurveTo(1650, 560, 1720, 620, 1700, 700);
+                ctx.bezierCurveTo(1660, 760, 1580, 750, 1530, 700);
+                ctx.bezierCurveTo(1500, 650, 1500, 600, 1550, 580);
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+                
+                // Add grid lines
+                ctx.strokeStyle = 'rgba(34, 211, 238, 0.15)';
+                ctx.lineWidth = 1;
+                
+                // Latitude lines
+                for (let lat = 0; lat <= 180; lat += 30) {
+                    const y = (lat / 180) * 1024;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(2048, y);
+                    ctx.stroke();
+                }
+                
+                // Longitude lines
+                for (let lon = 0; lon <= 360; lon += 30) {
+                    const x = (lon / 360) * 2048;
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, 1024);
+                    ctx.stroke();
+                }
+                
+                return new THREE.CanvasTexture(canvas);
+            }
+            
+            // Create globe
+            const earthTexture = createEarthTexture();
+            const globeGeometry = new THREE.SphereGeometry(1, 64, 64);
+            const globeMaterial = new THREE.MeshPhongMaterial({
+                map: earthTexture,
+                transparent: true,
+                opacity: 0.95,
+                shininess: 10
+            });
+            const globe = new THREE.Mesh(globeGeometry, globeMaterial);
+            
+            // Apply Earth's axial tilt (23.5 degrees)
+            globe.rotation.z = -23.5 * Math.PI / 180;
+            scene.add(globe);
+            
+            // Atmosphere glow
+            const atmosphereGeometry = new THREE.SphereGeometry(1.05, 64, 64);
+            const atmosphereMaterial = new THREE.ShaderMaterial({
+                vertexShader: `
+                    varying vec3 vNormal;
+                    void main() {
+                        vNormal = normalize(normalMatrix * normal);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vNormal;
+                    void main() {
+                        float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+                        gl_FragColor = vec4(0.13, 0.83, 0.93, 1.0) * intensity * 0.6;
+                    }
+                `,
+                blending: THREE.AdditiveBlending,
+                side: THREE.BackSide,
+                transparent: true
+            });
+            const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+            scene.add(atmosphere);
+            
+            // Add verification pulse points on the globe
+            const pulsePoints = [];
+            const pulseLocations = [
+                { lat: 40.7, lon: -74 },    // New York
+                { lat: 51.5, lon: -0.1 },   // London
+                { lat: 35.7, lon: 139.7 },  // Tokyo
+                { lat: -33.9, lon: 151.2 }, // Sydney
+                { lat: 55.8, lon: 37.6 },   // Moscow
+                { lat: 31.2, lon: 121.5 },  // Shanghai
+                { lat: -23.5, lon: -46.6 }, // São Paulo
+                { lat: 19.4, lon: -99.1 },  // Mexico City
+                { lat: 28.6, lon: 77.2 },   // New Delhi
+                { lat: 1.35, lon: 103.8 }   // Singapore
+            ];
+            
+            pulseLocations.forEach((loc, i) => {
+                const phi = (90 - loc.lat) * Math.PI / 180;
+                const theta = (loc.lon + 180) * Math.PI / 180;
+                
+                const x = -Math.sin(phi) * Math.cos(theta);
+                const y = Math.cos(phi);
+                const z = Math.sin(phi) * Math.sin(theta);
+                
+                // Outer pulse ring
+                const ringGeometry = new THREE.RingGeometry(0.02, 0.025, 32);
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x22d3ee,
+                    transparent: true,
+                    opacity: 0.8,
+                    side: THREE.DoubleSide
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.position.set(x * 1.01, y * 1.01, z * 1.01);
+                ring.lookAt(0, 0, 0);
+                ring.userData = { baseScale: 1, phase: i * 0.5 };
+                scene.add(ring);
+                pulsePoints.push(ring);
+                
+                // Center dot
+                const dotGeometry = new THREE.SphereGeometry(0.015, 16, 16);
+                const dotMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x22d3ee,
+                    transparent: true
+                });
+                const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+                dot.position.set(x * 1.01, y * 1.01, z * 1.01);
+                scene.add(dot);
+            });
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404060, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+            
+            const pointLight = new THREE.PointLight(0x22d3ee, 0.5);
+            pointLight.position.set(-5, -3, 5);
+            scene.add(pointLight);
+            
+            // Animation
+            let time = 0;
+            function animate() {
+                requestAnimationFrame(animate);
+                time += 0.01;
+                
+                // Rotate globe like Earth (west to east)
+                globe.rotation.y += 0.002;
+                
+                // Animate pulse points
+                pulsePoints.forEach((ring, i) => {
+                    const scale = 1 + 0.5 * Math.sin(time * 2 + ring.userData.phase);
+                    ring.scale.set(scale, scale, scale);
+                    ring.material.opacity = 0.8 - 0.5 * Math.sin(time * 2 + ring.userData.phase);
+                });
+                
+                renderer.render(scene, camera);
+            }
+            animate();
+        })();
+    </script>
+</body>
+</html>

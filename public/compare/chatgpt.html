@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verity vs ChatGPT - Fact-Checking Comparison | Verity Systems</title>
+    <meta name="description" content="Compare Verity's AI fact-checking with ChatGPT. See why journalists and researchers choose Verity for accurate, sourced verification.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/eden-style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(34, 211, 238, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #22d3ee, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #a0a0a0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #22d3ee;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22d3ee, #6366f1);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(34, 211, 238, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 5rem 5% 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .comparison-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #22d3ee;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #22d3ee, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Verdict Box */
+        .verdict-box {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+
+        .verdict-box h3 {
+            color: #22d3ee;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .verdict-box p {
+            font-size: 1.1rem;
+            color: #e0e0e0;
+            margin: 0;
+        }
+
+        /* Comparison Table */
+        .comparison-section {
+            padding: 4rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .comparison-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .comparison-table th {
+            background: rgba(34, 211, 238, 0.1);
+            font-weight: 600;
+            color: #22d3ee;
+        }
+
+        .comparison-table th:first-child {
+            width: 35%;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(34, 211, 238, 0.05);
+        }
+
+        .check {
+            color: #22c55e;
+            font-size: 1.25rem;
+        }
+
+        .cross {
+            color: #ef4444;
+            font-size: 1.25rem;
+        }
+
+        .partial {
+            color: #f59e0b;
+            font-size: 0.9rem;
+        }
+
+        .winner-cell {
+            background: rgba(34, 211, 238, 0.1) !important;
+        }
+
+        /* Deep Dive Sections */
+        .deep-dive {
+            padding: 4rem 5%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .deep-dive h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .dive-card {
+            background: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dive-card h3 {
+            color: #22d3ee;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dive-card p {
+            color: #a0a0a0;
+            margin-bottom: 1rem;
+        }
+
+        .dive-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .dive-card li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #e0e0e0;
+        }
+
+        .dive-card li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #22d3ee;
+        }
+
+        /* Real Example */
+        .example-section {
+            padding: 4rem 5%;
+            background: rgba(20, 20, 30, 0.3);
+        }
+
+        .example-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .example-card {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .example-card.verity {
+            border-color: rgba(34, 211, 238, 0.3);
+        }
+
+        .example-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .example-card.verity h3 {
+            color: #22d3ee;
+        }
+
+        .example-card.chatgpt h3 {
+            color: #10a37f;
+        }
+
+        .claim-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-style: italic;
+            color: #e0e0e0;
+        }
+
+        .response-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #a0a0a0;
+        }
+
+        .response-box .verdict {
+            font-weight: 600;
+            color: #22d3ee;
+            margin-bottom: 0.5rem;
+        }
+
+        .sources-list {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sources-list h4 {
+            font-size: 0.85rem;
+            color: #22d3ee;
+            margin-bottom: 0.5rem;
+        }
+
+        .sources-list a {
+            display: block;
+            font-size: 0.85rem;
+            color: #6366f1;
+            text-decoration: none;
+            margin-bottom: 0.25rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 5rem 5%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            color: #a0a0a0;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid rgba(34, 211, 238, 0.5);
+            color: #22d3ee;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(34, 211, 238, 0.1);
+            border-color: #22d3ee;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 15, 0.9);
+            padding: 3rem 5%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #a0a0a0;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: #22d3ee;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .example-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="../index.html" class="logo">Verity</a>
+        <div class="nav-links">
+            <a href="../verify.html">Verify</a>
+            <a href="../pricing.html">Pricing</a>
+            <a href="../tools.html">Tools</a>
+            <a href="chatgpt.html" style="color: #22d3ee;">Compare</a>
+            <a href="../waitlist.html" class="btn-primary">Get Early Access</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="comparison-badge">
+            ⚔️ Head-to-Head Comparison
+        </div>
+        <h1>Verity vs ChatGPT for <span>Fact-Checking</span></h1>
+        <p>ChatGPT is great for many things—but accurate, sourced fact-checking isn't one of them. Here's why professionals choose Verity.</p>
+        
+        <div class="verdict-box">
+            <h3>🏆 The Verdict</h3>
+            <p>For fact-checking, Verity wins. ChatGPT hallucinates sources, has a knowledge cutoff, and can't verify real-time claims. Verity is purpose-built for accuracy.</p>
+        </div>
+    </section>
+
+    <section class="comparison-section">
+        <h2>Feature-by-Feature Comparison</h2>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th class="winner-cell">Verity</th>
+                    <th>ChatGPT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Real-time verification</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> Live data from 50+ sources</td>
+                    <td><span class="cross">✗</span> Knowledge cutoff (2024)</td>
+                </tr>
+                <tr>
+                    <td><strong>Source citations</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> Clickable, verifiable links</td>
+                    <td><span class="partial">⚠ Often fabricates sources</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Multi-model consensus</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> 15 AI models must agree</td>
+                    <td><span class="cross">✗</span> Single model only</td>
+                </tr>
+                <tr>
+                    <td><strong>Confidence scores</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> Transparent accuracy rating</td>
+                    <td><span class="cross">✗</span> No confidence metrics</td>
+                </tr>
+                <tr>
+                    <td><strong>Verification speed</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> Under 2 seconds</td>
+                    <td><span class="check">✓</span> ~5-10 seconds</td>
+                </tr>
+                <tr>
+                    <td><strong>Bias detection</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> Cross-references perspectives</td>
+                    <td><span class="cross">✗</span> Can reflect training biases</td>
+                </tr>
+                <tr>
+                    <td><strong>API for newsrooms</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> Built for integration</td>
+                    <td><span class="check">✓</span> General purpose API</td>
+                </tr>
+                <tr>
+                    <td><strong>Hallucination risk</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> Eliminated by design</td>
+                    <td><span class="cross">✗</span> Known issue</td>
+                </tr>
+                <tr>
+                    <td><strong>Purpose-built for facts</strong></td>
+                    <td class="winner-cell"><span class="check">✓</span> 100% focused</td>
+                    <td><span class="cross">✗</span> General assistant</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="deep-dive">
+        <h2>Why ChatGPT Falls Short for Fact-Checking</h2>
+        
+        <div class="dive-card">
+            <h3>🔴 The Hallucination Problem</h3>
+            <p>ChatGPT is designed to generate plausible-sounding text, not accurate information. It will confidently cite sources that don't exist and present fabricated statistics as fact.</p>
+            <ul>
+                <li>Studies show ChatGPT hallucinates in 15-20% of responses</li>
+                <li>It cannot distinguish between what it "knows" and what it's generating</li>
+                <li>No mechanism to verify its own outputs against reality</li>
+            </ul>
+        </div>
+
+        <div class="dive-card">
+            <h3>🔴 Knowledge Cutoff Limitations</h3>
+            <p>ChatGPT's training data has a cutoff date, meaning it cannot verify claims about recent events, breaking news, or emerging stories.</p>
+            <ul>
+                <li>Cannot verify anything that happened after training cutoff</li>
+                <li>May provide outdated information presented as current</li>
+                <li>No access to real-time news sources or databases</li>
+            </ul>
+        </div>
+
+        <div class="dive-card">
+            <h3>🔴 Single Point of Failure</h3>
+            <p>ChatGPT is one model with one perspective. Verity uses 15+ AI models in consensus—if they don't agree, you get a warning, not a guess.</p>
+            <ul>
+                <li>One model's bias becomes your output's bias</li>
+                <li>No cross-validation of information</li>
+                <li>Confidence is assumed, not calculated</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="example-section">
+        <h2>Real Example: Same Claim, Different Results</h2>
+        
+        <div class="claim-box" style="max-width: 800px; margin: 0 auto 2rem; text-align: center;">
+            <strong>Claim tested:</strong> "The Great Wall of China is visible from space with the naked eye."
+        </div>
+
+        <div class="example-grid">
+            <div class="example-card verity">
+                <h3>🛡️ Verity's Response</h3>
+                <div class="response-box">
+                    <div class="verdict">❌ FALSE — 98.7% Confidence</div>
+                    <p>This is a common myth. The Great Wall of China is not visible from low Earth orbit with the naked eye. While the wall is long (13,000+ miles), it's only about 15-30 feet wide—too narrow to be distinguished from space without aid.</p>
+                    <div class="sources-list">
+                        <h4>Verified Sources:</h4>
+                        <a href="#">NASA: "Great Wall of China" (nasa.gov)</a>
+                        <a href="#">Scientific American: Space Visibility Myths</a>
+                        <a href="#">Astronaut Chris Hadfield's testimony</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example-card chatgpt">
+                <h3>🤖 ChatGPT's Response</h3>
+                <div class="response-box">
+                    <p>"The claim that the Great Wall of China is visible from space is a popular one! While it's often repeated, the reality is more nuanced. Under certain conditions, with perfect weather and lighting, some astronauts have reported being able to see it..."</p>
+                    <p style="margin-top: 1rem; font-style: italic; color: #f59e0b;">⚠️ Hedged answer with no clear verdict, no sources, and includes misleading information about astronaut sightings.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <h2>Ready for Real Fact-Checking?</h2>
+        <p>Join thousands of journalists who trust Verity for accurate, sourced verification.</p>
+        <div class="cta-buttons">
+            <a href="../verify.html" class="btn-primary">Try Verity Free</a>
+            <a href="../pricing.html" class="btn-secondary">View Pricing</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="logo">Verity</div>
+            <div class="footer-links">
+                <a href="perplexity.html">vs Perplexity</a>
+                <a href="google.html">vs Google</a>
+                <a href="manual.html">vs Manual Research</a>
+                <a href="../pricing.html">Pricing</a>
+                <a href="../security.html">Security</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

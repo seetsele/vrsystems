@@ -1,0 +1,265 @@
+/* Verity Browser Extension - Content Styles */
+
+/* Base tooltip */
+.verity-tooltip {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  width: 360px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  animation: verity-fade-in 0.2s ease-out;
+}
+
+@keyframes verity-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.verity-tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  color: white;
+}
+
+.verity-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.verity-logo svg {
+  stroke: white;
+}
+
+.verity-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.verity-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Verdict section */
+.verity-verdict {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  margin: 0;
+}
+
+.verity-verdict-text {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+.verity-confidence {
+  font-size: 12px;
+  color: #6B7280;
+}
+
+/* Body */
+.verity-tooltip-body {
+  padding: 16px;
+}
+
+.verity-explanation {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.verity-claim-preview {
+  font-size: 12px;
+  color: #6B7280;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* Sources */
+.verity-sources {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #E5E7EB;
+}
+
+.verity-sources h4 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.verity-sources ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.verity-sources li {
+  margin-bottom: 4px;
+}
+
+.verity-sources a {
+  font-size: 13px;
+  color: #4F46E5;
+  text-decoration: none;
+}
+
+.verity-sources a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+.verity-tooltip-footer {
+  padding: 12px 16px;
+  background: #F9FAFB;
+  border-top: 1px solid #E5E7EB;
+  text-align: center;
+}
+
+.verity-tooltip-footer a {
+  font-size: 12px;
+  color: #4F46E5;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.verity-tooltip-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Loading state */
+.verity-loading .verity-tooltip-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+}
+
+.verity-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #4F46E5;
+  border-radius: 50%;
+  animation: verity-spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes verity-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error state */
+.verity-error .verity-tooltip-header {
+  background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+}
+
+.verity-error-message {
+  color: #DC2626;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.verity-retry-btn {
+  background: #4F46E5;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.verity-retry-btn:hover {
+  background: #4338CA;
+}
+
+/* Verify button */
+.verity-verify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  transition: all 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  animation: verity-fade-in 0.2s ease-out;
+}
+
+.verity-verify-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+}
+
+.verity-verify-btn svg {
+  stroke: white;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .verity-tooltip {
+    background: #1F2937;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  }
+  
+  .verity-explanation {
+    color: #D1D5DB;
+  }
+  
+  .verity-sources {
+    border-top-color: #374151;
+  }
+  
+  .verity-sources h4 {
+    color: #9CA3AF;
+  }
+  
+  .verity-tooltip-footer {
+    background: #111827;
+    border-top-color: #374151;
+  }
+  
+  .verity-confidence {
+    color: #9CA3AF;
+  }
+}

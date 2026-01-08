@@ -8,7 +8,8 @@
 
 class VerityAPIClient {
     constructor(options = {}) {
-        this.apiBase = options.apiBase || 'http://localhost:8000';
+        const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        this.apiBase = options.apiBase || (isLocal ? 'http://localhost:8000' : 'https://veritysystems-production.up.railway.app');
         this.apiKey = options.apiKey || null;
         this.timeout = options.timeout || 30000;
         this.useDemo = options.useDemo || false;
@@ -614,8 +615,9 @@ class VerityAPIClient {
 
 // Create global instance
 window.VerityAPIClient = VerityAPIClient;
+const _isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 window.verity = new VerityAPIClient({
-    apiBase: 'http://localhost:8000',
+    apiBase: _isLocal ? 'http://localhost:8000' : 'https://veritysystems-production.up.railway.app',
     useDemo: false  // Will auto-fallback to demo if API unavailable
 });
 

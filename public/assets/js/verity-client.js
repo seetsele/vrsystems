@@ -5,7 +5,8 @@
 
 class VerityClient {
     constructor(options = {}) {
-        this.baseURL = options.baseURL || 'http://localhost:8000';
+        const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        this.baseURL = options.baseURL || (isLocal ? 'http://localhost:8000' : 'https://veritysystems-production.up.railway.app');
         this.apiKey = options.apiKey || null;
         this.accessToken = options.accessToken || null;
         this.onError = options.onError || console.error;
