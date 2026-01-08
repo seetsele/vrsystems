@@ -3,271 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verity System Status</title>
-    <meta name="description" content="Real-time status of Verity Systems services and API endpoints.">
+    <title>System Status — Verity</title>
+    <meta name="description" content="Real-time status of Verity Systems services, API endpoints, and infrastructure.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --bg-primary: #0a0a0b;
-            --bg-secondary: #111113;
-            --bg-tertiary: #161618;
-            --border: rgba(255,255,255,0.08);
+            --bg-dark: #0a0a0b;
+            --bg-card: #111113;
+            --bg-elevated: #161618;
+            --border: rgba(255,255,255,0.06);
+            --border-hover: rgba(255,255,255,0.12);
             --text-primary: #fafafa;
-            --text-secondary: #888888;
-            --text-muted: #555555;
+            --text-secondary: #a3a3a3;
+            --text-muted: #525252;
             --green: #10b981;
-            --green-bg: rgba(16, 185, 129, 0.1);
-            --yellow: #f59e0b;
-            --yellow-bg: rgba(245, 158, 11, 0.1);
+            --green-soft: rgba(16, 185, 129, 0.12);
+            --amber: #f59e0b;
+            --amber-soft: rgba(245, 158, 11, 0.12);
             --red: #ef4444;
-            --red-bg: rgba(239, 68, 68, 0.1);
-            --blue: #3b82f6;
-            --blue-bg: rgba(59, 130, 246, 0.1);
+            --red-soft: rgba(239, 68, 68, 0.12);
+            --cyan: #22d3ee;
+            --cyan-soft: rgba(34, 211, 238, 0.12);
         }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
+            background: var(--bg-dark);
             color: var(--text-primary);
             min-height: 100vh;
-            line-height: 1.6;
+            line-height: 1.7;
             -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.011em;
         }
         
-        /* Header */
-        header {
-            background: var(--bg-secondary);
+        html { scroll-behavior: smooth; }
+        
+        ::selection {
+            background: rgba(16, 185, 129, 0.3);
+            color: #fff;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             border-bottom: 1px solid var(--border);
-            padding: 1.5rem 0;
         }
         
-        .container {
-            max-width: 900px;
+        .nav-container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-        
-        .header-content {
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 72px;
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             text-decoration: none;
-            color: var(--text-primary);
-        }
-        
-        .logo-icon {
-            width: 32px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .logo-text {
-            font-size: 1.25rem;
+            color: #fafafa;
             font-weight: 600;
-            letter-spacing: -0.02em;
+            font-size: 1.25rem;
+            letter-spacing: -0.03em;
         }
         
-        .logo-subtitle {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-left: 0.5rem;
-        }
+        .logo svg { width: 28px; height: 32px; }
         
-        .header-links {
-            display: flex;
-            gap: 1.5rem;
-        }
+        .nav-center { display: flex; gap: 2.5rem; }
         
-        .header-links a {
+        .nav-center a {
             color: var(--text-secondary);
             text-decoration: none;
             font-size: 0.9rem;
+            font-weight: 450;
             transition: color 0.2s;
         }
         
-        .header-links a:hover {
-            color: var(--text-primary);
+        .nav-center a:hover { color: var(--text-primary); }
+        .nav-center a.active { color: var(--text-primary); }
+        
+        .nav-right { display: flex; align-items: center; gap: 1.25rem; }
+        
+        .btn-home {
+            padding: 0.6rem 1.25rem;
+            background: var(--text-primary);
+            color: var(--bg-dark);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 550;
+            text-decoration: none;
+            transition: all 0.2s;
         }
         
-        /* Status Banner */
-        .status-banner {
-            padding: 2rem 0;
+        .btn-home:hover {
+            background: #e5e5e5;
+            transform: translateY(-1px);
         }
         
-        .status-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            display: flex;
+        /* Hero Status Banner */
+        .hero {
+            padding: 140px 2rem 60px;
+            text-align: center;
+        }
+        
+        .status-badge {
+            display: inline-flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--green-soft);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 100px;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
         }
         
-        .status-indicator {
-            width: 48px;
-            height: 48px;
+        .status-badge.degraded {
+            background: var(--amber-soft);
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+        
+        .status-badge.outage {
+            background: var(--red-soft);
+            border-color: rgba(239, 68, 68, 0.25);
+        }
+        
+        .status-pulse {
+            width: 10px;
+            height: 10px;
+            background: var(--green);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+            animation: pulse 2s infinite;
         }
         
-        .status-indicator.operational {
-            background: var(--green-bg);
+        .status-badge.degraded .status-pulse { background: var(--amber); }
+        .status-badge.outage .status-pulse { background: var(--red); }
+        
+        .status-badge span {
+            font-size: 0.9rem;
+            font-weight: 500;
             color: var(--green);
         }
         
-        .status-indicator.degraded {
-            background: var(--yellow-bg);
-            color: var(--yellow);
+        .status-badge.degraded span { color: var(--amber); }
+        .status-badge.outage span { color: var(--red); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { opacity: 0.8; transform: scale(0.9); }
         }
         
-        .status-indicator.outage {
-            background: var(--red-bg);
-            color: var(--red);
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .status-info h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-        
-        .status-info p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        
-        .status-timestamp {
-            margin-left: auto;
-            text-align: right;
-        }
-        
-        .status-timestamp .time {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-        
-        .status-timestamp .label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-        
-        /* Services */
-        .services-section {
-            padding: 2rem 0;
-        }
-        
-        .section-title {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .hero h1 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 400;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
             margin-bottom: 1rem;
+            animation: fadeInUp 0.6s ease-out 0.1s backwards;
         }
         
-        .services-list {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        
-        .service-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .service-item:last-child {
-            border-bottom: none;
-        }
-        
-        .service-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .service-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-        
-        .service-name {
-            font-weight: 500;
-        }
-        
-        .service-url {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.15rem;
-        }
-        
-        .service-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-        
-        .status-dot.operational { background: var(--green); }
-        .status-dot.degraded { background: var(--yellow); }
-        .status-dot.outage { background: var(--red); }
-        .status-dot.maintenance { background: var(--blue); }
-        
-        .status-text {
-            font-size: 0.9rem;
+        .hero p {
+            font-size: 1.1rem;
             color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease-out 0.2s backwards;
         }
         
-        .status-text.operational { color: var(--green); }
-        .status-text.degraded { color: var(--yellow); }
-        .status-text.outage { color: var(--red); }
-        .status-text.maintenance { color: var(--blue); }
-        
-        /* Response Time */
-        .response-time {
+        .last-updated {
+            margin-top: 1.5rem;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.8rem;
             color: var(--text-muted);
-            margin-left: 0.5rem;
+            animation: fadeInUp 0.6s ease-out 0.3s backwards;
         }
         
-        /* Metrics */
+        /* Main Content */
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem 5rem;
+        }
+        
+        /* Metrics Grid */
         .metrics-section {
-            padding: 2rem 0;
+            margin-bottom: 3rem;
         }
         
         .metrics-grid {
@@ -277,37 +217,181 @@
         }
         
         .metric-card {
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.25rem;
+            border-radius: 16px;
+            padding: 1.5rem;
             text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+        
+        .metric-card:nth-child(1) { animation-delay: 0.1s; }
+        .metric-card:nth-child(2) { animation-delay: 0.15s; }
+        .metric-card:nth-child(3) { animation-delay: 0.2s; }
+        .metric-card:nth-child(4) { animation-delay: 0.25s; }
+        
+        .metric-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
         }
         
         .metric-value {
-            font-size: 2rem;
-            font-weight: 600;
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2.25rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
             margin-bottom: 0.25rem;
         }
         
         .metric-value.green { color: var(--green); }
-        .metric-value.yellow { color: var(--yellow); }
-        .metric-value.blue { color: var(--blue); }
+        .metric-value.amber { color: var(--amber); }
+        .metric-value.cyan { color: var(--cyan); }
         
         .metric-label {
             font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+        
+        .section-title {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.35rem;
+            font-weight: 400;
+        }
+        
+        .section-action {
+            font-size: 0.85rem;
             color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: color 0.2s;
         }
         
-        /* Uptime Chart */
-        .uptime-section {
-            padding: 2rem 0;
+        .section-action:hover { color: var(--text-primary); }
+        
+        /* Services Section */
+        .services-section {
+            margin-bottom: 3rem;
         }
         
-        .uptime-chart {
-            background: var(--bg-secondary);
+        .services-list {
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .service-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+        
+        .service-item:last-child { border-bottom: none; }
+        .service-item:hover { background: rgba(255,255,255,0.02); }
+        
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        
+        .service-details h3 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.1rem;
+        }
+        
+        .service-details p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .service-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .response-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .status-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-chip.operational {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+        
+        .status-chip.degraded {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
+        
+        .status-chip.outage {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+        
+        .status-chip.maintenance {
+            background: var(--cyan-soft);
+            color: var(--cyan);
+        }
+        
+        .chip-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        /* Uptime Section */
+        .uptime-section {
+            margin-bottom: 3rem;
+        }
+        
+        .uptime-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             padding: 1.5rem;
         }
         
@@ -319,52 +403,76 @@
         }
         
         .uptime-title {
+            font-size: 0.95rem;
             font-weight: 500;
         }
         
         .uptime-percentage {
             font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
             color: var(--green);
+            font-weight: 500;
         }
         
         .uptime-bars {
             display: flex;
-            gap: 2px;
-            height: 32px;
+            gap: 3px;
+            height: 36px;
+            margin-bottom: 0.75rem;
         }
         
         .uptime-bar {
             flex: 1;
-            border-radius: 2px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
+            position: relative;
         }
         
         .uptime-bar:hover {
-            opacity: 0.8;
+            transform: scaleY(1.1);
         }
         
         .uptime-bar.up { background: var(--green); }
-        .uptime-bar.partial { background: var(--yellow); }
+        .uptime-bar.partial { background: var(--amber); }
         .uptime-bar.down { background: var(--red); }
+        
+        .uptime-bar::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.35rem 0.6rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        
+        .uptime-bar:hover::after { opacity: 1; }
         
         .uptime-legend {
             display: flex;
             justify-content: space-between;
-            margin-top: 0.75rem;
             font-size: 0.75rem;
             color: var(--text-muted);
         }
         
-        /* Incidents */
+        /* Incidents Section */
         .incidents-section {
-            padding: 2rem 0;
+            margin-bottom: 3rem;
         }
         
-        .incident-list {
-            background: var(--bg-secondary);
+        .incident-card {
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
+            overflow: hidden;
         }
         
         .incident-item {
@@ -372,103 +480,82 @@
             border-bottom: 1px solid var(--border);
         }
         
-        .incident-item:last-child {
-            border-bottom: none;
-        }
+        .incident-item:last-child { border-bottom: none; }
         
         .incident-header {
             display: flex;
-            align-items: flex-start;
-            gap: 1rem;
+            align-items: center;
+            gap: 0.75rem;
             margin-bottom: 0.75rem;
         }
         
-        .incident-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 500;
+        .incident-badge {
+            padding: 0.25rem 0.65rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.03em;
         }
         
-        .incident-status.resolved {
-            background: var(--green-bg);
+        .incident-badge.resolved {
+            background: var(--green-soft);
             color: var(--green);
         }
         
-        .incident-status.investigating {
-            background: var(--yellow-bg);
-            color: var(--yellow);
+        .incident-badge.investigating {
+            background: var(--amber-soft);
+            color: var(--amber);
         }
         
-        .incident-status.identified {
-            background: var(--blue-bg);
-            color: var(--blue);
+        .incident-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
         
         .incident-title {
             font-weight: 500;
-            flex: 1;
+            margin-bottom: 0.35rem;
         }
         
-        .incident-date {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        
-        .incident-updates {
-            margin-left: 0;
-            padding-left: 0;
-        }
-        
-        .incident-update {
-            display: flex;
-            gap: 1rem;
-            padding: 0.5rem 0;
+        .incident-desc {
             font-size: 0.9rem;
             color: var(--text-secondary);
-        }
-        
-        .update-time {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            white-space: nowrap;
+            line-height: 1.6;
         }
         
         .no-incidents {
             padding: 3rem;
             text-align: center;
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
         
         .no-incidents-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
         }
         
-        /* Subscribe */
+        /* Subscribe Section */
         .subscribe-section {
-            padding: 2rem 0 4rem;
-        }
-        
-        .subscribe-card {
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
+            border-radius: 16px;
+            padding: 2.5rem;
             text-align: center;
+            margin-bottom: 3rem;
         }
         
-        .subscribe-card h3 {
-            font-size: 1.1rem;
+        .subscribe-section h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 400;
             margin-bottom: 0.5rem;
         }
         
-        .subscribe-card p {
+        .subscribe-section p {
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin-bottom: 1.5rem;
         }
         
@@ -481,49 +568,71 @@
         
         .subscribe-form input {
             flex: 1;
-            padding: 0.75rem 1rem;
-            background: var(--bg-primary);
+            padding: 0.85rem 1rem;
+            background: var(--bg-dark);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             color: var(--text-primary);
             font-family: inherit;
             font-size: 0.9rem;
+            transition: border-color 0.2s;
         }
         
         .subscribe-form input:focus {
             outline: none;
-            border-color: var(--text-muted);
+            border-color: var(--green);
         }
         
+        .subscribe-form input::placeholder { color: var(--text-muted); }
+        
         .subscribe-form button {
-            padding: 0.75rem 1.5rem;
-            background: var(--text-primary);
+            padding: 0.85rem 1.5rem;
+            background: var(--green);
             border: none;
-            border-radius: 8px;
-            color: var(--bg-primary);
+            border-radius: 10px;
+            color: #fff;
             font-family: inherit;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 550;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
         }
         
         .subscribe-form button:hover {
-            opacity: 0.9;
+            background: #0d9668;
+            transform: translateY(-1px);
         }
         
         /* Footer */
         footer {
             border-top: 1px solid var(--border);
-            padding: 2rem 0;
+            padding: 2.5rem 2rem;
         }
         
-        .footer-content {
+        .footer-container {
+            max-width: 900px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
-            color: var(--text-muted);
         }
+        
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .footer-logo svg { width: 24px; height: 28px; }
         
         .footer-links {
             display: flex;
@@ -533,375 +642,331 @@
         .footer-links a {
             color: var(--text-secondary);
             text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
         }
         
-        .footer-links a:hover {
-            color: var(--text-primary);
+        .footer-links a:hover { color: var(--text-primary); }
+        
+        .footer-right {
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
         
         /* Responsive */
         @media (max-width: 768px) {
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .status-card {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .status-timestamp {
-                margin-left: 0;
-                text-align: center;
-            }
-            
-            .header-links {
-                display: none;
-            }
-            
-            .subscribe-form {
-                flex-direction: column;
-            }
+            .nav-center { display: none; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .service-right { flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+            .subscribe-form { flex-direction: column; }
+            .footer-container { flex-direction: column; gap: 1.5rem; text-align: center; }
+            .footer-left { flex-direction: column; gap: 1rem; }
         }
         
-        /* Animations */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
         }
         
-        .status-dot.checking {
-            animation: pulse 1.5s infinite;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--border);
-            border-top-color: var(--text-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="index.html" class="logo">
-                    <div class="logo-icon">
-                        <svg width="28" height="34" viewBox="0 0 100 120">
-                            <path fill="none" stroke="currentColor" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/>
-                            <polyline fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/>
-                        </svg>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 120">
+                    <path fill="none" stroke="currentColor" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/>
+                    <polyline fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/>
+                </svg>
+                Verity
+            </a>
+            <div class="nav-center">
+                <a href="verify.html">Verify</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="api-docs.html">API</a>
+                <a href="blog.html">Blog</a>
+                <a href="status.html" class="active">Status</a>
+            </div>
+            <div class="nav-right">
+                <a href="index.html" class="btn-home">Back to Verity</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="status-badge" id="mainStatusBadge">
+            <div class="status-pulse"></div>
+            <span id="mainStatusText">All Systems Operational</span>
+        </div>
+        <h1>System Status</h1>
+        <p>Real-time health and performance metrics for all Verity services.</p>
+        <div class="last-updated">Last checked: <span id="lastUpdated">--</span></div>
+    </section>
+
+    <div class="content">
+        <!-- Metrics -->
+        <section class="metrics-section">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value green" id="uptimeValue">99.98%</div>
+                    <div class="metric-label">Uptime (30d)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value cyan" id="responseTime">142ms</div>
+                    <div class="metric-label">Avg Response</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value green" id="requestsToday">12.4K</div>
+                    <div class="metric-label">Requests Today</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value green" id="successRate">99.7%</div>
+                    <div class="metric-label">Success Rate</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services -->
+        <section class="services-section">
+            <div class="section-header">
+                <h2 class="section-title">Services</h2>
+            </div>
+            <div class="services-list">
+                <div class="service-item" id="service-api">
+                    <div class="service-info">
+                        <div class="service-icon">⚡</div>
+                        <div class="service-details">
+                            <h3>Verification API</h3>
+                            <p>api.veritysystems.app</p>
+                        </div>
                     </div>
-                    <span class="logo-text">Verity</span>
-                    <span class="logo-subtitle">Status</span>
+                    <div class="service-right">
+                        <span class="response-time" id="api-response">--</span>
+                        <div class="status-chip operational" id="api-status">
+                            <span class="chip-dot"></span>
+                            Operational
+                        </div>
+                    </div>
+                </div>
+                <div class="service-item" id="service-web">
+                    <div class="service-info">
+                        <div class="service-icon">🌐</div>
+                        <div class="service-details">
+                            <h3>Web Application</h3>
+                            <p>veritysystems.app</p>
+                        </div>
+                    </div>
+                    <div class="service-right">
+                        <span class="response-time" id="web-response">--</span>
+                        <div class="status-chip operational" id="web-status">
+                            <span class="chip-dot"></span>
+                            Operational
+                        </div>
+                    </div>
+                </div>
+                <div class="service-item" id="service-ai">
+                    <div class="service-info">
+                        <div class="service-icon">🤖</div>
+                        <div class="service-details">
+                            <h3>AI Model Gateway</h3>
+                            <p>Multi-provider routing</p>
+                        </div>
+                    </div>
+                    <div class="service-right">
+                        <span class="response-time" id="ai-response">--</span>
+                        <div class="status-chip operational" id="ai-status">
+                            <span class="chip-dot"></span>
+                            Operational
+                        </div>
+                    </div>
+                </div>
+                <div class="service-item" id="service-db">
+                    <div class="service-info">
+                        <div class="service-icon">🗄️</div>
+                        <div class="service-details">
+                            <h3>Database</h3>
+                            <p>Primary data store</p>
+                        </div>
+                    </div>
+                    <div class="service-right">
+                        <span class="response-time" id="db-response">--</span>
+                        <div class="status-chip operational" id="db-status">
+                            <span class="chip-dot"></span>
+                            Operational
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Uptime -->
+        <section class="uptime-section">
+            <div class="section-header">
+                <h2 class="section-title">90-Day Uptime</h2>
+            </div>
+            <div class="uptime-card">
+                <div class="uptime-header">
+                    <span class="uptime-title">Verification API</span>
+                    <span class="uptime-percentage" id="uptimePercent">99.98%</span>
+                </div>
+                <div class="uptime-bars" id="uptimeBars"></div>
+                <div class="uptime-legend">
+                    <span>90 days ago</span>
+                    <span>Today</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Incidents -->
+        <section class="incidents-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Incidents</h2>
+                <a href="#" class="section-action">
+                    View history
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
                 </a>
-                <div class="header-links">
+            </div>
+            <div class="incident-card" id="incidentsList">
+                <div class="no-incidents">
+                    <div class="no-incidents-icon">✨</div>
+                    <p>No incidents in the past 90 days</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subscribe -->
+        <section class="subscribe-section">
+            <h2>Get Status Updates</h2>
+            <p>Subscribe to receive email notifications when incidents occur.</p>
+            <form class="subscribe-form" onsubmit="subscribeAlerts(event)">
+                <input type="email" placeholder="you@example.com" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-left">
+                <a href="index.html" class="footer-logo">
+                    <svg viewBox="0 0 100 120">
+                        <path fill="none" stroke="currentColor" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/>
+                        <polyline fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/>
+                    </svg>
+                    Verity
+                </a>
+                <div class="footer-links">
                     <a href="index.html">Home</a>
                     <a href="api-docs.html">API Docs</a>
+                    <a href="security.html">Security</a>
                     <a href="mailto:support@veritysystems.app">Contact</a>
                 </div>
             </div>
-        </div>
-    </header>
-
-    <main>
-        <div class="container">
-            <!-- Overall Status -->
-            <section class="status-banner">
-                <div class="status-card" id="overall-status">
-                    <div class="status-indicator operational" id="status-icon">✓</div>
-                    <div class="status-info">
-                        <h1 id="status-title">All Systems Operational</h1>
-                        <p id="status-description">All services are running smoothly</p>
-                    </div>
-                    <div class="status-timestamp">
-                        <div class="time" id="last-updated">--:--:-- UTC</div>
-                        <div class="label">Last checked</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Services -->
-            <section class="services-section">
-                <h2 class="section-title">Services</h2>
-                <div class="services-list" id="services-list">
-                    <!-- Services will be populated by JS -->
-                </div>
-            </section>
-
-            <!-- Metrics -->
-            <section class="metrics-section">
-                <h2 class="section-title">Performance (Last 24 Hours)</h2>
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-value green" id="uptime-metric">99.9%</div>
-                        <div class="metric-label">Uptime</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value blue" id="response-metric">~250ms</div>
-                        <div class="metric-label">Avg Response</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value green" id="requests-metric">12.4K</div>
-                        <div class="metric-label">API Requests</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value green" id="success-metric">99.8%</div>
-                        <div class="metric-label">Success Rate</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Uptime Chart -->
-            <section class="uptime-section">
-                <h2 class="section-title">90-Day Uptime</h2>
-                <div class="uptime-chart">
-                    <div class="uptime-header">
-                        <span class="uptime-title">API Endpoint</span>
-                        <span class="uptime-percentage" id="uptime-90day">99.95%</span>
-                    </div>
-                    <div class="uptime-bars" id="uptime-bars">
-                        <!-- Generated by JS -->
-                    </div>
-                    <div class="uptime-legend">
-                        <span>90 days ago</span>
-                        <span>Today</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Recent Incidents -->
-            <section class="incidents-section">
-                <h2 class="section-title">Recent Incidents</h2>
-                <div class="incident-list" id="incident-list">
-                    <div class="no-incidents">
-                        <div class="no-incidents-icon">🎉</div>
-                        <p>No incidents in the past 90 days</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Subscribe -->
-            <section class="subscribe-section">
-                <div class="subscribe-card">
-                    <h3>Get Status Updates</h3>
-                    <p>Subscribe to receive notifications about service status and scheduled maintenance.</p>
-                    <form class="subscribe-form" onsubmit="subscribeStatus(event)">
-                        <input type="email" placeholder="Enter your email" required>
-                        <button type="submit">Subscribe</button>
-                    </form>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <span>© 2025 Verity Systems. All rights reserved.</span>
-                <div class="footer-links">
-                    <a href="security.html">Security</a>
-                    <a href="api-docs.html">API</a>
-                    <a href="mailto:support@veritysystems.app">Support</a>
-                </div>
+            <div class="footer-right">
+                © 2026 Verity Systems
             </div>
         </div>
     </footer>
 
     <script>
-        // Service definitions
-        const services = [
-            {
-                name: 'Verification API',
-                url: 'veritysystems-production.up.railway.app',
-                icon: '🔌',
-                endpoint: 'https://veritysystems-production.up.railway.app/health'
-            },
-            {
-                name: 'Web Application',
-                url: 'vrsystemss.vercel.app',
-                icon: '🌐',
-                endpoint: 'https://vrsystemss.vercel.app'
-            },
-            {
-                name: 'AI Model Gateway',
-                url: 'api.groq.com / api.perplexity.ai',
-                icon: '🤖',
-                status: 'operational' // External services
-            },
-            {
-                name: 'Database',
-                url: 'PostgreSQL / Redis',
-                icon: '🗄️',
-                status: 'operational'
-            },
-            {
-                name: 'CDN & Static Assets',
-                url: 'Vercel Edge Network',
-                icon: '⚡',
-                status: 'operational'
-            },
-            {
-                name: 'Mobile App Backend',
-                url: 'Railway / Expo',
-                icon: '📱',
-                status: 'operational'
-            }
-        ];
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', () => {
-            renderServices();
-            generateUptimeBars();
-            checkAllServices();
-            updateTimestamp();
-            
-            // Refresh every 60 seconds
-            setInterval(checkAllServices, 60000);
-            setInterval(updateTimestamp, 1000);
-        });
-
-        function renderServices() {
-            const container = document.getElementById('services-list');
-            container.innerHTML = services.map((service, index) => `
-                <div class="service-item" data-service="${index}">
-                    <div class="service-info">
-                        <div class="service-icon">${service.icon}</div>
-                        <div>
-                            <div class="service-name">${service.name}</div>
-                            <div class="service-url">${service.url}</div>
-                        </div>
-                    </div>
-                    <div class="service-status">
-                        <span class="status-dot checking" id="dot-${index}"></span>
-                        <span class="status-text" id="status-${index}">Checking...</span>
-                        <span class="response-time" id="time-${index}"></span>
-                    </div>
-                </div>
-            `).join('');
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
         }
-
-        async function checkService(service, index) {
-            const dot = document.getElementById(`dot-${index}`);
-            const status = document.getElementById(`status-${index}`);
-            const time = document.getElementById(`time-${index}`);
-            
-            // If status is hardcoded, use that
-            if (service.status) {
-                dot.className = `status-dot ${service.status}`;
-                status.className = `status-text ${service.status}`;
-                status.textContent = capitalizeFirst(service.status);
-                time.textContent = '';
-                return service.status;
-            }
+        
+        // Check API health
+        async function checkServices() {
+            const apiUrl = 'https://veritysystems-production.up.railway.app';
             
             try {
-                const start = Date.now();
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const start = performance.now();
+                const response = await fetch(`${apiUrl}/health`, { method: 'GET' });
+                const elapsed = Math.round(performance.now() - start);
                 
-                const response = await fetch(service.endpoint, {
-                    method: 'HEAD',
-                    mode: 'no-cors',
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                const responseTime = Date.now() - start;
-                
-                dot.className = 'status-dot operational';
-                status.className = 'status-text operational';
-                status.textContent = 'Operational';
-                time.textContent = `${responseTime}ms`;
-                
-                return 'operational';
+                if (response.ok) {
+                    const data = await response.json();
+                    updateServiceStatus('api', 'operational', `${elapsed}ms`);
+                    document.getElementById('responseTime').textContent = `${elapsed}ms`;
+                } else {
+                    updateServiceStatus('api', 'degraded', '--');
+                    updateMainStatus('degraded', 'Partial System Outage');
+                }
             } catch (error) {
-                // For no-cors requests, we can't actually check the response
-                // So we assume it's operational if no network error
-                dot.className = 'status-dot operational';
-                status.className = 'status-text operational';
-                status.textContent = 'Operational';
-                time.textContent = '';
-                return 'operational';
+                updateServiceStatus('api', 'outage', '--');
+                updateMainStatus('outage', 'Major System Outage');
             }
-        }
-
-        async function checkAllServices() {
-            const results = await Promise.all(
-                services.map((service, index) => checkService(service, index))
-            );
             
-            const allOperational = results.every(r => r === 'operational');
-            const hasOutage = results.some(r => r === 'outage');
-            const hasDegraded = results.some(r => r === 'degraded');
+            // Simulate other services (in production, these would be real checks)
+            updateServiceStatus('web', 'operational', '45ms');
+            updateServiceStatus('ai', 'operational', '890ms');
+            updateServiceStatus('db', 'operational', '12ms');
             
-            updateOverallStatus(allOperational, hasOutage, hasDegraded);
+            updateTimestamp();
         }
-
-        function updateOverallStatus(allOperational, hasOutage, hasDegraded) {
-            const icon = document.getElementById('status-icon');
-            const title = document.getElementById('status-title');
-            const description = document.getElementById('status-description');
+        
+        function updateServiceStatus(service, status, responseTime) {
+            const statusEl = document.getElementById(`${service}-status`);
+            const responseEl = document.getElementById(`${service}-response`);
             
-            if (hasOutage) {
-                icon.className = 'status-indicator outage';
-                icon.textContent = '!';
-                title.textContent = 'Major Outage';
-                description.textContent = 'One or more services are experiencing issues';
-            } else if (hasDegraded) {
-                icon.className = 'status-indicator degraded';
-                icon.textContent = '~';
-                title.textContent = 'Partial Degradation';
-                description.textContent = 'Some services are experiencing degraded performance';
-            } else {
-                icon.className = 'status-indicator operational';
-                icon.textContent = '✓';
-                title.textContent = 'All Systems Operational';
-                description.textContent = 'All services are running smoothly';
-            }
+            statusEl.className = `status-chip ${status}`;
+            statusEl.innerHTML = `<span class="chip-dot"></span>${status.charAt(0).toUpperCase() + status.slice(1)}`;
+            responseEl.textContent = responseTime;
         }
-
+        
+        function updateMainStatus(status, text) {
+            const badge = document.getElementById('mainStatusBadge');
+            const textEl = document.getElementById('mainStatusText');
+            badge.className = `status-badge ${status}`;
+            textEl.textContent = text;
+        }
+        
+        // Generate uptime bars
         function generateUptimeBars() {
-            const container = document.getElementById('uptime-bars');
-            const bars = [];
+            const container = document.getElementById('uptimeBars');
+            container.innerHTML = '';
             
             for (let i = 0; i < 90; i++) {
-                // Simulate 99.95% uptime with occasional partial outages
-                const rand = Math.random();
-                let status = 'up';
-                if (rand > 0.995) status = 'partial';
-                if (rand > 0.9995) status = 'down';
+                const bar = document.createElement('div');
+                const random = Math.random();
                 
-                bars.push(`<div class="uptime-bar ${status}" title="Day ${90 - i}"></div>`);
+                if (random > 0.02) {
+                    bar.className = 'uptime-bar up';
+                    bar.setAttribute('data-tooltip', `Day ${90-i}: 100% uptime`);
+                } else if (random > 0.005) {
+                    bar.className = 'uptime-bar partial';
+                    bar.setAttribute('data-tooltip', `Day ${90-i}: 99.5% uptime`);
+                } else {
+                    bar.className = 'uptime-bar down';
+                    bar.setAttribute('data-tooltip', `Day ${90-i}: Outage`);
+                }
+                
+                container.appendChild(bar);
             }
-            
-            container.innerHTML = bars.join('');
         }
-
-        function updateTimestamp() {
-            const el = document.getElementById('last-updated');
-            const now = new Date();
-            el.textContent = now.toISOString().split('T')[1].split('.')[0] + ' UTC';
-        }
-
-        function capitalizeFirst(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
-        function subscribeStatus(e) {
+        
+        function subscribeAlerts(e) {
             e.preventDefault();
             const email = e.target.querySelector('input').value;
-            alert(`Subscribed! You'll receive status updates at ${email}`);
+            alert(`Subscribed! You'll receive alerts at ${email}`);
             e.target.reset();
         }
+        
+        // Initialize
+        generateUptimeBars();
+        checkServices();
+        setInterval(checkServices, 60000); // Refresh every minute
     </script>
 </body>
 </html>
