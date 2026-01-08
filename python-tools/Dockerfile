@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install dependencies
-COPY requirements.txt .
+# Copy requirements and install dependencies (from python-tools subdirectory)
+COPY python-tools/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir --user -r requirements.txt
 
@@ -36,8 +36,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy Python packages from builder
 COPY --from=builder /root/.local /home/verity/.local
 
-# Copy application code
-COPY --chown=verity:verity . .
+# Copy application code from python-tools subdirectory
+COPY --chown=verity:verity python-tools/ .
 
 # Set environment variables
 ENV PATH=/home/verity/.local/bin:$PATH \
