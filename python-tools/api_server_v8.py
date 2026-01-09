@@ -138,8 +138,9 @@ class AIProviders:
         logger.info(f"Available providers: {self.available_providers}")
     
     async def verify_with_groq(self, claim: str) -> Dict:
-        """Verify claim using Groq (Llama 3.1)"""
+        """Verify claim using Groq (Llama 3.3)"""
         if not Config.GROQ_API_KEY:
+            logger.warning("Groq API key not configured")
             return None
         
         try:
@@ -147,7 +148,7 @@ class AIProviders:
                 "https://api.groq.com/openai/v1/chat/completions",
                 headers={"Authorization": f"Bearer {Config.GROQ_API_KEY}"},
                 json={
-                    "model": "llama-3.1-70b-versatile",
+                    "model": "llama-3.3-70b-versatile",
                     "messages": [
                         {"role": "system", "content": "You are a fact-checker. Analyze claims and provide verdicts: 'true', 'false', 'partially_true', 'mostly_true', 'mostly_false', or 'unverifiable'. Include confidence (0-1) and brief explanation."},
                         {"role": "user", "content": f"Fact-check this claim: {claim}"}
@@ -157,10 +158,13 @@ class AIProviders:
                 }
             )
             
+            logger.info(f"Groq response status: {response.status_code}")
             if response.status_code == 200:
                 data = response.json()
                 content = data["choices"][0]["message"]["content"]
                 return {"provider": "groq", "response": content, "success": True}
+            else:
+                logger.error(f"Groq HTTP error: {response.status_code} - {response.text}")
         except Exception as e:
             logger.error(f"Groq error: {e}")
         
@@ -169,6 +173,7 @@ class AIProviders:
     async def verify_with_perplexity(self, claim: str) -> Dict:
         """Verify claim using Perplexity (with citations)"""
         if not Config.PERPLEXITY_API_KEY:
+            logger.warning("Perplexity API key not configured")
             return None
         
         try:
@@ -176,7 +181,7 @@ class AIProviders:
                 "https://api.perplexity.ai/chat/completions",
                 headers={"Authorization": f"Bearer {Config.PERPLEXITY_API_KEY}"},
                 json={
-                    "model": "llama-3.1-sonar-small-128k-online",
+                    "model": "sonar-pro",
                     "messages": [
                         {"role": "system", "content": "You are a fact-checker with access to current information. Verify claims and cite sources. Provide verdict: 'true', 'false', 'partially_true', 'mostly_true', 'mostly_false', or 'unverifiable'."},
                         {"role": "user", "content": f"Fact-check with sources: {claim}"}
@@ -184,10 +189,13 @@ class AIProviders:
                 }
             )
             
+            logger.info(f"Perplexity response status: {response.status_code}")
             if response.status_code == 200:
                 data = response.json()
                 content = data["choices"][0]["message"]["content"]
                 return {"provider": "perplexity", "response": content, "success": True}
+            else:
+                logger.error(f"Perplexity HTTP error: {response.status_code} - {response.text}")
         except Exception as e:
             logger.error(f"Perplexity error: {e}")
         
@@ -196,11 +204,12 @@ class AIProviders:
     async def verify_with_google(self, claim: str) -> Dict:
         """Verify claim using Google Gemini"""
         if not Config.GOOGLE_AI_API_KEY:
+            logger.warning("Google AI API key not configured")
             return None
         
         try:
             response = await self.http_client.post(
-                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={Config.GOOGLE_AI_API_KEY}",
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={Config.GOOGLE_AI_API_KEY}",
                 json={
                     "contents": [{
                         "parts": [{"text": f"As a fact-checker, verify this claim and provide: verdict (true/false/partially_true/unverifiable), confidence (0-1), and brief explanation with reasoning.\n\nClaim: {claim}"}]
@@ -209,10 +218,13 @@ class AIProviders:
                 }
             )
             
+            logger.info(f"Google response status: {response.status_code}")
             if response.status_code == 200:
                 data = response.json()
                 content = data["candidates"][0]["content"]["parts"][0]["text"]
                 return {"provider": "google", "response": content, "success": True}
+            else:
+                logger.error(f"Google HTTP error: {response.status_code} - {response.text}")
         except Exception as e:
             logger.error(f"Google error: {e}")
         
@@ -223,6 +235,8 @@ class AIProviders:
         results = []
         providers_used = []
         
+        logger.info(f"Starting verification with providers: {self.available_providers}")
+        
         # Run providers concurrently
         tasks = [
             self.verify_with_perplexity(claim),
@@ -232,12 +246,21 @@ class AIProviders:
         
         responses = await asyncio.gather(*tasks, return_exceptions=True)
         
-        for response in responses:
-            if response and isinstance(response, dict) and response.get("success"):
+        for i, response in enumerate(responses):
+            provider_names = ["perplexity", "groq", "google"]
+            if isinstance(response, Exception):
+                logger.error(f"Provider {provider_names[i]} exception: {response}")
+            elif response is None:
+                logger.warning(f"Provider {provider_names[i]} returned None")
+            elif isinstance(response, dict) and response.get("success"):
                 results.append(response)
                 providers_used.append(response["provider"])
+                logger.info(f"Provider {provider_names[i]} succeeded")
+            else:
+                logger.warning(f"Provider {provider_names[i]} failed: {response}")
         
         if not results:
+            logger.warning("No providers returned successful results")
             return {
                 "verdict": "unverifiable",
                 "confidence": 0.5,
@@ -397,6 +420,20 @@ async def root():
             "/stats": "GET - Statistics",
             "/providers": "GET - List providers"
         }
+    }
+
+
+@app.get("/debug/env")
+async def debug_env():
+    """Debug endpoint to check environment variables"""
+    return {
+        "groq_key_present": bool(Config.GROQ_API_KEY),
+        "groq_key_preview": Config.GROQ_API_KEY[:10] + "..." if Config.GROQ_API_KEY else None,
+        "google_key_present": bool(Config.GOOGLE_AI_API_KEY),
+        "google_key_preview": Config.GOOGLE_AI_API_KEY[:10] + "..." if Config.GOOGLE_AI_API_KEY else None,
+        "perplexity_key_present": bool(Config.PERPLEXITY_API_KEY),
+        "perplexity_key_preview": Config.PERPLEXITY_API_KEY[:10] + "..." if Config.PERPLEXITY_API_KEY else None,
+        "env": Config.ENV
     }
 
 
