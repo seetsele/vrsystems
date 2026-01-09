@@ -6,14 +6,14 @@
     <title>API Keys - Verity Systems</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <style>
         .keys-section { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 2rem; }
         .keys-section-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); }
         .keys-section-header h2 { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
         .keys-section-header h2 svg { color: var(--accent-cyan); }
-        .keys-count { background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .keys-count { background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
         .api-key-item { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); transition: background 0.2s; gap: 1.5rem; }
         .api-key-item:hover { background: rgba(255,255,255,0.02); }
         .api-key-item:last-child { border-bottom: none; }
@@ -22,7 +22,7 @@
         .key-badge.revoked { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
         .api-key-value { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); background: var(--bg-input); padding: 0.5rem 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
         .btn-copy { background: rgba(255,255,255,0.1); border: none; color: var(--text-muted); cursor: pointer; padding: 0.35rem; border-radius: 4px; display: flex; transition: all 0.2s; }
-        .btn-copy:hover { color: var(--accent-cyan); background: rgba(34, 211, 238, 0.15); }
+        .btn-copy:hover { color: #f59e0b; background: rgba(245, 158, 11, 0.15); }
         .api-key-meta { display: flex; gap: 1.5rem; font-size: 0.8rem; color: var(--text-faint); flex-wrap: wrap; }
         .api-key-meta span { display: flex; align-items: center; gap: 0.35rem; }
         .btn-action { background: rgba(255,255,255,0.05); border: 1px solid var(--border-medium); color: var(--text-secondary); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; font-family: inherit; }
@@ -50,15 +50,15 @@
         .new-key-display h4 { color: var(--success); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
         .new-key-display p { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem; }
         .new-key-value { background: rgba(0,0,0,0.4); padding: 0.75rem 1rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; color: var(--success); display: flex; align-items: center; justify-content: space-between; word-break: break-all; }
-        .btn-create-key { background: var(--gradient-primary); color: #fff; padding: 0.875rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(34, 211, 238, 0.2); }
-        .btn-create-key:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(34, 211, 238, 0.3); }
+        .btn-create-key { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #0a0a0a; padding: 0.875rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2); }
+        .btn-create-key:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4); }
         .warning-icon { width: 36px; height: 36px; background: rgba(234, 179, 8, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .warning-icon svg { color: var(--warning); }
         .warning-content h4 { color: var(--warning); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
         .warning-content p { color: var(--text-muted); font-size: 0.825rem; }
         .btn-cancel { background: transparent; border: 1px solid var(--border-medium); color: var(--text-primary); padding: 0.75rem 1.5rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 500; transition: all 0.2s; font-family: inherit; }
-        .btn-submit { background: var(--gradient-primary); border: none; color: #fff; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; transition: all 0.2s; font-family: inherit; }
-        .btn-submit:hover { box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3); }
+        .btn-submit { background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none; color: #0a0a0a; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; transition: all 0.2s; font-family: inherit; }
+        .btn-submit:hover { box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
         @media (max-width: 768px) {
             .api-key-item { flex-direction: column; align-items: flex-start; }
             .api-key-actions { width: 100%; margin-top: 1rem; display: flex; }
@@ -66,11 +66,11 @@
         }
     </style>
 </head>
-<div id="loading-screen" style="position:fixed;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
+<div id="loading-screen" style="position:fixed;inset:0;background:#0a0a0b;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
     <svg width="64" height="64" viewBox="-26 -28 52 52" fill="none" style="animation:heartbeat 1.2s ease-in-out infinite;">
         <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#lg)" stroke-width="3.5" fill="none"/>
         <path d="M-6,0 L-2,4 L6,-5" stroke="url(#lg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs>
     </svg>
 </div>
 <style>
@@ -86,9 +86,9 @@
         <div class="gradient-orb orb-1"></div>
         <div class="gradient-orb orb-2"></div>
         <!-- Floating Badge -->
-        <div class="floating-badge" style="position:fixed;top:14%;right:6%;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#22d3ee;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 4s ease-in-out infinite;pointer-events:none;">
+        <div class="floating-badge" style="position:fixed;top:14%;right:6%;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#f59e0b;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 4s ease-in-out infinite;pointer-events:none;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778"/></svg>
-            <span>Developer API</span>
+            <span>Free API Access</span>
         </div>
     </div>
 
@@ -98,14 +98,14 @@
                 <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
                     <circle cx="20" cy="20" r="18" stroke="url(#sideGrad)" stroke-width="2" fill="none"/>
                     <path d="M12 20L17 25L28 14" stroke="url(#sideGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs>
                 </svg>
                 <span class="logo-text">verity<span class="dot">.</span></span>
             </a>
         </div>
         <nav class="sidebar-nav">
             <a href="dashboard.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
-            <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
+            <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
             <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
             <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
             <a href="api-keys.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
@@ -115,8 +115,8 @@
             <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a>
         </nav>
         <div class="sidebar-plan">
-            <div class="plan-info"><span class="plan-name">Starter</span><span class="plan-badge">FREE</span></div>
-            <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" id="usageFill" style="width: 0%"></div></div><span class="usage-text"><span id="usageCount">0</span> / <span id="usageLimit">50</span> verifications</span></div>
+            <div class="plan-info"><span class="plan-name">Free Tier</span><span class="plan-badge" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #0a0a0a;">FREE</span></div>
+            <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" id="usageFill" style="width: 0%; background: linear-gradient(90deg, #f59e0b, #fbbf24);"></div></div><span class="usage-text"><span id="usageCount">0</span> / <span id="usageLimit">300</span> verifications</span></div>
         </div>
     </aside>
 
@@ -131,13 +131,24 @@
             <div class="page-hero">
                 <div class="page-hero-content">
                     <div class="page-hero-text">
-                        <h1><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</h1>
-                        <p>Create and manage API keys to integrate Verity's fact-checking capabilities into your applications.</p>
+                        <h1 style="font-family: 'Newsreader', Georgia, serif; font-weight: 500;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</h1>
+                        <p>Get your free API key instantly. 300 verifications/month included — no credit card required.</p>
                     </div>
                     <button class="btn-create-key" onclick="openCreateKeyModal()">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        Create New Key
+                        Get Free API Key
                     </button>
+                </div>
+            </div>
+
+            <!-- Free Tier Banner -->
+            <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f59e0b, #fbbf24); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0b" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #f59e0b; margin-bottom: 0.25rem;">Free Tier — 300 Verifications/Month</div>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">Full API access with 2 AI models. No credit card required. <a href="pricing.html" style="color: #f59e0b; text-decoration: underline;">Upgrade for more →</a></div>
                 </div>
             </div>
 
@@ -169,10 +180,10 @@
                 </div>
                 <div id="apiKeysList">
                     <div class="empty-keys" id="emptyKeysState">
-                        <div class="empty-keys-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
-                        <h4>No API Keys Yet</h4>
-                        <p>Create your first API key to start integrating with the Verity API</p>
-                        <button class="btn-create-key" onclick="openCreateKeyModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Your First Key</button>
+                        <div class="empty-keys-icon" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+                        <h4>Get Your Free API Key</h4>
+                        <p>300 verifications/month included free. No credit card required.</p>
+                        <button class="btn-create-key" onclick="openCreateKeyModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Get Free API Key</button>
                     </div>
                 </div>
             </div>

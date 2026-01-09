@@ -8,5 +8,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.34.0"
   }
 }

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compare Verity to other fact-checking solutions. See why Verity's multi-model AI verification is the best choice for your team.">
+    <meta name="theme-color" content="#0a0a0b">
+    <title>Compare Verity to Alternatives | AI Fact-Checking Comparison</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/eden-style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%230a0a0b' width='100' height='100' rx='20'/%3E%3Cpath fill='none' stroke='%23f59e0b' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' d='M25 50 L40 65 L75 30'/%3E%3C/svg%3E">
+    
+    <style>
+        :root {
+            --amber: #f59e0b;
+            --amber-light: #fbbf24;
+            --green: #10b981;
+            --red: #ef4444;
+            --bg-dark: #0a0a0b;
+            --bg-card: #111113;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Hero */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--amber);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 500;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, var(--amber) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 650px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+        
+        /* Comparison Table */
+        .comparison-section {
+            padding: 4rem 2rem;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .comparison-table thead {
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .comparison-table th {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.9);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .comparison-table th:first-child {
+            width: 25%;
+        }
+        
+        .comparison-table th.highlight {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber);
+        }
+        
+        .comparison-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+            vertical-align: middle;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table td.highlight {
+            background: rgba(245, 158, 11, 0.05);
+        }
+        
+        .comparison-table .feature-name {
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        .check-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 50%;
+            color: var(--green);
+        }
+        
+        .x-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 50%;
+            color: var(--red);
+        }
+        
+        .partial-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: rgba(234, 179, 8, 0.15);
+            border-radius: 50%;
+            color: #eab308;
+        }
+        
+        .highlight-value {
+            color: var(--amber);
+            font-weight: 600;
+        }
+        
+        /* Competitor Cards */
+        .competitors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 4rem 2rem;
+        }
+        
+        .competitor-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .competitor-card:hover {
+            border-color: rgba(255,255,255,0.15);
+            transform: translateY(-4px);
+        }
+        
+        .competitor-card.verity {
+            border-color: rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, var(--bg-card) 100%);
+        }
+        
+        .competitor-card h3 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .competitor-card.verity h3 {
+            color: var(--amber);
+        }
+        
+        .competitor-card .tagline {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .competitor-card ul {
+            list-style: none;
+        }
+        
+        .competitor-card li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .competitor-card li svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        /* Why Verity Section */
+        .why-section {
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, transparent, rgba(245, 158, 11, 0.03));
+        }
+        
+        .why-section h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2.5rem;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .why-section .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 3rem;
+        }
+        
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .why-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        
+        .why-card .icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.1));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: var(--amber);
+        }
+        
+        .why-card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .why-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(251, 191, 36, 0.05));
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .cta-section h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2.25rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-section p {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--amber), var(--amber-light));
+            color: #0a0a0b;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-ghost {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-ghost:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 11, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .logo svg {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: #fff;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.4);
+            font-size: 0.875rem;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="../index.html" class="logo">
+            <svg viewBox="-26 -28 52 52" fill="none">
+                <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#navGrad)" stroke-width="4" fill="none"/>
+                <path d="M-6,0 L-2,4 L6,-5" stroke="url(#navGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <defs><linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs>
+            </svg>
+            verity<span style="color: var(--amber);">.</span>
+        </a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="../verify.html">Verify</a>
+            <a href="../pricing.html">Pricing</a>
+            <a href="../api-docs.html">API Docs</a>
+        </div>
+        <a href="../api-keys.html" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Get Free API Key</a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Compare Solutions
+        </div>
+        <h1>Why Teams Choose Verity</h1>
+        <p>The only real-time, multi-model AI fact-checking API. See how Verity compares to alternatives for enterprise verification needs.</p>
+    </section>
+
+    <section class="comparison-section">
+        <div class="container">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th class="highlight">Verity</th>
+                        <th>Google Fact Check</th>
+                        <th>ClaimBuster</th>
+                        <th>Manual Fact-Checking</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="feature-name">Real-time API</td>
+                        <td class="highlight"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                        <td><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                        <td><span class="partial-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"/></svg></span></td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Multi-model AI consensus</td>
+                        <td class="highlight"><span class="highlight-value">15+ providers</span></td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                        <td>1 model</td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Response time</td>
+                        <td class="highlight"><span class="highlight-value">&lt;2 seconds</span></td>
+                        <td>~1 second</td>
+                        <td>3-5 seconds</td>
+                        <td>30-60 minutes</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Production API</td>
+                        <td class="highlight"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                        <td><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                        <td>Academic only</td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Confidence scoring</td>
+                        <td class="highlight"><span class="highlight-value">Bayesian + Monte Carlo</span></td>
+                        <td>Simple rating</td>
+                        <td>Binary score</td>
+                        <td>Subjective</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Source citations</td>
+                        <td class="highlight"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                        <td><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                        <td><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Enterprise SLA</td>
+                        <td class="highlight"><span class="highlight-value">99.9% uptime</span></td>
+                        <td><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Batch verification</td>
+                        <td class="highlight"><span class="check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Free tier</td>
+                        <td class="highlight"><span class="highlight-value">300/month</span></td>
+                        <td>Limited</td>
+                        <td>Research only</td>
+                        <td><span class="x-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Cost at scale (10K/month)</td>
+                        <td class="highlight"><span class="highlight-value">$199/month</span></td>
+                        <td>Free (limited)</td>
+                        <td>Not available</td>
+                        <td>$15,000+/month</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="why-section">
+        <h2>Why Verity Wins</h2>
+        <p class="subtitle">The technology advantages that make Verity the choice for enterprise teams.</p>
+        
+        <div class="why-grid container">
+            <div class="why-card">
+                <div class="icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <h4>Multi-Model Consensus</h4>
+                <p>15+ AI models cross-verify claims, eliminating single-model bias and hallucinations that plague single-provider solutions.</p>
+            </div>
+            
+            <div class="why-card">
+                <div class="icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <h4>Real-Time Speed</h4>
+                <p>Fast response times enable real-time verification in content moderation, publishing workflows, and live broadcasts.</p>
+            </div>
+            
+            <div class="why-card">
+                <div class="icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h4>Enterprise Ready</h4>
+                <p>99.9% uptime SLA, SOC 2 compliance, on-premise deployment options, and dedicated support for mission-critical applications.</p>
+            </div>
+            
+            <div class="why-card">
+                <div class="icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <h4>Transparent Reasoning</h4>
+                <p>Every verification includes source citations, confidence intervals, and explainable AI reasoning you can audit and trust.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <h2>Ready to See the Difference?</h2>
+        <p>Get your free API key and verify your first claim in under 60 seconds.</p>
+        <div class="cta-buttons">
+            <a href="../api-keys.html" class="btn-primary">
+                Get Free API Key
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="../pricing.html" class="btn-ghost">View Pricing</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Verity Systems. All rights reserved.</p>
+    </footer>
+</body>
+</html>

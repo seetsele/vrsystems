@@ -4,7 +4,7 @@
  * FULLY INTEGRATED with Verity Ultimate API v2.0
  * 
  * Features:
- * - Multi-AI Verification (50+ AI models)
+ * - Multi-AI Verification (15+ AI providers)
  * - 7-Layer Consensus Algorithm
  * - NLP Analysis (Fallacy/Propaganda/Bias Detection)
  * - Deepfake & Media Analysis
@@ -930,7 +930,8 @@ class VerityVerificationEngine {
         
         return {
             verdict: verdict,
-            summary: `[Demo Mode] ${verdict.label} with ${verdict.score.toFixed(1)}% confidence. Connect to Verity API for full 50+ AI provider analysis.`,
+            summary: `[Demo Mode] ${verdict.label} with ${verdict.score.toFixed(1)}% confidence. Connect to Verity API for full 15+ AI provider analysis.`,
+
             tags: [inputData.type.charAt(0).toUpperCase() + inputData.type.slice(1) + ' Analysis', 'Demo Mode'],
             accuracy: {
                 factual: 60 + Math.random() * 35,
@@ -954,9 +955,9 @@ class VerityVerificationEngine {
     generateDemoAIAnalysis(inputData, verdict) {
         return `
             <div class="demo-notice" style="padding: 1rem; background: rgba(234, 179, 8, 0.15); border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid var(--warning);">
-                <strong>⚡ Demo Mode</strong> - API offline. Connect to Verity API for full 50+ AI provider analysis with:
+                <strong>⚡ Demo Mode</strong> - API offline. Connect to Verity API for full 15+ AI provider analysis with:
                 <ul style="margin: 0.5rem 0 0 1.5rem; padding: 0;">
-                    <li>Multi-AI consensus from 50+ models</li>
+                    <li>Multi-AI consensus from 15+ providers</li>
                     <li>NLP fallacy & propaganda detection</li>
                     <li>Monte Carlo confidence estimation</li>
                     <li>Temporal & geospatial reasoning</li>
@@ -1879,7 +1880,7 @@ ${result.sources.map(s => `- ${s.name} (${s.trust} trust)`).join('\n')}
 
 ================================================================================
 Powered by Verity Systems - The Ultimate Fact-Checking Platform
-50+ AI Models | 7-Layer Consensus | Industry Leading Accuracy
+15+ AI Providers | 7-Layer Consensus | Industry Leading Accuracy
 ================================================================================
         `.trim();
     }

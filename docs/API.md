@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Verity Systems API provides programmatic access to our fact-checking platform. Verify claims using 50+ AI models, news sources, academic databases, and fact-checkers.
+The Verity Systems API provides programmatic access to our fact-checking platform. Verify claims using 15+ AI providers, news sources, academic databases, and fact-checkers.
 
 **Base URL**: `https://api.verity.systems`
 
