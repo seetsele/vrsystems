@@ -143,9 +143,8 @@ Example: A viral TikTok claims that putting garlic in your ear cures ear infecti
         <p>© 2024-2026 Verity Systems Inc. | <a href="../ultimate-suite.html">Ultimate Suite</a> • <a href="../api-docs.html">API Docs</a></p>
     </footer>
     
+    <script src="../assets/js/verity-fallback.js"></script>
     <script>
-        const API_BASE = 'https://veritysystems-production.up.railway.app';
-        
         async function analyzeContent() {
             const content = document.getElementById('content-input').value.trim();
             if (!content) { alert('Please enter content to track'); return; }
@@ -155,12 +154,7 @@ Example: A viral TikTok claims that putting garlic in your ear cures ear infecti
             btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="spin"><circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="32"/></svg> Tracking...';
             
             try {
-                const response = await fetch(`${API_BASE}/tools/realtime-stream`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content })
-                });
-                const result = await response.json();
+                const result = await callVerityAPI('/tools/realtime-stream', content);
                 displayResults(result);
             } catch (error) {
                 document.getElementById('result-summary').innerHTML = '⚠️ Tracking failed.';

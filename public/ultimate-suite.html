@@ -1117,8 +1117,171 @@
     </footer>
     
     <script>
-        // API Configuration
-        const API_BASE = 'https://veritysystems-production.up.railway.app';
+        // API Configuration with fallback
+        const API_URLS = [
+            'https://veritysystems-production.up.railway.app',
+            'http://localhost:8000'  // Fallback to local
+        ];
+        let API_BASE = API_URLS[0];
+        let apiAvailable = null;  // Track API availability
+        
+        // Check API health on load
+        async function checkApiHealth() {
+            for (const url of API_URLS) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    const response = await fetch(`${url}/health`, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    if (response.ok) {
+                        API_BASE = url;
+                        apiAvailable = true;
+                        console.log(`✅ API available at ${url}`);
+                        return true;
+                    }
+                } catch (e) {
+                    console.log(`❌ API not available at ${url}`);
+                }
+            }
+            apiAvailable = false;
+            console.log('⚠️ Using fallback client-side analysis');
+            return false;
+        }
+        checkApiHealth();
+        
+        // Client-side fallback analysis functions
+        const fallbackAnalysis = {
+            social: (content) => {
+                const c = content.toLowerCase();
+                const indicators = [];
+                let score = 70;
+                
+                if (c.includes('viral') || c.includes('trending')) {
+                    indicators.push({ type: 'viral', severity: 'medium', detail: 'Viral content detected' });
+                    score -= 10;
+                }
+                if (c.includes('new account') || c.includes('just created')) {
+                    indicators.push({ type: 'new_account', severity: 'high', detail: 'New account warning' });
+                    score -= 20;
+                }
+                if (/\d+k|\d+m/i.test(c) && c.includes('followers')) {
+                    indicators.push({ type: 'follower_anomaly', severity: 'medium', detail: 'Unusual follower count' });
+                    score -= 15;
+                }
+                
+                return {
+                    tool: 'Social Media Analyzer',
+                    score: Math.max(5, score),
+                    verdict: score >= 60 ? 'low_risk' : score >= 40 ? 'medium_risk' : 'high_risk',
+                    summary: `📱 ${indicators.length} indicators detected (client-side)`,
+                    indicators,
+                    fallback: true
+                };
+            },
+            image: (content) => {
+                const c = content.toLowerCase();
+                const findings = [];
+                let score = 70;
+                
+                const aiTerms = ['ai-generated', 'midjourney', 'dall-e', 'stable diffusion', 'photoshopped', 'manipulated'];
+                aiTerms.forEach(term => {
+                    if (c.includes(term)) {
+                        findings.push({ type: 'ai_generated', severity: 'high', detail: `AI/manipulation indicator: ${term}` });
+                        score -= 25;
+                    }
+                });
+                
+                return {
+                    tool: 'Image Forensics',
+                    score: Math.max(10, score),
+                    verdict: score >= 60 ? 'authentic' : 'uncertain',
+                    summary: `🖼️ ${findings.length} finding(s) detected (client-side)`,
+                    findings,
+                    fallback: true
+                };
+            },
+            source: (content) => {
+                const c = content.toLowerCase();
+                const sources = [];
+                let score = 50;
+                
+                const tier1 = ['reuters', 'associated press', 'ap news', 'bbc', 'npr'];
+                const tier2 = ['nytimes', 'washington post', 'guardian', 'cnn', 'wsj'];
+                const tier3 = ['fox news', 'msnbc', 'huffpost', 'daily mail'];
+                
+                tier1.forEach(s => { if (c.includes(s)) { sources.push({ name: s, tier: 1 }); score += 20; } });
+                tier2.forEach(s => { if (c.includes(s)) { sources.push({ name: s, tier: 2 }); score += 10; } });
+                tier3.forEach(s => { if (c.includes(s)) { sources.push({ name: s, tier: 3 }); score += 5; } });
+                
+                return {
+                    tool: 'Source Credibility',
+                    score: Math.min(95, score),
+                    verdict: score >= 70 ? 'high_credibility' : score >= 40 ? 'medium_credibility' : 'low_credibility',
+                    summary: `📰 ${sources.length} source(s) analyzed (client-side)`,
+                    sources,
+                    fallback: true
+                };
+            },
+            statistics: (content) => {
+                const numbers = content.match(/\d+(\.\d+)?%?/g) || [];
+                const pValue = content.match(/p[\-\s]?value\s*[=:]\s*([\d.]+)/i);
+                let score = 70;
+                const findings = [];
+                
+                if (pValue && parseFloat(pValue[1]) > 0.05) {
+                    findings.push({ type: 'weak_significance', detail: 'P-value > 0.05 indicates weak significance' });
+                    score -= 20;
+                }
+                if (content.includes('100%') || content.includes('0%')) {
+                    findings.push({ type: 'extreme_value', detail: 'Extreme percentage (0% or 100%) is suspicious' });
+                    score -= 15;
+                }
+                
+                return {
+                    tool: 'Statistics Validator',
+                    score,
+                    verdict: score >= 60 ? 'plausible' : 'questionable',
+                    summary: `📊 ${numbers.length} numbers, ${findings.length} issues (client-side)`,
+                    findings,
+                    fallback: true
+                };
+            },
+            research: (content) => {
+                return {
+                    tool: 'Research Assistant',
+                    score: 50,
+                    verdict: 'requires_verification',
+                    summary: '🔬 AI research unavailable - use Scholar/Semantic Scholar manually (client-side)',
+                    research_databases: [
+                        { name: 'Google Scholar', url: `https://scholar.google.com/scholar?q=${encodeURIComponent(content.substring(0, 100))}` },
+                        { name: 'Semantic Scholar', url: `https://www.semanticscholar.org/search?q=${encodeURIComponent(content.substring(0, 100))}` }
+                    ],
+                    fallback: true
+                };
+            },
+            stream: (content) => {
+                const c = content.toLowerCase();
+                let velocity = 'low';
+                let score = 70;
+                
+                if (c.includes('breaking') || c.includes('just now') || c.includes('urgent')) {
+                    velocity = 'high';
+                    score -= 20;
+                } else if (c.includes('trending') || c.includes('viral')) {
+                    velocity = 'medium';
+                    score -= 10;
+                }
+                
+                return {
+                    tool: 'Real-Time Stream',
+                    score,
+                    spread_velocity: velocity,
+                    verdict: `${velocity}_spread_risk`,
+                    summary: `📡 Velocity: ${velocity.toUpperCase()} (client-side)`,
+                    fallback: true
+                };
+            }
+        };
         
         // Engine configurations with API endpoints
         const engines = {
@@ -1156,29 +1319,46 @@
         
         let isAnalyzing = false;
         
-        async function callToolAPI(endpoint, content) {
-            try {
-                const response = await fetch(`${API_BASE}${endpoint}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ content })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
+        async function callToolAPI(endpoint, content, engineId) {
+            // Try API first if available
+            if (apiAvailable !== false) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+                    
+                    const response = await fetch(`${API_BASE}${endpoint}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ content }),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    result.fallback = false;
+                    return result;
+                } catch (error) {
+                    console.warn(`API call failed for ${endpoint}, using fallback:`, error.message);
                 }
-                
-                return await response.json();
-            } catch (error) {
-                console.error(`Error calling ${endpoint}:`, error);
-                return {
-                    score: 50,
-                    summary: `⚠️ Analysis unavailable: ${error.message}`,
-                    error: true
-                };
             }
+            
+            // Use client-side fallback
+            if (fallbackAnalysis[engineId]) {
+                console.log(`Using fallback analysis for ${engineId}`);
+                return fallbackAnalysis[engineId](content);
+            }
+            
+            return {
+                score: 50,
+                summary: `⚠️ Analysis unavailable`,
+                error: true
+            };
         }
         
         async function runUltimateAnalysis() {
@@ -1213,7 +1393,7 @@
             
             // Run all engines in parallel for speed
             const promises = Object.entries(engines).map(async ([engineId, engine]) => {
-                const result = await callToolAPI(engine.endpoint, input);
+                const result = await callToolAPI(engine.endpoint, input, engineId);
                 return { engineId, result };
             });
             
@@ -1230,7 +1410,7 @@
                     card.classList.remove('analyzing');
                     card.classList.add('complete');
                     card.querySelector('.engine-status').className = 'engine-status complete';
-                    card.querySelector('.engine-status').textContent = 'Complete';
+                    card.querySelector('.engine-status').textContent = result.fallback ? 'Complete (local)' : 'Complete';
                     card.querySelector('.engine-result').innerHTML = result.summary || 'Analysis complete';
                 } else {
                     card.classList.remove('analyzing');
