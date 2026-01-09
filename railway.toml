@@ -1,8 +1,10 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "python-tools/Dockerfile"
+builder = "NIXPACKS"
+nixpacksConfigPath = "python-tools/nixpacks.toml"
+watchPatterns = ["python-tools/**"]
 
 [deploy]
+startCommand = "cd python-tools && uvicorn api_server_v8:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/health"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
