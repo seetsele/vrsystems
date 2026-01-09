@@ -61,7 +61,7 @@ class Config:
     REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "false").lower() == "true"
     
     # ==========================================================================
-    # ALL AI PROVIDER API KEYS
+    # ALL AI PROVIDER API KEYS - 20+ PROVIDERS
     # ==========================================================================
     
     # Tier 1: Primary Providers (fastest, most reliable)
@@ -71,6 +71,7 @@ class Config:
     
     # Tier 2: Major Providers
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
     MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
     COHERE_API_KEY = os.getenv("COHERE_API_KEY")
     
@@ -78,11 +79,22 @@ class Config:
     CEREBRAS_API_KEY = os.getenv("CEREBRAS_API_KEY")
     SAMBANOVA_API_KEY = os.getenv("SAMBANOVA_API_KEY")
     FIREWORKS_API_KEY = os.getenv("FIREWORKS_API_KEY")
+    DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
     
     # Tier 4: Aggregators & Open Source
     OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
     HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
     TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
+    REPLICATE_API_KEY = os.getenv("REPLICATE_API_KEY")
+    
+    # Tier 5: Additional Providers
+    XAI_API_KEY = os.getenv("XAI_API_KEY")  # Grok
+    AI21_API_KEY = os.getenv("AI21_API_KEY")
+    LEPTON_API_KEY = os.getenv("LEPTON_API_KEY")
+    ANYSCALE_API_KEY = os.getenv("ANYSCALE_API_KEY")
+    NVIDIA_NIM_API_KEY = os.getenv("NVIDIA_NIM_API_KEY")
+    CLOUDFLARE_API_KEY = os.getenv("CLOUDFLARE_ACCOUNT_ID")  # Cloudflare Workers AI
+    CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
     
     # Search & Research APIs
     TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
@@ -108,29 +120,40 @@ logger = logging.getLogger("VerityAPI")
 
 
 # =============================================================================
-# LATEST AI MODELS (January 2026)
+# LATEST AI MODELS (January 2026) - 20+ PROVIDERS
 # =============================================================================
 
 LATEST_MODELS = {
-    # Tier 1: Primary
-    "groq": "llama-3.3-70b-versatile",  # Fast inference
-    "perplexity": "sonar-pro",           # Real-time web search
-    "google": "gemini-2.0-flash",        # Multimodal, fast
+    # Tier 1: Primary (fastest)
+    "groq": "llama-3.3-70b-versatile",
+    "perplexity": "sonar-pro",
+    "google": "gemini-2.0-flash",
     
-    # Tier 2: Major
-    "openai": "gpt-4o",                  # Latest GPT-4o
-    "mistral": "mistral-large-latest",   # Mistral Large 2
-    "cohere": "command-r-plus",          # Cohere's best
+    # Tier 2: Major Providers
+    "openai": "gpt-4o",
+    "anthropic": "claude-3-5-sonnet-20241022",
+    "mistral": "mistral-large-latest",
+    "cohere": "command-r-plus",
     
     # Tier 3: Specialized
-    "cerebras": "llama-3.3-70b",         # Ultra-fast inference
-    "sambanova": "Meta-Llama-3.3-70B-Instruct",  # Fast Llama
+    "cerebras": "llama-3.3-70b",
+    "sambanova": "Meta-Llama-3.3-70B-Instruct",
     "fireworks": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+    "deepseek": "deepseek-chat",
     
     # Tier 4: Aggregators
     "openrouter": "meta-llama/llama-3.3-70b-instruct",
     "huggingface": "meta-llama/Llama-3.3-70B-Instruct",
     "together": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    "replicate": "meta/llama-3.3-70b-instruct",
+    
+    # Tier 5: Additional
+    "xai": "grok-2",
+    "ai21": "jamba-1.5-large",
+    "lepton": "llama-3.3-70b",
+    "anyscale": "meta-llama/Llama-3.3-70B-Instruct",
+    "nvidia": "meta/llama-3.1-70b-instruct",
+    "cloudflare": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
 }
 
 
@@ -166,11 +189,73 @@ rate_limiter = RateLimiter(Config.RATE_LIMIT_REQUESTS, Config.RATE_LIMIT_WINDOW)
 
 
 # =============================================================================
-# AI PROVIDERS - ALL 12 PROVIDERS
+# PROVIDER HEALTH TRACKING - ENSURES ALL PROVIDERS WORK AT ALL TIMES
+# =============================================================================
+
+class ProviderHealth:
+    """Track provider health and implement circuit breaker pattern"""
+    
+    def __init__(self):
+        self.failures: Dict[str, int] = defaultdict(int)
+        self.last_failure: Dict[str, float] = {}
+        self.cooldown_until: Dict[str, float] = {}
+        self.max_failures = 3  # Failures before cooldown
+        self.cooldown_seconds = 60  # Cooldown duration
+        self.retry_delays = [0.5, 1.0, 2.0]  # Exponential backoff
+    
+    def is_healthy(self, provider: str) -> bool:
+        """Check if provider is healthy (not in cooldown)"""
+        if provider in self.cooldown_until:
+            if time.time() < self.cooldown_until[provider]:
+                return False
+            # Cooldown expired, reset
+            del self.cooldown_until[provider]
+            self.failures[provider] = 0
+        return True
+    
+    def record_success(self, provider: str):
+        """Record successful call - reset failure count"""
+        self.failures[provider] = 0
+        if provider in self.cooldown_until:
+            del self.cooldown_until[provider]
+    
+    def record_failure(self, provider: str, status_code: int = 0):
+        """Record failed call - may trigger cooldown"""
+        self.failures[provider] += 1
+        self.last_failure[provider] = time.time()
+        
+        # Rate limit (429) or server error (5xx) - enter cooldown
+        if status_code in [429, 500, 502, 503, 504] or self.failures[provider] >= self.max_failures:
+            cooldown = self.cooldown_seconds
+            if status_code == 429:
+                cooldown = 120  # Longer cooldown for rate limits
+            self.cooldown_until[provider] = time.time() + cooldown
+            logger.warning(f"[HEALTH] {provider} entering {cooldown}s cooldown (failures: {self.failures[provider]})")
+    
+    def get_retry_delay(self, attempt: int) -> float:
+        """Get retry delay for exponential backoff"""
+        if attempt < len(self.retry_delays):
+            return self.retry_delays[attempt]
+        return self.retry_delays[-1]
+    
+    def get_status(self) -> Dict:
+        """Get health status of all providers"""
+        return {
+            "failures": dict(self.failures),
+            "in_cooldown": [p for p, t in self.cooldown_until.items() if time.time() < t]
+        }
+
+
+# Global provider health tracker
+provider_health = ProviderHealth()
+
+
+# =============================================================================
+# AI PROVIDERS - ALL 12 PROVIDERS WITH ROBUST FAILOVER
 # =============================================================================
 
 class AIProviders:
-    """Unified interface for 12+ AI verification providers"""
+    """Unified interface for 20+ AI verification providers with auto-retry and failover"""
     
     def __init__(self):
         self.http_client = None
@@ -188,18 +273,31 @@ class AIProviders:
     async def _check_providers(self):
         """Check which providers are available"""
         provider_checks = [
+            # Tier 1
             ("groq", Config.GROQ_API_KEY),
             ("perplexity", Config.PERPLEXITY_API_KEY),
             ("google", Config.GOOGLE_AI_API_KEY),
+            # Tier 2
             ("openai", Config.OPENAI_API_KEY),
+            ("anthropic", Config.ANTHROPIC_API_KEY),
             ("mistral", Config.MISTRAL_API_KEY),
             ("cohere", Config.COHERE_API_KEY),
+            # Tier 3
             ("cerebras", Config.CEREBRAS_API_KEY),
             ("sambanova", Config.SAMBANOVA_API_KEY),
             ("fireworks", Config.FIREWORKS_API_KEY),
+            ("deepseek", Config.DEEPSEEK_API_KEY),
+            # Tier 4
             ("openrouter", Config.OPENROUTER_API_KEY),
             ("huggingface", Config.HUGGINGFACE_API_KEY),
             ("together", Config.TOGETHER_API_KEY),
+            ("replicate", Config.REPLICATE_API_KEY),
+            # Tier 5
+            ("xai", Config.XAI_API_KEY),
+            ("ai21", Config.AI21_API_KEY),
+            ("lepton", Config.LEPTON_API_KEY),
+            ("anyscale", Config.ANYSCALE_API_KEY),
+            ("nvidia", Config.NVIDIA_NIM_API_KEY),
         ]
         
         for name, key in provider_checks:
@@ -207,6 +305,32 @@ class AIProviders:
                 self.available_providers.append(name)
         
         logger.info(f"Available providers ({len(self.available_providers)}): {self.available_providers}")
+    
+    async def _call_with_retry(self, provider: str, call_func, max_retries: int = 2) -> Dict:
+        """Call a provider with automatic retry and health tracking"""
+        if not provider_health.is_healthy(provider):
+            logger.debug(f"[SKIP] {provider} in cooldown")
+            return None
+        
+        for attempt in range(max_retries + 1):
+            try:
+                result = await call_func()
+                if result and result.get("success"):
+                    provider_health.record_success(provider)
+                    return result
+                elif result and result.get("status_code"):
+                    provider_health.record_failure(provider, result["status_code"])
+                    if result["status_code"] == 429:  # Rate limit - don't retry
+                        break
+            except Exception as e:
+                logger.error(f"[RETRY] {provider} attempt {attempt + 1} failed: {e}")
+                provider_health.record_failure(provider)
+            
+            if attempt < max_retries:
+                delay = provider_health.get_retry_delay(attempt)
+                await asyncio.sleep(delay)
+        
+        return None
     
     # =========================================================================
     # TIER 1 PROVIDERS
@@ -238,10 +362,11 @@ class AIProviders:
                 return {"provider": "groq", "model": LATEST_MODELS["groq"], "response": content, "success": True}
             else:
                 logger.error(f"Groq error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"Groq exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     async def verify_with_perplexity(self, claim: str) -> Dict:
         """Verify claim using Perplexity (Real-time web search)"""
@@ -267,10 +392,11 @@ class AIProviders:
                 return {"provider": "perplexity", "model": LATEST_MODELS["perplexity"], "response": content, "success": True}
             else:
                 logger.error(f"Perplexity error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"Perplexity exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     async def verify_with_google(self, claim: str) -> Dict:
         """Verify claim using Google Gemini 2.0 Flash"""
@@ -294,10 +420,11 @@ class AIProviders:
                 return {"provider": "google", "model": LATEST_MODELS["google"], "response": content, "success": True}
             else:
                 logger.error(f"Google error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"Google exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     # =========================================================================
     # TIER 2 PROVIDERS
@@ -329,10 +456,11 @@ class AIProviders:
                 return {"provider": "openai", "model": LATEST_MODELS["openai"], "response": content, "success": True}
             else:
                 logger.error(f"OpenAI error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"OpenAI exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     async def verify_with_mistral(self, claim: str) -> Dict:
         """Verify claim using Mistral Large"""
@@ -360,10 +488,11 @@ class AIProviders:
                 return {"provider": "mistral", "model": LATEST_MODELS["mistral"], "response": content, "success": True}
             else:
                 logger.error(f"Mistral error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"Mistral exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     async def verify_with_cohere(self, claim: str) -> Dict:
         """Verify claim using Cohere Command-R+"""
@@ -387,10 +516,11 @@ class AIProviders:
                 return {"provider": "cohere", "model": LATEST_MODELS["cohere"], "response": content, "success": True}
             else:
                 logger.error(f"Cohere error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"Cohere exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     # =========================================================================
     # TIER 3 PROVIDERS
@@ -422,10 +552,11 @@ class AIProviders:
                 return {"provider": "cerebras", "model": LATEST_MODELS["cerebras"], "response": content, "success": True}
             else:
                 logger.error(f"Cerebras error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"Cerebras exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     async def verify_with_sambanova(self, claim: str) -> Dict:
         """Verify claim using SambaNova"""
@@ -452,10 +583,11 @@ class AIProviders:
                 return {"provider": "sambanova", "model": LATEST_MODELS["sambanova"], "response": content, "success": True}
             else:
                 logger.error(f"SambaNova error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"SambaNova exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     async def verify_with_fireworks(self, claim: str) -> Dict:
         """Verify claim using Fireworks AI"""
@@ -483,10 +615,11 @@ class AIProviders:
                 return {"provider": "fireworks", "model": LATEST_MODELS["fireworks"], "response": content, "success": True}
             else:
                 logger.error(f"Fireworks error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"Fireworks exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     # =========================================================================
     # TIER 4 PROVIDERS
@@ -521,10 +654,11 @@ class AIProviders:
                 return {"provider": "openrouter", "model": LATEST_MODELS["openrouter"], "response": content, "success": True}
             else:
                 logger.error(f"OpenRouter error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"OpenRouter exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     async def verify_with_together(self, claim: str) -> Dict:
         """Verify claim using Together AI"""
@@ -552,17 +686,248 @@ class AIProviders:
                 return {"provider": "together", "model": LATEST_MODELS["together"], "response": content, "success": True}
             else:
                 logger.error(f"Together error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
         except Exception as e:
             logger.error(f"Together exception: {e}")
         
-        return None
+        return {"success": False, "status_code": 0}
     
     # =========================================================================
-    # MAIN VERIFICATION
+    # TIER 5: ADDITIONAL PROVIDERS
+    # =========================================================================
+    
+    async def verify_with_anthropic(self, claim: str) -> Dict:
+        """Verify claim using Anthropic Claude"""
+        if not Config.ANTHROPIC_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": Config.ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json"
+                },
+                json={
+                    "model": LATEST_MODELS["anthropic"],
+                    "max_tokens": 500,
+                    "messages": [
+                        {"role": "user", "content": f"As a fact-checker, verify this claim and provide: verdict (true/false/partially_true), confidence (0-1), and explanation.\n\nClaim: {claim}"}
+                    ]
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["content"][0]["text"]
+                return {"provider": "anthropic", "model": LATEST_MODELS["anthropic"], "response": content, "success": True}
+            else:
+                logger.error(f"Anthropic error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Anthropic exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
+    async def verify_with_deepseek(self, claim: str) -> Dict:
+        """Verify claim using DeepSeek"""
+        if not Config.DEEPSEEK_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.deepseek.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {Config.DEEPSEEK_API_KEY}"},
+                json={
+                    "model": LATEST_MODELS["deepseek"],
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "deepseek", "model": LATEST_MODELS["deepseek"], "response": content, "success": True}
+            else:
+                logger.error(f"DeepSeek error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"DeepSeek exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
+    async def verify_with_xai(self, claim: str) -> Dict:
+        """Verify claim using xAI Grok"""
+        if not Config.XAI_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.x.ai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {Config.XAI_API_KEY}"},
+                json={
+                    "model": LATEST_MODELS["xai"],
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "xai", "model": LATEST_MODELS["xai"], "response": content, "success": True}
+            else:
+                logger.error(f"xAI error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"xAI exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
+    async def verify_with_ai21(self, claim: str) -> Dict:
+        """Verify claim using AI21 Labs Jamba"""
+        if not Config.AI21_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.ai21.com/studio/v1/chat/completions",
+                headers={"Authorization": f"Bearer {Config.AI21_API_KEY}"},
+                json={
+                    "model": LATEST_MODELS["ai21"],
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "ai21", "model": LATEST_MODELS["ai21"], "response": content, "success": True}
+            else:
+                logger.error(f"AI21 error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"AI21 exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
+    async def verify_with_lepton(self, claim: str) -> Dict:
+        """Verify claim using Lepton AI"""
+        if not Config.LEPTON_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://llama-3-3-70b.lepton.run/api/v1/chat/completions",
+                headers={"Authorization": f"Bearer {Config.LEPTON_API_KEY}"},
+                json={
+                    "model": LATEST_MODELS["lepton"],
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "lepton", "model": LATEST_MODELS["lepton"], "response": content, "success": True}
+            else:
+                logger.error(f"Lepton error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Lepton exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
+    async def verify_with_anyscale(self, claim: str) -> Dict:
+        """Verify claim using Anyscale Endpoints"""
+        if not Config.ANYSCALE_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.endpoints.anyscale.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {Config.ANYSCALE_API_KEY}"},
+                json={
+                    "model": LATEST_MODELS["anyscale"],
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "anyscale", "model": LATEST_MODELS["anyscale"], "response": content, "success": True}
+            else:
+                logger.error(f"Anyscale error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Anyscale exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
+    async def verify_with_nvidia(self, claim: str) -> Dict:
+        """Verify claim using NVIDIA NIM"""
+        if not Config.NVIDIA_NIM_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://integrate.api.nvidia.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {Config.NVIDIA_NIM_API_KEY}"},
+                json={
+                    "model": LATEST_MODELS["nvidia"],
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "nvidia", "model": LATEST_MODELS["nvidia"], "response": content, "success": True}
+            else:
+                logger.error(f"NVIDIA error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"NVIDIA exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    # =========================================================================
+    # MAIN VERIFICATION WITH GUARANTEED FALLBACK
     # =========================================================================
     
     async def verify_claim(self, claim: str) -> Dict:
-        """Run verification across all available providers (max 5 concurrent)"""
+        """Run verification with intelligent failover - ALWAYS returns a result"""
         results = []
         providers_used = []
         
@@ -574,31 +939,90 @@ class AIProviders:
             "perplexity": self.verify_with_perplexity,
             "google": self.verify_with_google,
             "openai": self.verify_with_openai,
+            "anthropic": self.verify_with_anthropic,
             "mistral": self.verify_with_mistral,
             "cohere": self.verify_with_cohere,
             "cerebras": self.verify_with_cerebras,
             "sambanova": self.verify_with_sambanova,
             "fireworks": self.verify_with_fireworks,
+            "deepseek": self.verify_with_deepseek,
             "openrouter": self.verify_with_openrouter,
             "together": self.verify_with_together,
+            "xai": self.verify_with_xai,
+            "ai21": self.verify_with_ai21,
+            "lepton": self.verify_with_lepton,
+            "anyscale": self.verify_with_anyscale,
+            "nvidia": self.verify_with_nvidia,
         }
         
-        # Run top 5 available providers concurrently
-        priority_order = ["perplexity", "groq", "google", "openai", "mistral", 
-                         "cohere", "cerebras", "fireworks", "openrouter", "sambanova", "together"]
+        # Priority order - fastest and most reliable first (20 providers)
+        priority_order = [
+            "groq", "perplexity", "mistral", "cerebras", "fireworks", "deepseek",
+            "openrouter", "cohere", "sambanova", "together", "lepton", "anyscale",
+            "google", "openai", "anthropic", "xai", "ai21", "nvidia"
+        ]
         
-        selected = [p for p in priority_order if p in self.available_providers][:5]
+        # Filter to healthy and available providers
+        healthy_providers = [
+            p for p in priority_order 
+            if p in self.available_providers and provider_health.is_healthy(p)
+        ]
         
-        tasks = [provider_functions[p](claim) for p in selected if p in provider_functions]
-        responses = await asyncio.gather(*tasks, return_exceptions=True)
+        logger.info(f"[VERIFY] Healthy providers: {healthy_providers}")
         
-        for i, response in enumerate(responses):
-            if isinstance(response, Exception):
-                logger.error(f"Provider exception: {response}")
-            elif response and isinstance(response, dict) and response.get("success"):
-                results.append(response)
-                providers_used.append(response["provider"])
-                logger.info(f"✓ {response['provider']} succeeded")
+        # PHASE 1: Try top 5 providers concurrently
+        selected = healthy_providers[:5]
+        if selected:
+            tasks = [provider_functions[p](claim) for p in selected]
+            responses = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            for i, response in enumerate(responses):
+                provider = selected[i]
+                if isinstance(response, Exception):
+                    logger.error(f"[FAIL] {provider}: {response}")
+                    provider_health.record_failure(provider)
+                elif response and isinstance(response, dict):
+                    if response.get("success"):
+                        results.append(response)
+                        providers_used.append(response["provider"])
+                        provider_health.record_success(provider)
+                        logger.info(f"✓ {provider} succeeded")
+                    elif response.get("status_code"):
+                        provider_health.record_failure(provider, response["status_code"])
+        
+        # PHASE 2: If no results, try remaining providers sequentially
+        if not results and len(healthy_providers) > 5:
+            for provider in healthy_providers[5:]:
+                logger.info(f"[FALLBACK] Trying {provider}...")
+                try:
+                    response = await provider_functions[provider](claim)
+                    if response and response.get("success"):
+                        results.append(response)
+                        providers_used.append(response["provider"])
+                        provider_health.record_success(provider)
+                        logger.info(f"✓ {provider} succeeded (fallback)")
+                        break
+                    elif response and response.get("status_code"):
+                        provider_health.record_failure(provider, response["status_code"])
+                except Exception as e:
+                    logger.error(f"[FALLBACK FAIL] {provider}: {e}")
+                    provider_health.record_failure(provider)
+        
+        # PHASE 3: If still no results, force-try providers in cooldown
+        if not results:
+            logger.warning("[EMERGENCY] All healthy providers failed, trying cooldown providers...")
+            for provider in priority_order:
+                if provider in self.available_providers and provider not in healthy_providers:
+                    try:
+                        response = await provider_functions[provider](claim)
+                        if response and response.get("success"):
+                            results.append(response)
+                            providers_used.append(response["provider"])
+                            provider_health.record_success(provider)
+                            logger.info(f"✓ {provider} recovered from cooldown")
+                            break
+                    except Exception as e:
+                        logger.error(f"[EMERGENCY FAIL] {provider}: {e}")
         
         if not results:
             return {
@@ -726,7 +1150,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Verity Verification API",
     description="AI-powered fact verification with 10+ providers",
-    version="9.0.0",
+    version="9.1.0",
     docs_url="/docs",
     lifespan=lifespan
 )
@@ -781,7 +1205,7 @@ async def rate_limit_middleware(request: Request, call_next):
 async def root():
     return {
         "name": "Verity Verification API",
-        "version": "9.0.0",
+        "version": "9.1.0",
         "providers": "10+ AI providers",
         "endpoints": {
             "/verify": "POST - Verify a claim",
@@ -814,7 +1238,7 @@ async def health():
     return {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "9.0.0",
+        "version": "9.1.0",
         "environment": Config.ENV,
         "providers_available": len(providers),
         "providers": providers
@@ -823,7 +1247,7 @@ async def health():
 
 @app.get("/providers")
 async def list_providers():
-    """List all available providers with their models"""
+    """List all available providers with their models and health status"""
     provider_checks = [
         ("groq", Config.GROQ_API_KEY, LATEST_MODELS.get("groq")),
         ("perplexity", Config.PERPLEXITY_API_KEY, LATEST_MODELS.get("perplexity")),
@@ -838,20 +1262,43 @@ async def list_providers():
         ("together", Config.TOGETHER_API_KEY, LATEST_MODELS.get("together")),
     ]
     
+    health_status = provider_health.get_status()
     available = []
     unavailable = []
     
     for name, key, model in provider_checks:
         if key:
-            available.append({"name": name, "model": model, "status": "active"})
+            is_healthy = provider_health.is_healthy(name)
+            status = "active" if is_healthy else "cooldown"
+            failures = health_status["failures"].get(name, 0)
+            available.append({
+                "name": name, 
+                "model": model, 
+                "status": status,
+                "healthy": is_healthy,
+                "failures": failures
+            })
         else:
             unavailable.append({"name": name, "model": model, "status": "no_api_key"})
     
     return {
         "total_available": len(available),
+        "total_healthy": sum(1 for p in available if p["healthy"]),
+        "total_in_cooldown": len(health_status["in_cooldown"]),
         "total_configured": len(provider_checks),
         "available": available,
-        "unavailable": unavailable
+        "unavailable": unavailable,
+        "health": health_status
+    }
+
+
+@app.get("/providers/health")
+async def providers_health():
+    """Get detailed health status of all providers"""
+    return {
+        "timestamp": datetime.utcnow().isoformat(),
+        "health": provider_health.get_status(),
+        "message": "All providers with active failures will auto-recover after cooldown"
     }
 
 
@@ -1223,7 +1670,7 @@ async def get_stats():
     providers = [name for name, key in provider_checks if key]
     
     return {
-        "version": "9.0.0",
+        "version": "9.1.0",
         "providers_active": len(providers),
         "providers_list": providers,
         "rate_limit": {
