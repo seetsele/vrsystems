@@ -81,15 +81,15 @@ export default function CaptureScreen() {
   const getTypeConfig = () => {
     switch (captureType) {
       case 'camera':
-        return { icon: 'camera', color: '#06b6d4', title: 'Capture Image', placeholder: 'Add notes about this image...' };
+        return { icon: 'camera', color: '#f59e0b', title: 'Capture Image', placeholder: 'Add notes about this image...' };
       case 'text':
-        return { icon: 'text', color: '#8b5cf6', title: 'Text Claim', placeholder: 'Enter the claim or statement to verify...' };
+        return { icon: 'text', color: '#fbbf24', title: 'Text Claim', placeholder: 'Enter the claim or statement to verify...' };
       case 'link':
-        return { icon: 'link', color: '#ec4899', title: 'URL / Link', placeholder: 'Paste article URL or social media link...' };
+        return { icon: 'link', color: '#d97706', title: 'URL / Link', placeholder: 'Paste article URL or social media link...' };
       case 'share':
-        return { icon: 'share-social', color: '#fbbf24', title: 'Shared Content', placeholder: 'Paste shared content...' };
+        return { icon: 'share-social', color: '#10b981', title: 'Shared Content', placeholder: 'Paste shared content...' };
       default:
-        return { icon: 'document-text', color: '#06b6d4', title: 'Capture', placeholder: 'Enter content...' };
+        return { icon: 'document-text', color: '#f59e0b', title: 'Capture', placeholder: 'Enter content...' };
     }
   };
 
@@ -122,11 +122,11 @@ export default function CaptureScreen() {
             ) : (
               <View style={styles.cameraButtons}>
                 <TouchableOpacity style={styles.cameraBtn} onPress={takePhoto}>
-                  <Ionicons name="camera" size={32} color="#06b6d4" />
+                  <Ionicons name="camera" size={32} color="#f59e0b" />
                   <Text style={styles.cameraBtnText}>Take Photo</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.cameraBtn} onPress={pickImage}>
-                  <Ionicons name="images" size={32} color="#8b5cf6" />
+                  <Ionicons name="images" size={32} color="#fbbf24" />
                   <Text style={styles.cameraBtnText}>From Gallery</Text>
                 </TouchableOpacity>
               </View>
@@ -171,7 +171,7 @@ export default function CaptureScreen() {
               style={[styles.priorityBtn, priority === 'normal' && styles.priorityActive]}
               onPress={() => setPriority('normal')}
             >
-              <Ionicons name="time-outline" size={18} color={priority === 'normal' ? '#06b6d4' : '#71717a'} />
+              <Ionicons name="time-outline" size={18} color={priority === 'normal' ? '#f59e0b' : '#71717a'} />
               <Text style={[styles.priorityText, priority === 'normal' && styles.priorityTextActive]}>Normal</Text>
             </TouchableOpacity>
             <TouchableOpacity 
@@ -200,8 +200,8 @@ export default function CaptureScreen() {
 
         {/* Submit Button */}
         <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-          <LinearGradient colors={['#06b6d4', '#8b5cf6']} style={styles.submitGradient}>
-            <Ionicons name="send" size={20} color="#fff" />
+          <LinearGradient colors={['#f59e0b', '#fbbf24']} style={styles.submitGradient}>
+            <Ionicons name="send" size={20} color="#0a0a0b" />
             <Text style={styles.submitText}>Send to Desktop</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -282,15 +282,15 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.1)',
   },
   priorityActive: {
-    backgroundColor: 'rgba(6, 182, 212, 0.15)',
-    borderColor: 'rgba(6, 182, 212, 0.3)',
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    borderColor: 'rgba(245, 158, 11, 0.3)',
   },
   priorityUrgent: {
     backgroundColor: 'rgba(239, 68, 68, 0.15)',
     borderColor: 'rgba(239, 68, 68, 0.3)',
   },
   priorityText: { color: '#71717a', fontSize: 14, fontWeight: '500' },
-  priorityTextActive: { color: '#06b6d4' },
+  priorityTextActive: { color: '#f59e0b' },
   priorityTextUrgent: { color: '#ef4444' },
 
   connectionNote: {
@@ -313,5 +313,5 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingVertical: 16,
   },
-  submitText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  submitText: { color: '#0a0a0b', fontSize: 16, fontWeight: '600' },
 });

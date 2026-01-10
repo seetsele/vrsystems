@@ -144,7 +144,7 @@
       font-size: 14px;
       font-family: inherit;
       color: var(--text-primary);
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
     input::placeholder {
@@ -212,12 +212,27 @@
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .btn:hover::after {
+      opacity: 1;
     }
     
     .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
     }
     
     .btn-secondary {
@@ -226,11 +241,15 @@
       border: 1px solid var(--border-color);
     }
     
+    .btn-secondary::after {
+      display: none;
+    }
+    
     .btn-secondary:hover {
       background: #1f1f23;
       color: var(--text-primary);
       box-shadow: none;
-      transform: none;
+      border-color: var(--amber);
     }
     
     .actions {

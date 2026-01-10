@@ -4,12 +4,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
 const TOOLS = [
-  { id: 'source', title: 'Source Checker', desc: 'Evaluate website credibility', icon: 'link', color: '#06b6d4' },
-  { id: 'moderate', title: 'Content Moderator', desc: 'Detect harmful content', icon: 'shield', color: '#8b5cf6' },
-  { id: 'research', title: 'Research Assistant', desc: 'AI-powered research', icon: 'book', color: '#ec4899' },
-  { id: 'social', title: 'Social Monitor', desc: 'Track misinformation trends', icon: 'notifications', color: '#f59e0b' },
-  { id: 'stats', title: 'Stats Validator', desc: 'Verify statistical claims', icon: 'bar-chart', color: '#10b981' },
-  { id: 'realtime', title: 'Realtime Stream', desc: 'Live fact-check feed', icon: 'pulse', color: '#3b82f6' },
+  { id: 'source', title: 'Source Checker', desc: 'Evaluate website credibility', icon: 'link', color: '#f59e0b' },
+  { id: 'moderate', title: 'Content Moderator', desc: 'Detect harmful content', icon: 'shield', color: '#fbbf24' },
+  { id: 'research', title: 'Research Assistant', desc: 'AI-powered research', icon: 'book', color: '#d97706' },
+  { id: 'social', title: 'Social Monitor', desc: 'Track misinformation trends', icon: 'notifications', color: '#10b981' },
+  { id: 'stats', title: 'Stats Validator', desc: 'Verify statistical claims', icon: 'bar-chart', color: '#3b82f6' },
+  { id: 'realtime', title: 'Realtime Stream', desc: 'Live fact-check feed', icon: 'pulse', color: '#8b5cf6' },
 ];
 
 export default function ToolsScreen() {
@@ -41,7 +41,7 @@ export default function ToolsScreen() {
         {/* API Section */}
         <View style={styles.apiSection}>
           <View style={styles.apiHeader}>
-            <Ionicons name="code-slash" size={24} color="#06b6d4" />
+            <Ionicons name="code-slash" size={24} color="#f59e0b" />
             <Text style={styles.apiTitle}>Developer API</Text>
           </View>
           <Text style={styles.apiDesc}>
@@ -49,7 +49,7 @@ export default function ToolsScreen() {
           </Text>
           <TouchableOpacity style={styles.apiButton}>
             <Text style={styles.apiButtonText}>View Documentation</Text>
-            <Ionicons name="arrow-forward" size={16} color="#06b6d4" />
+            <Ionicons name="arrow-forward" size={16} color="#f59e0b" />
           </TouchableOpacity>
         </View>
 
@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#09090b' },
   orbContainer: { position: 'absolute', width: '100%', height: '100%' },
   orb: { position: 'absolute', borderRadius: 999 },
-  orb1: { width: 200, height: 200, backgroundColor: 'rgba(139, 92, 246, 0.1)', top: 100, right: -60 },
-  orb2: { width: 180, height: 180, backgroundColor: 'rgba(6, 182, 212, 0.08)', bottom: 200, left: -40 },
+  orb1: { width: 200, height: 200, backgroundColor: 'rgba(245, 158, 11, 0.1)', top: 100, right: -60 },
+  orb2: { width: 180, height: 180, backgroundColor: 'rgba(251, 191, 36, 0.08)', bottom: 200, left: -40 },
   content: { flex: 1, padding: 20 },
 
   headerTitle: { fontSize: 28, fontWeight: '700', color: '#fafafa', marginBottom: 4 },
@@ -86,16 +86,16 @@ const styles = StyleSheet.create({
   toolDesc: { fontSize: 13, color: '#71717a', marginTop: 2 },
 
   apiSection: { 
-    backgroundColor: 'rgba(6, 182, 212, 0.08)', 
+    backgroundColor: 'rgba(245, 158, 11, 0.08)', 
     borderRadius: 20, 
     padding: 24, 
     marginTop: 12,
     borderWidth: 1,
-    borderColor: 'rgba(6, 182, 212, 0.2)',
+    borderColor: 'rgba(245, 158, 11, 0.2)',
   },
   apiHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
   apiTitle: { fontSize: 18, fontWeight: '700', color: '#fafafa' },
   apiDesc: { fontSize: 14, color: '#a1a1aa', lineHeight: 22, marginBottom: 16 },
   apiButton: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  apiButtonText: { color: '#06b6d4', fontSize: 14, fontWeight: '600' },
+  apiButtonText: { color: '#f59e0b', fontSize: 14, fontWeight: '600' },
 });

@@ -46,13 +46,13 @@ export default function VerifyScreen() {
           
           <View style={styles.optionRow}>
             <View style={styles.optionLeft}>
-              <Ionicons name="flash" size={20} color="#8b5cf6" />
+              <Ionicons name="flash" size={20} color="#f59e0b" />
               <Text style={styles.optionText}>Deep AI Analysis</Text>
             </View>
             <Switch
               value={deepAnalysis}
               onValueChange={setDeepAnalysis}
-              trackColor={{ false: '#3f3f46', true: '#06b6d4' }}
+              trackColor={{ false: '#3f3f46', true: '#f59e0b' }}
               thumbColor="#fff"
             />
           </View>
@@ -62,7 +62,7 @@ export default function VerifyScreen() {
             onPress={handleVerify}
             disabled={!claim.trim() || isLoading}
           >
-            <LinearGradient colors={['#06b6d4', '#8b5cf6']} style={styles.buttonGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={['#f59e0b', '#fbbf24']} style={styles.buttonGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
@@ -118,7 +118,7 @@ function Step({ number, title, desc, icon }: { number: number; title: string; de
   return (
     <View style={styles.step}>
       <View style={styles.stepIcon}>
-        <Ionicons name={icon} size={20} color="#06b6d4" />
+        <Ionicons name={icon} size={20} color="#f59e0b" />
       </View>
       <View style={styles.stepContent}>
         <Text style={styles.stepTitle}>Step {number}: {title}</Text>
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#09090b' },
   orbContainer: { position: 'absolute', width: '100%', height: '100%' },
   orb: { position: 'absolute', borderRadius: 999 },
-  orb1: { width: 250, height: 250, backgroundColor: 'rgba(6, 182, 212, 0.12)', top: 50, right: -80 },
-  orb2: { width: 200, height: 200, backgroundColor: 'rgba(139, 92, 246, 0.1)', bottom: 150, left: -60 },
+  orb1: { width: 250, height: 250, backgroundColor: 'rgba(245, 158, 11, 0.1)', top: 50, right: -80 },
+  orb2: { width: 200, height: 200, backgroundColor: 'rgba(251, 191, 36, 0.08)', bottom: 150, left: -60 },
   content: { flex: 1, padding: 20 },
 
   inputCard: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: 24, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   howItWorks: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
   sectionTitle: { fontSize: 16, fontWeight: '600', color: '#fafafa', marginBottom: 16 },
   step: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 12, marginBottom: 10 },
-  stepIcon: { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(6, 182, 212, 0.15)', justifyContent: 'center', alignItems: 'center' },
+  stepIcon: { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(245, 158, 11, 0.15)', justifyContent: 'center', alignItems: 'center' },
   stepContent: { flex: 1, marginLeft: 14 },
   stepTitle: { fontSize: 14, fontWeight: '600', color: '#fafafa' },
   stepDesc: { fontSize: 12, color: '#71717a', marginTop: 2 },

@@ -52,8 +52,8 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.6);
-    --shadow-glow-cyan: 0 0 40px rgba(6, 182, 212, 0.3);
-    --shadow-glow-purple: 0 0 40px rgba(139, 92, 246, 0.3);
+    --shadow-glow-amber: 0 0 40px rgba(245, 158, 11, 0.25);
+    --shadow-glow-gold: 0 0 40px rgba(251, 191, 36, 0.25);
     
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -124,7 +124,7 @@ body {
 .orb-1 {
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
     top: -200px;
     left: -100px;
     animation-delay: 0s;
@@ -133,7 +133,7 @@ body {
 .orb-2 {
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.35) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, transparent 70%);
     top: 40%;
     right: -150px;
     animation-delay: -8s;
@@ -142,7 +142,7 @@ body {
 .orb-3 {
     width: 450px;
     height: 450px;
-    background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(217, 119, 6, 0.18) 0%, transparent 70%);
     bottom: -100px;
     left: 30%;
     animation-delay: -16s;
@@ -151,7 +151,7 @@ body {
 .orb-4 {
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
     top: 20%;
     left: 50%;
     animation-delay: -4s;
@@ -166,13 +166,14 @@ body {
 .glow-line {
     position: absolute;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
-    animation: glowMove 8s linear infinite;
+    background: linear-gradient(90deg, transparent, var(--accent-amber), transparent);
+    animation: glowMove 12s linear infinite;
+    opacity: 0.6;
 }
 
 .line-1 { top: 20%; width: 40%; left: -40%; animation-delay: 0s; }
-.line-2 { top: 50%; width: 30%; left: -30%; animation-delay: -3s; opacity: 0.5; }
-.line-3 { top: 80%; width: 50%; left: -50%; animation-delay: -6s; opacity: 0.3; }
+.line-2 { top: 50%; width: 30%; left: -30%; animation-delay: -4s; opacity: 0.4; }
+.line-3 { top: 80%; width: 50%; left: -50%; animation-delay: -8s; opacity: 0.25; }
 
 @keyframes bgPulse {
     0%, 100% { opacity: 1; transform: scale(1); }
@@ -553,7 +554,7 @@ body {
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s var(--ease-out);
     text-align: left;
     position: relative;
 }
@@ -561,11 +562,12 @@ body {
 .nav-item:hover {
     background: var(--bg-glass-strong);
     color: var(--text-primary);
+    transform: translateX(4px);
 }
 
 .nav-item.active {
-    background: var(--bg-glass-strong);
-    color: var(--text-primary);
+    background: rgba(245, 158, 11, 0.08);
+    color: var(--accent-amber);
 }
 
 .nav-item.active::before {
@@ -717,7 +719,7 @@ body {
     border-radius: var(--radius-xl);
     padding: 28px;
     margin-bottom: 28px;
-    transition: all 0.3s ease;
+    transition: all 0.3s var(--ease-out);
 }
 
 .card:hover {
@@ -748,8 +750,8 @@ body {
 }
 
 .card-gradient {
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-    border-color: rgba(6, 182, 212, 0.2);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(251, 191, 36, 0.08) 100%);
+    border-color: rgba(245, 158, 11, 0.2);
 }
 
 /* === Stats Grid === */
@@ -775,7 +777,7 @@ body {
     padding: 20px;
     position: relative;
     overflow: hidden;
-    transition: all 0.2s ease;
+    transition: all 0.3s var(--ease-out);
 }
 
 .stat-card::before {
@@ -785,11 +787,12 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: var(--accent-cyan);
+    background: var(--accent-amber);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
-.stat-card.purple::before { background: var(--accent-purple); }
-.stat-card.pink::before { background: var(--accent-pink); }
+.stat-card.gold::before { background: #fbbf24; }
+.stat-card.orange::before { background: #d97706; }
 .stat-card.green::before { background: var(--accent-green); }
 
 .stat-card:hover {
@@ -809,7 +812,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: var(--radius-lg);
-    background: rgba(6, 182, 212, 0.15);
+    background: rgba(245, 158, 11, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -818,13 +821,13 @@ body {
 .stat-icon svg {
     width: 20px;
     height: 20px;
-    color: var(--accent-cyan);
+    color: var(--accent-amber);
 }
 
-.stat-card.purple .stat-icon { background: rgba(139, 92, 246, 0.15); }
-.stat-card.purple .stat-icon svg { color: var(--accent-purple); }
-.stat-card.pink .stat-icon { background: rgba(236, 72, 153, 0.15); }
-.stat-card.pink .stat-icon svg { color: var(--accent-pink); }
+.stat-card.gold .stat-icon { background: rgba(251, 191, 36, 0.15); }
+.stat-card.gold .stat-icon svg { color: #fbbf24; }
+.stat-card.orange .stat-icon { background: rgba(217, 119, 6, 0.15); }
+.stat-card.orange .stat-icon svg { color: #d97706; }
 .stat-card.green .stat-icon { background: rgba(16, 185, 129, 0.15); }
 .stat-card.green .stat-icon svg { color: var(--accent-green); }
 
@@ -890,9 +893,9 @@ body {
 .card-badge {
     font-size: 11px;
     padding: 4px 10px;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    background: linear-gradient(135deg, var(--accent-amber), #fbbf24);
     border-radius: 20px;
-    color: white;
+    color: #0a0a0b;
     font-weight: 600;
 }
 
@@ -913,24 +916,25 @@ body {
     border: 1px solid var(--border-subtle);
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s var(--ease-out);
 }
 
 .action-item:hover {
     background: var(--bg-hover);
-    border-color: var(--accent-cyan);
-    transform: translateY(-2px);
+    border-color: var(--accent-amber);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 }
 
 .action-icon {
     width: 36px;
     height: 36px;
     border-radius: 10px;
-    background: rgba(6, 182, 212, 0.15);
+    background: rgba(245, 158, 11, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent-cyan);
+    color: var(--accent-amber);
 }
 
 .action-icon svg {
@@ -1239,9 +1243,24 @@ body {
     border-radius: var(--radius-lg);
     border: none;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s var(--ease-out);
     text-decoration: none;
     letter-spacing: 0.2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn:hover::after {
+    opacity: 1;
 }
 
 .btn svg {
@@ -1251,17 +1270,18 @@ body {
 
 .btn-primary {
     background: var(--gradient-primary);
-    color: white;
+    color: #0a0a0b;
     box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg), var(--shadow-glow-cyan);
+    box-shadow: var(--shadow-lg), var(--shadow-glow-amber);
 }
 
 .btn-primary:active {
     transform: translateY(0);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary {
@@ -1272,8 +1292,8 @@ body {
 
 .btn-secondary:hover {
     background: var(--bg-hover);
-    border-color: var(--border-strong);
-    transform: translateY(-1px);
+    border-color: var(--accent-amber);
+    transform: translateY(-2px);
 }
 
 .btn-ghost {
@@ -1283,7 +1303,7 @@ body {
 
 .btn-ghost:hover {
     background: var(--bg-glass-strong);
-    color: var(--text-primary);
+    color: var(--accent-amber);
 }
 
 .btn-danger {
@@ -1293,7 +1313,8 @@ body {
 
 .btn-danger:hover {
     background: #dc2626;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
 }
 
 .btn-lg {
@@ -1345,7 +1366,7 @@ body {
     color: var(--text-primary);
     font-family: var(--font-sans);
     font-size: 14px;
-    transition: all 0.25s ease;
+    transition: all 0.3s var(--ease-out);
     outline: none;
     box-sizing: border-box;
 }
@@ -1356,8 +1377,8 @@ body {
 }
 
 .input:focus, .textarea:focus, .select:focus {
-    border-color: var(--accent-cyan);
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15), 0 0 20px rgba(6, 182, 212, 0.1);
+    border-color: var(--accent-amber);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15), 0 0 20px rgba(245, 158, 11, 0.08);
     background: rgba(24, 24, 27, 1);
 }
 

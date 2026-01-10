@@ -126,14 +126,14 @@
       font-size: 14px;
       color: var(--text-primary);
       resize: none;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       line-height: 1.5;
     }
     
     textarea:focus {
       outline: none;
       border-color: var(--amber);
-      box-shadow: 0 0 0 3px var(--amber-soft);
+      box-shadow: 0 0 0 3px var(--amber-soft), 0 8px 24px rgba(0, 0, 0, 0.3);
     }
     
     textarea::placeholder {
@@ -143,7 +143,7 @@
     /* Verify Button */
     .verify-btn {
       width: 100%;
-      background: var(--amber);
+      background: linear-gradient(135deg, var(--amber), #fbbf24);
       color: #000;
       border: none;
       padding: 14px 20px;
@@ -152,17 +152,31 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .verify-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .verify-btn:hover::after {
+      opacity: 1;
     }
     
     .verify-btn:hover:not(:disabled) {
-      background: #d97706;
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px var(--amber-glow);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px var(--amber-glow);
     }
     
     .verify-btn:disabled {
@@ -212,6 +226,13 @@
       border-radius: 14px;
       overflow: hidden;
       display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    @keyframes slideIn {
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .result.visible { display: block; }
