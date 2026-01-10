@@ -9,12 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--gold:#fbbf24}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--gold:#fbbf24;--purple:#8b5cf6}
         body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
         ::selection{background:rgba(245,158,11,0.3)}
         @keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+        
         nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-        .nav-c{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center;height:72px}
+        .nav-c{max-width:1400px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center;height:72px}
         .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text);font-weight:600;font-size:1.3rem}
         .logo svg{width:32px;height:36px}
         .nav-links{display:flex;gap:2.5rem}
@@ -22,167 +23,310 @@
         .nav-links a:hover,.nav-links a.active{color:var(--amber)}
         .btn-nav{padding:.65rem 1.35rem;background:var(--amber);color:#000;border-radius:8px;font-size:.875rem;font-weight:600;text-decoration:none;transition:all .2s}
         .btn-nav:hover{background:#d97706}
-        .hero{padding:140px 2rem 60px;text-align:center;max-width:800px;margin:0 auto}
+        
+        .hero{padding:140px 2rem 60px;text-align:center;max-width:900px;margin:0 auto}
         .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--amber-soft);border:1px solid rgba(245,158,11,0.2);border-radius:100px;font-size:.8rem;color:var(--amber);margin-bottom:1.5rem;animation:fadeIn .5s ease}
         h1{font-family:'Newsreader',Georgia,serif;font-size:clamp(2.5rem,5vw,3.5rem);font-weight:400;line-height:1.15;margin-bottom:1rem;animation:fadeIn .5s ease .1s backwards}
         h1 em{font-style:italic;color:var(--amber)}
-        .hero p{font-size:1.15rem;color:var(--muted);animation:fadeIn .5s ease .2s backwards}
-        .toggle-wrap{display:flex;justify-content:center;gap:1rem;align-items:center;margin:3rem 0}
-        .toggle-label{font-size:.9rem;color:var(--muted)}
+        .hero p{font-size:1.15rem;color:var(--muted);animation:fadeIn .5s ease .2s backwards;max-width:700px;margin:0 auto}
+        
+        .toggle-wrap{display:flex;justify-content:center;gap:1rem;align-items:center;margin:3rem 0 2rem}
+        .toggle-label{font-size:.9rem;color:var(--muted);cursor:pointer}
         .toggle-label.active{color:var(--text);font-weight:600}
         .toggle{width:56px;height:28px;background:var(--elevated);border:1px solid var(--border);border-radius:100px;cursor:pointer;position:relative;transition:background .2s}
         .toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:var(--amber);border-radius:50%;transition:transform .2s}
         .toggle.annual::after{transform:translateX(28px)}
         .toggle.annual{background:var(--amber-soft);border-color:rgba(245,158,11,0.3)}
         .save-badge{padding:.3rem .6rem;background:var(--green-soft);border:1px solid rgba(16,185,129,0.2);border-radius:100px;font-size:.7rem;font-weight:600;color:var(--green)}
-        .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1200px;margin:0 auto;padding:0 2rem 4rem}
-        .pricing-grid-4{grid-template-columns:repeat(4,1fr)}
-        .plan{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;transition:all .3s}
-        .plan:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-5px)}
-        .plan.featured{border-color:rgba(245,158,11,0.4);box-shadow:0 0 60px rgba(245,158,11,0.1)}
-        .plan.featured::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);padding:.4rem 1rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:100px;letter-spacing:.05em}
-        .plan-name{font-size:1.1rem;font-weight:600;margin-bottom:.5rem}
-        .plan-desc{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
-        .plan-price{font-family:'Newsreader',Georgia,serif;font-size:3rem;font-weight:400;margin-bottom:.25rem}
-        .plan-price span{font-size:1rem;color:var(--muted);font-family:'Inter',sans-serif}
-        .plan-period{font-size:.8rem;color:var(--dim);margin-bottom:1.5rem}
-        .plan-btn{display:block;width:100%;padding:.9rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;transition:all .2s}
-        .plan-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
-        .plan.featured .plan-btn{background:var(--amber);border-color:var(--amber);color:#000}
-        .plan.featured .plan-btn:hover{background:#d97706}
-        .plan-features{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
-        .plan-features li{display:flex;align-items:flex-start;gap:.6rem;padding:.5rem 0;font-size:.85rem;color:var(--muted);list-style:none}
-        .plan-features li svg{width:16px;height:16px;color:var(--green);flex-shrink:0;margin-top:2px}
-        .enterprise{background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(34,211,238,0.1));border-color:rgba(139,92,246,0.3)}
-        .faq{max-width:700px;margin:0 auto;padding:4rem 2rem}
+        
+        .pricing-container{max-width:1400px;margin:0 auto;padding:0 1.5rem 4rem}
+        .pricing-overview{display:grid;grid-template-columns:repeat(7,1fr);gap:1rem;margin-bottom:3rem}
+        
+        .tier-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem;position:relative;transition:all .3s;display:flex;flex-direction:column}
+        .tier-card:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-3px)}
+        .tier-card.featured{border-color:rgba(245,158,11,0.5);box-shadow:0 0 40px rgba(245,158,11,0.15)}
+        .tier-card.featured::before{content:'⭐ MOST POPULAR';position:absolute;top:-11px;left:50%;transform:translateX(-50%);padding:.35rem .8rem;background:linear-gradient(135deg,var(--amber),var(--gold));color:#000;font-size:.6rem;font-weight:700;border-radius:100px;letter-spacing:.03em;white-space:nowrap}
+        
+        .tier-name{font-size:1rem;font-weight:600;margin-bottom:.35rem}
+        .tier-target{font-size:.75rem;color:var(--muted);margin-bottom:1rem;min-height:2.5rem}
+        .tier-price{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:.15rem}
+        .tier-price span{font-size:.85rem;color:var(--muted);font-family:'Inter',sans-serif}
+        .tier-annual{font-size:.7rem;color:var(--dim);margin-bottom:.75rem;min-height:1.5rem}
+        .tier-verifications{font-size:.8rem;font-weight:600;color:var(--amber);margin-bottom:1rem;padding:.5rem;background:var(--amber-soft);border-radius:8px;text-align:center}
+        
+        .tier-btn{display:block;width:100%;padding:.7rem;background:var(--elevated);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.8rem;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;transition:all .2s;margin-top:auto}
+        .tier-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
+        .tier-card.featured .tier-btn{background:var(--amber);border-color:var(--amber);color:#000}
+        .tier-card.featured .tier-btn:hover{background:#d97706}
+        
+        .tier-features{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);flex-grow:1}
+        .tier-features li{display:flex;align-items:flex-start;gap:.4rem;padding:.3rem 0;font-size:.7rem;color:var(--muted);list-style:none}
+        .tier-features li svg{width:12px;height:12px;color:var(--green);flex-shrink:0;margin-top:2px}
+        .tier-features li.disabled{opacity:.5}
+        .tier-features li.disabled svg{color:var(--dim)}
+        
+        .comparison-section{margin-top:4rem}
+        .comparison-section h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;text-align:center;margin-bottom:.5rem}
+        .comparison-section>p{text-align:center;color:var(--muted);margin-bottom:2rem}
+        
+        .comparison-table-wrap{overflow-x:auto;border-radius:16px;border:1px solid var(--border)}
+        .comparison-table{width:100%;border-collapse:collapse;font-size:.8rem}
+        .comparison-table th,.comparison-table td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid var(--border)}
+        .comparison-table th{background:var(--elevated);font-weight:600;position:sticky;top:0}
+        .comparison-table th:first-child{min-width:200px}
+        .comparison-table td:first-child{font-weight:500;color:var(--text)}
+        .comparison-table tr:last-child td{border-bottom:none}
+        .comparison-table .check{color:var(--green)}
+        .comparison-table .cross{color:var(--dim)}
+        .comparison-table .highlight{background:rgba(245,158,11,0.05)}
+        
+        .faq{max-width:800px;margin:4rem auto 0;padding:0 2rem}
         .faq h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;text-align:center;margin-bottom:2rem}
         .faq-item{border-bottom:1px solid var(--border);padding:1.25rem 0}
         .faq-q{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:500}
         .faq-q svg{width:20px;height:20px;color:var(--muted);transition:transform .2s}
         .faq-item.open .faq-q svg{transform:rotate(180deg)}
         .faq-a{max-height:0;overflow:hidden;transition:max-height .3s;color:var(--muted);font-size:.9rem;line-height:1.7}
-        .faq-item.open .faq-a{max-height:200px;padding-top:1rem}
+        .faq-item.open .faq-a{max-height:300px;padding-top:1rem}
+        
         .cta{text-align:center;padding:4rem 2rem;background:linear-gradient(180deg,transparent,rgba(245,158,11,0.03))}
         .cta h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;margin-bottom:1rem}
         .cta p{color:var(--muted);margin-bottom:2rem}
         .cta-btn{display:inline-flex;align-items:center;gap:.5rem;padding:1rem 2rem;background:var(--amber);color:#000;border-radius:12px;font-size:1rem;font-weight:600;text-decoration:none;transition:all .2s}
         .cta-btn:hover{background:#d97706;transform:translateY(-2px);box-shadow:0 15px 40px rgba(245,158,11,0.3)}
+        
         footer{padding:2rem;text-align:center;border-top:1px solid var(--border);color:var(--dim);font-size:.85rem}
         footer a{color:var(--amber);text-decoration:none}
-        @media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:700px){.pricing-grid{grid-template-columns:1fr}.nav-links{display:none}}
+        
+        @media(max-width:1200px){.pricing-overview{grid-template-columns:repeat(4,1fr)}}
+        @media(max-width:900px){.pricing-overview{grid-template-columns:repeat(2,1fr)}.nav-links{display:none}}
+        @media(max-width:600px){.pricing-overview{grid-template-columns:1fr}}
     </style>
 </head>
 <body>
     <nav><div class="nav-c">
         <a href="index.html" class="logo"><svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>Verity</a>
         <div class="nav-links"><a href="verify.html">Verify</a><a href="9-point-system.html">How It Works</a><a href="pricing.html" class="active">Pricing</a><a href="api-docs.html">API</a><a href="compare.html">Compare</a></div>
-        <a href="verify.html" class="btn-nav">Try Free</a>
+        <a href="auth.html" class="btn-nav">Get Started</a>
     </div></nav>
 
     <section class="hero">
-        <span class="hero-badge">Simple Pricing</span>
+        <span class="hero-badge">💎 7 Flexible Plans</span>
         <h1>Start Free, <em>Scale</em> When Ready</h1>
-        <p>No hidden fees. No credit card required. Upgrade only when you need more power.</p>
+        <p>From testing to Fortune 1000 — pricing that grows with you. No hidden fees. All plans include our 9-Point Verification System.</p>
     </section>
 
     <div class="toggle-wrap">
         <span class="toggle-label active" id="monthlyLabel">Monthly</span>
         <div class="toggle" id="billingToggle" onclick="toggleBilling()"></div>
         <span class="toggle-label" id="annualLabel">Annual</span>
-        <span class="save-badge">Save 20%</span>
+        <span class="save-badge">Save 10-17%</span>
     </div>
 
-    <div class="pricing-grid pricing-grid-4">
-        <!-- Free Tier -->
-        <div class="plan">
-            <div class="plan-name">Free</div>
-            <div class="plan-desc">Perfect for trying out Verity</div>
-            <div class="plan-price">$0<span>/mo</span></div>
-            <div class="plan-period">Free forever</div>
-            <a href="auth.html?plan=free" class="plan-btn">Get Started Free</a>
-            <ul class="plan-features">
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>300 verifications/month</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>2 LLM models</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 data sources</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Web dashboard</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Community support</li>
-            </ul>
+    <div class="pricing-container">
+        <div class="pricing-overview">
+            <!-- FREE -->
+            <div class="tier-card">
+                <div class="tier-name">Free</div>
+                <div class="tier-target">Testing & students</div>
+                <div class="tier-price">$0<span>/mo</span></div>
+                <div class="tier-annual">Free forever</div>
+                <div class="tier-verifications">300/mo (10/day)</div>
+                <a href="auth.html?plan=free" class="tier-btn">Get Started Free</a>
+                <ul class="tier-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Basic 9-Point Verification</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 AI models</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 data sources</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Web dashboard</li>
+                    <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>No API access</li>
+                    <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>No VerifyPlus</li>
+                </ul>
+            </div>
+
+            <!-- STARTER -->
+            <div class="tier-card">
+                <div class="tier-name">Starter</div>
+                <div class="tier-target">Individual creators & bloggers</div>
+                <div class="tier-price" id="starterPrice">$49<span>/mo</span></div>
+                <div class="tier-annual" id="starterAnnual">or $490/yr (save 17%)</div>
+                <div class="tier-verifications">1,200/mo</div>
+                <a href="auth.html?plan=starter" class="tier-btn">Start 14-Day Trial</a>
+                <ul class="tier-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Full 9-Point Verification</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>8 AI models</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>20 data sources</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>1 API key</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>VerifyPlus (10 docs/mo)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>30-day history</li>
+                </ul>
+            </div>
+
+            <!-- PRO -->
+            <div class="tier-card">
+                <div class="tier-name">Pro</div>
+                <div class="tier-target">Journalists & researchers</div>
+                <div class="tier-price" id="proPrice">$99<span>/mo</span></div>
+                <div class="tier-annual" id="proAnnual">or $1,069/yr (save 10%)</div>
+                <div class="tier-verifications">2,500/mo</div>
+                <a href="auth.html?plan=pro" class="tier-btn">Start 14-Day Trial</a>
+                <ul class="tier-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>12 AI models (premium)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>27 data sources</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3 API keys</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>NLP & bias detection</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>VerifyPlus (50 docs/mo)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>90-day history</li>
+                </ul>
+            </div>
+
+            <!-- PROFESSIONAL (FEATURED) -->
+            <div class="tier-card featured">
+                <div class="tier-name">Professional</div>
+                <div class="tier-target">Small newsrooms & agencies</div>
+                <div class="tier-price" id="professionalPrice">$199<span>/mo</span></div>
+                <div class="tier-annual" id="professionalAnnual">or $2,149/yr (save 10%)</div>
+                <div class="tier-verifications">5,000/mo</div>
+                <a href="auth.html?plan=professional" class="tier-btn">Start 14-Day Trial</a>
+                <ul class="tier-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>15+ AI models (all)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>40+ data sources</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>10 team members</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Batch processing (100)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>VerifyPlus unlimited</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Monte Carlo confidence</li>
+                </ul>
+            </div>
+
+            <!-- BUSINESS -->
+            <div class="tier-card">
+                <div class="tier-name">Business</div>
+                <div class="tier-target">Publishers & mid-market</div>
+                <div class="tier-price" id="businessPrice">$599<span>/mo</span></div>
+                <div class="tier-annual" id="businessAnnual">or $6,469/yr (save 10%)</div>
+                <div class="tier-verifications">15,000/mo</div>
+                <a href="auth.html?plan=business" class="tier-btn">Request Demo</a>
+                <ul class="tier-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>25 team members</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Batch processing (500)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom integrations</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA 99.5% uptime</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated CSM</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>White-label reports</li>
+                </ul>
+            </div>
+
+            <!-- BUSINESS+ -->
+            <div class="tier-card">
+                <div class="tier-name">Business+</div>
+                <div class="tier-target">Large enterprises</div>
+                <div class="tier-price" id="businessPlusPrice">$999<span>/mo</span></div>
+                <div class="tier-annual" id="businessPlusAnnual">or $10,789/yr (save 10%)</div>
+                <div class="tier-verifications">25,000/mo</div>
+                <a href="auth.html?plan=businessplus" class="tier-btn">Request Demo</a>
+                <ul class="tier-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 team members</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Batch (1,000 claims)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom AI training</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA 99.7% uptime</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SAML SSO</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>24/7 priority support</li>
+                </ul>
+            </div>
+
+            <!-- ENTERPRISE -->
+            <div class="tier-card" style="background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(245,158,11,0.08));border-color:rgba(139,92,246,0.3)">
+                <div class="tier-name">Enterprise</div>
+                <div class="tier-target">Fortune 1000</div>
+                <div class="tier-price">$2,999+<span>/mo</span></div>
+                <div class="tier-annual">Custom (15% off annual)</div>
+                <div class="tier-verifications">75,000+/mo</div>
+                <a href="mailto:enterprise@veritysystems.app" class="tier-btn" style="background:linear-gradient(135deg,var(--purple),var(--amber));border:none;color:#fff">Contact Sales</a>
+                <ul class="tier-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited team</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited batch</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>On-premise option</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA 99.9% uptime</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated 5-person team</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom everything</li>
+                </ul>
+            </div>
         </div>
-        <!-- Pro Tier (Featured) -->
-        <div class="plan featured">
-            <div class="plan-name">Pro</div>
-            <div class="plan-desc">For journalists & researchers</div>
-            <div class="plan-price" id="proPrice">$99<span>/mo</span></div>
-            <div class="plan-period" id="proPeriod">Billed monthly</div>
-            <a href="auth.html?plan=pro" class="plan-btn">Start 7-Day Trial</a>
-            <ul class="plan-features">
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5,000 verifications/month</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>8 LLM models</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All 27 data sources</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>NLP & bias detection</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>API access</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority email support</li>
-            </ul>
+
+        <div style="text-align:center;margin-bottom:3rem;padding:1.5rem;background:var(--card);border:1px solid var(--border);border-radius:12px;max-width:800px;margin-left:auto;margin-right:auto">
+            <h3 style="font-family:'Newsreader',Georgia,serif;font-size:1.3rem;margin-bottom:1rem">Cost Per Verification</h3>
+            <div style="display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;font-size:.85rem;color:var(--muted)">
+                <span>Free: <strong style="color:var(--text)">$0.00</strong></span>
+                <span>Starter: <strong style="color:var(--text)">$0.041</strong></span>
+                <span>Pro: <strong style="color:var(--text)">$0.040</strong></span>
+                <span>Professional: <strong style="color:var(--amber)">$0.040</strong></span>
+                <span>Business: <strong style="color:var(--text)">$0.040</strong></span>
+                <span>Business+: <strong style="color:var(--text)">$0.040</strong></span>
+                <span>Enterprise: <strong style="color:var(--text)">$0.040</strong></span>
+            </div>
         </div>
-        <!-- Professional Tier -->
-        <div class="plan">
-            <div class="plan-name">Professional</div>
-            <div class="plan-desc">For teams & agencies</div>
-            <div class="plan-price" id="professionalPrice">$199<span>/mo</span></div>
-            <div class="plan-period" id="professionalPeriod">Billed monthly</div>
-            <a href="auth.html?plan=professional" class="plan-btn">Start Free Trial</a>
-            <ul class="plan-features">
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>15,000 verifications/month</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>20+ AI providers</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 team members</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Monte Carlo confidence</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Deepfake detection</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
-            </ul>
-        </div>
-        <!-- Enterprise Tier -->
-        <div class="plan enterprise">
-            <div class="plan-name">Enterprise</div>
-            <div class="plan-desc">For large organizations</div>
-            <div class="plan-price">Custom</div>
-            <div class="plan-period">Contact for pricing</div>
-            <a href="mailto:enterprise@veritysystems.app" class="plan-btn">Contact Sales</a>
-            <ul class="plan-features">
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited verifications</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited team members</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom integrations</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA & uptime guarantee</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SSO & team management</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated account manager</li>
-            </ul>
-        </div>
+
+        <section class="comparison-section">
+            <h2>Compare All Plans</h2>
+            <p>Detailed feature breakdown across all 7 tiers</p>
+            <div class="comparison-table-wrap">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Free</th>
+                            <th>Starter</th>
+                            <th>Pro</th>
+                            <th class="highlight">Professional</th>
+                            <th>Business</th>
+                            <th>Business+</th>
+                            <th>Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Monthly Verifications</td><td>300</td><td>1,200</td><td>2,500</td><td class="highlight">5,000</td><td>15,000</td><td>25,000</td><td>75,000+</td></tr>
+                        <tr><td>AI Models</td><td>5</td><td>8</td><td>12</td><td class="highlight">15+</td><td>15+</td><td>15+ custom</td><td>Unlimited</td></tr>
+                        <tr><td>Data Sources</td><td>5</td><td>20</td><td>27</td><td class="highlight">40+</td><td>40+</td><td>40+ custom</td><td>Unlimited</td></tr>
+                        <tr><td>Team Members</td><td>1</td><td>1</td><td>1</td><td class="highlight">10</td><td>25</td><td>50</td><td>Unlimited</td></tr>
+                        <tr><td>API Access</td><td class="cross">—</td><td>1 key</td><td>3 keys</td><td class="highlight">10 keys</td><td>25 keys</td><td>Unlimited</td><td>Unlimited</td></tr>
+                        <tr><td>VerifyPlus (bulk)</td><td class="cross">—</td><td>10 docs/mo</td><td>50 docs/mo</td><td class="highlight">Unlimited</td><td>Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
+                        <tr><td>Batch Processing</td><td class="cross">—</td><td class="cross">—</td><td class="cross">—</td><td class="highlight">100 claims</td><td>500 claims</td><td>1,000 claims</td><td>Unlimited</td></tr>
+                        <tr><td>History Retention</td><td>7 days</td><td>30 days</td><td>90 days</td><td class="highlight">180 days</td><td>365 days</td><td>3 years</td><td>Unlimited</td></tr>
+                        <tr><td>SLA Uptime</td><td class="cross">—</td><td class="cross">—</td><td class="cross">—</td><td class="highlight cross">—</td><td>99.5%</td><td>99.7%</td><td>99.9%</td></tr>
+                        <tr><td>Support</td><td>Email (7d)</td><td>Email (48h)</td><td>Email+Chat (24h)</td><td class="highlight">Priority (12h)</td><td>24/7 (6h)</td><td>24/7 (4h)</td><td>Dedicated (30m)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
     <section class="faq">
         <h2>Frequently Asked Questions</h2>
         <div class="faq-item" onclick="this.classList.toggle('open')">
             <div class="faq-q">What counts as a verification?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-a">Each claim, image, video, or URL you submit counts as one verification. Our 9-point system runs all checks in a single verification.</div>
+            <div class="faq-a">Each claim, image, video, or URL you submit counts as one verification. Our 9-point system runs all checks in a single verification. Bulk documents use one verification per extracted claim.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-q">What happens if I exceed my limit?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-a">You'll be notified at 80% usage. Overages are charged per-verification: Starter $0.05, Pro $0.045, Professional $0.04, Business $0.035, Business+ $0.03. We never charge without consent.</div>
         </div>
         <div class="faq-item" onclick="this.classList.toggle('open')">
             <div class="faq-q">Can I cancel anytime?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
             <div class="faq-a">Yes! No contracts or commitments. Cancel your subscription anytime from your dashboard. You'll retain access until the end of your billing period.</div>
         </div>
         <div class="faq-item" onclick="this.classList.toggle('open')">
-            <div class="faq-q">What happens if I exceed my limit?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-a">You can purchase additional verification credits or upgrade your plan. We'll notify you when you reach 80% of your monthly limit.</div>
+            <div class="faq-q">Do unused verifications roll over?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-a">Free & Starter: No rollover. Pro: Up to 500. Professional: Up to 1,500 (2 months). Business: Up to 5,000 (3 months). Business+: Unlimited within 12-month period.</div>
         </div>
         <div class="faq-item" onclick="this.classList.toggle('open')">
             <div class="faq-q">Is my data secure?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-a">Absolutely. We use end-to-end encryption, SOC 2 compliance, and never store your content after analysis. Enterprise plans include additional security options.</div>
+            <div class="faq-a">Absolutely. We use AES-256 encryption, SOC 2 Type II compliance, and zero data retention. Enterprise plans include HIPAA, GDPR, and custom security options.</div>
         </div>
     </section>
 
     <section class="cta">
         <h2>Ready to Fight Misinformation?</h2>
         <p>Join thousands of journalists, researchers, and content creators using Verity.</p>
-        <a href="verify.html" class="cta-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Start Verifying Free</a>
+        <a href="auth.html" class="cta-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Start Verifying Free</a>
     </section>
 
     <footer><p>© 2026 Verity Systems · <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a> · <a href="api-docs.html">API Docs</a></p></footer>
@@ -194,12 +338,30 @@
             document.getElementById('billingToggle').classList.toggle('annual', isAnnual);
             document.getElementById('monthlyLabel').classList.toggle('active', !isAnnual);
             document.getElementById('annualLabel').classList.toggle('active', isAnnual);
-            // Pro pricing: $99/mo or $79/mo annual
-            document.getElementById('proPrice').innerHTML = isAnnual ? '$79<span>/mo</span>' : '$99<span>/mo</span>';
-            document.getElementById('proPeriod').textContent = isAnnual ? 'Billed annually ($948/yr)' : 'Billed monthly';
-            // Professional pricing: $199/mo or $159/mo annual
-            document.getElementById('professionalPrice').innerHTML = isAnnual ? '$159<span>/mo</span>' : '$199<span>/mo</span>';
-            document.getElementById('professionalPeriod').textContent = isAnnual ? 'Billed annually ($1,908/yr)' : 'Billed monthly';
+            
+            if (isAnnual) {
+                document.getElementById('starterPrice').innerHTML = '$41<span>/mo</span>';
+                document.getElementById('starterAnnual').textContent = 'Billed $490/yr (save 17%)';
+                document.getElementById('proPrice').innerHTML = '$89<span>/mo</span>';
+                document.getElementById('proAnnual').textContent = 'Billed $1,069/yr (save 10%)';
+                document.getElementById('professionalPrice').innerHTML = '$179<span>/mo</span>';
+                document.getElementById('professionalAnnual').textContent = 'Billed $2,149/yr (save 10%)';
+                document.getElementById('businessPrice').innerHTML = '$539<span>/mo</span>';
+                document.getElementById('businessAnnual').textContent = 'Billed $6,469/yr (save 10%)';
+                document.getElementById('businessPlusPrice').innerHTML = '$899<span>/mo</span>';
+                document.getElementById('businessPlusAnnual').textContent = 'Billed $10,789/yr (save 10%)';
+            } else {
+                document.getElementById('starterPrice').innerHTML = '$49<span>/mo</span>';
+                document.getElementById('starterAnnual').textContent = 'or $490/yr (save 17%)';
+                document.getElementById('proPrice').innerHTML = '$99<span>/mo</span>';
+                document.getElementById('proAnnual').textContent = 'or $1,069/yr (save 10%)';
+                document.getElementById('professionalPrice').innerHTML = '$199<span>/mo</span>';
+                document.getElementById('professionalAnnual').textContent = 'or $2,149/yr (save 10%)';
+                document.getElementById('businessPrice').innerHTML = '$599<span>/mo</span>';
+                document.getElementById('businessAnnual').textContent = 'or $6,469/yr (save 10%)';
+                document.getElementById('businessPlusPrice').innerHTML = '$999<span>/mo</span>';
+                document.getElementById('businessPlusAnnual').textContent = 'or $10,789/yr (save 10%)';
+            }
         }
     </script>
     <script src="assets/js/chatbot.js" defer></script>
