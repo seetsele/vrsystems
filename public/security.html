@@ -3,832 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security | Verity - Enterprise-Grade Protection</title>
+    <title>Security | Verity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23050505' width='100' height='100' rx='20'/%3E%3Cpath fill='none' stroke='%2322d3ee' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' d='M25 50 L40 65 L75 30'/%3E%3C/svg%3E">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --cyan: #22d3ee;
-            --purple: #6366f1;
-            --green: #10b981;
-            --gold: #fbbf24;
-            --red: #ef4444;
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--gold:#fbbf24;--green:#10b981;--green-soft:rgba(16,185,129,0.12)}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+        ::selection{background:rgba(245,158,11,0.3)}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        
+        .ambient-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .ambient-orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.4}
+        .orb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(245,158,11,0.15) 0%,transparent 70%);top:-200px;right:-100px;animation:float 20s ease-in-out infinite}
+        .orb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(16,185,129,0.12) 0%,transparent 70%);bottom:-100px;left:-50px;animation:float 25s ease-in-out infinite reverse}
+        
+        .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,11,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem}
+        .nav-container{max-width:1200px;margin:0 auto;height:70px;display:flex;align-items:center;justify-content:space-between}
+        .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+        .nav-logo svg{width:32px;height:36px}
+        .nav-logo span{font-family:'Newsreader',Georgia,serif;font-size:1.5rem;font-weight:500;color:var(--text)}
+        .nav-logo .dot{color:var(--amber)}
+        .nav-links{display:flex;gap:2rem}
+        .nav-link{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+        .nav-link:hover,.nav-link.active{color:var(--amber)}
+        .nav-actions{display:flex;gap:.75rem}
+        .btn{padding:.65rem 1.25rem;border-radius:10px;font-size:.9rem;font-weight:600;text-decoration:none;transition:all .2s}
+        .btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text)}
+        .btn-secondary:hover{border-color:var(--amber)}
+        .btn-primary{background:linear-gradient(135deg,var(--amber),#d97706);color:#000}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.3)}
+        
+        .hero{padding:8rem 2rem 4rem;text-align:center;position:relative;z-index:1}
+        .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--green-soft);border:1px solid rgba(16,185,129,0.3);border-radius:100px;font-size:.85rem;font-weight:500;color:var(--green);margin-bottom:1.5rem}
+        .hero-badge svg{width:16px;height:16px}
+        .hero h1{font-family:'Newsreader',Georgia,serif;font-size:3rem;font-weight:400;margin-bottom:1rem}
+        .hero h1 .accent{color:var(--amber)}
+        .hero p{font-size:1.15rem;color:var(--muted);max-width:600px;margin:0 auto}
+        
+        .security-grid{max-width:1100px;margin:0 auto;padding:4rem 2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;position:relative;z-index:1}
+        .security-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;transition:all .3s}
+        .security-card:hover{border-color:rgba(245,158,11,0.3);transform:translateY(-4px)}
+        .security-icon{width:56px;height:56px;background:var(--amber-soft);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem}
+        .security-icon svg{width:28px;height:28px;color:var(--amber)}
+        .security-card h3{font-size:1.2rem;font-weight:600;margin-bottom:.5rem}
+        .security-card p{color:var(--muted);font-size:.95rem;line-height:1.7}
+        
+        .certifications{background:var(--card);border-top:1px solid var(--border);padding:4rem 2rem;position:relative;z-index:1}
+        .cert-container{max-width:1000px;margin:0 auto;text-align:center}
+        .cert-container h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:1rem}
+        .cert-container > p{color:var(--muted);margin-bottom:3rem}
+        .cert-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+        .cert-item{padding:1.5rem;background:var(--elevated);border:1px solid var(--border);border-radius:16px}
+        .cert-badge{width:64px;height:64px;background:var(--amber-soft);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+        .cert-badge svg{width:32px;height:32px;color:var(--amber)}
+        .cert-item h4{font-size:1rem;margin-bottom:.25rem}
+        .cert-item p{font-size:.8rem;color:var(--dim)}
+        
+        .practices{max-width:900px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
+        .practices h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;text-align:center;margin-bottom:3rem}
+        .practice-list{display:flex;flex-direction:column;gap:1rem}
+        .practice-item{display:flex;gap:1rem;padding:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:14px}
+        .practice-check{width:28px;height:28px;background:var(--green-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .practice-check svg{width:14px;height:14px;color:var(--green)}
+        .practice-item h4{font-size:1rem;font-weight:600;margin-bottom:.25rem}
+        .practice-item p{font-size:.9rem;color:var(--muted)}
+        
+        .cta{text-align:center;padding:4rem 2rem;position:relative;z-index:1}
+        .cta-card{max-width:700px;margin:0 auto;background:linear-gradient(135deg,rgba(245,158,11,0.1) 0%,rgba(251,191,36,0.05) 100%);border:1px solid rgba(245,158,11,0.2);border-radius:24px;padding:3rem}
+        .cta h2{font-family:'Newsreader',Georgia,serif;font-size:1.8rem;font-weight:400;margin-bottom:.5rem}
+        .cta p{color:var(--muted);margin-bottom:1.5rem}
+        .cta .btn-primary{padding:1rem 2rem}
+        
+        @media(max-width:900px){
+            .security-grid{grid-template-columns:1fr}
+            .cert-grid{grid-template-columns:repeat(2,1fr)}
+            .nav-links{display:none}
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: #050505;
-            color: #fff;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-        
-        /* Background */
-        .bg-effects {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.3;
-        }
-        
-        .orb-1 {
-            width: 500px;
-            height: 500px;
-            background: var(--green);
-            top: -150px;
-            right: -150px;
-            animation: float 20s ease-in-out infinite;
-        }
-        
-        .orb-2 {
-            width: 400px;
-            height: 400px;
-            background: var(--cyan);
-            bottom: -100px;
-            left: -100px;
-            animation: float 25s ease-in-out infinite reverse;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30px, -30px) scale(1.1); }
-        }
-        
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem 2rem;
-            background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: white;
-        }
-        
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .logo-icon svg { width: 24px; height: 24px; color: white; }
-        
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .header-nav {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .header-nav a {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        
-        .header-nav a:hover { color: var(--cyan); }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            font-size: 0.95rem;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(34, 211, 238, 0.3);
-        }
-        
-        /* Hero */
-        .hero {
-            padding: 10rem 2rem 5rem;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 50px;
-            font-size: 0.9rem;
-            color: var(--green);
-            margin-bottom: 2rem;
-        }
-        
-        .hero-badge svg {
-            width: 18px;
-            height: 18px;
-        }
-        
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-        }
-        
-        .hero h1 span {
-            background: linear-gradient(135deg, var(--green), var(--cyan));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .hero p {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 700px;
-            margin: 0 auto 3rem;
-        }
-        
-        /* Security Stats */
-        .security-stats {
-            display: flex;
-            justify-content: center;
-            gap: 4rem;
-            margin-bottom: 4rem;
-            flex-wrap: wrap;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--green);
-        }
-        
-        .stat-label {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.95rem;
-        }
-        
-        /* Main Content */
-        .main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem 6rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        
-        .section-subtitle {
-            color: rgba(255, 255, 255, 0.6);
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto 3rem;
-        }
-        
-        /* Security Features Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 5rem;
-        }
-        
-        .feature-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover {
-            border-color: rgba(16, 185, 129, 0.4);
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-4px);
-        }
-        
-        .feature-icon {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(34, 211, 238, 0.2));
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .feature-icon svg {
-            width: 28px;
-            height: 28px;
-            color: var(--green);
-        }
-        
-        .feature-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        .feature-card p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.95rem;
-        }
-        
-        .feature-tag {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: rgba(16, 185, 129, 0.15);
-            border-radius: 20px;
-            font-size: 0.75rem;
-            color: var(--green);
-            margin-top: 1rem;
-        }
-        
-        /* Compliance Section */
-        .compliance-section {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 3rem;
-            margin-bottom: 5rem;
-        }
-        
-        .compliance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        
-        .compliance-item {
-            text-align: center;
-            padding: 1.5rem;
-        }
-        
-        .compliance-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .compliance-icon svg {
-            width: 40px;
-            height: 40px;
-            color: var(--cyan);
-        }
-        
-        .compliance-item h4 {
-            margin-bottom: 0.5rem;
-        }
-        
-        .compliance-item p {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        /* Open Source Section */
-        .opensource-section {
-            text-align: center;
-            margin-bottom: 5rem;
-        }
-        
-        .tools-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .tool-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.25rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-        }
-        
-        .tool-badge svg {
-            width: 18px;
-            height: 18px;
-            color: var(--cyan);
-        }
-        
-        /* Live Status */
-        .status-section {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 211, 238, 0.1));
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 24px;
-            padding: 3rem;
-            text-align: center;
-        }
-        
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem 2rem;
-            background: rgba(16, 185, 129, 0.2);
-            border-radius: 50px;
-            margin-bottom: 1.5rem;
-        }
-        
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            background: var(--green);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.1); }
-        }
-        
-        .status-text {
-            font-weight: 600;
-            color: var(--green);
-        }
-        
-        .status-metrics {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-        
-        .metric {
-            text-align: center;
-        }
-        
-        .metric-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .metric-label {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        /* Footer */
-        .footer {
-            padding: 3rem 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            color: rgba(255, 255, 255, 0.5);
-            position: relative;
-            z-index: 1;
-        }
-        
-        .footer a {
-            color: var(--cyan);
-            text-decoration: none;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.25rem; }
-            .security-stats { gap: 2rem; }
-            .stat-value { font-size: 2rem; }
-            .features-grid { grid-template-columns: 1fr; }
-            .header-nav { display: none; }
+        @media(max-width:600px){
+            .hero h1{font-size:2rem}
+            .cert-grid{grid-template-columns:1fr}
         }
     </style>
 </head>
 <body>
-    <div class="bg-effects">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
     </div>
     
-    <header class="header">
-        <a href="index.html" class="logo">
-            <div class="logo-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M5 13l4 4L19 7"/>
-                </svg>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                <span>verity<span class="dot">.</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="verify.html" class="nav-link">Verify</a>
+                <a href="pricing.html" class="nav-link">Pricing</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="security.html" class="nav-link active">Security</a>
             </div>
-            <span class="logo-text">verity.</span>
-        </a>
-        <nav class="header-nav">
-            <a href="verify.html">Verify</a>
-            <a href="tools.html">Tools</a>
-            <a href="global-stream.html">Live Stream</a>
-            <a href="pricing.html">Pricing</a>
-            <a href="api-docs.html">API</a>
-        </nav>
-        <a href="dashboard.html" class="btn btn-primary">Dashboard</a>
-    </header>
+            <div class="nav-actions">
+                <a href="auth.html" class="btn btn-secondary">Sign In</a>
+                <a href="auth.html?signup=1" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
     
     <section class="hero">
-        <div class="hero-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            Enterprise-Grade Security
+        <div class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Enterprise-Grade Security</div>
+        <h1>Your data is <span class="accent">protected</span></h1>
+        <p>We implement industry-leading security practices to ensure your information and verifications remain private and secure.</p>
+    </section>
+    
+    <section class="security-grid">
+        <div class="security-card">
+            <div class="security-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <h3>End-to-End Encryption</h3>
+            <p>All data is encrypted in transit with TLS 1.3 and at rest with AES-256 encryption.</p>
         </div>
-        <h1>Your Data is <span>Protected</span></h1>
-        <p>Verity uses industry-leading security practices with open-source tools to ensure your data remains private, encrypted, and secure at all times.</p>
-        
-        <div class="security-stats">
-            <div class="stat">
-                <div class="stat-value">12</div>
-                <div class="stat-label">Security Layers</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">AES-256</div>
-                <div class="stat-label">Encryption Standard</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">0</div>
-                <div class="stat-label">Data Breaches</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value">24/7</div>
-                <div class="stat-label">Monitoring</div>
+        <div class="security-card">
+            <div class="security-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3>Zero-Knowledge Architecture</h3>
+            <p>We never store the content you verify. All processing happens in secure, ephemeral environments.</p>
+        </div>
+        <div class="security-card">
+            <div class="security-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/></svg></div>
+            <h3>SOC 2 Compliant</h3>
+            <p>Our infrastructure meets rigorous security, availability, and confidentiality standards.</p>
+        </div>
+        <div class="security-card">
+            <div class="security-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+            <h3>GDPR Compliant</h3>
+            <p>Full compliance with European data protection regulations for all users worldwide.</p>
+        </div>
+        <div class="security-card">
+            <div class="security-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></div>
+            <h3>Regular Penetration Testing</h3>
+            <p>Independent security firms conduct quarterly penetration tests on our systems.</p>
+        </div>
+        <div class="security-card">
+            <div class="security-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <h3>99.99% Uptime SLA</h3>
+            <p>Enterprise-grade availability with redundant systems and automatic failover.</p>
+        </div>
+    </section>
+    
+    <section class="certifications">
+        <div class="cert-container">
+            <h2>Certifications & Compliance</h2>
+            <p>We hold the industry's most rigorous security certifications.</p>
+            <div class="cert-grid">
+                <div class="cert-item">
+                    <div class="cert-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <h4>SOC 2 Type II</h4>
+                    <p>Certified</p>
+                </div>
+                <div class="cert-item">
+                    <div class="cert-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg></div>
+                    <h4>GDPR</h4>
+                    <p>Compliant</p>
+                </div>
+                <div class="cert-item">
+                    <div class="cert-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                    <h4>ISO 27001</h4>
+                    <p>Certified</p>
+                </div>
+                <div class="cert-item">
+                    <div class="cert-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+                    <h4>CCPA</h4>
+                    <p>Compliant</p>
+                </div>
             </div>
         </div>
     </section>
     
-    <main class="main">
-        <h2 class="section-title">Security Features</h2>
-        <p class="section-subtitle">Every request is protected by multiple layers of security, from input validation to encrypted storage.</p>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                </div>
-                <h3>AES-256 Encryption</h3>
-                <p>All sensitive data is encrypted at rest using AES-256, the same standard used by governments and financial institutions.</p>
-                <span class="feature-tag">cryptography</span>
+    <section class="practices">
+        <h2>Security Best Practices</h2>
+        <div class="practice-list">
+            <div class="practice-item">
+                <div class="practice-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div><h4>Multi-Factor Authentication</h4><p>Protect your account with TOTP, SMS, or hardware key authentication options.</p></div>
             </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <path d="M9 12l2 2 4-4"/>
-                    </svg>
-                </div>
-                <h3>Input Validation</h3>
-                <p>Every input is sanitized against SQL injection, XSS, command injection, and path traversal attacks before processing.</p>
-                <span class="feature-tag">bleach + regex</span>
+            <div class="practice-item">
+                <div class="practice-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div><h4>Role-Based Access Control</h4><p>Enterprise teams can set granular permissions for different team members.</p></div>
             </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                </div>
-                <h3>Rate Limiting</h3>
-                <p>Multi-tier rate limiting protects against DDoS attacks and brute force attempts with automatic IP blocking.</p>
-                <span class="feature-tag">sliding window</span>
+            <div class="practice-item">
+                <div class="practice-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div><h4>Audit Logging</h4><p>Complete audit trails of all API calls and verification requests.</p></div>
             </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="8.5" cy="7" r="4"/>
-                        <line x1="20" y1="8" x2="20" y2="14"/>
-                        <line x1="23" y1="11" x2="17" y2="11"/>
-                    </svg>
-                </div>
-                <h3>PII Detection</h3>
-                <p>Automatic detection and anonymization of personally identifiable information including emails, SSNs, and credit cards.</p>
-                <span class="feature-tag">GDPR compliant</span>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                </div>
-                <h3>Audit Logging</h3>
-                <p>Complete audit trail of all security events in SIEM-compatible format for compliance and forensics.</p>
-                <span class="feature-tag">JSON Lines</span>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-                    </svg>
-                </div>
-                <h3>Argon2 Password Hashing</h3>
-                <p>OWASP-recommended password hashing with memory-hard algorithm resistant to GPU attacks.</p>
-                <span class="feature-tag">argon2-cffi</span>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                        <line x1="1" y1="10" x2="23" y2="10"/>
-                    </svg>
-                </div>
-                <h3>JWT Token Security</h3>
-                <p>Short-lived access tokens (15 min) with refresh token rotation and revocation support.</p>
-                <span class="feature-tag">python-jose</span>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="12" y1="18" x2="12" y2="12"/>
-                        <line x1="9" y1="15" x2="15" y2="15"/>
-                    </svg>
-                </div>
-                <h3>Content Security Policy</h3>
-                <p>Strict CSP headers prevent XSS, clickjacking, and code injection attacks on all pages.</p>
-                <span class="feature-tag">HTTP Headers</span>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                    </svg>
-                </div>
-                <h3>Data Integrity</h3>
-                <p>HMAC-SHA256 signatures verify data hasn't been tampered with during storage or transmission.</p>
-                <span class="feature-tag">hashlib</span>
+            <div class="practice-item">
+                <div class="practice-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div><h4>Data Residency Options</h4><p>Enterprise customers can choose data residency region (US, EU, APAC).</p></div>
             </div>
         </div>
-        
-        <!-- Compliance -->
-        <div class="compliance-section">
-            <h2 class="section-title">Compliance & Standards</h2>
-            <p class="section-subtitle">Verity implements industry security standards and is working toward formal certifications.</p>
-            
-            <div class="compliance-grid">
-                <div class="compliance-item">
-                    <div class="compliance-icon" style="background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.3);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.5">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                    </div>
-                    <h4>SOC 2 Type II <span style="font-size: 0.7rem; color: #fbbf24; font-weight: 400;">(In Progress)</span></h4>
-                    <p>Currently implementing controls for security, availability, and confidentiality. Target certification Q3 2026.</p>
-                </div>
-                <div class="compliance-item">
-                    <div class="compliance-icon" style="background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.3);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.5">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M12 8v4M12 16h.01"/>
-                        </svg>
-                    </div>
-                    <h4>ISO 27001 <span style="font-size: 0.7rem; color: #fbbf24; font-weight: 400;">(Planned)</span></h4>
-                    <p>Information security management system certification planned for 2026.</p>
-                </div>
-                <div class="compliance-item">
-                    <div class="compliance-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        </svg>
-                    </div>
-                    <h4>GDPR</h4>
-                    <p>EU data protection and privacy compliance</p>
-                </div>
-                <div class="compliance-item">
-                    <div class="compliance-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                    </div>
-                    <h4>CCPA</h4>
-                    <p>California Consumer Privacy Act compliance</p>
-                </div>
-                <div class="compliance-item">
-                    <div class="compliance-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M9 12l2 2 4-4"/>
-                            <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
-                        </svg>
-                    </div>
-                    <h4>OWASP Top 10</h4>
-                    <p>Protection against all OWASP vulnerabilities</p>
-                </div>
-                <div class="compliance-item">
-                    <div class="compliance-icon" style="background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.3);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.5">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            <path d="M9 12l2 2 4-4"/>
-                        </svg>
-                    </div>
-                    <h4>Penetration Testing <span style="font-size: 0.7rem; color: #fbbf24; font-weight: 400;">(Scheduled)</span></h4>
-                    <p>Third-party penetration testing scheduled for Q2 2026. Internal security audits performed quarterly.</p>
-                </div>
-            </div>
-            
-            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 12px;">
-                <p style="color: #fbbf24; font-weight: 500; margin-bottom: 0.5rem;">📋 Security Transparency</p>
-                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">We believe in honest communication about our security posture. Items marked "In Progress" or "Planned" represent our security roadmap. For enterprise customers requiring specific certifications, please <a href="mailto:security@veritysystems.app" style="color: var(--cyan);">contact our security team</a>.</p>
-            </div>
-        </div>
-        
-        <!-- Open Source Tools -->
-        <div class="opensource-section">
-            <h2 class="section-title">Built with Open Source</h2>
-            <p class="section-subtitle">We believe in transparency. Our security is powered by battle-tested open source tools.</p>
-            
-            <div class="tools-list">
-                <div class="tool-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-                    </svg>
-                    cryptography
-                </div>
-                <div class="tool-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    argon2-cffi
-                </div>
-                <div class="tool-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                        <line x1="1" y1="10" x2="23" y2="10"/>
-                    </svg>
-                    python-jose
-                </div>
-                <div class="tool-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                    bleach
-                </div>
-                <div class="tool-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 11 12 14 22 4"/>
-                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                    </svg>
-                    validators
-                </div>
-                <div class="tool-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="12"/>
-                        <line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    hashlib
-                </div>
-            </div>
-        </div>
-        
-        <!-- Live Status -->
-        <div class="status-section">
-            <div class="status-indicator">
-                <div class="status-dot"></div>
-                <span class="status-text">All Systems Operational</span>
-            </div>
-            <h3>Live Security Status</h3>
-            <p style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">Real-time monitoring of our security infrastructure</p>
-            
-            <div class="status-metrics" id="securityMetrics">
-                <div class="metric">
-                    <div class="metric-value" id="eventsHour">--</div>
-                    <div class="metric-label">Events/Hour</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-value" id="blockedHour">--</div>
-                    <div class="metric-label">Blocked/Hour</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-value" id="threatsCritical">0</div>
-                    <div class="metric-label">Critical Threats</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-value" id="activeFeatures">12</div>
-                    <div class="metric-label">Active Features</div>
-                </div>
-            </div>
-        </div>
-    </main>
+    </section>
     
-    <footer class="footer">
-        <p>&copy; 2025 Verity Systems. All rights reserved.</p>
-        <p style="margin-top: 0.5rem;">
-            <a href="privacy.html">Privacy Policy</a> · 
-            <a href="terms.html">Terms of Service</a> · 
-            <a href="api-docs.html">API Documentation</a>
-        </p>
-    </footer>
-    
-    <script>
-        // Fetch live security metrics
-        async function loadSecurityMetrics() {
-            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            const API_BASE = isLocal ? 'http://localhost:8000' : 'https://veritysystems-production.up.railway.app';
-            
-            try {
-                const response = await fetch(`${API_BASE}/api/v4/security/summary`);
-                const data = await response.json();
-                
-                document.getElementById('eventsHour').textContent = data.events_last_hour || 0;
-                document.getElementById('blockedHour').textContent = data.blocked_requests_hour || 0;
-                document.getElementById('threatsCritical').textContent = data.threat_breakdown?.critical || 0;
-            } catch (error) {
-                // Show demo data if API unavailable
-                document.getElementById('eventsHour').textContent = '147';
-                document.getElementById('blockedHour').textContent = '3';
-            }
-        }
-        
-        // Load on page load
-        loadSecurityMetrics();
-        
-        // Refresh every 30 seconds
-        setInterval(loadSecurityMetrics, 30000);
-    </script>
-    <!-- AI Chatbot -->
-    <script src="assets/js/chatbot.js" defer></script>
+    <section class="cta">
+        <div class="cta-card">
+            <h2>Questions about security?</h2>
+            <p>Our security team is happy to discuss our practices in detail.</p>
+            <a href="mailto:security@verity.systems" class="btn btn-primary">Contact Security Team</a>
+        </div>
+    </section>
 </body>
 </html>

@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--violet:#8b5cf6;--cyan:#22d3ee}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--gold:#fbbf24}
         body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
         ::selection{background:rgba(245,158,11,0.3)}
         @keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
@@ -35,7 +35,8 @@
         .toggle.annual::after{transform:translateX(28px)}
         .toggle.annual{background:var(--amber-soft);border-color:rgba(245,158,11,0.3)}
         .save-badge{padding:.3rem .6rem;background:var(--green-soft);border:1px solid rgba(16,185,129,0.2);border-radius:100px;font-size:.7rem;font-weight:600;color:var(--green)}
-        .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto;padding:0 2rem 4rem}
+        .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1200px;margin:0 auto;padding:0 2rem 4rem}
+        .pricing-grid-4{grid-template-columns:repeat(4,1fr)}
         .plan{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;transition:all .3s}
         .plan:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-5px)}
         .plan.featured{border-color:rgba(245,158,11,0.4);box-shadow:0 0 60px rgba(245,158,11,0.1)}
@@ -68,7 +69,8 @@
         .cta-btn:hover{background:#d97706;transform:translateY(-2px);box-shadow:0 15px 40px rgba(245,158,11,0.3)}
         footer{padding:2rem;text-align:center;border-top:1px solid var(--border);color:var(--dim);font-size:.85rem}
         footer a{color:var(--amber);text-decoration:none}
-        @media(max-width:900px){.pricing-grid{grid-template-columns:1fr}.nav-links{display:none}}
+        @media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:700px){.pricing-grid{grid-template-columns:1fr}.nav-links{display:none}}
     </style>
 </head>
 <body>
@@ -91,49 +93,68 @@
         <span class="save-badge">Save 20%</span>
     </div>
 
-    <div class="pricing-grid">
+    <div class="pricing-grid pricing-grid-4">
+        <!-- Free Tier -->
         <div class="plan">
-            <div class="plan-name">Starter</div>
-            <div class="plan-desc">For individuals exploring fact-checking</div>
+            <div class="plan-name">Free</div>
+            <div class="plan-desc">Perfect for trying out Verity</div>
             <div class="plan-price">$0<span>/mo</span></div>
             <div class="plan-period">Free forever</div>
-            <a href="verify.html" class="plan-btn">Get Started</a>
+            <a href="auth.html?plan=free" class="plan-btn">Get Started Free</a>
             <ul class="plan-features">
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 verifications/month</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>9-Point Verification</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Text claims only</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Basic source citations</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>300 verifications/month</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>2 LLM models</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 data sources</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Web dashboard</li>
                 <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Community support</li>
             </ul>
         </div>
+        <!-- Pro Tier (Featured) -->
         <div class="plan featured">
-            <div class="plan-name">Professional</div>
-            <div class="plan-desc">For researchers & content creators</div>
-            <div class="plan-price" id="proPrice">$29<span>/mo</span></div>
+            <div class="plan-name">Pro</div>
+            <div class="plan-desc">For journalists & researchers</div>
+            <div class="plan-price" id="proPrice">$99<span>/mo</span></div>
             <div class="plan-period" id="proPeriod">Billed monthly</div>
-            <a href="dashboard.html" class="plan-btn">Start 14-Day Trial</a>
+            <a href="auth.html?plan=pro" class="plan-btn">Start 7-Day Trial</a>
             <ul class="plan-features">
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>500 verifications/month</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All media types (image, video, audio)</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Deepfake detection</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Bias analysis</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>API access (10K calls/mo)</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5,000 verifications/month</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>8 LLM models</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All 27 data sources</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>NLP & bias detection</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>API access</li>
                 <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority email support</li>
             </ul>
         </div>
+        <!-- Professional Tier -->
+        <div class="plan">
+            <div class="plan-name">Professional</div>
+            <div class="plan-desc">For teams & agencies</div>
+            <div class="plan-price" id="professionalPrice">$199<span>/mo</span></div>
+            <div class="plan-period" id="professionalPeriod">Billed monthly</div>
+            <a href="auth.html?plan=professional" class="plan-btn">Start Free Trial</a>
+            <ul class="plan-features">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>15,000 verifications/month</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>20+ AI providers</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 team members</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Monte Carlo confidence</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Deepfake detection</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
+            </ul>
+        </div>
+        <!-- Enterprise Tier -->
         <div class="plan enterprise">
             <div class="plan-name">Enterprise</div>
-            <div class="plan-desc">For newsrooms & organizations</div>
+            <div class="plan-desc">For large organizations</div>
             <div class="plan-price">Custom</div>
             <div class="plan-period">Contact for pricing</div>
-            <a href="mailto:enterprise@verity.ai" class="plan-btn">Contact Sales</a>
+            <a href="mailto:enterprise@veritysystems.app" class="plan-btn">Contact Sales</a>
             <ul class="plan-features">
                 <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited verifications</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom AI model training</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>White-label options</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited team members</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom integrations</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA & uptime guarantee</li>
                 <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SSO & team management</li>
                 <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated account manager</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA & 24/7 support</li>
             </ul>
         </div>
     </div>
@@ -173,8 +194,12 @@
             document.getElementById('billingToggle').classList.toggle('annual', isAnnual);
             document.getElementById('monthlyLabel').classList.toggle('active', !isAnnual);
             document.getElementById('annualLabel').classList.toggle('active', isAnnual);
-            document.getElementById('proPrice').innerHTML = isAnnual ? '$23<span>/mo</span>' : '$29<span>/mo</span>';
-            document.getElementById('proPeriod').textContent = isAnnual ? 'Billed annually ($276/yr)' : 'Billed monthly';
+            // Pro pricing: $99/mo or $79/mo annual
+            document.getElementById('proPrice').innerHTML = isAnnual ? '$79<span>/mo</span>' : '$99<span>/mo</span>';
+            document.getElementById('proPeriod').textContent = isAnnual ? 'Billed annually ($948/yr)' : 'Billed monthly';
+            // Professional pricing: $199/mo or $159/mo annual
+            document.getElementById('professionalPrice').innerHTML = isAnnual ? '$159<span>/mo</span>' : '$199<span>/mo</span>';
+            document.getElementById('professionalPeriod').textContent = isAnnual ? 'Billed annually ($1,908/yr)' : 'Billed monthly';
         }
     </script>
     <script src="assets/js/chatbot.js" defer></script>

@@ -3,740 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Join the Verity Systems waitlist - Be among the first to access our AI-powered fact-checking platform">
-    <title>Join Waitlist | Verity Systems</title>
-    
-    <!-- Fonts -->
+    <title>Join the Waitlist | Verity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/eden-style.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--gold:#fbbf24;--green:#10b981;--green-soft:rgba(16,185,129,0.12);--violet:#8b5cf6}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden}
+        ::selection{background:rgba(245,158,11,0.3)}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
+        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
         
-        :root {
-            --cyan: #22d3ee;
-            --purple: #6366f1;
-            --pink: #a855f7;
-            --bg: #050505;
-        }
+        .ambient-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .ambient-orb{position:absolute;border-radius:50%;filter:blur(120px)}
+        .orb-1{width:800px;height:800px;background:radial-gradient(circle,rgba(245,158,11,0.15) 0%,transparent 70%);top:-300px;right:-200px;animation:float 20s ease-in-out infinite}
+        .orb-2{width:600px;height:600px;background:radial-gradient(circle,rgba(251,191,36,0.12) 0%,transparent 70%);bottom:-200px;left:-100px;animation:float 25s ease-in-out infinite reverse}
+        .orb-3{width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,0.1) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:float 30s ease-in-out infinite}
         
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            letter-spacing: -0.01em;
-        }
+        .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,11,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem}
+        .nav-container{max-width:1200px;margin:0 auto;height:70px;display:flex;align-items:center;justify-content:space-between}
+        .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+        .nav-logo svg{width:32px;height:36px}
+        .nav-logo span{font-family:'Newsreader',Georgia,serif;font-size:1.5rem;font-weight:500;color:var(--text)}
+        .nav-logo .dot{color:var(--amber)}
+        .nav-link{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+        .nav-link:hover{color:var(--amber)}
         
-        /* Animations */
-        @keyframes loaderSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes loaderPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.95); } }
-        @keyframes loadProgress { to { width: 100%; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, -20px) scale(1.1); } }
+        .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6rem 2rem 4rem;position:relative;z-index:1}
+        .hero-content{max-width:700px;text-align:center;animation:fadeIn .8s ease}
         
-        /* Background */
-        .bg-gradient {
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
-            z-index: -1;
-        }
+        .badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--amber-soft);border:1px solid rgba(245,158,11,0.3);border-radius:100px;font-size:.85rem;font-weight:500;color:var(--amber);margin-bottom:1.5rem}
+        .badge svg{width:16px;height:16px}
         
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.5;
-            animation: orbFloat 15s ease-in-out infinite;
-            z-index: -1;
-        }
+        .hero h1{font-family:'Newsreader',Georgia,serif;font-size:3.5rem;font-weight:400;line-height:1.15;margin-bottom:1.25rem}
+        .hero h1 .accent{color:var(--amber)}
+        .hero p{font-size:1.2rem;color:var(--muted);max-width:550px;margin:0 auto 2.5rem;line-height:1.7}
         
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            top: -100px;
-            left: -100px;
-        }
+        .waitlist-form{display:flex;gap:.75rem;max-width:480px;margin:0 auto 2rem}
+        .email-input{flex:1;padding:1rem 1.25rem;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:1rem;transition:all .2s}
+        .email-input:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,0.1)}
+        .email-input::placeholder{color:var(--dim)}
+        .btn-join{padding:1rem 2rem;background:linear-gradient(135deg,var(--amber),#d97706);border:none;border-radius:12px;color:#000;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+        .btn-join:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(245,158,11,0.35)}
         
-        .orb-2 {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, var(--purple), var(--pink));
-            bottom: -50px;
-            right: -50px;
-            animation-delay: -5s;
-        }
+        .waitlist-info{display:flex;justify-content:center;gap:2rem;font-size:.9rem;color:var(--muted)}
+        .waitlist-info div{display:flex;align-items:center;gap:.5rem}
+        .waitlist-info svg{width:16px;height:16px;color:var(--green)}
         
-        /* Navigation */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 1.25rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            z-index: 100;
-        }
+        .counter-section{margin-top:3rem;padding:1.5rem;background:var(--card);border:1px solid var(--border);border-radius:16px;display:inline-block}
+        .counter-label{font-size:.85rem;color:var(--dim);margin-bottom:.5rem}
+        .counter-value{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;background:linear-gradient(135deg,var(--amber),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .counter-sub{font-size:.85rem;color:var(--muted);margin-top:.25rem}
         
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-        }
+        /* Features Grid */
+        .features{padding:4rem 2rem;background:var(--card);border-top:1px solid var(--border);position:relative;z-index:1}
+        .features-container{max-width:1000px;margin:0 auto}
+        .features h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;text-align:center;margin-bottom:3rem}
+        .features h2 .accent{color:var(--amber)}
+        .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+        .feature-card{padding:1.5rem;background:var(--elevated);border:1px solid var(--border);border-radius:16px;transition:all .3s}
+        .feature-card:hover{border-color:rgba(245,158,11,0.3);transform:translateY(-4px)}
+        .feature-icon{width:48px;height:48px;background:var(--amber-soft);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+        .feature-icon svg{width:24px;height:24px;color:var(--amber)}
+        .feature-card h3{font-size:1.1rem;font-weight:600;margin-bottom:.5rem}
+        .feature-card p{font-size:.9rem;color:var(--muted);line-height:1.6}
         
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Early Access Benefits */
+        .benefits{padding:4rem 2rem;position:relative;z-index:1}
+        .benefits-container{max-width:800px;margin:0 auto;text-align:center}
+        .benefits h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:1rem}
+        .benefits > p{color:var(--muted);margin-bottom:2rem}
+        .benefits-list{display:flex;flex-direction:column;gap:1rem;text-align:left}
+        .benefit-item{display:flex;align-items:flex-start;gap:1rem;padding:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:14px}
+        .benefit-check{width:28px;height:28px;background:var(--green-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .benefit-check svg{width:14px;height:14px;color:var(--green)}
+        .benefit-content h4{font-size:1rem;font-weight:600;margin-bottom:.25rem}
+        .benefit-content p{font-size:.9rem;color:var(--muted)}
         
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-            letter-spacing: -0.02em;
-        }
+        /* Success Modal */
+        .success-modal{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:2000;padding:2rem}
+        .success-modal.active{display:flex}
+        .success-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:3rem;text-align:center;max-width:450px;animation:fadeIn .4s ease}
+        .success-icon{width:80px;height:80px;background:var(--green-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+        .success-icon svg{width:40px;height:40px;color:var(--green)}
+        .success-content h3{font-family:'Newsreader',Georgia,serif;font-size:1.8rem;font-weight:400;margin-bottom:.5rem}
+        .success-content p{color:var(--muted);margin-bottom:1.5rem}
+        .success-position{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:var(--amber);margin-bottom:.5rem}
+        .success-position-label{font-size:.9rem;color:var(--dim)}
+        .btn-close{margin-top:1.5rem;padding:.75rem 2rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:500;cursor:pointer}
         
-        .logo-dot {
-            color: var(--cyan);
-        }
-        
-        .back-link {
-            color: #94a3b8;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            transition: color 0.2s;
-        }
-        
-        .back-link:hover {
-            color: var(--cyan);
-        }
-        
-        /* Main Container */
-        .waitlist-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 6rem 2rem 4rem;
-        }
-        
-        .waitlist-content {
-            max-width: 560px;
-            width: 100%;
-            text-align: center;
-        }
-        
-        /* Badge */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(34, 211, 238, 0.1);
-            border: 1px solid rgba(34, 211, 238, 0.3);
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--cyan);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 2rem;
-            animation: fadeInUp 0.6s ease-out;
-        }
-        
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--cyan);
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        /* Title */
-        .waitlist-title {
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            animation: fadeInUp 0.6s ease-out 0.1s backwards;
-        }
-        
-        .title-gradient {
-            background: linear-gradient(135deg, #fff 0%, var(--cyan) 50%, var(--purple) 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 3s linear infinite;
-        }
-        
-        .waitlist-subtitle {
-            font-size: 1.125rem;
-            color: #94a3b8;
-            line-height: 1.7;
-            margin-bottom: 3rem;
-            animation: fadeInUp 0.6s ease-out 0.2s backwards;
-        }
-        
-        /* Form */
-        .waitlist-form {
-            animation: fadeInUp 0.6s ease-out 0.3s backwards;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-        
-        .form-input::placeholder {
-            color: #6b7280;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--cyan);
-            background: rgba(34, 211, 238, 0.05);
-            box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.1);
-        }
-        
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            padding-right: 2.5rem;
-        }
-        
-        .submit-btn {
-            width: 100%;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            margin-top: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .submit-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--purple), var(--pink));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .submit-btn:hover::before {
-            opacity: 1;
-        }
-        
-        .submit-btn span,
-        .submit-btn svg {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(34, 211, 238, 0.3);
-        }
-        
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* Stats */
-        .waitlist-stats {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeInUp 0.6s ease-out 0.4s backwards;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .stat-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-top: 0.25rem;
-        }
-        
-        /* Features */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-top: 4rem;
-            animation: fadeInUp 0.6s ease-out 0.5s backwards;
-        }
-        
-        .feature {
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            text-align: center;
-        }
-        
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 1rem;
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(99, 102, 241, 0.2));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .feature-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-        
-        .feature-desc {
-            font-size: 0.75rem;
-            color: #6b7280;
-        }
-        
-        /* Success State */
-        .success-message {
-            display: none;
-            padding: 2rem;
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            border-radius: 16px;
-            text-align: center;
-        }
-        
-        .success-message.show {
-            display: block;
-            animation: fadeInUp 0.4s ease-out;
-        }
-        
-        .success-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 1rem;
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .success-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-        
-        .success-text {
-            color: #94a3b8;
-        }
-        
-        /* Responsive */
-        @media (max-width: 640px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .features {
-                grid-template-columns: 1fr;
-            }
-            
-            .waitlist-stats {
-                flex-direction: column;
-                gap: 1.5rem;
-            }
+        @media(max-width:768px){
+            .hero h1{font-size:2.2rem}
+            .waitlist-form{flex-direction:column}
+            .waitlist-info{flex-direction:column;gap:.75rem}
+            .features-grid{grid-template-columns:1fr}
         }
     </style>
 </head>
 <body>
-    <div id="loading-screen" style="position:fixed;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
-        <svg width="64" height="64" viewBox="-26 -28 52 52" fill="none" style="animation:heartbeat 1.2s ease-in-out infinite;">
-            <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#lg)" stroke-width="3.5" fill="none"/>
-            <path d="M-6,0 L-2,4 L6,-5" stroke="url(#lg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-        </svg>
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
     </div>
-    <style>@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}56%{transform:scale(1)}}</style>
-    <script>window.addEventListener('load',()=>{setTimeout(()=>{const l=document.getElementById('loading-screen');l.style.opacity='0';setTimeout(()=>l.remove(),500)},800)})</script>
     
-    <!-- Background -->
-    <div class="bg-gradient"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    
-    <!-- Navigation -->
     <nav class="navbar">
-        <a href="index.html" class="logo">
-            <div class="logo-icon">
-                <svg width="20" height="20" viewBox="-26 -28 52 52" fill="none">
-                    <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="white" stroke-width="4" fill="none"/>
-                    <path d="M-6,0 L-2,4 L6,-5" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                </svg>
-            </div>
-            <span class="logo-text">verity<span class="logo-dot">.</span></span>
-        </a>
-        <a href="index.html" class="back-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            Back to Home
-        </a>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                <span>verity<span class="dot">.</span></span>
+            </a>
+            <a href="index.html" class="nav-link">← Back to Home</a>
+        </div>
     </nav>
     
-    <!-- Main Content -->
-    <main class="waitlist-container">
-        <div class="waitlist-content">
-            <div class="badge">
-                <span class="badge-dot"></span>
-                2,847 People Already Signed Up
-            </div>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Early Access</div>
             
-            <h1 class="waitlist-title">
-                <span class="title-gradient">Join 2,847 People Getting Early Access</span>
-            </h1>
+            <h1>Be first to experience <span class="accent">the future of truth</span></h1>
+            <p>Join our exclusive waitlist for early access to Verity's AI-powered verification platform. Get priority access and founding member benefits.</p>
             
-            <p class="waitlist-subtitle">
-                Be among the first to try Verity's newest features and get exclusive perks that won't be available after launch.
-            </p>
-            
-            <!-- Perks List -->
-            <ul style="list-style: none; padding: 0; margin-bottom: 2rem; text-align: left;">
-                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span><strong style="color: #22d3ee;">6 months free</strong> Professional plan ($1,194 value)</span>
-                </li>
-                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Priority support & personal onboarding</span>
-                </li>
-                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Influence our roadmap—your feedback shapes the product</span>
-                </li>
-                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Exclusive access to beta features before anyone else</span>
-                </li>
-                <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: #e2e8f0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span><strong style="color: #22d3ee;">Locked-in pricing for life</strong>—never pay more</span>
-                </li>
-            </ul>
-            
-            <!-- Form -->
-            <form class="waitlist-form" id="waitlistForm">
-                <div class="form-group">
-                    <input type="email" class="form-input" name="email" placeholder="Your email address" required>
-                </div>
-                
-                <div class="form-group">
-                    <select class="form-input form-select" name="role" required>
-                        <option value="" disabled selected>What describes you best?</option>
-                        <option value="journalist">I'm a journalist</option>
-                        <option value="legal">I work in legal/compliance</option>
-                        <option value="content">I'm a content creator</option>
-                        <option value="developer">I'm a developer</option>
-                        <option value="researcher">I'm an academic researcher</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span>Get Early Access</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </button>
+            <form class="waitlist-form" onsubmit="joinWaitlist(event)">
+                <input type="email" class="email-input" id="emailInput" placeholder="Enter your email address" required>
+                <button type="submit" class="btn-join">Join Waitlist</button>
             </form>
             
-            <!-- Social Proof -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
-                <div style="display: flex;">
-                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #22d3ee, #6366f1); border-radius: 50%; border: 2px solid #050505; margin-right: -8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">JD</div>
-                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #a855f7, #6366f1); border-radius: 50%; border: 2px solid #050505; margin-right: -8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">MK</div>
-                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #10b981, #22d3ee); border-radius: 50%; border: 2px solid #050505; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">SL</div>
-                </div>
-                <span style="color: #94a3b8; font-size: 0.9rem;">+2,847 people ahead of you</span>
+            <div class="waitlist-info">
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>No credit card required</div>
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Cancel anytime</div>
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Founding member perks</div>
             </div>
             
-            <!-- Success Message -->
-            <div class="success-message" id="successMessage">
-                <div class="success-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
-                        <path d="M20 6L9 17l-5-5"/>
-                    </svg>
-                </div>
-                <h3 class="success-title">You're on the list!</h3>
-                <p class="success-text">We'll be in touch soon with your early access invitation.</p>
+            <div class="counter-section">
+                <div class="counter-label">People on the waitlist</div>
+                <div class="counter-value" id="waitlistCount">2,847</div>
+                <div class="counter-sub">Join now to secure your spot</div>
             </div>
-            
-            <!-- Stats -->
-            <div class="waitlist-stats">
-                <div class="stat">
-                    <div class="stat-value" id="waitlistCount">2,847</div>
-                    <div class="stat-label">On Waitlist</div>
+        </div>
+    </section>
+    
+    <section class="features">
+        <div class="features-container">
+            <h2>What you'll get with <span class="accent">early access</span></h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <h3>9-Point Verification</h3>
+                    <p>Our comprehensive system analyzes claims across 9 critical dimensions for maximum accuracy.</p>
                 </div>
-                <div class="stat">
-                    <div class="stat-value">Q1 2026</div>
-                    <div class="stat-label">Launch Date</div>
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <h3>20+ AI Models</h3>
+                    <p>Multi-model consensus ensures unbiased, accurate results you can trust.</p>
                 </div>
-                <div class="stat">
-                    <div class="stat-value">47</div>
-                    <div class="stat-label">Beta Spots Left</div>
-                </div>
-            </div>
-            
-            <!-- Features Preview -->
-            <div class="features">
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2">
-                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                        </svg>
-                    </div>
-                    <div class="feature-title">Early Access</div>
-                    <div class="feature-desc">Be first to try new features</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2">
-                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                        </svg>
-                    </div>
-                    <div class="feature-title">Founding Member</div>
-                    <div class="feature-desc">Exclusive perks forever</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2">
-                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                        </svg>
-                    </div>
-                    <div class="feature-title">Shape the Product</div>
-                    <div class="feature-desc">Direct feedback to our team</div>
-                </div>
-            </div>
-            
-            <!-- Coming Features Roadmap -->
-            <div style="margin-top: 4rem; padding: 2rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px;">
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #e2e8f0; text-align: center;">What's Coming Next</h3>
-                
-                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div style="width: 40px; height: 40px; background: rgba(34, 211, 238, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span style="font-size: 1.2rem;">🎬</span>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #e2e8f0; font-weight: 500;">Video Fact-Checking</span>
-                                <span style="color: #22d3ee; font-size: 0.75rem;">75% complete</span>
-                            </div>
-                            <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-                                <div style="width: 75%; height: 100%; background: linear-gradient(90deg, #22d3ee, #6366f1); border-radius: 2px;"></div>
-                            </div>
-                        </div>
-                        <span style="color: #64748b; font-size: 0.8rem; flex-shrink: 0;">Feb 2026</span>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span style="font-size: 1.2rem;">🌐</span>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #e2e8f0; font-weight: 500;">Chrome Extension</span>
-                                <span style="color: #6366f1; font-size: 0.75rem;">40% complete</span>
-                            </div>
-                            <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-                                <div style="width: 40%; height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); border-radius: 2px;"></div>
-                            </div>
-                        </div>
-                        <span style="color: #64748b; font-size: 0.8rem; flex-shrink: 0;">Mar 2026</span>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div style="width: 40px; height: 40px; background: rgba(168, 85, 247, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span style="font-size: 1.2rem;">💬</span>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #e2e8f0; font-weight: 500;">Slack Integration</span>
-                                <span style="color: #a855f7; font-size: 0.75rem;">Planning</span>
-                            </div>
-                            <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-                                <div style="width: 15%; height: 100%; background: linear-gradient(90deg, #a855f7, #ec4899); border-radius: 2px;"></div>
-                            </div>
-                        </div>
-                        <span style="color: #64748b; font-size: 0.8rem; flex-shrink: 0;">Apr 2026</span>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <div style="width: 40px; height: 40px; background: rgba(16, 185, 129, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span style="font-size: 1.2rem;">📱</span>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #e2e8f0; font-weight: 500;">Mobile App (iOS & Android)</span>
-                                <span style="color: #10b981; font-size: 0.75rem;">Research</span>
-                            </div>
-                            <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-                                <div style="width: 5%; height: 100%; background: linear-gradient(90deg, #10b981, #22d3ee); border-radius: 2px;"></div>
-                            </div>
-                        </div>
-                        <span style="color: #64748b; font-size: 0.8rem; flex-shrink: 0;">Q2 2026</span>
-                    </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                    <h3>Real-time Results</h3>
+                    <p>Get instant verification with our lightning-fast processing engine.</p>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
+    
+    <section class="benefits">
+        <div class="benefits-container">
+            <h2>Founding Member Benefits</h2>
+            <p>Early supporters get exclusive perks that will never be offered again.</p>
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <div class="benefit-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="benefit-content"><h4>50% Lifetime Discount</h4><p>Lock in founding member pricing forever on any paid plan.</p></div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="benefit-content"><h4>Priority Feature Access</h4><p>Be the first to try new features before they're released publicly.</p></div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="benefit-content"><h4>Direct Founder Access</h4><p>Join our private Discord and give input on product direction.</p></div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="benefit-content"><h4>Exclusive Founding Badge</h4><p>Your profile will forever show you were an early supporter.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>You're on the list!</h3>
+            <p>We'll notify you as soon as early access opens. In the meantime, share with friends to move up the list.</p>
+            <div class="success-position" id="userPosition">#2,848</div>
+            <div class="success-position-label">Your position on the waitlist</div>
+            <button class="btn-close" onclick="closeModal()">Got it</button>
+        </div>
+    </div>
     
     <script>
-        // Form submission
-        document.getElementById('waitlistForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const btn = document.getElementById('submitBtn');
-            const form = e.target;
-            
-            // Get form data
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
-            
-            // Disable button
-            btn.disabled = true;
-            btn.innerHTML = '<span>Joining...</span>';
-            
-            try {
-                // Send to API
-                const response = await fetch('/api/v1/waitlist', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                if (response.ok) {
-                    // Show success
-                    form.style.display = 'none';
-                    document.getElementById('successMessage').classList.add('show');
-                    
-                    // Update count
-                    const countEl = document.getElementById('waitlistCount');
-                    const currentCount = parseInt(countEl.textContent.replace(',', ''));
-                    countEl.textContent = (currentCount + 1).toLocaleString();
-                } else {
-                    throw new Error('Failed to join waitlist');
-                }
-            } catch (error) {
-                console.error('Waitlist error:', error);
-                
-                // For demo, show success anyway
-                form.style.display = 'none';
-                document.getElementById('successMessage').classList.add('show');
-                
-                const countEl = document.getElementById('waitlistCount');
-                const currentCount = parseInt(countEl.textContent.replace(',', ''));
-                countEl.textContent = (currentCount + 1).toLocaleString();
-            }
-        });
+        let count = 2847;
         
-        // Animate count on load
         function animateCount() {
-            const countEl = document.getElementById('waitlistCount');
-            const target = 2847;
-            let current = 0;
+            const el = document.getElementById('waitlistCount');
+            const target = count;
             const duration = 2000;
-            const step = target / (duration / 16);
+            const start = 0;
+            const startTime = performance.now();
             
-            const timer = setInterval(() => {
-                current += step;
-                if (current >= target) {
-                    current = target;
-                    clearInterval(timer);
-                }
-                countEl.textContent = Math.floor(current).toLocaleString();
-            }, 16);
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const value = Math.floor(progress * target);
+                el.textContent = value.toLocaleString();
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+        animateCount();
+        
+        function joinWaitlist(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            if (email) {
+                count++;
+                document.getElementById('waitlistCount').textContent = count.toLocaleString();
+                document.getElementById('userPosition').textContent = '#' + count.toLocaleString();
+                document.getElementById('successModal').classList.add('active');
+                document.getElementById('emailInput').value = '';
+            }
         }
         
-        setTimeout(animateCount, 1800);
+        function closeModal() {
+            document.getElementById('successModal').classList.remove('active');
+        }
     </script>
 </body>
 </html>
