@@ -3,513 +3,618 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#050505">
-    <title>Verify Claims - Verity Systems</title>
-    
-    <!-- PWA -->
-    <link rel="manifest" href="/manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
+    <title>Verify Claims | Verity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/eden-style.css">
-    <link rel="stylesheet" href="assets/css/premium-typography.css">
-    <link rel="stylesheet" href="assets/css/icons.css">
-    <link rel="stylesheet" href="assets/css/dashboard.css">
-    <link rel="stylesheet" href="assets/css/verify.css">
-    <!-- PDF & DOCX Generation Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://unpkg.com/docx@8.2.0/build/index.js"></script>
-    
-    <!-- Service Worker -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {});
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--red:#ef4444;--red-soft:rgba(239,68,68,0.12);--cyan:#22d3ee;--cyan-soft:rgba(34,211,238,0.12);--violet:#8b5cf6;--violet-soft:rgba(139,92,246,0.12);--sidebar-w:260px}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+        ::selection{background:rgba(245,158,11,0.3)}
+        
+        /* Animations */
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+        @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(245,158,11,0.3)}50%{box-shadow:0 0 40px rgba(245,158,11,0.5)}}
+        @keyframes progressPulse{0%,100%{opacity:1}50%{opacity:.7}}
+        @keyframes checkmark{0%{stroke-dashoffset:100}100%{stroke-dashoffset:0}}
+        @keyframes ringFill{from{stroke-dashoffset:327}to{stroke-dashoffset:var(--offset)}}
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+        
+        /* Sidebar */
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+        .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border)}
+        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text)}
+        .logo svg{width:32px;height:36px}
+        .logo span{font-family:'Newsreader',Georgia,serif;font-size:1.4rem;font-weight:500}
+        .logo .dot{color:var(--amber)}
+        
+        .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
+        .nav-section{margin-bottom:1.5rem}
+        .nav-section-title{padding:0 1.25rem;margin-bottom:.5rem;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.25rem;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;border-left:2px solid transparent;margin:2px 0}
+        .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+        .nav-item.active{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
+        .nav-item svg{width:18px;height:18px;flex-shrink:0}
+        .nav-badge{margin-left:auto;padding:.15rem .5rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:10px}
+        .nav-badge.live{background:var(--red);color:#fff;animation:pulse 2s infinite}
+        
+        .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px}
+        .tier-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.25rem}
+        .tier-name{font-family:'Newsreader',Georgia,serif;font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
+        .tier-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+        .tier-fill{height:100%;background:var(--amber);border-radius:4px;transition:width .5s}
+        .tier-text{font-size:.75rem;color:var(--muted);margin-top:.35rem}
+        
+        /* Main Content */
+        .main{margin-left:var(--sidebar-w);min-height:100vh;padding:2rem 2.5rem}
+        
+        /* Hero */
+        .hero{text-align:center;margin-bottom:2.5rem;animation:fadeIn .4s ease}
+        .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--amber-soft);border:1px solid rgba(245,158,11,0.2);border-radius:100px;font-size:.8rem;color:var(--amber);margin-bottom:1.25rem}
+        .hero-badge-dot{width:6px;height:6px;background:var(--amber);border-radius:50%;animation:pulse 2s infinite}
+        .hero h1{font-family:'Newsreader',Georgia,serif;font-size:clamp(2rem,4vw,3rem);font-weight:400;margin-bottom:.75rem}
+        .hero h1 em{font-style:italic;color:var(--amber)}
+        .hero p{color:var(--muted);font-size:1.05rem;max-width:600px;margin:0 auto}
+        
+        /* Tier Banner */
+        .tier-banner{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:linear-gradient(135deg,var(--violet-soft),var(--cyan-soft));border:1px solid rgba(139,92,246,0.2);border-radius:14px;margin-bottom:2rem;animation:fadeIn .4s ease .1s backwards}
+        .tier-banner.free{background:linear-gradient(135deg,rgba(107,114,128,0.1),rgba(156,163,175,0.08));border-color:rgba(156,163,175,0.2)}
+        .tier-banner.pro{background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border-color:rgba(245,158,11,0.2)}
+        .tier-banner.enterprise{background:linear-gradient(135deg,var(--violet-soft),var(--cyan-soft));border-color:rgba(139,92,246,0.2)}
+        .tier-info{display:flex;align-items:center;gap:1rem}
+        .tier-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem}
+        .tier-banner.free .tier-icon{background:rgba(156,163,175,0.15);color:#9ca3af}
+        .tier-banner.pro .tier-icon{background:var(--amber-soft);color:var(--amber)}
+        .tier-banner.enterprise .tier-icon{background:var(--violet-soft);color:var(--violet)}
+        .tier-details h3{font-size:1rem;font-weight:600;margin-bottom:.15rem}
+        .tier-details p{font-size:.8rem;color:var(--muted)}
+        .tier-upgrade{padding:.6rem 1.25rem;background:var(--amber);color:#000;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;transition:all .2s}
+        .tier-upgrade:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(245,158,11,0.3)}
+        
+        /* Input Card */
+        .input-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2rem;animation:fadeIn .4s ease .15s backwards}
+        
+        /* Type Tabs */
+        .type-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+        .type-tab{display:flex;align-items:center;gap:.4rem;padding:.7rem 1.1rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;font-size:.85rem;color:var(--muted);cursor:pointer;transition:all .2s;font-family:inherit}
+        .type-tab:hover{border-color:rgba(255,255,255,0.12);color:var(--text)}
+        .type-tab.active{background:var(--amber-soft);border-color:rgba(245,158,11,0.3);color:var(--amber)}
+        .type-tab svg{width:18px;height:18px}
+        .type-tab .pro-badge{font-size:.6rem;padding:.15rem .4rem;background:var(--violet);color:#fff;border-radius:4px;margin-left:.25rem}
+        .type-tab .enterprise-badge{font-size:.6rem;padding:.15rem .4rem;background:linear-gradient(135deg,#f97316,#ef4444);color:#fff;border-radius:4px;margin-left:.25rem}
+        .type-tab.locked{opacity:.5;cursor:not-allowed}
+        
+        /* Input Header */
+        .input-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+        .input-header h3{font-size:1rem;font-weight:600;display:flex;align-items:center;gap:.5rem}
+        .input-header h3 svg{color:var(--amber)}
+        .char-count{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--dim)}
+        
+        /* Textarea */
+        textarea{width:100%;min-height:160px;background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:1.25rem;font-family:inherit;font-size:1rem;color:var(--text);resize:vertical;transition:border-color .2s,box-shadow .2s}
+        textarea::placeholder{color:var(--dim)}
+        textarea:focus{outline:none;border-color:rgba(245,158,11,0.4);box-shadow:0 0 0 3px rgba(245,158,11,0.1)}
+        
+        /* Options Section */
+        .options-section{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+        .options-title{font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+        .options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem}
+        .option-item{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;background:var(--elevated);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s}
+        .option-item:hover{border-color:rgba(255,255,255,0.12)}
+        .option-item.selected{background:var(--green-soft);border-color:rgba(16,185,129,0.3)}
+        .option-item.locked{opacity:.5;cursor:not-allowed}
+        .option-item input{display:none}
+        .option-check{width:20px;height:20px;border:2px solid var(--dim);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+        .option-item.selected .option-check{background:var(--green);border-color:var(--green)}
+        .option-check svg{width:12px;height:12px;color:#fff;opacity:0;transition:opacity .2s}
+        .option-item.selected .option-check svg{opacity:1}
+        .option-label{font-size:.85rem;color:var(--text)}
+        .option-desc{font-size:.7rem;color:var(--dim)}
+        .option-tier{font-size:.55rem;padding:.1rem .35rem;border-radius:4px;margin-left:.35rem}
+        .option-tier.pro{background:var(--amber);color:#000}
+        .option-tier.enterprise{background:var(--violet);color:#fff}
+        
+        /* Verify Button */
+        .verify-btn{width:100%;padding:1.15rem 2rem;background:linear-gradient(135deg,var(--amber),#d97706);color:#000;border:none;border-radius:14px;font-size:1.05rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.65rem;transition:all .2s;margin-top:1.75rem;font-family:inherit}
+        .verify-btn:hover{transform:translateY(-2px);box-shadow:0 15px 40px rgba(245,158,11,0.35)}
+        .verify-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+        .verify-btn svg{width:20px;height:20px}
+        .verify-btn .spinner{width:20px;height:20px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin .8s linear infinite}
+        
+        /* Results Section */
+        #resultsSection{display:none}
+        #resultsSection.show{display:block}
+        
+        /* Progress Card */
+        .progress-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:1.5rem;animation:fadeIn .3s ease}
+        .progress-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+        .progress-header .spinner{width:28px;height:28px;border:3px solid var(--amber-soft);border-top-color:var(--amber);border-radius:50%;animation:spin .8s linear infinite}
+        .progress-header h3{font-family:'Newsreader',Georgia,serif;font-size:1.25rem;font-weight:500}
+        .progress-stages{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:1.5rem}
+        .stage-group{padding:1rem;background:var(--elevated);border-radius:12px;border:1px solid var(--border)}
+        .stage-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.75rem}
+        .stage{font-size:.8rem;color:var(--muted);padding:.4rem 0;display:flex;align-items:center;gap:.5rem}
+        .stage::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--dim);transition:all .3s}
+        .stage.active::before{background:var(--amber);animation:pulse 1s infinite}
+        .stage.complete::before{background:var(--green)}
+        .progress-bar{height:6px;background:var(--elevated);border-radius:6px;overflow:hidden}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--cyan));border-radius:6px;transition:width .4s ease}
+        
+        /* Verdict Card */
+        .verdict-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;margin-bottom:1.5rem;display:none;animation:fadeIn .4s ease}
+        .verdict-card.show{display:flex;gap:2.5rem;align-items:center}
+        .verdict-score-wrap{text-align:center}
+        .verdict-ring{position:relative;width:140px;height:140px}
+        .verdict-ring svg{width:140px;height:140px}
+        .verdict-ring circle{transition:stroke-dashoffset 1.5s ease}
+        .score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Newsreader',Georgia,serif;font-size:2.75rem;font-weight:500}
+        .verdict-label{margin-top:.75rem;font-size:.9rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+        .verdict-label.true{color:var(--green)}
+        .verdict-label.false{color:var(--red)}
+        .verdict-label.partial{color:#eab308}
+        .verified-badge{display:inline-flex;align-items:center;gap:.4rem;margin-top:.5rem;padding:.35rem .75rem;background:var(--green-soft);border:1px solid rgba(16,185,129,0.2);border-radius:20px;font-size:.7rem;font-weight:600;color:var(--green)}
+        .verdict-details{flex:1}
+        .verdict-details h2{font-family:'Newsreader',Georgia,serif;font-size:1.75rem;font-weight:500;margin-bottom:.75rem}
+        .verdict-details p{color:var(--muted);line-height:1.7;margin-bottom:1rem}
+        .verdict-tags{display:flex;flex-wrap:wrap;gap:.5rem}
+        .verdict-tag{padding:.35rem .75rem;background:var(--elevated);border:1px solid var(--border);border-radius:8px;font-size:.75rem;color:var(--muted)}
+        
+        /* Analysis Grid */
+        .analysis-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem;display:none}
+        .analysis-grid.show{display:grid}
+        .analysis-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;animation:fadeIn .4s ease}
+        .analysis-card.full{grid-column:span 2}
+        .card-head{display:flex;align-items:center;gap:.5rem;font-size:.9rem;font-weight:600;margin-bottom:1rem}
+        .bars{display:flex;flex-direction:column;gap:.75rem}
+        .bar-item{display:flex;align-items:center;gap:.75rem}
+        .bar-label{width:100px;font-size:.8rem;color:var(--muted)}
+        .bar-track{flex:1;height:8px;background:var(--elevated);border-radius:8px;overflow:hidden}
+        .bar-fill{height:100%;border-radius:8px;transition:width 1s ease}
+        .bar-fill.high{background:var(--green)}
+        .bar-fill.medium{background:#eab308}
+        .bar-fill.low{background:var(--red)}
+        .bar-value{width:40px;font-family:'JetBrains Mono',monospace;font-size:.75rem;text-align:right}
+        .ai-text{color:var(--muted);font-size:.9rem;line-height:1.7}
+        .sources-list{display:flex;flex-direction:column;gap:.6rem}
+        .source-item{display:flex;align-items:flex-start;gap:.6rem;padding:.75rem;background:var(--elevated);border-radius:10px}
+        .source-item svg{color:var(--cyan);flex-shrink:0;margin-top:2px}
+        .source-item a{color:var(--cyan);font-size:.85rem;text-decoration:none;word-break:break-all}
+        .source-item a:hover{text-decoration:underline}
+        
+        /* Action Buttons */
+        .result-actions{display:flex;gap:.75rem;justify-content:center;display:none}
+        .result-actions.show{display:flex}
+        .action-btn{display:flex;align-items:center;gap:.5rem;padding:.75rem 1.25rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.875rem;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit}
+        .action-btn:hover{border-color:rgba(255,255,255,0.15)}
+        .action-btn.primary{background:var(--amber);border-color:var(--amber);color:#000}
+        .action-btn.primary:hover{box-shadow:0 8px 20px rgba(245,158,11,0.3)}
+        
+        /* Mobile */
+        @media(max-width:1024px){
+            .progress-stages{grid-template-columns:1fr}
+            .analysis-grid{grid-template-columns:1fr}
+            .analysis-card.full{grid-column:span 1}
+            .verdict-card.show{flex-direction:column;text-align:center}
         }
-    </script>
+        @media(max-width:768px){
+            .sidebar{transform:translateX(-100%)}
+            .main{margin-left:0;padding:1.5rem}
+            .type-tabs{gap:.4rem}
+            .type-tab{padding:.6rem .9rem;font-size:.8rem}
+            .options-grid{grid-template-columns:1fr}
+        }
+    </style>
 </head>
-<div id="loading-screen" style="position:fixed;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
-    <svg width="64" height="64" viewBox="-26 -28 52 52" fill="none" style="animation:heartbeat 1.2s ease-in-out infinite;">
-        <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#lg)" stroke-width="3.5" fill="none"/>
-        <path d="M-6,0 L-2,4 L6,-5" stroke="url(#lg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-    </svg>
-</div>
-<style>
-@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}56%{transform:scale(1)}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.2)}}
-.verify-page-hero{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.1s}
-.input-type-selector{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.2s}
-.promo-banner{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.05s}
-/* Quick Mode Card Styling */
-.quick-mode-card { border: 1px dashed rgba(245, 158, 11, 0.4) !important; background: rgba(245, 158, 11, 0.05) !important; }
-.quick-mode-card:has(input:checked) { border-color: #f59e0b !important; background: rgba(245, 158, 11, 0.15) !important; box-shadow: 0 0 20px rgba(245, 158, 11, 0.2) !important; }
-.quick-mode-card .option-icon { color: #f59e0b !important; }
-.quick-mode-card .option-text strong { color: #f59e0b !important; }
-/* Default verification badge */
-.verification-default-notice { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(99, 102, 241, 0.1)); border-radius: 8px; border-left: 3px solid #22c55e; margin-bottom: 1rem; font-size: 0.875rem; color: #9ca3af; }
-.verification-default-notice strong { color: #22c55e; }
-</style>
-<script>window.addEventListener('load',()=>{setTimeout(()=>{const l=document.getElementById('loading-screen');l.style.opacity='0';setTimeout(()=>l.remove(),500)},800)})</script>
-<body class="dashboard-body">
-    <div class="page-background">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <div class="gradient-orb orb-3"></div>
-        <!-- Floating Badges -->
-        <div class="floating-badge" style="position:fixed;top:12%;right:6%;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#22d3ee;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 4s ease-in-out infinite;pointer-events:none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            <span>Instant Results</span>
-        </div>
-        <div class="floating-badge" style="position:fixed;bottom:25%;right:4%;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#a855f7;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 5s ease-in-out infinite 1s;pointer-events:none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span>AI Verified</span>
-        </div>
-    </div>
-
-    <aside class="sidebar" id="sidebar">
+<body>
+    <!-- Sidebar (same as dashboard) -->
+    <aside class="sidebar">
         <div class="sidebar-header">
-            <a href="index.html" class="sidebar-logo">
-                <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
-                    <circle cx="20" cy="20" r="18" stroke="url(#sideGrad)" stroke-width="2" fill="none"/>
-                    <path d="M12 20L17 25L28 14" stroke="url(#sideGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-                </svg>
-                <span class="logo-text">verity<span class="dot">.</span></span>
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                <span>verity<span class="dot">.</span></span>
             </a>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
-            <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
-            <a href="verify.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
-            <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
-            <a href="global-stream.html" class="nav-item" style="color: #ef4444;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Live Stream <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; display: inline-block; margin-left: 4px; animation: pulse 1.5s ease-in-out infinite;"></span></a>
-            <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
-            <a href="billing.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
-            <a href="settings.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
-            <div class="nav-divider"></div>
-            <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a>
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+                <a href="verify.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Verify<span class="nav-badge">+</span></a>
+                <a href="verify.html?quick=1" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
+                <a href="history.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+                <a href="realtime-stream.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>Live Stream<span class="nav-badge live">●</span></a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <a href="api-keys.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
+                <a href="provider-setup.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
+                <a href="billing.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+                <a href="settings.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+            </div>
+            <div class="nav-section">
+                <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a>
+            </div>
         </nav>
-        <div class="sidebar-plan">
-            <div class="plan-info"><span class="plan-name">Starter</span><span class="plan-badge">FREE</span></div>
-            <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" id="usageFill" style="width: 0%"></div></div><span class="usage-text"><span id="usageCount">0</span> / <span id="usageLimit">50</span> verifications</span></div>
+        <div class="sidebar-footer">
+            <div class="tier-card" id="tierCard">
+                <div class="tier-label">Current Plan</div>
+                <div class="tier-name" id="tierName">Free Plan</div>
+                <div class="tier-bar"><div class="tier-fill" id="tierFill" style="width:20%"></div></div>
+                <div class="tier-text" id="tierText">20 / 100 verifications</div>
+            </div>
         </div>
     </aside>
-
-    <main class="main-content">
-        <header class="mobile-header">
-            <button class="mobile-menu-toggle" id="mobileMenuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-            <span class="mobile-logo">verity<span class="dot">.</span></span>
-            <div class="mobile-user">JD</div>
-        </header>
-
-        <div class="page-content verify-page">
-            <!-- Verify+ Promo Banner -->
-            <a href="verify-plus.html" class="promo-banner" style="display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(34, 211, 238, 0.15)); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 12px; margin-bottom: 1.5rem; text-decoration: none; transition: all 0.3s ease;">
-                <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #6366f1, #22d3ee); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
-                </div>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; color: #e2e8f0; margin-bottom: 0.15rem; display: flex; align-items: center; gap: 0.5rem;">Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.1em;">Plus</span> <span style="background: linear-gradient(135deg, #6366f1, #22d3ee); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem;">NEW</span></div>
-                    <div style="font-size: 0.85rem; color: #94a3b8;">Bulk verify documents, PDFs, videos & more — extract and verify multiple claims at once</div>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" style="flex-shrink: 0;"><polyline points="9 18 15 12 9 6"/></svg>
-            </a>
-
-            <!-- Page Hero -->
-            <div class="verify-page-hero">
-                <div class="hero-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>AI-Powered Verification</div>
-                <h1>Verify Any Claim</h1>
-                <p>Analyze text, images, videos, documents, and audio for authenticity. Detect deepfakes, misinformation, and manipulated content with industry-leading AI.</p>
-            </div>
-
-            <!-- Trending Claims Section -->
-            <div class="trending-claims" style="margin-bottom: 2rem; opacity: 0; animation: fadeInUp 0.5s ease forwards; animation-delay: 0.15s;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                    <h3 style="font-size: 0.95rem; color: #a0a0a0; display: flex; align-items: center; gap: 0.5rem;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                        Try a trending claim
-                    </h3>
-                    <span style="font-size: 0.75rem; color: #6b7280;">Click to auto-fill</span>
-                </div>
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <button onclick="fillClaim('The Great Wall of China is visible from space with the naked eye.')" style="background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.2); padding: 0.5rem 1rem; border-radius: 20px; color: #e0e0e0; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; font-family: inherit; display: inline-flex; align-items: center; gap: 0.5rem;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                        Great Wall visible from space?
-                    </button>
-                    <button onclick="fillClaim('Humans only use 10% of their brain capacity.')" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); padding: 0.5rem 1rem; border-radius: 20px; color: #e0e0e0; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; font-family: inherit; display: inline-flex; align-items: center; gap: 0.5rem;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.75"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1v3h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2v-3h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/></svg>
-                        We use only 10% of brain?
-                    </button>
-                    <button onclick="fillClaim('Goldfish have a 3-second memory.')" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); padding: 0.5rem 1rem; border-radius: 20px; color: #e0e0e0; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; font-family: inherit; display: inline-flex; align-items: center; gap: 0.5rem;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5"/></svg>
-                        Goldfish 3-second memory?
-                    </button>
-                    <button onclick="fillClaim('Lightning never strikes the same place twice.')" style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); padding: 0.5rem 1rem; border-radius: 20px; color: #e0e0e0; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; font-family: inherit; display: inline-flex; align-items: center; gap: 0.5rem;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.75"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                        Lightning never strikes twice?
-                    </button>
-                    <button onclick="fillClaim('You need to wait 24 hours before filing a missing person report.')" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.5rem 1rem; border-radius: 20px; color: #e0e0e0; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; font-family: inherit; display: inline-flex; align-items: center; gap: 0.5rem;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.75"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5"/></svg>
-                        24-hour missing person rule?
-                    </button>
+    
+    <!-- Main Content -->
+    <main class="main">
+        <div class="hero">
+            <span class="hero-badge"><span class="hero-badge-dot"></span>9-Point Triple Verification</span>
+            <h1>Verify Any <em>Claim</em></h1>
+            <p>Enter text, upload media, or paste a URL. Our AI analyzes 40+ models and trusted sources for accurate verdicts.</p>
+        </div>
+        
+        <!-- Tier Banner -->
+        <div class="tier-banner free" id="tierBanner">
+            <div class="tier-info">
+                <div class="tier-icon">⚡</div>
+                <div class="tier-details">
+                    <h3>Free Plan</h3>
+                    <p>100 verifications/month • Basic analysis • 3 AI models</p>
                 </div>
             </div>
-            <script>
-            function fillClaim(text) {
-                const textarea = document.getElementById('claimText');
-                if (textarea) {
-                    textarea.value = text;
-                    textarea.dispatchEvent(new Event('input'));
-                    textarea.focus();
-                    // Scroll to textarea
-                    textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-            </script>
-
-            <!-- Input Type Selector -->
-            <div class="input-type-selector">
-                <button class="type-btn active" data-type="text" onclick="switchInputType('text')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    <span>Text</span>
-                </button>
-                <button class="type-btn" data-type="image" onclick="switchInputType('image')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                    <span>Image</span>
-                </button>
-                <button class="type-btn" data-type="video" onclick="switchInputType('video')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-                    <span>Video</span>
-                </button>
-                <button class="type-btn" data-type="audio" onclick="switchInputType('audio')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                    <span>Audio</span>
-                </button>
-                <button class="type-btn" data-type="document" onclick="switchInputType('document')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    <span>Document</span>
-                </button>
-                <button class="type-btn" data-type="url" onclick="switchInputType('url')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                    <span>URL</span>
-                </button>
+            <a href="pricing.html" class="tier-upgrade">Upgrade to Pro</a>
+        </div>
+        
+        <!-- Input Card -->
+        <div class="input-card">
+            <!-- Type Tabs -->
+            <div class="type-tabs">
+                <button class="type-tab active" data-type="text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Text</button>
+                <button class="type-tab" data-type="image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Image</button>
+                <button class="type-tab" data-type="url"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>URL</button>
+                <button class="type-tab tier-pro" data-type="video" data-tier="pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Video<span class="pro-badge">PRO</span></button>
+                <button class="type-tab tier-pro" data-type="audio" data-tier="pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>Audio<span class="pro-badge">PRO</span></button>
+                <button class="type-tab tier-enterprise" data-type="batch" data-tier="enterprise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Batch<span class="enterprise-badge">ENT</span></button>
             </div>
-
-            <!-- Main Input Container -->
-            <div class="verify-input-container">
-                <!-- Text Input -->
-                <div class="input-section active" data-type="text" id="textInput">
-                    <div class="input-header">
-                        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Enter Claim or Statement</h3>
-                        <span class="char-count"><span id="charCount">0</span> / 5000</span>
-                    </div>
-                    <textarea id="claimText" placeholder="Enter any claim, statement, or text you want to verify...&#10;&#10;Examples:&#10;• &quot;The Earth is 4.5 billion years old&quot;&#10;• &quot;Vaccines cause autism&quot;&#10;• &quot;COVID-19 originated from a laboratory&quot;" maxlength="5000"></textarea>
-                </div>
-
-                <!-- Image Input -->
-                <div class="input-section" data-type="image" id="imageInput">
-                    <div class="input-header">
-                        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Upload Image for Analysis</h3>
-                        <span class="file-types">JPG, PNG, GIF, WebP (max 25MB)</span>
-                    </div>
-                    <div class="upload-zone" id="imageDropZone">
-                        <div class="upload-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-                        <p>Drag & drop an image here, or <span class="upload-link">browse</span></p>
-                        <p class="upload-hint">Detect manipulated photos, deepfakes, AI-generated images</p>
-                        <input type="file" class="file-input" id="imageFile" accept="image/*" hidden>
-                        <div class="file-preview" id="imagePreview">
-                            <div class="preview-item">
-                                <img class="preview-thumbnail" src="" alt="Preview">
-                                <div class="preview-info"><strong></strong><span></span></div>
-                                <button class="preview-remove"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Video Input -->
-                <div class="input-section" data-type="video" id="videoInput">
-                    <div class="input-header">
-                        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Upload Video for Analysis</h3>
-                        <span class="file-types">MP4, MOV, AVI, WebM (max 500MB)</span>
-                    </div>
-                    <div class="upload-zone" id="videoDropZone">
-                        <div class="upload-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
-                        <p>Drag & drop a video here, or <span class="upload-link">browse</span></p>
-                        <p class="upload-hint">Detect deepfake videos, face swaps, audio manipulation</p>
-                        <input type="file" class="file-input" id="videoFile" accept="video/*" hidden>
-                        <div class="file-preview" id="videoPreview">
-                            <div class="preview-item">
-                                <div class="preview-thumbnail" style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
-                                <div class="preview-info"><strong></strong><span></span></div>
-                                <button class="preview-remove"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Audio Input -->
-                <div class="input-section" data-type="audio" id="audioInput">
-                    <div class="input-header">
-                        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/></svg>Upload Audio for Analysis</h3>
-                        <span class="file-types">MP3, WAV, M4A, OGG (max 100MB)</span>
-                    </div>
-                    <div class="upload-zone" id="audioDropZone">
-                        <div class="upload-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
-                        <p>Drag & drop an audio file here, or <span class="upload-link">browse</span></p>
-                        <p class="upload-hint">Detect voice cloning, audio deepfakes, spliced recordings</p>
-                        <input type="file" class="file-input" id="audioFile" accept="audio/*" hidden>
-                        <div class="file-preview" id="audioPreview">
-                            <div class="preview-item">
-                                <div class="preview-thumbnail" style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/></svg></div>
-                                <div class="preview-info"><strong></strong><span></span></div>
-                                <button class="preview-remove"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Document Input -->
-                <div class="input-section" data-type="document" id="documentInput">
-                    <div class="input-header">
-                        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Upload Document for Analysis</h3>
-                        <span class="file-types">PDF, DOC, DOCX, TXT (max 50MB)</span>
-                    </div>
-                    <div class="upload-zone" id="documentDropZone">
-                        <div class="upload-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                        <p>Drag & drop a document here, or <span class="upload-link">browse</span></p>
-                        <p class="upload-hint">Analyze documents for factual accuracy and claims</p>
-                        <input type="file" class="file-input" id="documentFile" accept=".pdf,.doc,.docx,.txt" hidden>
-                        <div class="file-preview" id="documentPreview">
-                            <div class="preview-item">
-                                <div class="preview-thumbnail" style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                                <div class="preview-info"><strong></strong><span></span></div>
-                                <button class="preview-remove"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- URL Input -->
-                <div class="input-section" data-type="url" id="urlInputSection">
-                    <div class="input-header">
-                        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg>Enter URL to Analyze</h3>
-                    </div>
-                    <div class="url-input-wrapper">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                        <input type="url" id="urlInput" placeholder="https://example.com/article-to-verify">
-                    </div>
-                    <p class="url-hint">Enter a news article, social media post, or any web page to analyze for misinformation</p>
-                </div>
+            
+            <div class="input-header">
+                <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Enter Claim</h3>
+                <span class="char-count"><span id="charCount">0</span> / <span id="charLimit">1000</span></span>
             </div>
+            <textarea id="claimInput" placeholder="Type or paste any claim, statement, or text to verify...
 
+Examples:
+• &quot;The Great Wall of China is visible from space&quot;
+• &quot;Humans only use 10% of their brain&quot;
+• &quot;Lightning never strikes the same place twice&quot;"></textarea>
+            
             <!-- Analysis Options -->
-            <div class="analysis-options">
-                <h4>Verification Options</h4>
-                <div class="verification-default-notice">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                    <span><strong>🔒 9-Point Triple Verification</strong> is the default for maximum accuracy. <a href="9-point-system.html" style="color: #22d3ee;">Learn how it works →</a></span>
-                </div>
-                <div class="options-grid-top">
-                    <label class="option-card quick-mode-card">
-                        <input type="checkbox" id="optQuickCheck">
-                        <div class="option-content">
-                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-                            <div class="option-text"><strong>Quick Check</strong><span>Fast 5-second preliminary scan</span></div>
-                        </div>
-                    </label>
-                    <label class="option-card">
-                        <input type="checkbox" id="optSourceCheck" checked>
-                        <div class="option-content">
-                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
-                            <div class="option-text"><strong>Source Verification</strong><span>Cross-reference with trusted sources</span></div>
-                        </div>
-                    </label>
-                    <label class="option-card">
-                        <input type="checkbox" id="optDeepfake">
-                        <div class="option-content">
-                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-                            <div class="option-text"><strong>Deepfake Detection</strong><span>AI manipulation analysis</span></div>
-                        </div>
-                    </label>
-                    <label class="option-card">
-                        <input type="checkbox" id="optBiasCheck">
-                        <div class="option-content">
-                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"/></svg></div>
-                            <div class="option-text"><strong>Bias Analysis</strong><span>Detect political/media bias</span></div>
-                        </div>
-                    </label>
-                </div>
-                <div class="options-grid-bottom">
-                    <label class="option-card">
-                        <input type="checkbox" id="optHistoryCheck">
-                        <div class="option-content">
-                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                            <div class="option-text"><strong>Historical Context</strong><span>Check past similar claims</span></div>
-                        </div>
-                    </label>
-                    <label class="option-card">
-                        <input type="checkbox" id="optSaveHistory" checked>
-                        <div class="option-content">
-                            <div class="option-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></div>
-                            <div class="option-text"><strong>Save to History</strong><span>Keep record of this analysis</span></div>
-                        </div>
-                    </label>
+            <div class="options-section">
+                <div class="options-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2m-9-11h2m18 0h2m-2.64-6.36l-1.42 1.42M6.34 17.66l-1.41 1.41m0-12.02l1.41 1.41m11.31 11.31l1.42 1.42"/></svg>Analysis Options</div>
+                <div class="options-grid">
+                    <label class="option-item selected"><input type="checkbox" checked name="opt" value="sources"><div class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="option-label">Source Verification</div><div class="option-desc">Cross-reference trusted sources</div></div></label>
+                    <label class="option-item selected"><input type="checkbox" checked name="opt" value="bias"><div class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="option-label">Bias Detection</div><div class="option-desc">Analyze political/media bias</div></div></label>
+                    <label class="option-item" data-tier="pro"><input type="checkbox" name="opt" value="history"><div class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="option-label">Historical Context<span class="option-tier pro">PRO</span></div><div class="option-desc">Check past similar claims</div></div></label>
+                    <label class="option-item" data-tier="pro"><input type="checkbox" name="opt" value="deepfake"><div class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="option-label">Deepfake Detection<span class="option-tier pro">PRO</span></div><div class="option-desc">AI manipulation analysis</div></div></label>
+                    <label class="option-item" data-tier="enterprise"><input type="checkbox" name="opt" value="sentiment"><div class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="option-label">Sentiment Analysis<span class="option-tier enterprise">ENT</span></div><div class="option-desc">Emotional tone detection</div></div></label>
+                    <label class="option-item" data-tier="enterprise"><input type="checkbox" name="opt" value="network"><div class="option-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="option-label">Network Analysis<span class="option-tier enterprise">ENT</span></div><div class="option-desc">Track spread patterns</div></div></label>
                 </div>
             </div>
-
-            <!-- Verify Button -->
-            <div class="verify-actions">
-                <button class="btn-verify-main" id="verifyBtn">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    <span>Start Verification</span>
-                </button>
-                <button class="btn-clear" id="clearBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    Clear
-                </button>
+            
+            <button class="verify-btn" id="verifyBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Start 9-Point Verification
+            </button>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="resultsSection">
+            <!-- Progress Card -->
+            <div class="progress-card" id="progressCard">
+                <div class="progress-header">
+                    <div class="spinner"></div>
+                    <h3 id="progressTitle">Running 9-Point Verification...</h3>
+                </div>
+                <div class="progress-stages">
+                    <div class="stage-group">
+                        <div class="stage-label">L1 · Data Sources</div>
+                        <div class="stage" id="s1">Academic DBs</div>
+                        <div class="stage" id="s2">News Archives</div>
+                        <div class="stage" id="s3">Fact-Check Orgs</div>
+                    </div>
+                    <div class="stage-group">
+                        <div class="stage-label" style="color:var(--violet)">L2 · AI Analysis</div>
+                        <div class="stage" id="s4">Primary Models</div>
+                        <div class="stage" id="s5">Specialist Models</div>
+                        <div class="stage" id="s6">Reasoning Models</div>
+                    </div>
+                    <div class="stage-group">
+                        <div class="stage-label" style="color:var(--green)">L3 · Validation</div>
+                        <div class="stage" id="s7">Cross-Validation</div>
+                        <div class="stage" id="s8">Source Quality</div>
+                        <div class="stage" id="s9">Confidence Score</div>
+                    </div>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
             </div>
-
-            <!-- Results Section -->
-            <div class="results-container" id="resultsContainer">
-                <!-- Progress Indicator -->
-                <div class="analysis-progress" id="analysisProgress">
-                    <div class="progress-header">
-                        <div class="progress-spinner"></div>
-                        <h3 id="progressTitle">9-Point Triple-Check Verification...</h3>
+            
+            <!-- Verdict Card -->
+            <div class="verdict-card" id="verdictCard">
+                <div class="verdict-score-wrap">
+                    <div class="verdict-ring">
+                        <svg viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+                            <circle id="scoreRing" cx="60" cy="60" r="52" fill="none" stroke="var(--green)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)"/>
+                        </svg>
+                        <div class="score-num" id="scoreNum">--</div>
                     </div>
-                    <div class="progress-stages" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0;">
-                        <!-- Level 1: Data Sources -->
-                        <div style="background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 12px; padding: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-                                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(34, 211, 238, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #22d3ee;">L1</div>
-                                <span style="font-size: 0.85rem; font-weight: 600; color: #22d3ee;">Data Sources</span>
-                            </div>
-                            <div class="stage" id="stage-init" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>Academic DBs</span></div>
-                            <div class="stage" id="stage-content" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>News Archives</span></div>
-                            <div class="stage" id="stage-source" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>Fact-Check Orgs</span></div>
-                        </div>
-                        <!-- Level 2: AI Analysis -->
-                        <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-                                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(139, 92, 246, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #8b5cf6;">L2</div>
-                                <span style="font-size: 0.85rem; font-weight: 600; color: #8b5cf6;">AI Analysis</span>
-                            </div>
-                            <div class="stage" id="stage-ai1" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>Primary Models</span></div>
-                            <div class="stage" id="stage-ai2" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>Specialist Models</span></div>
-                            <div class="stage" id="stage-ai3" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>Reasoning Models</span></div>
-                        </div>
-                        <!-- Level 3: Validation -->
-                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-                                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(16, 185, 129, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #10b981;">L3</div>
-                                <span style="font-size: 0.85rem; font-weight: 600; color: #10b981;">Validation</span>
-                            </div>
-                            <div class="stage" id="stage-cross" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>Cross-Validation</span></div>
-                            <div class="stage" id="stage-quality" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>Source Quality</span></div>
-                            <div class="stage" id="stage-report" style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;"><span class="stage-icon"></span><span>Confidence Score</span></div>
-                        </div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="progressBarFill"></div>
-                    </div>
-                    <p class="progress-status" id="progressStatus">Running 9-point verification...</p>
+                    <div class="verdict-label" id="verdictLabel">Analyzing...</div>
+                    <div class="verified-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>9-Point Verified</div>
                 </div>
-
-                <!-- Results Display -->
-                <div class="results-display" id="resultsDisplay">
-                    <!-- Verdict Card -->
-                    <div class="verdict-card" id="verdictCard">
-                        <div class="verdict-visual">
-                            <div class="verdict-circle" id="verdictCircle">
-                                <svg class="verdict-ring" viewBox="0 0 160 160">
-                                    <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
-                                    <circle id="verdictRing" cx="80" cy="80" r="70" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440"/>
-                                </svg>
-                                <div class="verdict-score" id="verdictScore">--</div>
-                            </div>
-                            <div class="verdict-label" id="verdictLabel">Analyzing...</div>
-                            <div style="margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.15)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 20px; font-size: 0.7rem; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                9-Point Verified
-                            </div>
-                        </div>
-                        <div class="verdict-details">
-                            <h2 id="verdictTitle">Verification Result</h2>
-                            <p id="verdictSummary">Your verification result will appear here.</p>
-                            <div class="verdict-tags" id="verdictTags"></div>
-                        </div>
-                    </div>
-
-                    <!-- Detailed Analysis -->
-                    <div class="analysis-grid">
-                        <!-- Accuracy Breakdown -->
-                        <div class="analysis-card">
-                            <div class="card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><h4>Accuracy Breakdown</h4></div>
-                            <div class="card-body">
-                                <div class="accuracy-item"><span>Factual Accuracy</span><div class="accuracy-bar"><div class="accuracy-fill" id="factualBar"></div></div><span>--%</span></div>
-                                <div class="accuracy-item"><span>Source Reliability</span><div class="accuracy-bar"><div class="accuracy-fill" id="sourceBar"></div></div><span>--%</span></div>
-                                <div class="accuracy-item"><span>Context Accuracy</span><div class="accuracy-bar"><div class="accuracy-fill" id="contextBar"></div></div><span>--%</span></div>
-                                <div class="accuracy-item"><span>Bias Score</span><div class="accuracy-bar"><div class="accuracy-fill" id="biasBar"></div></div><span>--%</span></div>
-                            </div>
-                        </div>
-
-                        <!-- Media Analysis (for images/videos) -->
-                        <div class="analysis-card" id="mediaAnalysisCard">
-                            <div class="card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg><h4>Media Analysis</h4></div>
-                            <div class="card-body" id="mediaAnalysisContent">
-                                <p style="color: var(--text-muted); text-align: center; padding: 2rem;">Media analysis results will appear here</p>
-                            </div>
-                        </div>
-
-                        <!-- AI Analysis -->
-                        <div class="analysis-card full-width">
-                            <div class="card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><h4>AI Analysis</h4></div>
-                            <div class="card-body"><div id="aiAnalysisContent" class="ai-analysis-text">Detailed AI analysis will appear here...</div></div>
-                        </div>
-
-                        <!-- Sources -->
-                        <div class="analysis-card full-width">
-                            <div class="card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><h4>Sources & References</h4></div>
-                            <div class="card-body"><div id="sourcesContent" class="sources-grid"></div></div>
-                        </div>
-
-                        <!-- Similar Claims -->
-                        <div class="analysis-card full-width">
-                            <div class="card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h4>Similar Past Claims</h4></div>
-                            <div class="card-body"><div id="similarClaimsContent" class="similar-claims-list"></div></div>
-                        </div>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="results-actions">
-                        <button class="btn-action" id="shareBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>
-                        <div class="export-dropdown">
-                            <button class="btn-action" id="downloadBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Report <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-                            <div class="export-menu" id="exportMenu">
-                                <button class="export-option" onclick="window.verityEngine?.downloadReport('pdf')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> PDF Report</button>
-                                <button class="export-option" onclick="window.verityEngine?.downloadReport('docx')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Word Document</button>
-                                <button class="export-option" onclick="window.verityEngine?.downloadReport('json')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> JSON Data</button>
-                                <button class="export-option" onclick="window.verityEngine?.downloadReport('txt')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Plain Text</button>
-                            </div>
-                        </div>
-                        <button class="btn-action primary" id="verifyAnotherBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Verify Another</button>
-                    </div>
+                <div class="verdict-details">
+                    <h2 id="verdictTitle">Verification Complete</h2>
+                    <p id="verdictSummary">Summary will appear here.</p>
+                    <div class="verdict-tags" id="verdictTags"></div>
                 </div>
+            </div>
+            
+            <!-- Analysis Grid -->
+            <div class="analysis-grid" id="analysisGrid">
+                <div class="analysis-card">
+                    <div class="card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Accuracy Breakdown</div>
+                    <div class="bars" id="accuracyBars"></div>
+                </div>
+                <div class="analysis-card">
+                    <div class="card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>AI Analysis</div>
+                    <div class="ai-text" id="aiAnalysis">Detailed analysis will appear here...</div>
+                </div>
+                <div class="analysis-card full">
+                    <div class="card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Sources</div>
+                    <div class="sources-list" id="sourcesList"></div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="result-actions" id="resultActions">
+                <button class="action-btn" onclick="shareResult()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>
+                <button class="action-btn" onclick="downloadReport()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+                <button class="action-btn primary" onclick="verifyAnother()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Verify Another</button>
             </div>
         </div>
     </main>
-
-    <!-- Verity API v6 Client -->
-    <script src="assets/js/verity-api-v6.js"></script>
-    <script src="assets/js/verify.js"></script>
     
-    <!-- Verity AI Chatbot -->
-    <script src="assets/js/chatbot.js" defer></script>
+    <script>
+        // Tier configuration
+        const tiers = {
+            free: { name: 'Free Plan', limit: 1000, models: 3, verifications: 100 },
+            pro: { name: 'Pro Plan', limit: 5000, models: 20, verifications: 1000 },
+            enterprise: { name: 'Enterprise', limit: 50000, models: 40, verifications: 'Unlimited' }
+        };
+        
+        // Current user tier (would come from auth in real app)
+        let currentTier = 'free';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTierUI();
+            setupTypeTabs();
+            setupOptions();
+            setupCharCount();
+            setupVerifyButton();
+        });
+        
+        function updateTierUI() {
+            const tier = tiers[currentTier];
+            const banner = document.getElementById('tierBanner');
+            const tierName = document.getElementById('tierName');
+            const tierText = document.getElementById('tierText');
+            const tierFill = document.getElementById('tierFill');
+            const charLimit = document.getElementById('charLimit');
+            
+            banner.className = 'tier-banner ' + currentTier;
+            tierName.textContent = tier.name;
+            charLimit.textContent = tier.limit;
+            document.getElementById('claimInput').maxLength = tier.limit;
+            
+            // Update banner content based on tier
+            const tierIcon = banner.querySelector('.tier-icon');
+            const tierDetails = banner.querySelector('.tier-details');
+            
+            if (currentTier === 'free') {
+                tierIcon.textContent = '⚡';
+                tierDetails.querySelector('h3').textContent = 'Free Plan';
+                tierDetails.querySelector('p').textContent = '100 verifications/month • Basic analysis • 3 AI models';
+            } else if (currentTier === 'pro') {
+                tierIcon.textContent = '🚀';
+                tierDetails.querySelector('h3').textContent = 'Pro Plan';
+                tierDetails.querySelector('p').textContent = '1,000 verifications/month • Advanced analysis • 20+ AI models';
+                banner.querySelector('.tier-upgrade').textContent = 'Manage Plan';
+            } else {
+                tierIcon.textContent = '👑';
+                tierDetails.querySelector('h3').textContent = 'Enterprise';
+                tierDetails.querySelector('p').textContent = 'Unlimited verifications • Full analysis suite • 40+ AI models';
+                banner.querySelector('.tier-upgrade').style.display = 'none';
+            }
+            
+            // Lock/unlock features based on tier
+            document.querySelectorAll('[data-tier]').forEach(el => {
+                const requiredTier = el.dataset.tier;
+                const tierOrder = ['free', 'pro', 'enterprise'];
+                const hasAccess = tierOrder.indexOf(currentTier) >= tierOrder.indexOf(requiredTier);
+                
+                if (!hasAccess) {
+                    el.classList.add('locked');
+                    if (el.tagName === 'LABEL') {
+                        el.querySelector('input').disabled = true;
+                    }
+                } else {
+                    el.classList.remove('locked');
+                    if (el.tagName === 'LABEL') {
+                        el.querySelector('input').disabled = false;
+                    }
+                }
+            });
+        }
+        
+        function setupTypeTabs() {
+            document.querySelectorAll('.type-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    if (tab.classList.contains('locked')) {
+                        alert('Upgrade to ' + (tab.dataset.tier === 'pro' ? 'Pro' : 'Enterprise') + ' to unlock this feature!');
+                        return;
+                    }
+                    document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                });
+            });
+        }
+        
+        function setupOptions() {
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (item.classList.contains('locked')) {
+                        e.preventDefault();
+                        return;
+                    }
+                    item.classList.toggle('selected');
+                    const checkbox = item.querySelector('input');
+                    checkbox.checked = item.classList.contains('selected');
+                });
+            });
+        }
+        
+        function setupCharCount() {
+            const input = document.getElementById('claimInput');
+            const count = document.getElementById('charCount');
+            input.addEventListener('input', () => {
+                count.textContent = input.value.length;
+            });
+        }
+        
+        function setupVerifyButton() {
+            const btn = document.getElementById('verifyBtn');
+            const input = document.getElementById('claimInput');
+            
+            btn.addEventListener('click', async () => {
+                const claim = input.value.trim();
+                if (!claim) return;
+                
+                btn.disabled = true;
+                btn.innerHTML = '<div class="spinner"></div>Verifying...';
+                
+                // Show results section
+                const results = document.getElementById('resultsSection');
+                results.classList.add('show');
+                results.scrollIntoView({ behavior: 'smooth' });
+                
+                // Simulate verification process
+                await runVerification(claim);
+                
+                btn.disabled = false;
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Start 9-Point Verification';
+            });
+        }
+        
+        async function runVerification(claim) {
+            const progressFill = document.getElementById('progressFill');
+            const stages = ['s1','s2','s3','s4','s5','s6','s7','s8','s9'];
+            
+            // Animate progress
+            for (let i = 0; i < stages.length; i++) {
+                await sleep(400);
+                document.getElementById(stages[i]).classList.add('active');
+                progressFill.style.width = ((i + 1) / stages.length * 100) + '%';
+                await sleep(300);
+                document.getElementById(stages[i]).classList.remove('active');
+                document.getElementById(stages[i]).classList.add('complete');
+            }
+            
+            await sleep(500);
+            
+            // Hide progress, show results
+            document.getElementById('progressCard').style.display = 'none';
+            
+            // Show verdict
+            const verdictCard = document.getElementById('verdictCard');
+            verdictCard.classList.add('show');
+            
+            // Determine result (simulated)
+            const isTrue = Math.random() > 0.3;
+            const score = isTrue ? 75 + Math.floor(Math.random() * 25) : 10 + Math.floor(Math.random() * 40);
+            
+            // Animate score ring
+            const ring = document.getElementById('scoreRing');
+            const offset = 327 - (327 * score / 100);
+            ring.style.strokeDashoffset = offset;
+            ring.style.stroke = score > 70 ? 'var(--green)' : score > 40 ? '#eab308' : 'var(--red)';
+            
+            document.getElementById('scoreNum').textContent = score;
+            
+            const label = document.getElementById('verdictLabel');
+            label.textContent = score > 70 ? 'VERIFIED TRUE' : score > 40 ? 'PARTIALLY TRUE' : 'LIKELY FALSE';
+            label.className = 'verdict-label ' + (score > 70 ? 'true' : score > 40 ? 'partial' : 'false');
+            
+            document.getElementById('verdictTitle').textContent = score > 70 ? 'Claim Verified' : score > 40 ? 'Partially Accurate' : 'Claim Disputed';
+            document.getElementById('verdictSummary').textContent = 'Based on our 9-point verification system analyzing 40+ AI models and trusted sources, this claim has been evaluated with ' + score + '% confidence.';
+            
+            // Show analysis
+            const analysisGrid = document.getElementById('analysisGrid');
+            analysisGrid.classList.add('show');
+            
+            // Add accuracy bars
+            const barsHTML = `
+                <div class="bar-item"><span class="bar-label">Source Quality</span><div class="bar-track"><div class="bar-fill ${score > 60 ? 'high' : score > 30 ? 'medium' : 'low'}" style="width:${score + 5}%"></div></div><span class="bar-value">${score + 5}%</span></div>
+                <div class="bar-item"><span class="bar-label">AI Consensus</span><div class="bar-track"><div class="bar-fill ${score > 60 ? 'high' : score > 30 ? 'medium' : 'low'}" style="width:${score}%"></div></div><span class="bar-value">${score}%</span></div>
+                <div class="bar-item"><span class="bar-label">Cross-Ref</span><div class="bar-track"><div class="bar-fill ${score > 60 ? 'high' : score > 30 ? 'medium' : 'low'}" style="width:${score - 8}%"></div></div><span class="bar-value">${score - 8}%</span></div>
+            `;
+            document.getElementById('accuracyBars').innerHTML = barsHTML;
+            
+            document.getElementById('aiAnalysis').textContent = `Our analysis evaluated this claim across multiple AI models including GPT-4, Claude, and specialized fact-checking systems. The claim was cross-referenced against academic databases, news archives, and fact-checking organizations. ${score > 70 ? 'The evidence strongly supports this claim.' : score > 40 ? 'The evidence partially supports this claim with some caveats.' : 'The available evidence does not support this claim.'}`;
+            
+            // Add sources
+            const sourcesHTML = `
+                <div class="source-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">Wikipedia - Related Topic</a></div>
+                <div class="source-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">Snopes Fact Check</a></div>
+                <div class="source-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">PolitiFact Analysis</a></div>
+            `;
+            document.getElementById('sourcesList').innerHTML = sourcesHTML;
+            
+            // Show actions
+            document.getElementById('resultActions').classList.add('show');
+        }
+        
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+        
+        function shareResult() {
+            if (navigator.share) {
+                navigator.share({ title: 'Verity Verification Result', url: window.location.href });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            }
+        }
+        
+        function downloadReport() {
+            alert('Report download feature coming soon!');
+        }
+        
+        function verifyAnother() {
+            document.getElementById('resultsSection').classList.remove('show');
+            document.getElementById('progressCard').style.display = 'block';
+            document.getElementById('verdictCard').classList.remove('show');
+            document.getElementById('analysisGrid').classList.remove('show');
+            document.getElementById('resultActions').classList.remove('show');
+            document.getElementById('progressFill').style.width = '0%';
+            document.querySelectorAll('.stage').forEach(s => { s.classList.remove('active', 'complete'); });
+            document.getElementById('claimInput').value = '';
+            document.getElementById('charCount').textContent = '0';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>

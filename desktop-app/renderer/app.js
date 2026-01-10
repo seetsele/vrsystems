@@ -25,6 +25,10 @@ const state = {
     apiOnline: false,
     history: [],
     notifications: [],
+    subscription: {
+        tier: 'free', // 'free', 'starter', 'pro', 'professional', 'business', 'business_plus', 'enterprise'
+        isPro: false  // true for pro+ tiers
+    },
     settings: {
         darkMode: true,
         animations: true,
@@ -33,6 +37,14 @@ const state = {
         autoSave: true
     }
 };
+
+// Pro+ tiers that unlock AI Tools
+const PRO_PLUS_TIERS = ['professional', 'business', 'business_plus', 'enterprise'];
+
+// Check if user has Pro+ access
+function hasProPlusAccess() {
+    return state.authenticated && PRO_PLUS_TIERS.includes(state.subscription.tier);
+}
 
 // ===== PREMIUM SVG ICONS =====
 const ICONS = {
@@ -108,14 +120,15 @@ const NAV_ITEMS = [
     },
     {
         section: 'AI Tools',
+        requiresPro: true,
         items: [
-            { id: 'source-checker', icon: 'source', label: 'Source Checker' },
-            { id: 'content-mod', icon: 'moderate', label: 'Content Moderator' },
-            { id: 'research', icon: 'research', label: 'Research Assistant' },
-            { id: 'social', icon: 'social', label: 'Social Monitor' },
-            { id: 'stats', icon: 'stats', label: 'Stats Validator' },
-            { id: 'misinfo-map', icon: 'map', label: 'Misinfo Map' },
-            { id: 'realtime', icon: 'realtime', label: 'Realtime Stream' }
+            { id: 'source-checker', icon: 'source', label: 'Source Checker', premium: true },
+            { id: 'content-mod', icon: 'moderate', label: 'Content Moderator', premium: true },
+            { id: 'research', icon: 'research', label: 'Research Assistant', premium: true },
+            { id: 'social', icon: 'social', label: 'Social Monitor', premium: true },
+            { id: 'stats', icon: 'stats', label: 'Stats Validator', premium: true },
+            { id: 'misinfo-map', icon: 'map', label: 'Misinfo Map', premium: true },
+            { id: 'realtime', icon: 'realtime', label: 'Realtime Stream', premium: true }
         ]
     },
     {
@@ -197,24 +210,129 @@ function buildNavigation() {
     const nav = document.getElementById('nav');
     if (!nav) return;
     
+    const hasPro = hasProPlusAccess();
+    
     nav.innerHTML = NAV_ITEMS.map(section => `
-        <div class="nav-section">
-            <div class="nav-label">${section.section}</div>
-            ${section.items.map(item => `
-                <button class="nav-item${state.currentPage === item.id ? ' active' : ''}" data-page="${item.id}">
+        <div class="nav-section${section.requiresPro && !hasPro ? ' section-locked' : ''}">
+            <div class="nav-label">
+                ${section.section}
+                ${section.requiresPro && !hasPro ? `<span class="pro-badge">PRO+</span>` : ''}
+            </div>
+            ${section.items.map(item => {
+                const isLocked = item.premium && !hasPro;
+                return `
+                <button class="nav-item${state.currentPage === item.id ? ' active' : ''}${isLocked ? ' locked' : ''}" 
+                        data-page="${item.id}" 
+                        ${isLocked ? 'data-locked="true"' : ''}>
                     <span class="nav-icon">${ICONS[item.icon]}</span>
                     <span>${item.label}</span>
-                    ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+                    ${isLocked ? `<span class="lock-icon">${ICONS.lock}</span>` : ''}
+                    ${item.badge && !isLocked ? `<span class="nav-badge">${item.badge}</span>` : ''}
                 </button>
-            `).join('')}
+            `}).join('')}
         </div>
     `).join('');
     
     nav.querySelectorAll('.nav-item').forEach(btn => {
-        btn.addEventListener('click', () => navigate(btn.dataset.page));
+        btn.addEventListener('click', () => {
+            if (btn.dataset.locked === 'true') {
+                showUpgradeModal();
+            } else {
+                navigate(btn.dataset.page);
+            }
+        });
     });
     
     updateUserMenu();
+}
+
+// Show upgrade modal for locked features
+function showUpgradeModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
+        <div class="upgrade-modal">
+            <div class="upgrade-modal-header">
+                <div class="upgrade-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h2>Upgrade to Pro+</h2>
+                <p>Unlock all AI Tools with a Professional plan or higher</p>
+            </div>
+            <div class="upgrade-features">
+                <div class="upgrade-feature">
+                    <span class="feature-icon">${ICONS.source}</span>
+                    <span>Source Checker</span>
+                </div>
+                <div class="upgrade-feature">
+                    <span class="feature-icon">${ICONS.moderate}</span>
+                    <span>Content Moderator</span>
+                </div>
+                <div class="upgrade-feature">
+                    <span class="feature-icon">${ICONS.research}</span>
+                    <span>Research Assistant</span>
+                </div>
+                <div class="upgrade-feature">
+                    <span class="feature-icon">${ICONS.social}</span>
+                    <span>Social Monitor</span>
+                </div>
+                <div class="upgrade-feature">
+                    <span class="feature-icon">${ICONS.stats}</span>
+                    <span>Stats Validator</span>
+                </div>
+                <div class="upgrade-feature">
+                    <span class="feature-icon">${ICONS.map}</span>
+                    <span>Misinfo Map</span>
+                </div>
+                <div class="upgrade-feature">
+                    <span class="feature-icon">${ICONS.realtime}</span>
+                    <span>Realtime Stream</span>
+                </div>
+            </div>
+            <div class="upgrade-pricing">
+                <div class="upgrade-price">
+                    <span class="price-label">Starting at</span>
+                    <span class="price-amount">$199<span>/mo</span></span>
+                </div>
+                <p class="price-desc">Professional plan with 15,000 verifications/month</p>
+            </div>
+            <div class="upgrade-actions">
+                <button class="btn btn-primary btn-upgrade" id="upgrade-now-btn">
+                    ${ICONS.zap} Upgrade Now
+                </button>
+                <button class="btn btn-ghost btn-close-modal">Maybe Later</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Animate in
+    requestAnimationFrame(() => modal.classList.add('visible'));
+    
+    // Close handlers
+    modal.querySelector('.btn-close-modal')?.addEventListener('click', () => {
+        modal.classList.remove('visible');
+        setTimeout(() => modal.remove(), 300);
+    });
+    
+    modal.querySelector('#upgrade-now-btn')?.addEventListener('click', () => {
+        modal.classList.remove('visible');
+        setTimeout(() => {
+            modal.remove();
+            navigate('billing');
+        }, 300);
+    });
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('visible');
+            setTimeout(() => modal.remove(), 300);
+        }
+    });
 }
 
 function updateUserMenu() {

@@ -3,326 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - Verity Systems</title>
+    <title>Settings | Verity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/eden-style.css">
-    <link rel="stylesheet" href="assets/css/premium-typography.css">
-    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        .settings-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; flex-wrap: wrap; }
-        .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 0.75rem 1.25rem; font-family: inherit; font-size: 0.95rem; font-weight: 500; cursor: pointer; position: relative; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; border-radius: var(--radius-md); }
-        .tab-btn:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
-        .tab-btn.active { color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1); }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: -0.5rem; left: 0; right: 0; height: 2px; background: var(--accent-cyan); border-radius: 2px; }
-        .settings-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 1.5rem; }
-        .settings-card-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); }
-        .settings-card-header svg { color: var(--accent-cyan); }
-        .settings-card-header h3 { font-size: 1.15rem; font-weight: 600; }
-        .settings-card-body { padding: 1.5rem 2rem; }
-        .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; border-bottom: 1px solid var(--border-subtle); gap: 1.5rem; }
-        .setting-row:last-child { border-bottom: none; }
-        .setting-info { flex: 1; }
-        .setting-info h4 { font-size: 1rem; font-weight: 500; margin-bottom: 0.35rem; }
-        .setting-info p { color: var(--text-muted); font-size: 0.875rem; line-height: 1.5; }
-        .toggle-switch { position: relative; width: 52px; height: 28px; cursor: pointer; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.1); border-radius: 28px; transition: all 0.3s; border: 1px solid var(--border-medium); }
-        .toggle-slider::before { content: ''; position: absolute; width: 22px; height: 22px; left: 2px; bottom: 2px; background: var(--text-muted); border-radius: 50%; transition: all 0.3s; }
-        .toggle-switch input:checked + .toggle-slider { background: var(--accent-cyan); border-color: var(--accent-cyan); }
-        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(24px); background: #fff; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-group label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-secondary); }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; color: var(--text-primary); font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-cyan); }
-        .form-group .hint { font-size: 0.8rem; color: var(--text-faint); margin-top: 0.35rem; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .avatar-upload { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
-        .avatar-preview { width: 80px; height: 80px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 600; color: #fff; }
-        .avatar-actions { display: flex; flex-direction: column; gap: 0.5rem; }
-        .btn-upload { background: rgba(255,255,255,0.1); border: 1px solid var(--border-medium); color: var(--text-primary); padding: 0.6rem 1.25rem; border-radius: var(--radius-md); cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; font-family: inherit; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .btn-upload:hover { background: rgba(255,255,255,0.15); }
-        .btn-remove { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 0.85rem; padding: 0.35rem 0; font-family: inherit; }
-        .btn-save { background: var(--gradient-primary); color: #fff; padding: 0.875rem 2rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(34, 211, 238, 0.2); font-family: inherit; font-size: 0.95rem; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(34, 211, 238, 0.3); }
-        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .danger-zone { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); }
-        .danger-zone .settings-card-header { border-bottom-color: rgba(239, 68, 68, 0.2); }
-        .danger-zone .settings-card-header svg { color: var(--danger); }
-        .btn-danger { background: var(--danger); color: #fff; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-outline-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-        .btn-outline-danger:hover { background: rgba(239, 68, 68, 0.1); }
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .setting-row { flex-direction: column; align-items: flex-start; }
-            .setting-row .toggle-switch { margin-top: 1rem; }
-            .settings-tabs { overflow-x: auto; padding-bottom: 1rem; }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--red:#ef4444;--red-soft:rgba(239,68,68,0.12);--cyan:#22d3ee;--violet:#8b5cf6;--sidebar-w:260px}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+        ::selection{background:rgba(245,158,11,0.3)}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+        .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border)}
+        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text)}
+        .logo svg{width:32px;height:36px}
+        .logo span{font-family:'Newsreader',Georgia,serif;font-size:1.4rem;font-weight:500}
+        .logo .dot{color:var(--amber)}
+        .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
+        .nav-section{margin-bottom:1.5rem}
+        .nav-section-title{padding:0 1.25rem;margin-bottom:.5rem;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.25rem;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;border-left:2px solid transparent;margin:2px 0}
+        .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+        .nav-item.active{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
+        .nav-item svg{width:18px;height:18px;flex-shrink:0}
+        .nav-badge{margin-left:auto;padding:.15rem .5rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:10px}
+        .nav-badge.live{background:var(--red);color:#fff;animation:pulse 2s infinite}
+        .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px}
+        .tier-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.25rem}
+        .tier-name{font-family:'Newsreader',Georgia,serif;font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
+        .tier-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+        .tier-fill{height:100%;background:var(--amber);border-radius:4px}
+        .tier-text{font-size:.75rem;color:var(--muted);margin-top:.35rem}
+        
+        .main{margin-left:var(--sidebar-w);min-height:100vh;padding:2rem}
+        
+        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;animation:fadeIn .4s ease}
+        .header-left h1{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:.25rem}
+        .header-left p{color:var(--muted);font-size:.95rem}
+        
+        .settings-layout{display:grid;grid-template-columns:220px 1fr;gap:2rem}
+        @media(max-width:900px){.settings-layout{grid-template-columns:1fr}}
+        
+        .settings-tabs{display:flex;flex-direction:column;gap:.25rem}
+        .settings-tab{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;border-radius:10px;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;cursor:pointer;border:none;background:none;text-align:left}
+        .settings-tab:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+        .settings-tab.active{color:var(--amber);background:var(--amber-soft)}
+        .settings-tab svg{width:18px;height:18px}
+        
+        .settings-content{animation:fadeIn .4s ease .1s backwards}
+        
+        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.5rem}
+        .card-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
+        .card-header h3{font-size:1rem;font-weight:600}
+        .card-header p{color:var(--muted);font-size:.85rem;margin-top:.25rem}
+        .card-body{padding:1.5rem}
+        
+        .form-group{margin-bottom:1.5rem}
+        .form-group:last-child{margin-bottom:0}
+        .form-group label{display:block;font-size:.85rem;font-weight:500;margin-bottom:.5rem}
+        .form-group .help{color:var(--muted);font-size:.8rem;margin-top:.35rem}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        @media(max-width:600px){.form-row{grid-template-columns:1fr}}
+        input[type="text"],input[type="email"],input[type="password"],select,textarea{width:100%;padding:.8rem 1rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;font-family:inherit;transition:all .2s}
+        input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber)}
+        select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
+        textarea{min-height:100px;resize:vertical}
+        
+        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid var(--border)}
+        .toggle-row:last-child{border-bottom:none}
+        .toggle-info h4{font-size:.9rem;font-weight:500;margin-bottom:.2rem}
+        .toggle-info p{color:var(--muted);font-size:.8rem}
+        .toggle{position:relative;width:48px;height:26px;background:var(--elevated);border-radius:50px;border:none;cursor:pointer;transition:all .2s}
+        .toggle.active{background:var(--amber)}
+        .toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:all .2s}
+        .toggle.active::after{left:25px}
+        
+        .btn{padding:.75rem 1.5rem;border-radius:10px;font-size:.9rem;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
+        .btn-primary{background:linear-gradient(135deg,var(--amber),#d97706);color:#000}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.3)}
+        .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+        .btn-outline:hover{border-color:var(--amber);color:var(--amber)}
+        .btn-danger{background:var(--red-soft);border:1px solid var(--red);color:var(--red)}
+        .btn-danger:hover{background:var(--red);color:#fff}
+        
+        .avatar-section{display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem}
+        .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d97706);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:600;color:#000}
+        .avatar-actions{display:flex;gap:.75rem}
+        
+        .danger-zone{background:linear-gradient(135deg,var(--red-soft),rgba(239,68,68,0.03));border-color:rgba(239,68,68,0.3)}
+        .danger-zone .card-header h3{color:var(--red)}
+        
+        @media(max-width:768px){
+            .sidebar{transform:translateX(-100%)}
+            .main{margin-left:0}
         }
     </style>
 </head>
-<div id="loading-screen" style="position:fixed;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
-    <svg width="64" height="64" viewBox="-26 -28 52 52" fill="none" style="animation:heartbeat 1.2s ease-in-out infinite;">
-        <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#lg)" stroke-width="3.5" fill="none"/>
-        <path d="M-6,0 L-2,4 L6,-5" stroke="url(#lg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-    </svg>
-</div>
-<style>
-@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}56%{transform:scale(1)}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.2)}}
-.settings-tabs{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.1s}
-.settings-card{opacity:0;animation:fadeInUp 0.5s ease forwards;}
-.settings-card:nth-of-type(1){animation-delay:0.15s}
-.settings-card:nth-of-type(2){animation-delay:0.25s}
-.settings-card:nth-of-type(3){animation-delay:0.35s}
-</style>
-<script>window.addEventListener('load',()=>{setTimeout(()=>{const l=document.getElementById('loading-screen');l.style.opacity='0';setTimeout(()=>l.remove(),500)},800)})</script>
-<body class="dashboard-body">
-    <div class="page-background">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <!-- Floating Badge -->
-        <div class="floating-badge" style="position:fixed;top:14%;right:6%;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#22d3ee;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 4s ease-in-out infinite;pointer-events:none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06"/></svg>
-            <span>Preferences</span>
-        </div>
-    </div>
-
-    <aside class="sidebar" id="sidebar">
+<body>
+    <aside class="sidebar">
         <div class="sidebar-header">
-            <a href="index.html" class="sidebar-logo">
-                <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
-                    <circle cx="20" cy="20" r="18" stroke="url(#sideGrad)" stroke-width="2" fill="none"/>
-                    <path d="M12 20L17 25L28 14" stroke="url(#sideGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-                </svg>
-                <span class="logo-text">verity<span class="dot">.</span></span>
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                <span>verity<span class="dot">.</span></span>
             </a>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
-            <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
-            <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
-            <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
-            <a href="global-stream.html" class="nav-item" style="color: #ef4444;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Live Stream <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; display: inline-block; margin-left: 4px; animation: pulse 1.5s ease-in-out infinite;"></span></a>
-            <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
-            <a href="provider-setup.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
-            <a href="billing.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
-            <a href="settings.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
-            <div class="nav-divider"></div>
-            <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a>
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+                <a href="verify.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Verify<span class="nav-badge">+</span></a>
+                <a href="verify.html?quick=1" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
+                <a href="history.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+                <a href="realtime-stream.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>Live Stream<span class="nav-badge live">●</span></a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <a href="api-keys.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778z"/></svg>API Keys</a>
+                <a href="provider-setup.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
+                <a href="billing.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+                <a href="settings.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+            </div>
+            <div class="nav-section"><a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a></div>
         </nav>
-        <div class="sidebar-plan">
-            <div class="plan-info"><span class="plan-name">Starter</span><span class="plan-badge">FREE</span></div>
-            <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" id="usageFill" style="width: 0%"></div></div><span class="usage-text"><span id="usageCount">0</span> / <span id="usageLimit">50</span> verifications</span></div>
+        <div class="sidebar-footer">
+            <div class="tier-card">
+                <div class="tier-label">Current Plan</div>
+                <div class="tier-name">Pro Plan</div>
+                <div class="tier-bar"><div class="tier-fill" style="width:68%"></div></div>
+                <div class="tier-text">680 / 1,000 verifications</div>
+            </div>
         </div>
     </aside>
-
-    <main class="main-content">
-        <header class="mobile-header">
-            <button class="mobile-menu-toggle" id="mobileMenuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-            <span class="mobile-logo">verity<span class="dot">.</span></span>
-            <div class="mobile-user">JD</div>
+    
+    <main class="main">
+        <header class="header">
+            <div class="header-left">
+                <h1>Settings</h1>
+                <p>Manage your account settings and preferences.</p>
+            </div>
         </header>
-
-        <div class="page-content">
-            <div class="page-hero">
-                <div class="page-hero-content">
-                    <div class="page-hero-text">
-                        <h1><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</h1>
-                        <p>Manage your account settings and preferences.</p>
-                    </div>
-                </div>
-            </div>
-
+        
+        <div class="settings-layout">
             <div class="settings-tabs">
-                <button class="tab-btn active" onclick="switchTab('profile')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
-                <button class="tab-btn" onclick="switchTab('preferences')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09"/></svg>Preferences</button>
-                <button class="tab-btn" onclick="switchTab('notifications')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notifications</button>
-                <button class="tab-btn" onclick="switchTab('security')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Security</button>
+                <button class="settings-tab active" onclick="showTab('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
+                <button class="settings-tab" onclick="showTab('notifications')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notifications</button>
+                <button class="settings-tab" onclick="showTab('appearance')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Appearance</button>
+                <button class="settings-tab" onclick="showTab('security')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Security</button>
             </div>
-
-            <div id="profile" class="tab-content active">
-                <div class="settings-card">
-                    <div class="settings-card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><h3>Profile Information</h3></div>
-                    <div class="settings-card-body">
-                        <div class="avatar-upload">
-                            <div class="avatar-preview" id="avatarPreview">JD</div>
+            
+            <div class="settings-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Profile Information</h3>
+                            <p>Update your personal details and profile picture.</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="avatar-section">
+                            <div class="avatar">JD</div>
                             <div class="avatar-actions">
-                                <button class="btn-upload"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload Photo</button>
-                                <button class="btn-remove">Remove</button>
+                                <button class="btn btn-outline">Change Photo</button>
+                                <button class="btn btn-outline">Remove</button>
                             </div>
                         </div>
-                        <form id="profileForm">
-                            <div class="form-row">
-                                <div class="form-group"><label for="firstName">First Name</label><input type="text" id="firstName" value="John"></div>
-                                <div class="form-group"><label for="lastName">Last Name</label><input type="text" id="lastName" value="Doe"></div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" value="John" placeholder="First name">
                             </div>
-                            <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" value="john@example.com"><p class="hint">We'll send important notifications to this email</p></div>
-                            <div class="form-group"><label for="company">Company / Organization</label><input type="text" id="company" placeholder="Optional"></div>
-                            <button type="submit" class="btn-save">Save Changes</button>
-                        </form>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" value="Doe" placeholder="Last name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" value="john@example.com" placeholder="Email address">
+                        </div>
+                        <div class="form-group">
+                            <label>Bio</label>
+                            <textarea placeholder="Write a short bio...">Fact-checking enthusiast and journalist. Using Verity to combat misinformation.</textarea>
+                        </div>
+                        <button class="btn btn-primary">Save Changes</button>
                     </div>
                 </div>
-            </div>
-
-            <div id="preferences" class="tab-content">
-                <div class="settings-card">
-                    <div class="settings-card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg><h3>Verification Preferences</h3></div>
-                    <div class="settings-card-body">
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Deep Research Mode</h4><p>Enable multi-model consensus with 4-8 LLM providers, 20+ sources, and academic verification. <strong style="color: #22d3ee;">PRO feature</strong></p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="deepResearchMode"><span class="toggle-slider"></span></label>
-                        </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Quick Check Mode</h4><p>Enable fast preliminary verification instead of full 9-Point Triple Verification. Use for simple claims.</p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="extendedMode"><span class="toggle-slider"></span></label>
-                        </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Auto-save History</h4><p>Automatically save all verification results to your history.</p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="autoSave" checked><span class="toggle-slider"></span></label>
-                        </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Show Confidence Scores</h4><p>Display detailed confidence percentages with verification results.</p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="showConfidence" checked><span class="toggle-slider"></span></label>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Notification Preferences</h3>
+                            <p>Control how and when you receive notifications.</p>
                         </div>
                     </div>
-                </div>
-                <div class="settings-card">
-                    <div class="settings-card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><h3>Regional Settings</h3></div>
-                    <div class="settings-card-body">
-                        <div class="form-group"><label for="language">Language</label><select id="language"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option></select></div>
-                        <div class="form-group"><label for="timezone">Timezone</label><select id="timezone"><option value="UTC">UTC</option><option value="EST">Eastern Time</option><option value="PST">Pacific Time</option><option value="GMT">GMT</option></select></div>
-                        <button class="btn-save">Save Preferences</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="notifications" class="tab-content">
-                <div class="settings-card">
-                    <div class="settings-card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg><h3>Email Notifications</h3></div>
-                    <div class="settings-card-body">
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Weekly Summary</h4><p>Receive a weekly summary of your verification activity.</p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="weeklySummary" checked><span class="toggle-slider"></span></label>
+                    <div class="card-body">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Email Notifications</h4>
+                                <p>Receive email updates about your verifications</p>
+                            </div>
+                            <button class="toggle active" onclick="this.classList.toggle('active')"></button>
                         </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Usage Alerts</h4><p>Get notified when approaching your verification limit.</p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="usageAlerts" checked><span class="toggle-slider"></span></label>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Weekly Digest</h4>
+                                <p>Get a weekly summary of trending misinformation</p>
+                            </div>
+                            <button class="toggle active" onclick="this.classList.toggle('active')"></button>
                         </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Product Updates</h4><p>Stay informed about new features and improvements.</p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="productUpdates"><span class="toggle-slider"></span></label>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>API Usage Alerts</h4>
+                                <p>Notify when approaching usage limits</p>
+                            </div>
+                            <button class="toggle active" onclick="this.classList.toggle('active')"></button>
                         </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Marketing Emails</h4><p>Receive tips, best practices, and promotional offers.</p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="marketing"><span class="toggle-slider"></span></label>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Marketing Emails</h4>
+                                <p>Receive news about new features and updates</p>
+                            </div>
+                            <button class="toggle" onclick="this.classList.toggle('active')"></button>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div id="security" class="tab-content">
-                <div class="settings-card">
-                    <div class="settings-card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><h3>Change Password</h3></div>
-                    <div class="settings-card-body">
-                        <form id="passwordForm">
-                            <div class="form-group"><label for="currentPassword">Current Password</label><input type="password" id="currentPassword" placeholder="Enter current password"></div>
-                            <div class="form-group"><label for="newPassword">New Password</label><input type="password" id="newPassword" placeholder="Enter new password"><p class="hint">Use at least 8 characters with a mix of letters, numbers, and symbols</p></div>
-                            <div class="form-group"><label for="confirmPassword">Confirm New Password</label><input type="password" id="confirmPassword" placeholder="Confirm new password"></div>
-                            <button type="submit" class="btn-save">Update Password</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="settings-card">
-                    <div class="settings-card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><h3>Two-Factor Authentication</h3></div>
-                    <div class="settings-card-body">
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Enable 2FA</h4><p>Add an extra layer of security to your account with two-factor authentication.</p></div>
-                            <label class="toggle-switch"><input type="checkbox" id="twoFactor"><span class="toggle-slider"></span></label>
+                
+                <div class="card danger-zone">
+                    <div class="card-header">
+                        <div>
+                            <h3>Danger Zone</h3>
+                            <p>Irreversible actions that affect your account.</p>
                         </div>
                     </div>
-                </div>
-                <div class="settings-card danger-zone">
-                    <div class="settings-card-header"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><h3>Danger Zone</h3></div>
-                    <div class="settings-card-body">
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Export Data</h4><p>Download all your verification history and account data.</p></div>
-                            <button class="btn-outline-danger">Export Data</button>
-                        </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><h4>Delete Account</h4><p>Permanently delete your account and all associated data. This action cannot be undone.</p></div>
-                            <button class="btn-danger" onclick="confirmDelete()">Delete Account</button>
+                    <div class="card-body">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <h4>Delete Account</h4>
+                                <p>Permanently delete your account and all associated data.</p>
+                            </div>
+                            <button class="btn btn-danger">Delete Account</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-
+    
     <script>
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+        function showTab(tabName) {
+            document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+            event.target.closest('.settings-tab').classList.add('active');
         }
-        
-        function loadSettings() {
-            const settings = JSON.parse(localStorage.getItem('verity_settings') || '{}');
-            document.getElementById('extendedMode').checked = settings.extendedMode || false;
-            document.getElementById('autoSave').checked = settings.autoSave !== false;
-            document.getElementById('showConfidence').checked = settings.showConfidence !== false;
-            document.getElementById('weeklySummary').checked = settings.weeklySummary !== false;
-            document.getElementById('usageAlerts').checked = settings.usageAlerts !== false;
-            document.getElementById('productUpdates').checked = settings.productUpdates || false;
-            document.getElementById('marketing').checked = settings.marketing || false;
-            document.getElementById('twoFactor').checked = settings.twoFactor || false;
-            updateSidebarUsage();
-        }
-        
-        function saveSettings() {
-            const settings = {
-                extendedMode: document.getElementById('extendedMode').checked,
-                autoSave: document.getElementById('autoSave').checked,
-                showConfidence: document.getElementById('showConfidence').checked,
-                weeklySummary: document.getElementById('weeklySummary').checked,
-                usageAlerts: document.getElementById('usageAlerts').checked,
-                productUpdates: document.getElementById('productUpdates').checked,
-                marketing: document.getElementById('marketing').checked,
-                twoFactor: document.getElementById('twoFactor').checked
-            };
-            localStorage.setItem('verity_settings', JSON.stringify(settings));
-        }
-        
-        function updateSidebarUsage() {
-            const stats = JSON.parse(localStorage.getItem('verity_stats') || '{}');
-            const plan = localStorage.getItem('verity_plan') || 'starter';
-            const limits = { starter: 50, pro: 1000, enterprise: 999999 };
-            const used = stats.verifications_used || 0;
-            const limit = limits[plan];
-            document.getElementById('usageCount').textContent = used;
-            document.getElementById('usageLimit').textContent = limit === 999999 ? '∞' : limit;
-            document.getElementById('usageFill').style.width = Math.min((used / limit) * 100, 100) + '%';
-        }
-        
-        function confirmDelete() { if (confirm('Are you sure you want to delete your account? This cannot be undone.')) alert('Account deletion would be processed here.'); }
-        
-        document.querySelectorAll('input[type="checkbox"]').forEach(input => input.addEventListener('change', saveSettings));
-        document.getElementById('profileForm').addEventListener('submit', e => { e.preventDefault(); alert('Profile saved!'); });
-        document.getElementById('passwordForm').addEventListener('submit', e => { e.preventDefault(); alert('Password updated!'); });
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
-        document.addEventListener('DOMContentLoaded', loadSettings);
     </script>
-    <!-- AI Chatbot -->
-    <script src="assets/js/chatbot.js" defer></script>
 </body>
 </html>

@@ -3,426 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Provider Setup - Verity Systems</title>
+    <title>Provider Setup | Verity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        .provider-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .provider-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; transition: all 0.3s; }
-        .provider-card:hover { border-color: var(--accent-cyan); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
-        .provider-card.free { border-color: rgba(34, 197, 94, 0.4); }
-        .provider-card.free:hover { border-color: rgba(34, 197, 94, 0.8); }
-        .provider-header { padding: 1.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 1rem; }
-        .provider-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; }
-        .provider-icon.cerebras { background: linear-gradient(135deg, #00d4ff, #7c3aed); color: white; }
-        .provider-icon.sambanova { background: linear-gradient(135deg, #f97316, #ef4444); color: white; }
-        .provider-icon.groq { background: linear-gradient(135deg, #00d9ff, #0066ff); color: white; }
-        .provider-icon.fireworks { background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; }
-        .provider-icon.openrouter { background: linear-gradient(135deg, #6366f1, #22d3ee); color: white; }
-        .provider-icon.perplexity { background: linear-gradient(135deg, #ff6b35, #f7931e); color: white; }
-        .provider-icon.together { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-        .provider-icon.deepseek { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
-        .provider-icon.mistral { background: linear-gradient(135deg, #f97316, #facc15); color: white; }
-        .provider-icon.gemini { background: linear-gradient(135deg, #4285f4, #ea4335); color: white; }
-        .provider-icon.cohere { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; }
-        .provider-icon.huggingface { background: linear-gradient(135deg, #ffd60a, #f59e0b); color: #000; }
-        .provider-icon.novita { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; }
-        .provider-info h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem; }
-        .provider-info p { color: var(--text-muted); font-size: 0.85rem; }
-        .tier-badge { font-size: 0.65rem; padding: 0.2rem 0.5rem; border-radius: 10px; font-weight: 700; text-transform: uppercase; }
-        .tier-badge.free { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-        .tier-badge.credit { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-        .tier-badge.cheap { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .provider-body { padding: 1.5rem; }
-        .provider-features { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
-        .provider-feature { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); }
-        .provider-feature svg { color: var(--success); flex-shrink: 0; }
-        .provider-feature.highlight { color: var(--accent-cyan); font-weight: 500; }
-        .provider-actions { display: flex; gap: 0.75rem; }
-        .btn-setup { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.2s; border: none; cursor: pointer; font-family: inherit; }
-        .btn-setup.primary { background: var(--gradient-primary); color: white; }
-        .btn-setup.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(34, 211, 238, 0.3); }
-        .btn-setup.secondary { background: rgba(255,255,255,0.05); border: 1px solid var(--border-medium); color: var(--text-primary); }
-        .btn-setup.secondary:hover { background: rgba(255,255,255,0.1); }
-        .setup-hero { padding: 2rem; background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(99, 102, 241, 0.08)); border-radius: var(--radius-xl); margin-bottom: 2rem; border: 1px solid rgba(34, 211, 238, 0.2); }
-        .setup-hero h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; }
-        .setup-hero h1 svg { color: var(--accent-cyan); }
-        .setup-hero p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
-        .quick-stats { display: flex; gap: 2rem; flex-wrap: wrap; }
-        .quick-stat { display: flex; align-items: center; gap: 0.75rem; }
-        .quick-stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .quick-stat-icon.green { background: rgba(34, 197, 94, 0.15); color: var(--success); }
-        .quick-stat-icon.cyan { background: rgba(34, 211, 238, 0.15); color: var(--accent-cyan); }
-        .quick-stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
-        .quick-stat-text strong { display: block; font-size: 1.25rem; color: var(--text-primary); }
-        .quick-stat-text span { font-size: 0.8rem; color: var(--text-muted); }
-        .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle); }
-        .section-title svg { color: var(--accent-cyan); }
-        .env-template { background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem; }
-        .env-template h4 { font-size: 0.95rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .env-template h4 svg { color: var(--accent-cyan); }
-        .env-code { background: rgba(0,0,0,0.5); border-radius: var(--radius-md); padding: 1rem; overflow-x: auto; }
-        .env-code pre { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.8; color: var(--text-secondary); margin: 0; }
-        .env-code .comment { color: var(--text-faint); }
-        .env-code .key { color: var(--accent-cyan); }
-        .env-code .value { color: var(--success); }
-        .copy-btn { position: absolute; top: 0.75rem; right: 0.75rem; background: rgba(255,255,255,0.1); border: none; color: var(--text-muted); padding: 0.5rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .copy-btn:hover { background: rgba(34, 211, 238, 0.2); color: var(--accent-cyan); }
-        @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        .provider-card{opacity:0;animation:fadeInUp 0.5s ease forwards;}
-        .provider-card:nth-child(1){animation-delay:0.05s}
-        .provider-card:nth-child(2){animation-delay:0.1s}
-        .provider-card:nth-child(3){animation-delay:0.15s}
-        .provider-card:nth-child(4){animation-delay:0.2s}
-        .provider-card:nth-child(5){animation-delay:0.25s}
-        .provider-card:nth-child(6){animation-delay:0.3s}
-        @media (max-width: 768px) { .provider-grid { grid-template-columns: 1fr; } .quick-stats { flex-direction: column; gap: 1rem; } }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--red:#ef4444;--red-soft:rgba(239,68,68,0.12);--cyan:#22d3ee;--violet:#8b5cf6;--sidebar-w:260px}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+        ::selection{background:rgba(245,158,11,0.3)}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+        .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border)}
+        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text)}
+        .logo svg{width:32px;height:36px}
+        .logo span{font-family:'Newsreader',Georgia,serif;font-size:1.4rem;font-weight:500}
+        .logo .dot{color:var(--amber)}
+        .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
+        .nav-section{margin-bottom:1.5rem}
+        .nav-section-title{padding:0 1.25rem;margin-bottom:.5rem;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.25rem;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;border-left:2px solid transparent;margin:2px 0}
+        .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+        .nav-item.active{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
+        .nav-item svg{width:18px;height:18px;flex-shrink:0}
+        .nav-badge{margin-left:auto;padding:.15rem .5rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:10px}
+        .nav-badge.live{background:var(--red);color:#fff;animation:pulse 2s infinite}
+        .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px}
+        .tier-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.25rem}
+        .tier-name{font-family:'Newsreader',Georgia,serif;font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
+        .tier-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+        .tier-fill{height:100%;background:var(--amber);border-radius:4px}
+        .tier-text{font-size:.75rem;color:var(--muted);margin-top:.35rem}
+        
+        .main{margin-left:var(--sidebar-w);min-height:100vh;padding:2rem}
+        
+        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;animation:fadeIn .4s ease}
+        .header-left h1{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:.25rem}
+        .header-left p{color:var(--muted);font-size:.95rem}
+        
+        .provider-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.25rem;margin-bottom:2rem}
+        .provider-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeIn .4s ease backwards;transition:all .3s}
+        .provider-card:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-2px)}
+        .provider-card:nth-child(1){animation-delay:.05s}
+        .provider-card:nth-child(2){animation-delay:.1s}
+        .provider-card:nth-child(3){animation-delay:.15s}
+        .provider-card:nth-child(4){animation-delay:.2s}
+        .provider-card:nth-child(5){animation-delay:.25s}
+        .provider-card:nth-child(6){animation-delay:.3s}
+        .provider-header{display:flex;align-items:center;gap:1rem;padding:1.25rem;border-bottom:1px solid var(--border)}
+        .provider-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700}
+        .provider-icon.openai{background:linear-gradient(135deg,#10a37f 0%,#0a8a6d 100%);color:#fff}
+        .provider-icon.anthropic{background:linear-gradient(135deg,#d97757 0%,#cc5030 100%);color:#fff}
+        .provider-icon.google{background:linear-gradient(135deg,#4285f4 0%,#34a853 50%,#ea4335 100%);color:#fff}
+        .provider-icon.cohere{background:linear-gradient(135deg,#7c3aed 0%,#5b21b6 100%);color:#fff}
+        .provider-icon.mistral{background:linear-gradient(135deg,#ff7000 0%,#e55d00 100%);color:#fff}
+        .provider-icon.azure{background:linear-gradient(135deg,#0078d4 0%,#004c87 100%);color:#fff}
+        .provider-info h4{font-size:1.05rem;font-weight:600;margin-bottom:.25rem}
+        .provider-info p{color:var(--muted);font-size:.8rem}
+        .provider-body{padding:1.25rem}
+        .status-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+        .status-badge{display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;border-radius:8px;font-size:.75rem;font-weight:600}
+        .status-badge.connected{background:var(--green-soft);color:var(--green)}
+        .status-badge.disconnected{background:var(--elevated);color:var(--dim)}
+        .status-badge.error{background:var(--red-soft);color:var(--red)}
+        .toggle{position:relative;width:44px;height:24px;background:var(--elevated);border-radius:50px;border:none;cursor:pointer;transition:all .2s}
+        .toggle.active{background:var(--amber)}
+        .toggle::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:all .2s}
+        .toggle.active::after{left:23px}
+        .input-group{margin-bottom:1rem}
+        .input-group label{display:block;font-size:.8rem;font-weight:500;color:var(--muted);margin-bottom:.5rem}
+        .input-row{display:flex;gap:.5rem}
+        .input-group input{flex:1;padding:.75rem 1rem;background:var(--elevated);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.85rem;transition:all .2s}
+        .input-group input:focus{outline:none;border-color:var(--amber)}
+        .input-group input[type="password"]{letter-spacing:2px}
+        .btn-test{padding:.75rem 1rem;background:var(--amber-soft);border:1px solid rgba(245,158,11,0.3);border-radius:8px;color:var(--amber);font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit;font-size:.85rem}
+        .btn-test:hover{background:rgba(245,158,11,0.2)}
+        .models-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.75rem}
+        .model-tag{padding:.3rem .6rem;background:var(--elevated);border-radius:6px;font-size:.7rem;color:var(--muted)}
+        
+        .info-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;animation:fadeIn .4s ease .35s backwards}
+        .info-card h3{font-size:1.1rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
+        .info-card h3 svg{color:var(--amber);width:20px;height:20px}
+        .info-list{list-style:none}
+        .info-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--border);color:var(--muted);font-size:.9rem}
+        .info-list li:last-child{border-bottom:none}
+        .info-list li svg{width:16px;height:16px;color:var(--green);flex-shrink:0;margin-top:2px}
+        
+        @media(max-width:768px){
+            .sidebar{transform:translateX(-100%)}
+            .main{margin-left:0}
+            .provider-grid{grid-template-columns:1fr}
+        }
     </style>
 </head>
-<div id="loading-screen" style="position:fixed;inset:0;background:#050505;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s ease;">
-    <svg width="64" height="64" viewBox="-26 -28 52 52" fill="none" style="animation:heartbeat 1.2s ease-in-out infinite;">
-        <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#lg)" stroke-width="3.5" fill="none"/>
-        <path d="M-6,0 L-2,4 L6,-5" stroke="url(#lg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-    </svg>
-</div>
-<style>@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}56%{transform:scale(1)}}</style>
-<script>window.addEventListener('load',()=>{setTimeout(()=>{const l=document.getElementById('loading-screen');l.style.opacity='0';setTimeout(()=>l.remove(),500)},800)})</script>
-<body class="dashboard-body">
-    <div class="page-background">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-    </div>
-
-    <aside class="sidebar" id="sidebar">
+<body>
+    <aside class="sidebar">
         <div class="sidebar-header">
-            <a href="index.html" class="sidebar-logo">
-                <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
-                    <circle cx="20" cy="20" r="18" stroke="url(#sideGrad)" stroke-width="2" fill="none"/>
-                    <path d="M12 20L17 25L28 14" stroke="url(#sideGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-                </svg>
-                <span class="logo-text">verity<span class="dot">.</span></span>
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                <span>verity<span class="dot">.</span></span>
             </a>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
-            <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Verify+</a>
-            <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778"/></svg>API Keys</a>
-            <a href="provider-setup.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06"/></svg>Provider Setup</a>
-            <a href="settings.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>Settings</a>
-            <div class="nav-divider"></div>
-            <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Back to Home</a>
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+                <a href="verify.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Verify<span class="nav-badge">+</span></a>
+                <a href="verify.html?quick=1" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
+                <a href="history.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+                <a href="realtime-stream.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>Live Stream<span class="nav-badge live">●</span></a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <a href="api-keys.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778z"/></svg>API Keys</a>
+                <a href="provider-setup.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
+                <a href="billing.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+                <a href="settings.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+            </div>
+            <div class="nav-section"><a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a></div>
         </nav>
+        <div class="sidebar-footer">
+            <div class="tier-card">
+                <div class="tier-label">Current Plan</div>
+                <div class="tier-name">Pro Plan</div>
+                <div class="tier-bar"><div class="tier-fill" style="width:68%"></div></div>
+                <div class="tier-text">680 / 1,000 verifications</div>
+            </div>
+        </div>
     </aside>
-
-    <main class="main-content">
-        <div class="page-content">
-            <!-- Hero Section -->
-            <div class="setup-hero">
-                <h1>
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    AI Provider Setup Guide
-                </h1>
-                <p>Configure your AI providers to enable Deep Research Mode. Most providers offer FREE tiers - no credit card required! Get API keys from each provider and add them to your environment.</p>
-                
-                <div class="quick-stats">
-                    <div class="quick-stat">
-                        <div class="quick-stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-                        <div class="quick-stat-text"><strong>5 FREE</strong><span>No credit card needed</span></div>
+    
+    <main class="main">
+        <header class="header">
+            <div class="header-left">
+                <h1>Provider Setup</h1>
+                <p>Configure your AI provider API keys for enhanced verification.</p>
+            </div>
+        </header>
+        
+        <div class="provider-grid">
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-icon openai">AI</div>
+                    <div class="provider-info">
+                        <h4>OpenAI</h4>
+                        <p>GPT-4o, GPT-4 Turbo, o1</p>
                     </div>
-                    <div class="quick-stat">
-                        <div class="quick-stat-icon cyan"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-                        <div class="quick-stat-text"><strong>3000+ tok/sec</strong><span>Cerebras fastest inference</span></div>
+                </div>
+                <div class="provider-body">
+                    <div class="status-row">
+                        <span class="status-badge connected"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Connected</span>
+                        <button class="toggle active" onclick="this.classList.toggle('active')"></button>
                     </div>
-                    <div class="quick-stat">
-                        <div class="quick-stat-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-                        <div class="quick-stat-text"><strong>15+ Providers</strong><span>Maximum consensus</span></div>
+                    <div class="input-group">
+                        <label>API Key</label>
+                        <div class="input-row">
+                            <input type="password" value="sk-xxxxxxxxxxxxxxxxxxxxxxx" placeholder="sk-...">
+                            <button class="btn-test" onclick="testProvider(this)">Test</button>
+                        </div>
+                    </div>
+                    <div class="models-row">
+                        <span class="model-tag">gpt-4o</span>
+                        <span class="model-tag">gpt-4-turbo</span>
+                        <span class="model-tag">o1-preview</span>
                     </div>
                 </div>
             </div>
-
-            <!-- FREE Tier Providers -->
-            <h2 class="section-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                🆓 FREE Tier Providers (No Credit Card!)
-            </h2>
-            <div class="provider-grid">
-                <!-- Cerebras -->
-                <div class="provider-card free">
-                    <div class="provider-header">
-                        <div class="provider-icon cerebras">C</div>
-                        <div class="provider-info">
-                            <h3>Cerebras <span class="tier-badge free">FREE</span></h3>
-                            <p>World's Fastest AI Inference</p>
-                        </div>
-                    </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature highlight"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3000+ tokens/second (!))</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Llama 3.3 70B, Qwen 3 32B</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>No credit card required</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://cloud.cerebras.ai/" target="_blank" class="btn-setup primary">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778"/></svg>
-                                Get API Key
-                            </a>
-                        </div>
+            
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-icon anthropic">C</div>
+                    <div class="provider-info">
+                        <h4>Anthropic</h4>
+                        <p>Claude 4 Opus, Sonnet, Haiku</p>
                     </div>
                 </div>
-
-                <!-- SambaNova -->
-                <div class="provider-card free">
-                    <div class="provider-header">
-                        <div class="provider-icon sambanova">S</div>
-                        <div class="provider-info">
-                            <h3>SambaNova <span class="tier-badge free">FREE</span></h3>
-                            <p>405B Parameter Model - FREE!</p>
+                <div class="provider-body">
+                    <div class="status-row">
+                        <span class="status-badge connected"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Connected</span>
+                        <button class="toggle active" onclick="this.classList.toggle('active')"></button>
+                    </div>
+                    <div class="input-group">
+                        <label>API Key</label>
+                        <div class="input-row">
+                            <input type="password" value="sk-ant-xxxxxxxxxxxxxxxx" placeholder="sk-ant-...">
+                            <button class="btn-test" onclick="testProvider(this)">Test</button>
                         </div>
                     </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature highlight"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Llama 3.1 405B FREE access</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>DeepSeek V3, Qwen 2.5</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>World's largest free model</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://cloud.sambanova.ai/" target="_blank" class="btn-setup primary">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778"/></svg>
-                                Get API Key
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Groq -->
-                <div class="provider-card free">
-                    <div class="provider-header">
-                        <div class="provider-icon groq">G</div>
-                        <div class="provider-info">
-                            <h3>Groq <span class="tier-badge free">FREE</span></h3>
-                            <p>Ultra-Fast LPU Inference</p>
-                        </div>
-                    </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature highlight"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>700+ tokens/second</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Llama 3.3 70B, Mixtral</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Very generous free tier</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://console.groq.com/" target="_blank" class="btn-setup primary">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778"/></svg>
-                                Get API Key
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- OpenRouter -->
-                <div class="provider-card free">
-                    <div class="provider-header">
-                        <div class="provider-icon openrouter">O</div>
-                        <div class="provider-info">
-                            <h3>OpenRouter <span class="tier-badge free">FREE</span></h3>
-                            <p>Multi-Model Gateway</p>
-                        </div>
-                    </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Many free models available</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Llama, Gemma, Phi-3 free</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Access 100+ models</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://openrouter.ai/" target="_blank" class="btn-setup primary">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778"/></svg>
-                                Get API Key
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hugging Face -->
-                <div class="provider-card free">
-                    <div class="provider-header">
-                        <div class="provider-icon huggingface">🤗</div>
-                        <div class="provider-info">
-                            <h3>Hugging Face <span class="tier-badge free">FREE</span></h3>
-                            <p>Open Source AI Hub</p>
-                        </div>
-                    </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Free inference API</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Llama, Mistral, Qwen</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Community models</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://huggingface.co/settings/tokens" target="_blank" class="btn-setup primary">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778"/></svg>
-                                Get API Key
-                            </a>
-                        </div>
+                    <div class="models-row">
+                        <span class="model-tag">claude-4-opus</span>
+                        <span class="model-tag">claude-4-sonnet</span>
                     </div>
                 </div>
             </div>
-
-            <!-- Cheap Tier Providers -->
-            <h2 class="section-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
-                💰 Affordable Providers (Free Credits!)
-            </h2>
-            <div class="provider-grid">
-                <!-- Fireworks -->
-                <div class="provider-card">
-                    <div class="provider-header">
-                        <div class="provider-icon fireworks">🔥</div>
-                        <div class="provider-info">
-                            <h3>Fireworks AI <span class="tier-badge credit">$1 FREE</span></h3>
-                            <p>Fast & Cost-Effective</p>
-                        </div>
-                    </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>$1 free credit on signup</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200+ tokens/second</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Llama 3.1 70B, Mixtral</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://fireworks.ai/" target="_blank" class="btn-setup primary">Get API Key</a>
-                        </div>
+            
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-icon google">G</div>
+                    <div class="provider-info">
+                        <h4>Google AI</h4>
+                        <p>Gemini 2.5 Pro, Flash, Ultra</p>
                     </div>
                 </div>
-
-                <!-- Together AI -->
-                <div class="provider-card">
-                    <div class="provider-header">
-                        <div class="provider-icon together">T</div>
-                        <div class="provider-info">
-                            <h3>Together AI <span class="tier-badge credit">$25 FREE</span></h3>
-                            <p>100+ Open Models</p>
+                <div class="provider-body">
+                    <div class="status-row">
+                        <span class="status-badge disconnected">Not Connected</span>
+                        <button class="toggle" onclick="this.classList.toggle('active')"></button>
+                    </div>
+                    <div class="input-group">
+                        <label>API Key</label>
+                        <div class="input-row">
+                            <input type="password" value="" placeholder="AIza...">
+                            <button class="btn-test" onclick="testProvider(this)">Test</button>
                         </div>
                     </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature highlight"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>$25 free credit!</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Llama 3.2 90B Vision</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>DeepSeek R1 Distill</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://api.together.xyz/" target="_blank" class="btn-setup primary">Get API Key</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- DeepSeek -->
-                <div class="provider-card">
-                    <div class="provider-header">
-                        <div class="provider-icon deepseek">D</div>
-                        <div class="provider-info">
-                            <h3>DeepSeek <span class="tier-badge cheap">CHEAP</span></h3>
-                            <p>Technical & Scientific</p>
-                        </div>
-                    </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Ultra-affordable pricing</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>DeepSeek-Chat, Coder</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Great for STEM verification</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://platform.deepseek.com/" target="_blank" class="btn-setup primary">Get API Key</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Novita -->
-                <div class="provider-card">
-                    <div class="provider-header">
-                        <div class="provider-icon novita">N</div>
-                        <div class="provider-info">
-                            <h3>Novita AI <span class="tier-badge cheap">CHEAP</span></h3>
-                            <p>Budget-Friendly</p>
-                        </div>
-                    </div>
-                    <div class="provider-body">
-                        <div class="provider-features">
-                            <div class="provider-feature highlight"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200+ models available</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Llama 3.3 70B, DeepSeek V3</div>
-                            <div class="provider-feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>🔥 20% off Build Month!</div>
-                        </div>
-                        <div class="provider-actions">
-                            <a href="https://novita.ai/console" target="_blank" class="btn-setup primary">Get API Key</a>
-                        </div>
+                    <div class="models-row">
+                        <span class="model-tag">gemini-2.5-pro</span>
+                        <span class="model-tag">gemini-flash</span>
                     </div>
                 </div>
             </div>
-
-            <!-- .env Template -->
-            <div class="env-template">
-                <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg> Copy to your .env file</h4>
-                <div class="env-code" style="position: relative;">
-                    <button class="copy-btn" onclick="copyEnvTemplate()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
-                    <pre><span class="comment"># === FREE PROVIDERS (No Credit Card!) ===</span>
-<span class="key">CEREBRAS_API_KEY</span>=<span class="value">your_cerebras_key_here</span>
-<span class="key">SAMBANOVA_API_KEY</span>=<span class="value">your_sambanova_key_here</span>
-<span class="key">GROQ_API_KEY</span>=<span class="value">your_groq_key_here</span>
-<span class="key">OPENROUTER_API_KEY</span>=<span class="value">your_openrouter_key_here</span>
-<span class="key">HUGGINGFACE_API_KEY</span>=<span class="value">your_huggingface_key_here</span>
-
-<span class="comment"># === AFFORDABLE PROVIDERS ===</span>
-<span class="key">FIREWORKS_API_KEY</span>=<span class="value">your_fireworks_key_here</span>
-<span class="key">TOGETHER_API_KEY</span>=<span class="value">your_together_key_here</span>
-<span class="key">DEEPSEEK_API_KEY</span>=<span class="value">your_deepseek_key_here</span>
-<span class="key">NOVITA_API_KEY</span>=<span class="value">your_novita_key_here</span>
-<span class="key">PERPLEXITY_API_KEY</span>=<span class="value">your_perplexity_key_here</span>
-
-<span class="comment"># === OPTIONAL PROVIDERS ===</span>
-<span class="key">GOOGLE_AI_API_KEY</span>=<span class="value">your_gemini_key_here</span>
-<span class="key">MISTRAL_API_KEY</span>=<span class="value">your_mistral_key_here</span>
-<span class="key">COHERE_API_KEY</span>=<span class="value">your_cohere_key_here</span></pre>
+            
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-icon cohere">Co</div>
+                    <div class="provider-info">
+                        <h4>Cohere</h4>
+                        <p>Command R+, Embed, Rerank</p>
+                    </div>
+                </div>
+                <div class="provider-body">
+                    <div class="status-row">
+                        <span class="status-badge disconnected">Not Connected</span>
+                        <button class="toggle" onclick="this.classList.toggle('active')"></button>
+                    </div>
+                    <div class="input-group">
+                        <label>API Key</label>
+                        <div class="input-row">
+                            <input type="password" value="" placeholder="Enter Cohere API key">
+                            <button class="btn-test" onclick="testProvider(this)">Test</button>
+                        </div>
+                    </div>
+                    <div class="models-row">
+                        <span class="model-tag">command-r-plus</span>
+                        <span class="model-tag">embed-v3</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-icon mistral">M</div>
+                    <div class="provider-info">
+                        <h4>Mistral AI</h4>
+                        <p>Mistral Large, Medium, Small</p>
+                    </div>
+                </div>
+                <div class="provider-body">
+                    <div class="status-row">
+                        <span class="status-badge disconnected">Not Connected</span>
+                        <button class="toggle" onclick="this.classList.toggle('active')"></button>
+                    </div>
+                    <div class="input-group">
+                        <label>API Key</label>
+                        <div class="input-row">
+                            <input type="password" value="" placeholder="Enter Mistral API key">
+                            <button class="btn-test" onclick="testProvider(this)">Test</button>
+                        </div>
+                    </div>
+                    <div class="models-row">
+                        <span class="model-tag">mistral-large</span>
+                        <span class="model-tag">codestral</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-icon azure">Az</div>
+                    <div class="provider-info">
+                        <h4>Azure OpenAI</h4>
+                        <p>Enterprise-grade deployment</p>
+                    </div>
+                </div>
+                <div class="provider-body">
+                    <div class="status-row">
+                        <span class="status-badge disconnected">Not Connected</span>
+                        <button class="toggle" onclick="this.classList.toggle('active')"></button>
+                    </div>
+                    <div class="input-group">
+                        <label>Endpoint URL</label>
+                        <input type="text" value="" placeholder="https://your-resource.openai.azure.com">
+                    </div>
+                    <div class="input-group">
+                        <label>API Key</label>
+                        <div class="input-row">
+                            <input type="password" value="" placeholder="Enter Azure API key">
+                            <button class="btn-test" onclick="testProvider(this)">Test</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
-
-    <script>
-        function copyEnvTemplate() {
-            const template = `# === FREE PROVIDERS (No Credit Card!) ===
-CEREBRAS_API_KEY=your_cerebras_key_here
-SAMBANOVA_API_KEY=your_sambanova_key_here
-GROQ_API_KEY=your_groq_key_here
-OPENROUTER_API_KEY=your_openrouter_key_here
-HUGGINGFACE_API_KEY=your_huggingface_key_here
-
-# === AFFORDABLE PROVIDERS ===
-FIREWORKS_API_KEY=your_fireworks_key_here
-TOGETHER_API_KEY=your_together_key_here
-DEEPSEEK_API_KEY=your_deepseek_key_here
-NOVITA_API_KEY=your_novita_key_here
-PERPLEXITY_API_KEY=your_perplexity_key_here
-
-# === OPTIONAL PROVIDERS ===
-GOOGLE_AI_API_KEY=your_gemini_key_here
-MISTRAL_API_KEY=your_mistral_key_here
-COHERE_API_KEY=your_cohere_key_here`;
-            navigator.clipboard.writeText(template).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
-                setTimeout(() => {
-                    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-                }, 2000);
-            });
-        }
         
-        // Sidebar toggle for mobile
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('open');
-        });
+        <div class="info-card">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>About Provider Keys</h3>
+            <ul class="info-list">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Your API keys are encrypted and stored securely. We never expose or log your keys.</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Adding your own provider keys allows access to premium models and faster rate limits.</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Free tier users can use our shared API quota. Pro users get priority access.</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Enterprise customers can configure Azure OpenAI for compliance requirements.</li>
+            </ul>
+        </div>
+    </main>
+    
+    <script>
+        function testProvider(btn) {
+            btn.textContent = '...';
+            setTimeout(() => {
+                btn.textContent = '✓';
+                btn.style.color = 'var(--green)';
+                setTimeout(() => {
+                    btn.textContent = 'Test';
+                    btn.style.color = 'var(--amber)';
+                }, 2000);
+            }, 1500);
+        }
     </script>
 </body>
 </html>

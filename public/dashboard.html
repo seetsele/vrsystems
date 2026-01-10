@@ -3,548 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Verity Systems</title>
+    <title>Dashboard | Verity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/eden-style.css">
-    <link rel="stylesheet" href="assets/css/premium-typography.css">
-    <link rel="stylesheet" href="assets/css/icons.css">
-    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        .verify-hero { background: linear-gradient(135deg, rgba(34, 211, 238, 0.12) 0%, rgba(99, 102, 241, 0.12) 100%); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: var(--radius-xl); padding: 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
-        .verify-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #22d3ee, #6366f1, #a855f7); }
-        .verify-hero h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; }
-        .verify-hero h2 svg { color: var(--accent-cyan); }
-        .verify-hero > p { color: var(--text-muted); margin-bottom: 1.5rem; }
-        .verify-input-container { position: relative; }
-        .verify-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-medium); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; padding-right: 140px; color: var(--text-primary); font-family: inherit; font-size: 1rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); resize: none; min-height: 80px; }
-        .verify-input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1); }
-        .verify-input::placeholder { color: var(--text-faint); }
-        .btn-verify { position: absolute; right: 12px; bottom: 12px; background: var(--gradient-primary); color: #fff; padding: 0.875rem 1.75rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 15px rgba(34, 211, 238, 0.25); font-family: inherit; font-size: 0.95rem; }
-        .btn-verify:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(34, 211, 238, 0.35); }
-        .btn-verify:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .verify-options { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
-        .verify-option { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.875rem; }
-        .verify-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-cyan); cursor: pointer; }
-        .result-section { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 2rem; display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .result-section.show { display: block; }
-        .result-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); }
-        .result-header h3 { font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
-        .result-body { padding: 2rem; }
-        .verdict-display { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-lg); }
-        .verdict-icon { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
-        .verdict-icon.true { background: rgba(34, 197, 94, 0.15); color: var(--success); }
-        .verdict-icon.false { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .verdict-icon.partially { background: rgba(234, 179, 8, 0.15); color: var(--warning); }
-        .verdict-icon.analyzing { background: rgba(34, 211, 238, 0.15); color: var(--accent-cyan); animation: pulse 2s infinite; }
-        .verdict-text h4 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
-        .verdict-text p { color: var(--text-muted); }
-        .confidence-meter { margin-bottom: 2rem; }
-        .confidence-meter label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
-        .confidence-bar { height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
-        .confidence-fill { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
-        .confidence-fill.high { background: linear-gradient(90deg, var(--success), #4ade80); }
-        .confidence-fill.medium { background: linear-gradient(90deg, var(--warning), #fbbf24); }
-        .confidence-fill.low { background: linear-gradient(90deg, var(--danger), #f87171); }
-        .analysis-section { margin-bottom: 1.5rem; }
-        .analysis-section h5 { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
-        .analysis-section h5 svg { color: var(--accent-cyan); }
-        .analysis-content { color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
-        .sources-list { display: flex; flex-direction: column; gap: 0.75rem; }
-        .source-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-md); }
-        .source-item svg { color: var(--accent-indigo); flex-shrink: 0; margin-top: 2px; }
-        .source-item a { color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem; word-break: break-all; }
-        .source-item a:hover { text-decoration: underline; }
-        .progress-indicator { display: none; padding: 2rem; text-align: center; }
-        .progress-indicator.show { display: block; }
-        .progress-spinner { width: 48px; height: 48px; border: 3px solid rgba(34, 211, 238, 0.2); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
-        .progress-text { color: var(--text-muted); margin-bottom: 0.5rem; }
-        .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; max-width: 300px; margin: 0 auto; }
-        .progress-fill { height: 100%; background: var(--gradient-primary); transition: width 0.3s; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .quick-action { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: all 0.3s; text-decoration: none; color: inherit; }
-        .quick-action:hover { border-color: var(--accent-cyan); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
-        .quick-action-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-        .quick-action-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-        .quick-action-icon.green { background: rgba(34, 197, 94, 0.15); color: var(--success); }
-        .quick-action-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
-        .quick-action-icon.cyan { background: rgba(34, 211, 238, 0.15); color: var(--accent-cyan); }
-        .quick-action-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.15rem; }
-        .quick-action-text p { font-size: 0.8rem; color: var(--text-muted); }
-        .recent-section { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; }
-        .recent-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); }
-        .recent-header h3 { font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; }
-        .recent-header h3 svg { color: var(--accent-cyan); }
-        .view-all { color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.35rem; }
-        .view-all:hover { text-decoration: underline; }
-        .recent-item { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border-subtle); transition: background 0.2s; cursor: pointer; }
-        .recent-item:hover { background: rgba(255,255,255,0.02); }
-        .recent-item:last-child { border-bottom: none; }
-        .recent-verdict { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .recent-verdict.true { background: rgba(34, 197, 94, 0.15); color: var(--success); }
-        .recent-verdict.false { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .recent-verdict.partially { background: rgba(234, 179, 8, 0.15); color: var(--warning); }
-        .recent-claim { flex: 1; min-width: 0; }
-        .recent-claim h4 { font-size: 0.95rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.2rem; }
-        .recent-claim span { font-size: 0.8rem; color: var(--text-faint); }
-        .recent-conf { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
-        .empty-recent { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
-        .empty-recent svg { margin-bottom: 1rem; opacity: 0.5; }
-        @media (max-width: 768px) {
-            .verify-input { padding-right: 1.5rem; padding-bottom: 70px; }
-            .btn-verify { right: 12px; left: 12px; bottom: 12px; width: calc(100% - 24px); justify-content: center; }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--red:#ef4444;--red-soft:rgba(239,68,68,0.12);--cyan:#22d3ee;--violet:#8b5cf6;--sidebar-w:260px}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+        ::selection{background:rgba(245,158,11,0.3)}
+        
+        /* Animations */
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+        @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        
+        /* Sidebar */
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+        .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border)}
+        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text)}
+        .logo svg{width:32px;height:36px}
+        .logo span{font-family:'Newsreader',Georgia,serif;font-size:1.4rem;font-weight:500}
+        .logo .dot{color:var(--amber)}
+        
+        .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
+        .nav-section{margin-bottom:1.5rem}
+        .nav-section-title{padding:0 1.25rem;margin-bottom:.5rem;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.25rem;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;border-left:2px solid transparent;margin:2px 0}
+        .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+        .nav-item.active{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
+        .nav-item svg{width:18px;height:18px;flex-shrink:0}
+        .nav-badge{margin-left:auto;padding:.15rem .5rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:10px}
+        .nav-badge.live{background:var(--red);color:#fff;animation:pulse 2s infinite}
+        
+        .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px}
+        .tier-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.25rem}
+        .tier-name{font-family:'Newsreader',Georgia,serif;font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
+        .tier-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+        .tier-fill{height:100%;background:var(--amber);border-radius:4px;transition:width .5s}
+        .tier-text{font-size:.75rem;color:var(--muted);margin-top:.35rem}
+        
+        /* Main Content */
+        .main{margin-left:var(--sidebar-w);min-height:100vh;padding:2rem}
+        
+        /* Header */
+        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;animation:fadeIn .4s ease backwards}
+        .header-left h1{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:.25rem}
+        .header-left p{color:var(--muted);font-size:.95rem}
+        .header-right{display:flex;gap:.75rem}
+        .btn{padding:.7rem 1.25rem;border-radius:10px;font-size:.875rem;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
+        .btn-primary{background:linear-gradient(135deg,var(--amber),#d97706);color:#000}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.3)}
+        .btn-secondary{background:var(--elevated);color:var(--text);border:1px solid var(--border)}
+        .btn-secondary:hover{border-color:rgba(255,255,255,0.12)}
+        
+        /* Stats Grid */
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+        .stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;animation:fadeIn .4s ease backwards;transition:all .25s}
+        .stat-card:hover{border-color:rgba(255,255,255,0.1);transform:translateY(-2px)}
+        .stat-card:nth-child(1){animation-delay:.05s}
+        .stat-card:nth-child(2){animation-delay:.1s}
+        .stat-card:nth-child(3){animation-delay:.15s}
+        .stat-card:nth-child(4){animation-delay:.2s}
+        .stat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+        .stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .stat-icon.amber{background:var(--amber-soft);color:var(--amber)}
+        .stat-icon.green{background:var(--green-soft);color:var(--green)}
+        .stat-icon.red{background:var(--red-soft);color:var(--red)}
+        .stat-icon.cyan{background:rgba(34,211,238,0.12);color:var(--cyan)}
+        .stat-trend{display:flex;align-items:center;gap:.25rem;font-size:.75rem;font-weight:600}
+        .stat-trend.up{color:var(--green)}
+        .stat-trend.down{color:var(--red)}
+        .stat-value{font-family:'Newsreader',Georgia,serif;font-size:2.25rem;font-weight:500;margin-bottom:.25rem;animation:countUp .6s ease backwards}
+        .stat-label{color:var(--muted);font-size:.85rem}
+        
+        /* Quick Verify */
+        .verify-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden;animation:fadeIn .4s ease .2s backwards}
+        .verify-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--cyan),var(--violet))}
+        .verify-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+        .verify-header h2{font-family:'Newsreader',Georgia,serif;font-size:1.35rem;font-weight:500}
+        .verify-header svg{color:var(--amber)}
+        .verify-input-wrap{position:relative}
+        .verify-input{width:100%;background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;padding-right:140px;color:var(--text);font-size:1rem;font-family:inherit;resize:none;min-height:100px;transition:border-color .2s}
+        .verify-input:focus{outline:none;border-color:rgba(245,158,11,0.4)}
+        .verify-input::placeholder{color:var(--dim)}
+        .verify-submit{position:absolute;right:12px;bottom:12px;background:linear-gradient(135deg,var(--amber),#d97706);color:#000;border:none;padding:.85rem 1.5rem;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all .2s;font-family:inherit}
+        .verify-submit:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(245,158,11,0.3)}
+        .verify-submit svg{width:18px;height:18px}
+        
+        /* Content Grid */
+        .content-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:1.5rem}
+        
+        /* Recent Activity */
+        .recent-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeIn .4s ease .3s backwards}
+        .card-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
+        .card-header h3{font-size:1rem;font-weight:600;display:flex;align-items:center;gap:.6rem}
+        .card-header h3 svg{color:var(--amber);width:18px;height:18px}
+        .card-link{color:var(--amber);font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:.35rem}
+        .card-link:hover{text-decoration:underline}
+        
+        .activity-list{max-height:360px;overflow-y:auto}
+        .activity-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer}
+        .activity-item:hover{background:rgba(255,255,255,0.02)}
+        .activity-item:last-child{border-bottom:none}
+        .activity-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .activity-icon.true{background:var(--green-soft);color:var(--green)}
+        .activity-icon.false{background:var(--red-soft);color:var(--red)}
+        .activity-icon.partial{background:rgba(234,179,8,0.12);color:#eab308}
+        .activity-content{flex:1;min-width:0}
+        .activity-claim{font-size:.9rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.2rem}
+        .activity-meta{font-size:.75rem;color:var(--dim)}
+        .activity-score{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;color:var(--text)}
+        
+        /* Quick Actions */
+        .actions-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;animation:fadeIn .4s ease .35s backwards}
+        .actions-card h3{font-size:1rem;font-weight:600;margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem}
+        .actions-card h3 svg{color:var(--amber)}
+        .action-grid{display:flex;flex-direction:column;gap:.75rem}
+        .action-btn{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--elevated);border:1px solid var(--border);border-radius:12px;text-decoration:none;color:var(--text);transition:all .2s}
+        .action-btn:hover{border-color:rgba(245,158,11,0.3);transform:translateX(4px)}
+        .action-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .action-icon.amber{background:var(--amber-soft);color:var(--amber)}
+        .action-icon.green{background:var(--green-soft);color:var(--green)}
+        .action-icon.cyan{background:rgba(34,211,238,0.12);color:var(--cyan)}
+        .action-icon.violet{background:rgba(139,92,246,0.12);color:var(--violet)}
+        .action-text h4{font-size:.9rem;font-weight:500;margin-bottom:.15rem}
+        .action-text p{font-size:.75rem;color:var(--muted)}
+        
+        /* Mobile */
+        @media(max-width:1024px){
+            .stats-grid{grid-template-columns:repeat(2,1fr)}
+            .content-grid{grid-template-columns:1fr}
+        }
+        @media(max-width:768px){
+            .sidebar{transform:translateX(-100%)}
+            .main{margin-left:0}
+            .stats-grid{grid-template-columns:1fr}
+            .verify-input{padding-right:1.25rem;padding-bottom:70px}
+            .verify-submit{right:12px;left:12px;width:calc(100% - 24px)}
         }
     </style>
-    <!-- Shared CSS -->
-    <link rel="stylesheet" href="assets/css/shared.css">
 </head>
-<body class="dashboard-body">
-    <!-- Loading Screen - Unified Verity Heartbeat -->
-    <div id="loadingScreen" class="verity-loading-screen">
-        <svg class="verity-loading-logo" width="80" height="80" viewBox="-26 -28 52 52" fill="none">
-            <defs>
-                <linearGradient id="loadingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#22d3ee"/>
-                    <stop offset="100%" stop-color="#6366f1"/>
-                </linearGradient>
-            </defs>
-            <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#loadingGradient)" stroke-width="3.5" fill="none"/>
-            <path d="M-6,0 L-2,4 L6,-5" stroke="url(#loadingGradient)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
-        <div class="verity-loading-text">verity</div>
-        <div class="verity-loading-dots"><span></span><span></span><span></span></div>
-    </div>
-    <script>document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{const l=document.getElementById('loadingScreen');if(l){l.style.opacity='0';setTimeout(()=>l.remove(),300)}},200)})</script>
-
-    <div class="page-background">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <!-- Floating Badges -->
-        <div class="floating-badge badge-1" style="position:fixed;top:15%;right:8%;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#22d3ee;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 4s ease-in-out infinite;pointer-events:none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span>20+ AI Providers</span>
-        </div>
-        <div class="floating-badge badge-2" style="position:fixed;bottom:20%;right:5%;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);padding:0.5rem 1rem;border-radius:30px;font-size:0.75rem;color:#a855f7;display:flex;align-items:center;gap:0.5rem;z-index:1;animation:floatBadge 5s ease-in-out infinite 1s;pointer-events:none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            <span>Real-time</span>
-        </div>
-    </div>
-    <style>
-    @keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    </style>
-
-    <aside class="sidebar" id="sidebar">
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
         <div class="sidebar-header">
-            <a href="index.html" class="sidebar-logo">
-                <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
-                    <circle cx="20" cy="20" r="18" stroke="url(#sideGrad)" stroke-width="2" fill="none"/>
-                    <path d="M12 20L17 25L28 14" stroke="url(#sideGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <defs><linearGradient id="sideGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-                </svg>
-                <span class="logo-text">verity<span class="dot">.</span></span>
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                <span>verity<span class="dot">.</span></span>
             </a>
         </div>
+        
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
-            <a href="verify-plus.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.3em;">+</span></a>
-            <a href="verify.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
-            <a href="tools.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>AI Tools</a>
-            <a href="history.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
-            <a href="global-stream.html" class="nav-item" style="color: #ef4444;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Live Stream <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; display: inline-block; margin-left: 4px; animation: pulse 1.5s ease-in-out infinite;"></span></a>
-            <a href="api-keys.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>API Keys</a>
-            <a href="provider-setup.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
-            <a href="billing.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
-            <a href="settings.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
-            <div class="nav-divider"></div>
-            <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a>
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                    Dashboard
+                </a>
+                <a href="verify.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Verify
+                    <span class="nav-badge">+</span>
+                </a>
+                <a href="verify.html?quick=1" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Quick Verify
+                </a>
+                <a href="history.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    History
+                </a>
+                <a href="realtime-stream.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+                    Live Stream
+                    <span class="nav-badge live">●</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <a href="api-keys.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                    API Keys
+                </a>
+                <a href="provider-setup.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Provider Setup
+                </a>
+                <a href="billing.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    Billing
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Settings
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <a href="index.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Back to Home
+                </a>
+            </div>
         </nav>
-        <div class="sidebar-plan">
-            <div class="plan-info"><span class="plan-name">Starter</span><span class="plan-badge">FREE</span></div>
-            <div class="plan-usage"><div class="usage-bar"><div class="usage-fill" id="usageFill" style="width: 0%"></div></div><span class="usage-text"><span id="usageCount">0</span> / <span id="usageLimit">50</span> verifications</span></div>
-            <a href="pricing.html" class="upgrade-link" style="display: block; margin-top: 0.75rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #6366f1, #22d3ee); border-radius: 8px; color: white; text-decoration: none; font-size: 0.85rem; font-weight: 600; text-align: center; transition: transform 0.2s, box-shadow 0.2s;">Upgrade Plan</a>
+        
+        <div class="sidebar-footer">
+            <div class="tier-card">
+                <div class="tier-label">Current Plan</div>
+                <div class="tier-name">Pro Plan</div>
+                <div class="tier-bar"><div class="tier-fill" style="width:68%"></div></div>
+                <div class="tier-text">680 / 1,000 verifications</div>
+            </div>
         </div>
     </aside>
-
-    <main class="main-content">
-        <header class="mobile-header">
-            <button class="mobile-menu-toggle" id="mobileMenuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-            <span class="mobile-logo">verity<span class="dot">.</span></span>
-            <div class="mobile-user">JD</div>
+    
+    <!-- Main Content -->
+    <main class="main">
+        <header class="header">
+            <div class="header-left">
+                <h1>Welcome back</h1>
+                <p>Here's what's happening with your verifications today.</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export
+                </button>
+                <a href="verify.html" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    New Verification
+                </a>
+            </div>
         </header>
-
-        <div class="page-content">
-            <style>
-            @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-            @keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-            .stats-grid .stat-card{opacity:0;animation:fadeInUp 0.5s ease forwards;}
-            .stats-grid .stat-card:nth-child(1){animation-delay:0.1s}
-            .stats-grid .stat-card:nth-child(2){animation-delay:0.2s}
-            .stats-grid .stat-card:nth-child(3){animation-delay:0.3s}
-            .stats-grid .stat-card:nth-child(4){animation-delay:0.4s}
-            .verify-plus-hero{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.5s}
-            .verify-hero{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.6s}
-            .quick-actions{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.7s}
-            .recent-section{opacity:0;animation:fadeInUp 0.5s ease forwards;animation-delay:0.8s}
-            </style>
-            <div class="stats-grid">
-                <div class="stat-card"><div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="stat-value" id="totalVerifications">0</span><span class="stat-label">Total Verifications</span></div>
-                <div class="stat-card"><div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span class="stat-value" id="trueCount">0</span><span class="stat-label">Verified True</span></div>
-                <div class="stat-card"><div class="stat-icon red"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><span class="stat-value" id="falseCount">0</span><span class="stat-label">Verified False</span></div>
-                <div class="stat-card"><div class="stat-icon yellow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="stat-value" id="remainingCount">50</span><span class="stat-label">Remaining This Month</span></div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                    <span class="stat-trend up">↑ 12%</span>
+                </div>
+                <div class="stat-value">1,247</div>
+                <div class="stat-label">Total Verifications</div>
             </div>
-
-            <!-- VERIFY+ - Primary Action -->
-            <a href="verify-plus.html" class="verify-plus-hero" style="display: block; text-decoration: none; background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(34, 211, 238, 0.1)); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; transition: all 0.3s ease;">
-                <div style="display: flex; align-items: center; gap: 1.5rem;">
-                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #6366f1, #22d3ee); border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
-                    </div>
-                    <div style="flex: 1;">
-                        <h2 style="color: #fff; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.1em;">Plus</span> <span style="background: linear-gradient(135deg, #6366f1, #22d3ee); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600;">FEATURED</span></h2>
-                        <p style="color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 0.75rem;">Bulk verify documents, videos, articles, and social media content. Upload PDFs, paste URLs, or enter multiple claims at once.</p>
-                        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
-                            <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg> Documents</span>
-                            <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg> Videos</span>
-                            <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg> Social Media</span>
-                            <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Batch Claims</span>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                    <span class="stat-trend up">↑ 8%</span>
+                </div>
+                <div class="stat-value">94.2%</div>
+                <div class="stat-label">Accuracy Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+                    <span class="stat-trend down">↓ 3%</span>
+                </div>
+                <div class="stat-value">156</div>
+                <div class="stat-label">Misinformation Found</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon cyan"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                </div>
+                <div class="stat-value">2.3s</div>
+                <div class="stat-label">Avg. Response Time</div>
+            </div>
+        </div>
+        
+        <!-- Quick Verify -->
+        <div class="verify-card">
+            <div class="verify-header">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <h2>Quick Verify</h2>
+            </div>
+            <div class="verify-input-wrap">
+                <textarea class="verify-input" placeholder="Enter any claim, statement, or paste a URL to verify..."></textarea>
+                <button class="verify-submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Verify Now
+                </button>
+            </div>
+        </div>
+        
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Recent Activity -->
+            <div class="recent-card">
+                <div class="card-header">
+                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Recent Activity</h3>
+                    <a href="history.html" class="card-link">View all →</a>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <div class="activity-content">
+                            <div class="activity-claim">"The Earth revolves around the Sun"</div>
+                            <div class="activity-meta">2 minutes ago</div>
                         </div>
+                        <div class="activity-score">98%</div>
                     </div>
-                    <div style="flex-shrink: 0;">
-                        <span style="display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #6366f1, #22d3ee); color: white; padding: 0.75rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 0.95rem;">Start Verifying <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                    <div class="activity-item">
+                        <div class="activity-icon false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                        <div class="activity-content">
+                            <div class="activity-claim">"Humans only use 10% of their brain"</div>
+                            <div class="activity-meta">15 minutes ago</div>
+                        </div>
+                        <div class="activity-score">12%</div>
                     </div>
-                </div>
-            </a>
-
-            <!-- Quick Verify - Secondary Option -->
-            <div class="verify-hero" style="opacity: 0.85;">
-                <h2 style="font-size: 1.1rem;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Single Claim Verify</h2>
-                <p>Enter any statement or claim to fact-check using 9-Point Triple Verification.</p>
-                <div class="verify-input-container">
-                    <textarea class="verify-input" id="claimInput" placeholder="Enter a claim to verify... e.g., 'The Earth is 4.5 billion years old'" rows="3"></textarea>
-                    <button class="btn-verify" id="verifyBtn" onclick="verifyClaim()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                        Verify
-                    </button>
-                </div>
-                <div class="verify-options">
-                    <label class="verify-option" style="color: #f59e0b;"><input type="checkbox" id="quickMode"> ⚡ Quick Check (5s preliminary)</label>
-                    <label class="verify-option"><input type="checkbox" id="saveHistory" checked> Save to history</label>
-                </div>
-                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;">🔒 Default: Full 9-Point Triple Verification for maximum accuracy</p>
-            </div>
-
-            <div class="result-section" id="resultSection">
-                <div class="progress-indicator" id="progressIndicator">
-                    <div class="progress-spinner"></div>
-                    <p class="progress-text" id="progressText">Analyzing claim...</p>
-                    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
-                </div>
-                <div class="result-body" id="resultBody" style="display: none;">
-                    <div class="verdict-display">
-                        <div class="verdict-icon" id="verdictIcon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
-                        <div class="verdict-text"><h4 id="verdictTitle">Verified True</h4><p id="verdictSubtitle">This claim is factually accurate</p></div>
+                    <div class="activity-item">
+                        <div class="activity-icon partial"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                        <div class="activity-content">
+                            <div class="activity-claim">"Coffee is the most traded commodity"</div>
+                            <div class="activity-meta">1 hour ago</div>
+                        </div>
+                        <div class="activity-score">54%</div>
                     </div>
-                    <div class="confidence-meter">
-                        <label>Confidence Score: <strong id="confidenceValue">95%</strong></label>
-                        <div class="confidence-bar"><div class="confidence-fill high" id="confidenceFill" style="width: 95%"></div></div>
+                    <div class="activity-item">
+                        <div class="activity-icon true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <div class="activity-content">
+                            <div class="activity-claim">"Water boils at 100°C at sea level"</div>
+                            <div class="activity-meta">2 hours ago</div>
+                        </div>
+                        <div class="activity-score">99%</div>
                     </div>
-                    <div class="analysis-section">
-                        <h5><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Analysis</h5>
-                        <p class="analysis-content" id="analysisContent">Loading analysis...</p>
-                    </div>
-                    <div class="analysis-section">
-                        <h5><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Sources</h5>
-                        <div class="sources-list" id="sourcesList"></div>
+                    <div class="activity-item">
+                        <div class="activity-icon false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                        <div class="activity-content">
+                            <div class="activity-claim">"The Great Wall is visible from space"</div>
+                            <div class="activity-meta">3 hours ago</div>
+                        </div>
+                        <div class="activity-score">8%</div>
                     </div>
                 </div>
             </div>
-
-            <div class="quick-actions">
-                <a href="verify-plus.html" class="quick-action" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(34, 211, 238, 0.1)); border-color: rgba(99, 102, 241, 0.4);">
-                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #6366f1, #22d3ee); color: white;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg></div>
-                    <div class="quick-action-text"><h4>Verify<span style="background: linear-gradient(135deg, #22d3ee 0%, #6366f1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; font-size: 1.2em;">+</span> ✨</h4><p>Bulk verification, PDFs, videos</p></div>
-                </a>
-                <a href="history.html" class="quick-action">
-                    <div class="quick-action-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                    <div class="quick-action-text"><h4>View History</h4><p>See past verifications</p></div>
-                </a>
-                <a href="api-keys.html" class="quick-action">
-                    <div class="quick-action-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
-                    <div class="quick-action-text"><h4>API Keys</h4><p>Manage integrations</p></div>
-                </a>
-                <a href="billing.html" class="quick-action">
-                    <div class="quick-action-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-                    <div class="quick-action-text"><h4>Upgrade Plan</h4><p>Get more verifications</p></div>
-                </a>
-                <a href="settings.html" class="quick-action">
-                    <div class="quick-action-icon cyan"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09"/></svg></div>
-                    <div class="quick-action-text"><h4>Settings</h4><p>Configure preferences</p></div>
-                </a>
-            </div>
-
-            <div class="recent-section">
-                <div class="recent-header">
-                    <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Recent Verifications</h3>
-                    <a href="history.html" class="view-all">View All <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></a>
-                </div>
-                <div id="recentList">
-                    <div class="empty-recent">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <p>No verifications yet. Start by verifying a claim above!</p>
-                    </div>
+            
+            <!-- Quick Actions -->
+            <div class="actions-card">
+                <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Actions</h3>
+                <div class="action-grid">
+                    <a href="verify.html?type=image" class="action-btn">
+                        <div class="action-icon amber"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                        <div class="action-text"><h4>Image Analysis</h4><p>Check image authenticity</p></div>
+                    </a>
+                    <a href="realtime-stream.html" class="action-btn">
+                        <div class="action-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg></div>
+                        <div class="action-text"><h4>Live Monitoring</h4><p>Real-time fact checking</p></div>
+                    </a>
+                    <a href="api-keys.html" class="action-btn">
+                        <div class="action-icon cyan"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778z"/></svg></div>
+                        <div class="action-text"><h4>API Access</h4><p>Integrate with your apps</p></div>
+                    </a>
+                    <a href="9-point-system.html" class="action-btn">
+                        <div class="action-icon violet"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                        <div class="action-text"><h4>How It Works</h4><p>9-Point verification system</p></div>
+                    </a>
                 </div>
             </div>
         </div>
     </main>
-
-    <script>
-        // API Production Railway endpoint
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const API_BASE = isLocal ? 'http://localhost:8000' : 'https://veritysystems-production.up.railway.app';
-        
-        async function loadDashboard() {
-            const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
-            
-            // Try to fetch real quota from API
-            try {
-                const response = await fetch(`${API_BASE}/status`, {
-                    headers: {
-                        'X-User-Tier': localStorage.getItem('verity_tier') || 'free',
-                        'X-API-Key': localStorage.getItem('verity_api_key') || ''
-                    }
-                });
-                
-                if (response.ok) {
-                    const status = await response.json();
-                    // Update UI with API status
-                    document.querySelector('.stat-value').textContent = history.length;
-                    
-                    // Update sidebar plan info
-                    const tierName = status.tier || 'Starter';
-                    const quota = status.quota || { tier: 'free', usage: { month: { used: 0, limit: 50, remaining: 50 } }, features: {} };
-                    document.querySelector('.plan-name').textContent = tierName;
-                    document.querySelector('.plan-badge').textContent = quota.tier === 'free' ? 'FREE' : quota.tier.toUpperCase();
-                    
-                    // Update usage
-                    const used = quota.usage.month.used;
-                    const limit = quota.usage.month.limit;
-                    const remaining = quota.usage.month.remaining;
-                    
-                    document.getElementById('usageCount').textContent = used;
-                    document.getElementById('usageLimit').textContent = limit >= 999999 ? '∞' : limit;
-                    document.getElementById('usageFill').style.width = Math.min((used / limit) * 100, 100) + '%';
-                    document.getElementById('remainingCount').textContent = remaining >= 999999 ? '∞' : remaining;
-                    
-                    // Show/hide upgrade link based on tier
-                    const upgradeLink = document.querySelector('.upgrade-link');
-                    if (upgradeLink) {
-                        upgradeLink.style.display = quota.tier === 'enterprise' ? 'none' : 'block';
-                        upgradeLink.textContent = quota.tier === 'free' ? 'Upgrade Plan' : 'Change Plan';
-                    }
-                    
-                    // Store features for gating
-                    localStorage.setItem('verity_features', JSON.stringify(quota.features));
-                }
-            } catch (e) {
-                console.log('API not available, using local storage');
-                // Fallback to local storage
-                const stats = JSON.parse(localStorage.getItem('verity_stats') || '{}');
-                const plan = localStorage.getItem('verity_plan') || 'free';
-                const limits = { free: 300, pro: 500, team: 2500, enterprise: 999999 };
-                const used = stats.verifications_used || 0;
-                const limit = limits[plan];
-                
-                document.getElementById('usageCount').textContent = used;
-                document.getElementById('usageLimit').textContent = limit === 999999 ? '∞' : limit;
-                document.getElementById('usageFill').style.width = Math.min((used / limit) * 100, 100) + '%';
-                document.getElementById('remainingCount').textContent = Math.max(0, limit - used);
-            }
-            
-            // Update stats from history
-            document.getElementById('totalVerifications').textContent = history.length;
-            document.getElementById('trueCount').textContent = history.filter(h => h.verdict === 'true').length;
-            document.getElementById('falseCount').textContent = history.filter(h => h.verdict === 'false').length;
-            
-            renderRecentHistory(history.slice(0, 5));
-        }
-        
-        function renderRecentHistory(items) {
-            const container = document.getElementById('recentList');
-            if (items.length === 0) return;
-            container.innerHTML = items.map(item => `
-                <div class="recent-item" onclick="viewDetails('${item.id}')">
-                    <div class="recent-verdict ${item.verdict}">${getVerdictIcon(item.verdict)}</div>
-                    <div class="recent-claim"><h4>${escapeHtml(item.claim)}</h4><span>${formatDate(item.timestamp)}</span></div>
-                    <span class="recent-conf">${item.confidence}%</span>
-                </div>
-            `).join('');
-        }
-        
-        function getVerdictIcon(verdict) {
-            const icons = {
-                true: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
-                false: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-                partially: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>'
-            };
-            return icons[verdict] || icons.partially;
-        }
-        
-        function escapeHtml(text) { return text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m]); }
-        function formatDate(d) { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
-        
-        async function verifyClaim() {
-            const claim = document.getElementById('claimInput').value.trim();
-            if (!claim) { alert('Please enter a claim to verify'); return; }
-            if (claim.length < 10) { alert('Please enter a longer claim (at least 10 characters)'); return; }
-            
-            const extended = document.getElementById('extendedMode').checked;
-            const save = document.getElementById('saveHistory').checked;
-            const btn = document.getElementById('verifyBtn');
-            const resultSection = document.getElementById('resultSection');
-            const progress = document.getElementById('progressIndicator');
-            const resultBody = document.getElementById('resultBody');
-            
-            btn.disabled = true;
-            resultSection.classList.add('show');
-            progress.classList.add('show');
-            resultBody.style.display = 'none';
-            
-            const steps = ['Analyzing claim...', 'Searching databases...', 'Cross-referencing sources...', 'Generating report...'];
-            let stepIdx = 0;
-            const stepInterval = setInterval(() => {
-                stepIdx = (stepIdx + 1) % steps.length;
-                document.getElementById('progressText').textContent = steps[stepIdx];
-            }, 2000);
-            
-            let progressPct = 0;
-            const progressInterval = setInterval(() => {
-                progressPct = Math.min(progressPct + 2, 95);
-                document.getElementById('progressFill').style.width = progressPct + '%';
-            }, 200);
-            
-            try {
-                // Call real API v5
-                const response = await fetch(`${API_BASE}/verify`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-User-Tier': localStorage.getItem('verity_tier') || 'free',
-                        'X-API-Key': localStorage.getItem('verity_api_key') || ''
-                    },
-                    body: JSON.stringify({ claim, options: { extended } })
-                });
-                
-                clearInterval(stepInterval);
-                clearInterval(progressInterval);
-                document.getElementById('progressFill').style.width = '100%';
-                
-                if (response.status === 429) {
-                    const error = await response.json();
-                    alert(`Quota exceeded: ${error.detail?.message || 'Please upgrade your plan'}`);
-                    btn.disabled = false;
-                    resultSection.classList.remove('show');
-                    return;
-                }
-                
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                // Map verdict to our display format
-                const verdictMap = {
-                    'verified': 'true',
-                    'true': 'true',
-                    'false': 'false',
-                    'refuted': 'false',
-                    'partially_true': 'partially',
-                    'mixed': 'partially',
-                    'unverifiable': 'partially'
-                };
-                const verdict = verdictMap[result.verdict.toLowerCase()] || 'partially';
-                const confidence = Math.round(result.confidence * 100);
-                
-                displayResult(claim, verdict, confidence, result);
-                
-                if (save) {
-                    const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
-                    history.unshift({ 
-                        id: result.request_id || Date.now().toString(), 
-                        claim, 
-                        verdict, 
-                        confidence, 
-                        timestamp: new Date().toISOString(), 
-                        sources: result.source_count || 0,
-                        summary: result.summary
-                    });
-                    localStorage.setItem('verity_history', JSON.stringify(history));
-                }
-                
-            } catch (error) {
-                clearInterval(stepInterval);
-                clearInterval(progressInterval);
-                console.error('Verification error:', error);
-                
-                // Fallback to mock for demo
-                const verdicts = ['true', 'false', 'partially'];
-                const verdict = verdicts[Math.floor(Math.random() * verdicts.length)];
-                const confidence = 65 + Math.floor(Math.random() * 30);
-                displayResult(claim, verdict, confidence);
-                
-                if (save) {
-                    const history = JSON.parse(localStorage.getItem('verity_history') || '[]');
-                    history.unshift({ id: Date.now().toString(), claim, verdict, confidence, timestamp: new Date().toISOString(), sources: 3 });
-                    localStorage.setItem('verity_history', JSON.stringify(history));
-                }
-            }
-            
-            btn.disabled = false;
-            loadDashboard();
-        }
-        
-        function displayResult(claim, verdict, confidence) {
-            const progress = document.getElementById('progressIndicator');
-            const resultBody = document.getElementById('resultBody');
-            progress.classList.remove('show');
-            resultBody.style.display = 'block';
-            
-            const verdictData = {
-                true: { title: 'Verified True', subtitle: 'This claim is factually accurate', icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' },
-                false: { title: 'Verified False', subtitle: 'This claim is not accurate', icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' },
-                partially: { title: 'Partially True', subtitle: 'This claim contains both accurate and inaccurate elements', icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>' }
-            };
-            
-            const vd = verdictData[verdict];
-            document.getElementById('verdictIcon').className = 'verdict-icon ' + verdict;
-            document.getElementById('verdictIcon').innerHTML = vd.icon;
-            document.getElementById('verdictTitle').textContent = vd.title;
-            document.getElementById('verdictSubtitle').textContent = vd.subtitle;
-            document.getElementById('confidenceValue').textContent = confidence + '%';
-            document.getElementById('confidenceFill').style.width = confidence + '%';
-            document.getElementById('confidenceFill').className = 'confidence-fill ' + (confidence >= 80 ? 'high' : confidence >= 50 ? 'medium' : 'low');
-            document.getElementById('analysisContent').textContent = `Based on analysis of multiple authoritative sources, this claim has been evaluated. The verification process examined scientific literature, official databases, and reputable news sources to determine the accuracy of the statement.`;
-            document.getElementById('sourcesList').innerHTML = `
-                <div class="source-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">Wikipedia - Reference Article</a></div>
-                <div class="source-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">Scientific Journal Publication</a></div>
-                <div class="source-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg><a href="#">Official Government Data</a></div>
-            `;
-        }
-        
-        function viewDetails(id) { window.location.href = 'history.html'; }
-        
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
-        document.getElementById('claimInput')?.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); verifyClaim(); } });
-        document.addEventListener('DOMContentLoaded', loadDashboard);
-    </script>
     
-    <!-- Shared JavaScript -->
-    <script src="assets/js/shared.js"></script>
-    <!-- AI Chatbot -->
-    <script src="assets/js/chatbot.js" defer></script>
+    <script>
+        // Quick verify functionality
+        const input = document.querySelector('.verify-input');
+        const submit = document.querySelector('.verify-submit');
+        submit.addEventListener('click', () => {
+            const claim = input.value.trim();
+            if (claim) {
+                window.location.href = 'verify.html?claim=' + encodeURIComponent(claim);
+            }
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submit.click();
+            }
+        });
+        
+        // Activity item click
+        document.querySelectorAll('.activity-item').forEach(item => {
+            item.addEventListener('click', () => {
+                window.location.href = 'history.html';
+            });
+        });
+    </script>
 </body>
 </html>

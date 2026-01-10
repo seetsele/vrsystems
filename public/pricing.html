@@ -3,1065 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Verity Pricing - Simple, transparent pricing. Start free, scale as you grow.">
-    <meta name="theme-color" content="#050505">
-    <title>Pricing | Verity Intelligence Platform</title>
-    
+    <title>Pricing | Verity Systems</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/eden-style.css">
-    <link rel="stylesheet" href="assets/css/premium-typography.css">
-    <link rel="stylesheet" href="assets/css/styles-dark.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23050505' width='100' height='100' rx='20'/%3E%3Cpath fill='none' stroke='%2322d3ee' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' d='M25 50 L40 65 L75 30'/%3E%3C/svg%3E">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --cyan: #22d3ee;
-            --purple: #6366f1;
-            --gold: #fbbf24;
-        }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #050505;
-            color: #fff;
-            min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            letter-spacing: -0.01em;
-        }
-        
-        /* Loading Screen */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #050505;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 2rem;
-            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        #loading-screen.hidden { opacity: 0; visibility: hidden; }
-        
-        .loader-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            border-radius: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            animation: loaderPulse 1.5s ease-in-out infinite;
-            box-shadow: 0 20px 60px rgba(34, 211, 238, 0.4);
-        }
-        
-        .loader-icon::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            background: conic-gradient(from 0deg, var(--cyan), var(--purple), var(--cyan));
-            border-radius: 26px;
-            z-index: -1;
-            animation: loaderSpin 2s linear infinite;
-        }
-        
-        .loader-icon svg { width: 40px; height: 40px; color: white; }
-        
-        @keyframes loaderSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes loaderPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.95); } }
-        
-        .loader-bar { width: 200px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
-        .loader-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--purple)); animation: loadProgress 1.5s ease-out forwards; }
-        @keyframes loadProgress { to { width: 100%; } }
-        
-        /* Hero */
-        .pricing-hero {
-            padding: 10rem 2rem 4rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .pricing-hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 30% 30%, rgba(34, 211, 238, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 70% 70%, rgba(99, 102, 241, 0.08) 0%, transparent 40%);
-            animation: gradientMove 25s ease infinite;
-            z-index: -1;
-        }
-        
-        @keyframes gradientMove {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-5%, 5%) rotate(2deg); }
-            50% { transform: translate(5%, -5%) rotate(-2deg); }
-            75% { transform: translate(-3%, -3%) rotate(1deg); }
-        }
-        
-        .gradient-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            z-index: -1;
-            pointer-events: none;
-            animation: orbPulse 8s ease-in-out infinite;
-        }
-        
-        .orb-1 { width: 500px; height: 500px; background: rgba(34, 211, 238, 0.12); top: -10%; left: 20%; }
-        .orb-2 { width: 400px; height: 400px; background: rgba(99, 102, 241, 0.1); bottom: 10%; right: 10%; animation-delay: 2s; }
-        
-        @keyframes orbPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-        }
-        
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(99, 102, 241, 0.1));
-            border: 1px solid rgba(34, 211, 238, 0.3);
-            padding: 0.6rem 1.25rem;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--cyan);
-            margin-bottom: 2rem;
-            animation: badgePulse 3s ease-in-out infinite;
-        }
-        
-        @keyframes badgePulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
-            50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.4); }
-        }
-        
-        .hero-title {
-            font-family: 'Newsreader', Georgia, serif;
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff 0%, var(--cyan) 50%, var(--purple) 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% 200%;
-            animation: titleShimmer 5s ease infinite;
-        }
-        
-        @keyframes titleShimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.6);
-            max-width: 600px;
-            margin: 0 auto 3rem;
-        }
-        
-        /* Billing Toggle */
-        .billing-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 4rem;
-        }
-        
-        .billing-label {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.5);
-            transition: color 0.3s ease;
-        }
-        
-        .billing-label.active { color: #fff; font-weight: 600; }
-        
-        .toggle-switch {
-            width: 56px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            cursor: pointer;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-switch:hover { border-color: rgba(34, 211, 238, 0.3); }
-        
-        .toggle-dot {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 22px;
-            height: 22px;
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            border-radius: 50%;
-            transition: transform 0.3s ease;
-        }
-        
-        .toggle-switch.annual .toggle-dot { transform: translateX(26px); }
-        
-        .save-badge {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            color: #10b981;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        
-        /* Pricing Grid */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 0 2rem 6rem;
-        }
-        
-        @media (max-width: 1200px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
-        
-        /* Pricing Card */
-        .pricing-card {
-            background: rgba(10, 10, 10, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 2rem;
-            position: relative;
-            backdrop-filter: blur(20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeInUp 0.6s ease forwards;
-            opacity: 0;
-        }
-        
-        .pricing-card:nth-child(1) { animation-delay: 0.1s; }
-        .pricing-card:nth-child(2) { animation-delay: 0.2s; }
-        .pricing-card:nth-child(3) { animation-delay: 0.3s; }
-        .pricing-card:nth-child(4) { animation-delay: 0.4s; }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .pricing-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(34, 211, 238, 0.3);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-        }
-        
-        /* Popular Card */
-        .pricing-card.popular {
-            border: 2px solid rgba(34, 211, 238, 0.4);
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
-        }
-        
-        .pricing-card.popular::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--cyan), var(--purple));
-            border-radius: 24px 24px 0 0;
-        }
-        
-        /* Enterprise Card */
-        .pricing-card.enterprise {
-            border: 2px solid rgba(251, 191, 36, 0.4);
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
-        }
-        
-        .pricing-card.enterprise::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--gold), #d97706);
-            border-radius: 24px 24px 0 0;
-        }
-        
-        /* Card Badge */
-        .card-badge {
-            position: absolute;
-            top: -14px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-        }
-        
-        .card-badge.popular {
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            color: #fff;
-        }
-        
-        .card-badge.enterprise {
-            background: linear-gradient(135deg, var(--gold), #d97706);
-            color: #0a0a0a;
-        }
-        
-        /* Card Content */
-        .card-tier {
-            font-size: 1rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .pricing-card.popular .card-tier { color: var(--cyan); }
-        .pricing-card.enterprise .card-tier { color: var(--gold); }
-        
-        .card-price {
-            display: flex;
-            align-items: baseline;
-            gap: 0.25rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .price-value {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #fff;
-        }
-        
-        .price-period {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.4);
-        }
-        
-        .card-desc {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 1.5rem;
-        }
-        
-        /* CTA Button */
-        .card-cta {
-            display: block;
-            width: 100%;
-            padding: 0.9rem;
-            border: none;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-family: inherit;
-        }
-        
-        .card-cta.ghost {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-        
-        .card-cta.ghost:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.25);
-        }
-        
-        .card-cta.primary {
-            background: linear-gradient(135deg, var(--cyan), var(--purple));
-            color: #fff;
-            border: none;
-        }
-        
-        .card-cta.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(34, 211, 238, 0.3);
-        }
-        
-        .card-cta.gold {
-            background: linear-gradient(135deg, var(--gold), #d97706);
-            color: #0a0a0a;
-            border: none;
-        }
-        
-        .card-cta.gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
-        }
-        
-        /* Features List */
-        .features-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        
-        .feature-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .feature-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-        
-        .feature-icon.check {
-            background: rgba(34, 211, 238, 0.15);
-            color: var(--cyan);
-        }
-        
-        .feature-icon.x {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .feature-icon svg { width: 12px; height: 12px; }
-        
-        .feature-item.disabled { color: rgba(255, 255, 255, 0.35); }
-        
-        .pricing-card.enterprise .feature-icon.check {
-            background: rgba(251, 191, 36, 0.15);
-            color: var(--gold);
-        }
-        
-        .feature-item strong { color: #fff; }
-        
-        /* FAQ Section */
-        .faq-section {
-            padding: 6rem 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .faq-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-        
-        .faq-subtitle {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 4rem;
-        }
-        
-        .faq-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        @media (max-width: 768px) { .faq-grid { grid-template-columns: 1fr; } }
-        
-        .faq-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .faq-item:hover {
-            border-color: rgba(34, 211, 238, 0.2);
-            background: rgba(255, 255, 255, 0.04);
-        }
-        
-        .faq-question {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 0.75rem;
-        }
-        
-        .faq-answer {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.7;
-        }
-        
-        /* CTA Section */
-        .cta-section {
-            padding: 6rem 2rem;
-            text-align: center;
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .cta-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        
-        .cta-desc {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.6);
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        /* Footer */
-        footer {
-            padding: 3rem 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            text-align: center;
-            color: rgba(255, 255, 255, 0.4);
-        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--violet:#8b5cf6;--cyan:#22d3ee}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+        ::selection{background:rgba(245,158,11,0.3)}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+        nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+        .nav-c{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center;height:72px}
+        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text);font-weight:600;font-size:1.3rem}
+        .logo svg{width:32px;height:36px}
+        .nav-links{display:flex;gap:2.5rem}
+        .nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:color .2s}
+        .nav-links a:hover,.nav-links a.active{color:var(--amber)}
+        .btn-nav{padding:.65rem 1.35rem;background:var(--amber);color:#000;border-radius:8px;font-size:.875rem;font-weight:600;text-decoration:none;transition:all .2s}
+        .btn-nav:hover{background:#d97706}
+        .hero{padding:140px 2rem 60px;text-align:center;max-width:800px;margin:0 auto}
+        .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--amber-soft);border:1px solid rgba(245,158,11,0.2);border-radius:100px;font-size:.8rem;color:var(--amber);margin-bottom:1.5rem;animation:fadeIn .5s ease}
+        h1{font-family:'Newsreader',Georgia,serif;font-size:clamp(2.5rem,5vw,3.5rem);font-weight:400;line-height:1.15;margin-bottom:1rem;animation:fadeIn .5s ease .1s backwards}
+        h1 em{font-style:italic;color:var(--amber)}
+        .hero p{font-size:1.15rem;color:var(--muted);animation:fadeIn .5s ease .2s backwards}
+        .toggle-wrap{display:flex;justify-content:center;gap:1rem;align-items:center;margin:3rem 0}
+        .toggle-label{font-size:.9rem;color:var(--muted)}
+        .toggle-label.active{color:var(--text);font-weight:600}
+        .toggle{width:56px;height:28px;background:var(--elevated);border:1px solid var(--border);border-radius:100px;cursor:pointer;position:relative;transition:background .2s}
+        .toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:var(--amber);border-radius:50%;transition:transform .2s}
+        .toggle.annual::after{transform:translateX(28px)}
+        .toggle.annual{background:var(--amber-soft);border-color:rgba(245,158,11,0.3)}
+        .save-badge{padding:.3rem .6rem;background:var(--green-soft);border:1px solid rgba(16,185,129,0.2);border-radius:100px;font-size:.7rem;font-weight:600;color:var(--green)}
+        .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto;padding:0 2rem 4rem}
+        .plan{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;transition:all .3s}
+        .plan:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-5px)}
+        .plan.featured{border-color:rgba(245,158,11,0.4);box-shadow:0 0 60px rgba(245,158,11,0.1)}
+        .plan.featured::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);padding:.4rem 1rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:100px;letter-spacing:.05em}
+        .plan-name{font-size:1.1rem;font-weight:600;margin-bottom:.5rem}
+        .plan-desc{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
+        .plan-price{font-family:'Newsreader',Georgia,serif;font-size:3rem;font-weight:400;margin-bottom:.25rem}
+        .plan-price span{font-size:1rem;color:var(--muted);font-family:'Inter',sans-serif}
+        .plan-period{font-size:.8rem;color:var(--dim);margin-bottom:1.5rem}
+        .plan-btn{display:block;width:100%;padding:.9rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;transition:all .2s}
+        .plan-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
+        .plan.featured .plan-btn{background:var(--amber);border-color:var(--amber);color:#000}
+        .plan.featured .plan-btn:hover{background:#d97706}
+        .plan-features{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+        .plan-features li{display:flex;align-items:flex-start;gap:.6rem;padding:.5rem 0;font-size:.85rem;color:var(--muted);list-style:none}
+        .plan-features li svg{width:16px;height:16px;color:var(--green);flex-shrink:0;margin-top:2px}
+        .enterprise{background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(34,211,238,0.1));border-color:rgba(139,92,246,0.3)}
+        .faq{max-width:700px;margin:0 auto;padding:4rem 2rem}
+        .faq h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;text-align:center;margin-bottom:2rem}
+        .faq-item{border-bottom:1px solid var(--border);padding:1.25rem 0}
+        .faq-q{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:500}
+        .faq-q svg{width:20px;height:20px;color:var(--muted);transition:transform .2s}
+        .faq-item.open .faq-q svg{transform:rotate(180deg)}
+        .faq-a{max-height:0;overflow:hidden;transition:max-height .3s;color:var(--muted);font-size:.9rem;line-height:1.7}
+        .faq-item.open .faq-a{max-height:200px;padding-top:1rem}
+        .cta{text-align:center;padding:4rem 2rem;background:linear-gradient(180deg,transparent,rgba(245,158,11,0.03))}
+        .cta h2{font-family:'Newsreader',Georgia,serif;font-size:2rem;margin-bottom:1rem}
+        .cta p{color:var(--muted);margin-bottom:2rem}
+        .cta-btn{display:inline-flex;align-items:center;gap:.5rem;padding:1rem 2rem;background:var(--amber);color:#000;border-radius:12px;font-size:1rem;font-weight:600;text-decoration:none;transition:all .2s}
+        .cta-btn:hover{background:#d97706;transform:translateY(-2px);box-shadow:0 15px 40px rgba(245,158,11,0.3)}
+        footer{padding:2rem;text-align:center;border-top:1px solid var(--border);color:var(--dim);font-size:.85rem}
+        footer a{color:var(--amber);text-decoration:none}
+        @media(max-width:900px){.pricing-grid{grid-template-columns:1fr}.nav-links{display:none}}
     </style>
-    <link rel="stylesheet" href="assets/css/shared.css">
 </head>
 <body>
-    <!-- Unified Loading Screen - Fast load -->
-    <div id="loadingScreen" class="verity-loading-screen">
-        <svg class="verity-loading-logo" width="64" height="64" viewBox="-26 -28 52 52" fill="none">
-            <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#loadGrad)" stroke-width="3.5" fill="none"/>
-            <path d="M-6,0 L-2,4 L6,-5" stroke="url(#loadGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <defs><linearGradient id="loadGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
-        </svg>
+    <nav><div class="nav-c">
+        <a href="index.html" class="logo"><svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>Verity</a>
+        <div class="nav-links"><a href="verify.html">Verify</a><a href="9-point-system.html">How It Works</a><a href="pricing.html" class="active">Pricing</a><a href="api-docs.html">API</a><a href="compare.html">Compare</a></div>
+        <a href="verify.html" class="btn-nav">Try Free</a>
+    </div></nav>
+
+    <section class="hero">
+        <span class="hero-badge">Simple Pricing</span>
+        <h1>Start Free, <em>Scale</em> When Ready</h1>
+        <p>No hidden fees. No credit card required. Upgrade only when you need more power.</p>
+    </section>
+
+    <div class="toggle-wrap">
+        <span class="toggle-label active" id="monthlyLabel">Monthly</span>
+        <div class="toggle" id="billingToggle" onclick="toggleBilling()"></div>
+        <span class="toggle-label" id="annualLabel">Annual</span>
+        <span class="save-badge">Save 20%</span>
     </div>
-    <script>
-        // Fast load - hide immediately when DOM ready
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const l = document.getElementById('loadingScreen');
-                if (l) { l.style.opacity = '0'; setTimeout(() => l.remove(), 300); }
-            }, 200);
-        });
-    </script>
 
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <svg class="logo-icon-svg" width="28" height="28" viewBox="-26 -28 52 52" fill="none">
-                    <path d="M0,-24 L-22,-20 L-22,0 Q-22,16 0,20 Q22,16 22,0 L22,-20 Z" stroke="url(#shieldGrad)" stroke-width="4" fill="none"/>
-                    <path d="M-6,0 L-2,4 L6,-5" stroke="url(#checkGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    <defs>
-                        <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22D3EE"/><stop offset="100%" stop-color="#6366F1"/></linearGradient>
-                        <linearGradient id="checkGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22D3EE"/><stop offset="100%" stop-color="#6366F1"/></linearGradient>
-                    </defs>
-                </svg>
-                <span class="logo-text">verity<span class="logo-dot">.</span></span>
-            </a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="tools.html" class="nav-link">Tools</a>
-                <a href="global-stream.html" class="nav-link" style="color: #ef4444;">Live <span style="width: 6px; height: 6px; background: #ef4444; border-radius: 50%; display: inline-block; margin-left: 4px; animation: pulse 1.5s ease-in-out infinite;"></span></a>
-                <a href="ultimate-suite.html" class="nav-link" style="color: #fbbf24;">Ultimate</a>
-                <a href="verify.html" class="nav-link">Verify</a>
-                <a href="pricing.html" class="nav-link active">Pricing</a>
-                <a href="api-docs.html" class="nav-link">Docs</a>
-            </div>
-            <div class="nav-actions">
-                <a href="dashboard.html" class="btn btn-ghost">Dashboard</a>
-                <a href="auth.html" class="btn btn-primary">Get Started</a>
-            </div>
+    <div class="pricing-grid">
+        <div class="plan">
+            <div class="plan-name">Starter</div>
+            <div class="plan-desc">For individuals exploring fact-checking</div>
+            <div class="plan-price">$0<span>/mo</span></div>
+            <div class="plan-period">Free forever</div>
+            <a href="verify.html" class="plan-btn">Get Started</a>
+            <ul class="plan-features">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 verifications/month</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>9-Point Verification</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Text claims only</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Basic source citations</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Community support</li>
+            </ul>
         </div>
-    </nav>
+        <div class="plan featured">
+            <div class="plan-name">Professional</div>
+            <div class="plan-desc">For researchers & content creators</div>
+            <div class="plan-price" id="proPrice">$29<span>/mo</span></div>
+            <div class="plan-period" id="proPeriod">Billed monthly</div>
+            <a href="dashboard.html" class="plan-btn">Start 14-Day Trial</a>
+            <ul class="plan-features">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>500 verifications/month</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All media types (image, video, audio)</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Deepfake detection</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Bias analysis</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>API access (10K calls/mo)</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority email support</li>
+            </ul>
+        </div>
+        <div class="plan enterprise">
+            <div class="plan-name">Enterprise</div>
+            <div class="plan-desc">For newsrooms & organizations</div>
+            <div class="plan-price">Custom</div>
+            <div class="plan-period">Contact for pricing</div>
+            <a href="mailto:enterprise@verity.ai" class="plan-btn">Contact Sales</a>
+            <ul class="plan-features">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited verifications</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom AI model training</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>White-label options</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SSO & team management</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated account manager</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA & 24/7 support</li>
+            </ul>
+        </div>
+    </div>
 
-    <section class="pricing-hero">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        
-        <div class="hero-badge">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Private Beta Pricing
+    <section class="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-q">What counts as a verification?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-a">Each claim, image, video, or URL you submit counts as one verification. Our 9-point system runs all checks in a single verification.</div>
         </div>
-        
-        <h2 class="hero-title">Simple, Transparent Pricing</h2>
-        <p class="hero-subtitle">Start free. Scale as you grow. No hidden fees. Cancel anytime.</p>
-        
-        <!-- 9-Point Badge -->
-        <div style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 100px; margin-bottom: 24px;">
-            <svg width="16" height="16" fill="none" stroke="#22d3ee" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <span style="font-size: 0.9rem; color: rgba(255,255,255,0.9);">All plans include <strong style="color: #22d3ee;">9-Point Triple-Check</strong> verification</span>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-q">Can I cancel anytime?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-a">Yes! No contracts or commitments. Cancel your subscription anytime from your dashboard. You'll retain access until the end of your billing period.</div>
         </div>
-        
-        <!-- Billing Toggle -->
-        <div class="billing-toggle">
-            <span class="billing-label active" id="monthlyLabel">Monthly</span>
-            <div class="toggle-switch" id="billingToggle">
-                <div class="toggle-dot"></div>
-            </div>
-            <span class="billing-label" id="annualLabel">Annual</span>
-            <span class="save-badge">Save 20%</span>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-q">What happens if I exceed my limit?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-a">You can purchase additional verification credits or upgrade your plan. We'll notify you when you reach 80% of your monthly limit.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-q">Is my data secure?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-a">Absolutely. We use end-to-end encryption, SOC 2 compliance, and never store your content after analysis. Enterprise plans include additional security options.</div>
         </div>
     </section>
 
-    <section class="pricing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1400px; margin: 0 auto; padding: 2rem;">
-        <!-- Free -->
-        <div class="pricing-card">
-            <div class="card-tier">Free</div>
-            <div class="card-price">
-                <span class="price-value">$0</span>
-                <span class="price-period">/month</span>
-            </div>
-            <p class="card-desc">Perfect for testing</p>
-            
-            <a href="auth.html" class="card-cta ghost">Get Started Free</a>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>300</strong> verifications/month</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>2</strong> LLM models</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>5 data sources</span>
-                </div>
-                <div class="feature-item disabled">
-                    <div class="feature-icon x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg></div>
-                    <span>API access</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Starter -->
-        <div class="pricing-card">
-            <div class="card-tier">Starter</div>
-            <div class="card-price">
-                <span class="price-value monthly-price">$49</span>
-                <span class="price-value annual-price" style="display:none;">$39</span>
-                <span class="price-period">/month</span>
-            </div>
-            <p class="card-desc">For individual creators</p>
-            
-            <a href="checkout.html?plan=starter" class="card-cta ghost">Start Free Trial</a>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>2,000</strong> verifications/month</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>4</strong> LLM models</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>15 data sources</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>API access</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>Email support</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pro -->
-        <div class="pricing-card">
-            <div class="card-tier">Pro</div>
-            <div class="card-price">
-                <span class="price-value monthly-price">$99</span>
-                <span class="price-value annual-price" style="display:none;">$79</span>
-                <span class="price-period">/month</span>
-            </div>
-            <p class="card-desc">For professional creators</p>
-            
-            <a href="checkout.html?plan=pro" class="card-cta ghost">Start Free Trial</a>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>5,000</strong> verifications/month</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>8</strong> LLM models</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>All 27 data sources</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>NLP & bias detection</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>Priority email support</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Professional (Most Popular) -->
-        <div class="pricing-card popular">
-            <span class="card-badge popular">⭐ Most Popular</span>
-            <div class="card-tier">Professional</div>
-            <div class="card-price">
-                <span class="price-value monthly-price">$199</span>
-                <span class="price-value annual-price" style="display:none;">$159</span>
-                <span class="price-period">/month</span>
-            </div>
-            <p class="card-desc">For teams & agencies</p>
-            
-            <a href="checkout.html?plan=professional" class="card-cta primary">Start 7-Day Free Trial</a>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>15,000</strong> verifications/month</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>15+</strong> AI providers</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>5 team members</strong></span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>Monte Carlo confidence</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>Priority support</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Business -->
-        <div class="pricing-card">
-            <div class="card-tier">Business</div>
-            <div class="card-price">
-                <span class="price-value monthly-price">$599</span>
-                <span class="price-value annual-price" style="display:none;">$479</span>
-                <span class="price-period">/month</span>
-            </div>
-            <p class="card-desc">For mid-market companies</p>
-            
-            <a href="checkout.html?plan=business" class="card-cta ghost">Contact Sales</a>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>60,000</strong> verifications/month</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>15 team members</strong></span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>SSO & advanced security</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>Dedicated account manager</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>Custom integrations</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Business+ -->
-        <div class="pricing-card">
-            <div class="card-tier">Business+</div>
-            <div class="card-price">
-                <span class="price-value monthly-price">$799</span>
-                <span class="price-value annual-price" style="display:none;">$639</span>
-                <span class="price-period">/month</span>
-            </div>
-            <p class="card-desc">For large enterprises</p>
-            
-            <a href="mailto:enterprise@veritysystems.app" class="card-cta ghost">Contact Sales</a>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>75,000</strong> verifications/month</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>Unlimited</strong> team members</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>All 6 verification tools</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>SLA guarantee (99.9%)</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>24/7 phone support</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Enterprise -->
-        <div class="pricing-card enterprise">
-            <span class="card-badge enterprise">👑 Fortune 1000</span>
-            <div class="card-tier">Enterprise</div>
-            <div class="card-price">
-                <span class="price-value monthly-price">$2,999+</span>
-                <span class="price-value annual-price" style="display:none;">$2,399+</span>
-                <span class="price-period">/month</span>
-            </div>
-            <p class="card-desc">For Fortune 1000 companies</p>
-            
-            <a href="mailto:enterprise@veritysystems.app" class="card-cta gold">Contact Sales</a>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>300,000+</strong> verifications/month</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span><strong>Unlimited</strong> everything</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>On-premise deployment option</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>Custom AI model training</span>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-                    <span>Dedicated success team</span>
-                </div>
-            </div>
-        </div>
+    <section class="cta">
+        <h2>Ready to Fight Misinformation?</h2>
+        <p>Join thousands of journalists, researchers, and content creators using Verity.</p>
+        <a href="verify.html" class="cta-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Start Verifying Free</a>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="faq-section">
-        <h2 class="faq-title">Frequently Asked Questions</h2>
-        <p class="faq-subtitle">Everything you need to know about Verity pricing</p>
-        
-        <div class="faq-grid">
-            <div class="faq-item">
-                <h4 class="faq-question">Can I change plans anytime?</h4>
-                <p class="faq-answer">Yes! Upgrade or downgrade anytime from your dashboard. Changes take effect immediately and we'll prorate your billing.</p>
-            </div>
-            <div class="faq-item">
-                <h4 class="faq-question">What happens if I exceed my limit?</h4>
-                <p class="faq-answer">You'll receive a notification and can either upgrade or pay $0.05/verification overage. We never charge without your consent.</p>
-            </div>
-            <div class="faq-item">
-                <h4 class="faq-question">Do unused verifications roll over?</h4>
-                <p class="faq-answer">No, verifications reset each billing cycle. We recommend choosing a plan that matches your regular usage.</p>
-            </div>
-            <div class="faq-item">
-                <h4 class="faq-question">Is there a free trial?</h4>
-                <p class="faq-answer">Yes! All paid plans include a 14-day free trial. No credit card required to start.</p>
-            </div>
-            <div class="faq-item">
-                <h4 class="faq-question">What payment methods do you accept?</h4>
-                <p class="faq-answer">We accept all major credit cards, PayPal, and wire transfer for Enterprise plans.</p>
-            </div>
-            <div class="faq-item">
-                <h4 class="faq-question">Can I get a refund?</h4>
-                <p class="faq-answer">Yes! We offer a 14-day money-back guarantee, no questions asked. Contact support for a full refund.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ROI Calculator Section -->
-    <section style="padding: 5rem 2rem; background: linear-gradient(180deg, transparent 0%, rgba(34, 211, 238, 0.05) 50%, transparent 100%);">
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 3rem;">
-                <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Calculate Your Savings</h2>
-                <p style="color: rgba(255,255,255,0.6); font-size: 1.1rem;">See how much time and money Verity can save your team</p>
-            </div>
-            
-            <div style="background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2.5rem;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-                    <div>
-                        <label style="display: block; color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem;">Articles published per month</label>
-                        <input type="number" id="articlesPerMonth" value="50" style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; font-size: 1.1rem;">
-                    </div>
-                    <div>
-                        <label style="display: block; color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem;">Avg. fact-checking time per article (mins)</label>
-                        <input type="number" id="minsPerArticle" value="30" style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; font-size: 1.1rem;">
-                    </div>
-                </div>
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem;">Hourly rate of fact-checker ($)</label>
-                    <input type="number" id="hourlyRate" value="35" style="width: 50%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; font-size: 1.1rem;">
-                </div>
-                
-                <div style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(99, 102, 241, 0.1)); border-radius: 16px; padding: 2rem; text-align: center;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
-                        <div>
-                            <div style="color: #ef4444; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Without Verity</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: #e2e8f0;"><span id="hoursWithout">25</span> hrs/month</div>
-                            <div style="color: #94a3b8; font-size: 1rem;">$<span id="costWithout">10,500</span>/year</div>
-                        </div>
-                        <div>
-                            <div style="color: #10b981; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">With Verity</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: #e2e8f0;"><span id="hoursWith">2.5</span> hrs/month</div>
-                            <div style="color: #94a3b8; font-size: 1rem;">$<span id="costWith">1,050</span>/year + $588 Verity</div>
-                        </div>
-                    </div>
-                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
-                        <div style="color: #22d3ee; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Annual Savings</div>
-                        <div style="font-size: 3rem; font-weight: 700; background: linear-gradient(135deg, #22d3ee, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">$<span id="annualSavings">8,862</span></div>
-                        <div style="color: #10b981; font-size: 1rem; margin-top: 0.5rem;">ROI: <span id="roiPercent">1506</span>%</div>
-                    </div>
-                </div>
-                
-                <a href="auth.html" style="display: block; text-align: center; margin-top: 2rem; padding: 1rem 2rem; background: linear-gradient(135deg, #22d3ee, #6366f1); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 1.1rem;">Start Free Trial — ROI in 30 Days</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Trust Signals Section -->
-    <section style="padding: 4rem 2rem; border-top: 1px solid rgba(255,255,255,0.05);">
-        <div style="max-width: 900px; margin: 0 auto;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-                    <span style="color: #e2e8f0; font-weight: 500;">14-day money-back guarantee</span>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                    <span style="color: #e2e8f0; font-weight: 500;">No credit card for trial</span>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
-                    <span style="color: #e2e8f0; font-weight: 500;">Cancel anytime</span>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <span style="color: #e2e8f0; font-weight: 500;">SOC 2 Type II certified</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <h2 class="cta-title">Ready to Fight Misinformation?</h2>
-        <p class="cta-desc">Join thousands of journalists, researchers, and organizations using Verity to verify truth at scale.</p>
-        <div class="cta-buttons">
-            <a href="auth.html" class="btn btn-primary btn-lg">Join Private Beta <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="api-docs.html" class="btn btn-ghost btn-lg">View API Docs</a>
-        </div>
-    </section>
-
-    <footer>
-        <p>© 2024 Verity Intelligence. All rights reserved.</p>
-    </footer>
+    <footer><p>© 2026 Verity Systems · <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a> · <a href="api-docs.html">API Docs</a></p></footer>
 
     <script>
-        // Loading screen
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loading-screen').classList.add('hidden');
-            }, 1600);
-        });
-        
-        // Billing toggle
-        const toggle = document.getElementById('billingToggle');
-        const monthlyLabel = document.getElementById('monthlyLabel');
-        const annualLabel = document.getElementById('annualLabel');
         let isAnnual = false;
-        
-        toggle.addEventListener('click', () => {
+        function toggleBilling() {
             isAnnual = !isAnnual;
-            toggle.classList.toggle('annual', isAnnual);
-            monthlyLabel.classList.toggle('active', !isAnnual);
-            annualLabel.classList.toggle('active', isAnnual);
-            
-            document.querySelectorAll('.monthly-price').forEach(el => {
-                el.style.display = isAnnual ? 'none' : 'block';
-            });
-            document.querySelectorAll('.annual-price').forEach(el => {
-                el.style.display = isAnnual ? 'block' : 'none';
-            });
-        });
-        
-        // ROI Calculator
-        function calculateROI() {
-            const articles = parseFloat(document.getElementById('articlesPerMonth').value) || 50;
-            const minsPerArticle = parseFloat(document.getElementById('minsPerArticle').value) || 30;
-            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 35;
-            
-            const hoursWithout = (articles * minsPerArticle) / 60;
-            const hoursWith = hoursWithout * 0.1; // 90% reduction
-            const costWithout = hoursWithout * hourlyRate * 12;
-            const costWith = hoursWith * hourlyRate * 12;
-            const verityCost = 49 * 12; // Starter plan
-            const savings = costWithout - costWith - verityCost;
-            const roi = ((savings / verityCost) * 100).toFixed(0);
-            
-            document.getElementById('hoursWithout').textContent = hoursWithout.toFixed(1);
-            document.getElementById('hoursWith').textContent = hoursWith.toFixed(1);
-            document.getElementById('costWithout').textContent = costWithout.toLocaleString();
-            document.getElementById('costWith').textContent = costWith.toLocaleString();
-            document.getElementById('annualSavings').textContent = Math.max(0, savings).toLocaleString();
-            document.getElementById('roiPercent').textContent = Math.max(0, roi);
+            document.getElementById('billingToggle').classList.toggle('annual', isAnnual);
+            document.getElementById('monthlyLabel').classList.toggle('active', !isAnnual);
+            document.getElementById('annualLabel').classList.toggle('active', isAnnual);
+            document.getElementById('proPrice').innerHTML = isAnnual ? '$23<span>/mo</span>' : '$29<span>/mo</span>';
+            document.getElementById('proPeriod').textContent = isAnnual ? 'Billed annually ($276/yr)' : 'Billed monthly';
         }
-        
-        document.getElementById('articlesPerMonth').addEventListener('input', calculateROI);
-        document.getElementById('minsPerArticle').addEventListener('input', calculateROI);
-        document.getElementById('hourlyRate').addEventListener('input', calculateROI);
-        calculateROI();
     </script>
-    
-    <!-- Verity AI Chatbot -->
     <script src="assets/js/chatbot.js" defer></script>
 </body>
 </html>

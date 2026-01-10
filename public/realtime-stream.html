@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Stream | Verity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--green:#10b981;--green-soft:rgba(16,185,129,0.12);--red:#ef4444;--red-soft:rgba(239,68,68,0.12);--cyan:#22d3ee;--violet:#8b5cf6;--sidebar-w:260px}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+        ::selection{background:rgba(245,158,11,0.3)}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        @keyframes slide{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+        @keyframes wave{0%{height:20%}50%{height:80%}100%{height:20%}}
+        
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+        .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border)}
+        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text)}
+        .logo svg{width:32px;height:36px}
+        .logo span{font-family:'Newsreader',Georgia,serif;font-size:1.4rem;font-weight:500}
+        .logo .dot{color:var(--amber)}
+        .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
+        .nav-section{margin-bottom:1.5rem}
+        .nav-section-title{padding:0 1.25rem;margin-bottom:.5rem;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.25rem;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;border-left:2px solid transparent;margin:2px 0}
+        .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+        .nav-item.active{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
+        .nav-item svg{width:18px;height:18px;flex-shrink:0}
+        .nav-badge{margin-left:auto;padding:.15rem .5rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:10px}
+        .nav-badge.live{background:var(--red);color:#fff;animation:pulse 2s infinite}
+        .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px}
+        .tier-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.25rem}
+        .tier-name{font-family:'Newsreader',Georgia,serif;font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
+        .tier-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+        .tier-fill{height:100%;background:var(--amber);border-radius:4px}
+        .tier-text{font-size:.75rem;color:var(--muted);margin-top:.35rem}
+        
+        .main{margin-left:var(--sidebar-w);min-height:100vh;padding:2rem}
+        
+        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;animation:fadeIn .4s ease;flex-wrap:wrap;gap:1rem}
+        .header-left h1{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:.25rem;display:flex;align-items:center;gap:1rem}
+        .header-left p{color:var(--muted);font-size:.95rem}
+        .live-indicator{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--red-soft);border:1px solid var(--red);border-radius:20px;font-size:.8rem;font-weight:600;color:var(--red)}
+        .live-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:blink 1s infinite}
+        
+        .stream-controls{display:flex;gap:.75rem;flex-wrap:wrap}
+        .btn{padding:.75rem 1.5rem;border-radius:10px;font-size:.9rem;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
+        .btn-primary{background:linear-gradient(135deg,var(--amber),#d97706);color:#000}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.3)}
+        .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+        .btn-outline:hover{border-color:var(--amber);color:var(--amber)}
+        .btn-danger{background:var(--red);color:#fff}
+        .btn-danger:hover{background:#dc2626}
+        
+        .stream-grid{display:grid;grid-template-columns:1fr 340px;gap:1.5rem}
+        @media(max-width:1100px){.stream-grid{grid-template-columns:1fr}}
+        
+        .stream-feed{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeIn .4s ease .1s backwards}
+        .feed-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
+        .feed-header h3{font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:.6rem}
+        .feed-header h3 svg{color:var(--amber);width:18px;height:18px}
+        .feed-stats{display:flex;gap:1.5rem}
+        .feed-stat{text-align:center}
+        .feed-stat .value{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--amber)}
+        .feed-stat .label{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+        
+        .feed-items{max-height:calc(100vh - 320px);overflow-y:auto;padding:.5rem}
+        .feed-item{display:flex;gap:1rem;padding:1rem;margin:.5rem 0;background:var(--elevated);border-radius:12px;animation:slide .4s ease backwards;transition:all .2s}
+        .feed-item:hover{background:rgba(255,255,255,0.04)}
+        .feed-item:nth-child(1){animation-delay:0s}
+        .feed-item:nth-child(2){animation-delay:.05s}
+        .feed-item:nth-child(3){animation-delay:.1s}
+        .feed-item:nth-child(4){animation-delay:.15s}
+        .feed-item:nth-child(5){animation-delay:.2s}
+        .verdict-badge{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .verdict-badge.true{background:var(--green-soft);color:var(--green)}
+        .verdict-badge.false{background:var(--red-soft);color:var(--red)}
+        .verdict-badge.misleading{background:var(--amber-soft);color:var(--amber)}
+        .verdict-badge.unverified{background:var(--elevated);color:var(--muted)}
+        .feed-content{flex:1;min-width:0}
+        .feed-claim{font-size:.9rem;margin-bottom:.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .feed-meta{display:flex;gap:1rem;font-size:.75rem;color:var(--dim)}
+        .feed-meta span{display:flex;align-items:center;gap:.35rem}
+        .feed-score{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;color:var(--text)}
+        
+        .stream-sidebar{display:flex;flex-direction:column;gap:1.5rem}
+        
+        .sources-card{background:var(--card);border:1px solid var(--border);border-radius:16px;animation:fadeIn .4s ease .15s backwards}
+        .sources-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
+        .sources-header h3{font-size:.95rem;font-weight:600}
+        .sources-list{padding:1rem}
+        .source-item{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--border)}
+        .source-item:last-child{border-bottom:none}
+        .source-info{display:flex;align-items:center;gap:.75rem}
+        .source-icon{width:32px;height:32px;background:var(--elevated);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+        .source-name{font-size:.85rem;font-weight:500}
+        .source-status{width:8px;height:8px;border-radius:50%;background:var(--green)}
+        .source-status.paused{background:var(--amber)}
+        
+        .activity-card{background:var(--card);border:1px solid var(--border);border-radius:16px;animation:fadeIn .4s ease .2s backwards}
+        .activity-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
+        .activity-header h3{font-size:.95rem;font-weight:600}
+        .activity-visual{padding:1.5rem;display:flex;justify-content:center;align-items:flex-end;gap:4px;height:120px}
+        .bar{width:8px;background:var(--amber);border-radius:4px;animation:wave 1s ease infinite}
+        .bar:nth-child(1){animation-delay:0s}
+        .bar:nth-child(2){animation-delay:.1s}
+        .bar:nth-child(3){animation-delay:.2s}
+        .bar:nth-child(4){animation-delay:.3s}
+        .bar:nth-child(5){animation-delay:.4s}
+        .bar:nth-child(6){animation-delay:.5s}
+        .bar:nth-child(7){animation-delay:.6s}
+        .bar:nth-child(8){animation-delay:.7s}
+        .bar:nth-child(9){animation-delay:.8s}
+        .bar:nth-child(10){animation-delay:.9s}
+        .bar:nth-child(11){animation-delay:1s}
+        .bar:nth-child(12){animation-delay:1.1s}
+        .activity-stats{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;padding:0 1.25rem 1.25rem}
+        .mini-stat{text-align:center;padding:.75rem;background:var(--elevated);border-radius:10px}
+        .mini-stat .value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600}
+        .mini-stat .label{font-size:.7rem;color:var(--muted);margin-top:.2rem}
+        
+        @media(max-width:768px){
+            .sidebar{transform:translateX(-100%)}
+            .main{margin-left:0}
+            .header{flex-direction:column;align-items:flex-start}
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                <span>verity<span class="dot">.</span></span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
+                <a href="verify.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Verify<span class="nav-badge">+</span></a>
+                <a href="verify.html?quick=1" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
+                <a href="history.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+                <a href="realtime-stream.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>Live Stream<span class="nav-badge live">●</span></a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <a href="api-keys.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778z"/></svg>API Keys</a>
+                <a href="provider-setup.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
+                <a href="billing.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
+                <a href="settings.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+            </div>
+            <div class="nav-section"><a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a></div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="tier-card">
+                <div class="tier-label">Current Plan</div>
+                <div class="tier-name">Pro Plan</div>
+                <div class="tier-bar"><div class="tier-fill" style="width:68%"></div></div>
+                <div class="tier-text">680 / 1,000 verifications</div>
+            </div>
+        </div>
+    </aside>
+    
+    <main class="main">
+        <header class="header">
+            <div class="header-left">
+                <h1>Live Stream <span class="live-indicator"><span class="live-dot"></span>LIVE</span></h1>
+                <p>Real-time verification feed from monitored sources.</p>
+            </div>
+            <div class="stream-controls">
+                <button class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>Filter</button>
+                <button class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09"/></svg>Configure</button>
+                <button class="btn btn-danger" id="pauseBtn" onclick="toggleStream()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>Pause Stream</button>
+            </div>
+        </header>
+        
+        <div class="stream-grid">
+            <div class="stream-feed">
+                <div class="feed-header">
+                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg>Verification Feed</h3>
+                    <div class="feed-stats">
+                        <div class="feed-stat">
+                            <div class="value">127</div>
+                            <div class="label">Today</div>
+                        </div>
+                        <div class="feed-stat">
+                            <div class="value">89%</div>
+                            <div class="label">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feed-items" id="feedItems">
+                    <div class="feed-item">
+                        <div class="verdict-badge false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                        <div class="feed-content">
+                            <div class="feed-claim">"New study shows 5G towers cause widespread health issues in major cities"</div>
+                            <div class="feed-meta">
+                                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>2 min ago</span>
+                                <span>Twitter</span>
+                            </div>
+                        </div>
+                        <div class="feed-score">2.1</div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="verdict-badge true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <div class="feed-content">
+                            <div class="feed-claim">"WHO confirms new COVID variant detected in multiple countries"</div>
+                            <div class="feed-meta">
+                                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>5 min ago</span>
+                                <span>Reuters</span>
+                            </div>
+                        </div>
+                        <div class="feed-score">8.7</div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="verdict-badge misleading"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                        <div class="feed-content">
+                            <div class="feed-claim">"Government announces complete ban on all cryptocurrency trading"</div>
+                            <div class="feed-meta">
+                                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>8 min ago</span>
+                                <span>Facebook</span>
+                            </div>
+                        </div>
+                        <div class="feed-score">4.3</div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="verdict-badge false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                        <div class="feed-content">
+                            <div class="feed-claim">"Viral image shows alien spacecraft landing in rural Nevada"</div>
+                            <div class="feed-meta">
+                                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>12 min ago</span>
+                                <span>Reddit</span>
+                            </div>
+                        </div>
+                        <div class="feed-score">1.2</div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="verdict-badge true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <div class="feed-content">
+                            <div class="feed-claim">"NASA successfully launches new Mars exploration mission"</div>
+                            <div class="feed-meta">
+                                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>15 min ago</span>
+                                <span>AP News</span>
+                            </div>
+                        </div>
+                        <div class="feed-score">9.2</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stream-sidebar">
+                <div class="sources-card">
+                    <div class="sources-header">
+                        <h3>Monitored Sources</h3>
+                    </div>
+                    <div class="sources-list">
+                        <div class="source-item">
+                            <div class="source-info">
+                                <div class="source-icon">𝕏</div>
+                                <span class="source-name">Twitter/X</span>
+                            </div>
+                            <span class="source-status"></span>
+                        </div>
+                        <div class="source-item">
+                            <div class="source-info">
+                                <div class="source-icon">f</div>
+                                <span class="source-name">Facebook</span>
+                            </div>
+                            <span class="source-status"></span>
+                        </div>
+                        <div class="source-item">
+                            <div class="source-info">
+                                <div class="source-icon">R</div>
+                                <span class="source-name">Reddit</span>
+                            </div>
+                            <span class="source-status paused"></span>
+                        </div>
+                        <div class="source-item">
+                            <div class="source-info">
+                                <div class="source-icon">📰</div>
+                                <span class="source-name">News RSS</span>
+                            </div>
+                            <span class="source-status"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="activity-card">
+                    <div class="activity-header">
+                        <h3>Activity</h3>
+                    </div>
+                    <div class="activity-visual">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                    <div class="activity-stats">
+                        <div class="mini-stat">
+                            <div class="value" style="color:var(--green)">78</div>
+                            <div class="label">Verified True</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="value" style="color:var(--red)">34</div>
+                            <div class="label">Flagged False</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="value" style="color:var(--amber)">15</div>
+                            <div class="label">Misleading</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="value" style="color:var(--muted)">23</div>
+                            <div class="label">Unverified</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        let streaming = true;
+        function toggleStream() {
+            streaming = !streaming;
+            const btn = document.getElementById('pauseBtn');
+            if (streaming) {
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>Pause Stream';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-danger');
+            } else {
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>Resume Stream';
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-primary');
+            }
+        }
+    </script>
+</body>
+</html>

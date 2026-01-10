@@ -3546,3 +3546,396 @@ body {
     display: inline-flex;
     flex-shrink: 0;
 }
+/* === Premium/Locked Navigation Styles === */
+.nav-section.section-locked .nav-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pro-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    color: #000;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.nav-item.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.nav-item.locked:hover {
+    background: transparent;
+    transform: none;
+    opacity: 0.6;
+}
+
+.nav-item.locked .lock-icon {
+    margin-left: auto;
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+}
+
+.nav-item.locked .lock-icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* === Upgrade Modal === */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s var(--ease-out);
+}
+
+.modal-overlay.active {
+    visibility: visible;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+}
+
+.upgrade-modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    max-width: 480px;
+    width: 90%;
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s var(--ease-out);
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-overlay.visible .upgrade-modal {
+    transform: scale(1) translateY(0);
+}
+
+.upgrade-modal-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.upgrade-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(251, 191, 36, 0.1) 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upgrade-icon svg {
+    width: 32px;
+    height: 32px;
+    stroke: var(--accent-amber);
+}
+
+.upgrade-modal-header h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.upgrade-modal-header p {
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+.upgrade-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.upgrade-feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.upgrade-feature .feature-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--accent-amber);
+}
+
+.upgrade-feature .feature-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.upgrade-pricing {
+    text-align: center;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(251, 191, 36, 0.04) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+}
+
+.upgrade-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.upgrade-price .price-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.upgrade-price .price-amount {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 500;
+    color: var(--accent-amber);
+}
+
+.upgrade-price .price-amount span {
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.price-desc {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+.upgrade-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-upgrade {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.btn-close-modal {
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 14px;
+}
+
+/* === Enhanced Titlebar === */
+.titlebar {
+    background: rgba(10, 10, 11, 0.92);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.search-bar {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 10px 16px;
+    transition: all 0.25s var(--ease-out);
+}
+
+.search-bar:hover,
+.search-bar:focus-within {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(245, 158, 11, 0.3);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.08);
+}
+
+.signin-btn {
+    background: var(--accent-amber);
+    color: #000;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 10px;
+    transition: all 0.25s var(--ease-out);
+}
+
+.signin-btn:hover {
+    background: #fbbf24;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.35);
+}
+
+.tb-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    transition: all 0.2s var(--ease-out);
+}
+
+.tb-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.notif-badge {
+    background: var(--accent-amber);
+    color: #000;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    top: 2px;
+    right: 2px;
+}
+
+/* === Smoother Animations === */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.page-header {
+    animation: slideUp 0.4s var(--ease-out);
+}
+
+.stats-grid {
+    animation: slideUp 0.4s var(--ease-out) 0.05s backwards;
+}
+
+.dashboard-grid {
+    animation: slideUp 0.4s var(--ease-out) 0.1s backwards;
+}
+
+.card {
+    animation: scaleIn 0.3s var(--ease-out);
+}
+
+/* === Page Header Typography === */
+.page-header h1 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+}
+
+.page-header p {
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+/* === Card Enhancements === */
+.card {
+    background: rgba(17, 17, 19, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    transition: all 0.3s var(--ease-out);
+}
+
+.card:hover {
+    border-color: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.card-header h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+
+/* === Stat Cards Enhancement === */
+.stat-card {
+    background: rgba(17, 17, 19, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s var(--ease-out);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.stat-value {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+}
+
+/* === Button Enhancements === */
+.btn {
+    transition: all 0.25s var(--ease-out);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.35);
+}
+
+/* === Input Enhancements === */
+.input, .textarea {
+    transition: all 0.25s var(--ease-out);
+}
+
+.input:focus, .textarea:focus {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* === Nav Item Enhancements === */
+.nav-item {
+    transition: all 0.2s var(--ease-out);
+}
+
+.nav-item:hover {
+    transform: translateX(6px);
+}
+
+.nav-item.active {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
