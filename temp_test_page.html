@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Verity Systems - AI-powered fact-checking platform. Verify claims with 40+ sources and multi-model consensus.">
+    <title>Verity — AI Fact-Checking That Shows Its Work</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #111113;
+            --bg-elevated: #18181b;
+            --border: rgba(255,255,255,0.06);
+            --border-hover: rgba(255,255,255,0.12);
+            --text-primary: #fafafa;
+            --text-secondary: #a3a3a3;
+            --text-muted: #525252;
+            --amber: #f59e0b;
+            --amber-soft: rgba(245, 158, 11, 0.12);
+            --green: #10b981;
+            --green-soft: rgba(16, 185, 129, 0.12);
+            --cyan: #22d3ee;
+            --violet: #8b5cf6;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.011em;
+        }
+        
+        html { scroll-behavior: smooth; }
+        
+        ::selection {
+            background: rgba(245, 158, 11, 0.3);
+            color: #fff;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.35rem;
+            letter-spacing: -0.03em;
+        }
+        
+        .logo svg { width: 32px; height: 36px; }
+        
+        .nav-center { display: flex; gap: 2.5rem; }
+        
+        .nav-center a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 450;
+            transition: color 0.2s;
+        }
+        
+        .nav-center a:hover { color: var(--text-primary); }
+        
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
+        
+        .btn-ghost {
+            padding: 0.55rem 1rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .btn-ghost:hover { color: var(--text-primary); }
+        
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.35rem;
+            background: var(--text-primary);
+            color: var(--bg-dark);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 550;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #e5e5e5;
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary svg { width: 16px; height: 16px; }
+        
+        /* Hero */
+        .hero {
+            padding: 160px 2rem 100px;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.55rem 1.15rem;
+            background: var(--green-soft);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--green);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+        
+        .hero h1 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: clamp(2.75rem, 6vw, 4.25rem);
+            font-weight: 400;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.5s ease-out 0.1s backwards;
+        }
+        
+        .hero h1 em { 
+            font-style: italic; 
+            background: linear-gradient(135deg, var(--amber), #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-sub {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin: 0 auto 2.5rem;
+            animation: fadeInUp 0.5s ease-out 0.2s backwards;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.5s ease-out 0.3s backwards;
+        }
+        
+        .btn-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 1.75rem;
+            background: var(--amber);
+            color: #000;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-hero:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.25);
+        }
+        
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 1.75rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-hover);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        /* Stats Row */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3.5rem;
+            animation: fadeInUp 0.5s ease-out 0.4s backwards;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: var(--amber);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* Demo Section */
+        .demo-section {
+            padding: 60px 2rem 100px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .demo-terminal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .terminal-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .terminal-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .terminal-dots .red { background: #ef4444; }
+        .terminal-dots .yellow { background: #eab308; }
+        .terminal-dots .green { background: #22c55e; }
+        
+        .terminal-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .terminal-body {
+            padding: 1.5rem;
+        }
+        
+        .terminal-line {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .terminal-line .prompt { color: var(--amber); }
+        .terminal-line .command { color: var(--text-primary); }
+        
+        .terminal-output {
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 10px;
+        }
+        
+        .output-verdict {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        
+        .verdict-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.85rem;
+            background: var(--green-soft);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--green);
+        }
+        
+        .confidence {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .output-sources {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .output-sources span { color: var(--text-secondary); }
+        
+        /* Features */
+        .features-section {
+            padding: 100px 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto 4rem;
+        }
+        
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--amber-soft);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--amber);
+            margin-bottom: 1.25rem;
+        }
+        
+        .section-header h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-weight: 400;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+        }
+        
+        .feature-card.featured {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(139, 92, 246, 0.05));
+            border-color: rgba(245, 158, 11, 0.15);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            font-size: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 550;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .feature-tag {
+            padding: 0.3rem 0.65rem;
+            background: var(--bg-elevated);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        /* How It Works */
+        .how-section {
+            padding: 100px 2rem;
+            background: linear-gradient(180deg, transparent, rgba(245, 158, 11, 0.02), transparent);
+        }
+        
+        .how-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        
+        .step-card {
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+        
+        .step-number {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 1.5rem;
+            background: var(--amber-soft);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--amber);
+        }
+        
+        .step-card h3 {
+            font-size: 1.15rem;
+            font-weight: 550;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Providers */
+        .providers-section {
+            padding: 100px 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        
+        .provider-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.25s;
+        }
+        
+        .provider-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+        
+        .provider-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .provider-card h4 {
+            font-size: 0.95rem;
+            font-weight: 550;
+            margin-bottom: 0.25rem;
+        }
+        
+        .provider-card p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .providers-summary {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding: 1.5rem 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .summary-count {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--amber);
+        }
+        
+        .summary-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        /* CTA */
+        .cta-section {
+            padding: 100px 2rem;
+            text-align: center;
+        }
+        
+        .cta-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 4rem;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 24px;
+        }
+        
+        .cta-container h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-container p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .cta-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 4rem 2rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+        }
+        
+        .footer-brand {
+            max-width: 280px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-logo svg { width: 28px; height: 32px; }
+        
+        .footer-brand p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        
+        .footer-column h4 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+        
+        .footer-column a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+        
+        .footer-column a:hover { color: var(--text-primary); }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-bottom span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .footer-links a {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover { color: var(--text-primary); }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .nav-center { display: none; }
+            .features-grid { grid-template-columns: 1fr; }
+            .feature-card.featured { grid-column: span 1; }
+            .steps-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .providers-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-container { grid-template-columns: 1fr 1fr; }
+            .hero-stats { flex-wrap: wrap; gap: 2rem; }
+        }
+        
+        @media (max-width: 600px) {
+            .hero-actions { flex-direction: column; align-items: center; }
+            .providers-summary { flex-direction: column; gap: 1rem; text-align: center; }
+            .cta-actions { flex-direction: column; }
+            .footer-container { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        .mobile-menu-btn span {
+            width: 22px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 1px;
+        }
+        
+        @media (max-width: 900px) {
+            .mobile-menu-btn { display: flex; }
+            .nav-right .btn-ghost { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 100 120">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f59e0b"/>
+                            <stop offset="100%" stop-color="#fbbf24"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="none" stroke="url(#logoGrad)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/>
+                    <polyline fill="none" stroke="url(#logoGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/>
+                </svg>
+                Verity
+            </a>
+            
+            <div class="nav-center">
+                <a href="#features">Features</a>
+                <a href="verify.html">Verify</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="api-docs.html">API</a>
+                <a href="blog.html">Blog</a>
+            </div>
+            
+            <div class="nav-right">
+                <a href="auth.html" class="btn-ghost">Sign In</a>
+                <a href="waitlist.html" class="btn-primary">
+                    Get Started
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <button class="mobile-menu-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            All Systems Operational
+        </div>
+        
+        <h1>Stop Publishing<br>Misinformation.<br><em>Verify with Confidence.</em></h1>
+        
+        <p class="hero-sub">
+            The only fact-checker that shows its work—every source, every time. 
+            40+ AI models cross-validate results. We flag uncertainty when sources disagree.
+        </p>
+        
+        <div class="hero-actions">
+            <a href="waitlist.html" class="btn-hero">
+                Start Free Trial
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <a href="#demo" class="btn-outline">
+                See It In Action
+            </a>
+        </div>
+        
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-value">40+</div>
+                <div class="stat-label">AI Models & Sources</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">9-Point</div>
+                <div class="stat-label">Verification System</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">Real-Time</div>
+                <div class="stat-label">Cross-Validation</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Terminal -->
+    <section class="demo-section" id="demo">
+        <div class="demo-terminal">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <span class="red"></span>
+                    <span class="yellow"></span>
+                    <span class="green"></span>
+                </div>
+                <span class="terminal-title">verity-cli</span>
+                <div></div>
+            </div>
+            <div class="terminal-body">
+                <div class="terminal-line">
+                    <span class="prompt">$</span>
+                    <span class="command">verity verify "The Earth is approximately 4.5 billion years old"</span>
+                </div>
+                <div class="terminal-output">
+                    <div class="output-verdict">
+                        <span class="verdict-badge">✓ VERIFIED TRUE</span>
+                        <span class="confidence">98.7% confidence</span>
+                    </div>
+                    <div class="output-sources">
+                        Sources: <span>847</span> · Claude, GPT-4, Gemini, Wikipedia, Semantic Scholar
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <span class="section-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                Capabilities
+            </span>
+            <h2>Built for Professionals<br>Who Can't Afford to Be Wrong</h2>
+            <p>Enterprise-grade verification with complete transparency and full audit trails.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card featured">
+                <div class="feature-icon">🔒</div>
+                <h3>Your Data Never Leaves Your Control</h3>
+                <p>Zero retention policy—verification requests are processed and immediately deleted. AES-256-GCM encryption, PBKDF2 key derivation, and GDPR-compliant data handling throughout.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">AES-256</span>
+                    <span class="feature-tag">PBKDF2</span>
+                    <span class="feature-tag">GDPR</span>
+                    <span class="feature-tag">SOC 2</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>Multi-Model Consensus</h3>
+                <p>20+ AI models must agree. If they disagree, we flag it as uncertain—never guess.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Sub-Second Verification</h3>
+                <p>Parallel processing across 40+ sources. Get answers before your deadline.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h3>Batch Processing</h3>
+                <p>Verify 100 claims at once with efficient queue management.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Full Audit Trail</h3>
+                <p>Tamper-proof logs with cryptographic verification for legal and regulatory needs.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔌</div>
+                <h3>REST API</h3>
+                <p>Simple integration with your existing workflow. SDKs for Python, Node.js, and more.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-section">
+        <div class="how-container">
+            <div class="section-header">
+                <span class="section-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    9-Point Verification
+                </span>
+                <h2>Triple-Check at Every Level</h2>
+                <p>Each claim passes through 3 verification levels, with 3 independent checks at each level.</p>
+            </div>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Data Sources</h3>
+                    <p>Academic databases, news wire services, and fact-check organizations.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>AI Analysis</h3>
+                    <p>GPT-4, Claude, Gemini, DeepSeek, and 10+ more models analyze in parallel.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Validation</h3>
+                    <p>Cross-model consensus, source quality scoring, and confidence calibration.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Providers -->
+    <section class="providers-section">
+        <div class="section-header">
+            <span class="section-label">Powered By</span>
+            <h2>World-Class AI Infrastructure</h2>
+            <p>Aggregate results from leading AI providers and authoritative data sources.</p>
+        </div>
+        
+        <div class="providers-grid">
+            <div class="provider-card">
+                <div class="provider-icon">🧠</div>
+                <h4>OpenAI</h4>
+                <p>GPT-4, GPT-4o</p>
+            </div>
+            <div class="provider-card">
+                <div class="provider-icon">🎭</div>
+                <h4>Anthropic</h4>
+                <p>Claude 3.5</p>
+            </div>
+            <div class="provider-card">
+                <div class="provider-icon">✨</div>
+                <h4>Google</h4>
+                <p>Gemini Pro</p>
+            </div>
+            <div class="provider-card">
+                <div class="provider-icon">⚡</div>
+                <h4>Groq</h4>
+                <p>Ultra-fast inference</p>
+            </div>
+            <div class="provider-card">
+                <div class="provider-icon">🔍</div>
+                <h4>Perplexity</h4>
+                <p>Real-time search</p>
+            </div>
+            <div class="provider-card">
+                <div class="provider-icon">📚</div>
+                <h4>Wikipedia</h4>
+                <p>Knowledge base</p>
+            </div>
+            <div class="provider-card">
+                <div class="provider-icon">🎓</div>
+                <h4>Semantic Scholar</h4>
+                <p>Academic papers</p>
+            </div>
+            <div class="provider-card">
+                <div class="provider-icon">✅</div>
+                <h4>Fact-Checkers</h4>
+                <p>Snopes, PolitiFact</p>
+            </div>
+        </div>
+        
+        <div class="providers-summary">
+            <div class="summary-item">
+                <span class="summary-count">15+</span>
+                <span class="summary-label">AI Providers</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-count">27+</span>
+                <span class="summary-label">Data Sources</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-count">12+</span>
+                <span class="summary-label">Fact-Check Orgs</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2>Ready to verify with confidence?</h2>
+            <p>Join newsrooms, researchers, and enterprises who trust Verity for accurate fact-checking.</p>
+            <div class="cta-actions">
+                <a href="waitlist.html" class="btn-hero">
+                    Start Free Trial
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="api-docs.html" class="btn-outline">View API Docs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <svg viewBox="0 0 100 120">
+                        <path fill="none" stroke="currentColor" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/>
+                        <polyline fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/>
+                    </svg>
+                    Verity
+                </a>
+                <p>AI-powered fact-checking that shows its work. Built for professionals who can't afford to be wrong.</p>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Product</h4>
+                <a href="verify.html">Verify Claims</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="api-docs.html">API</a>
+                <a href="tools.html">Tools</a>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Company</h4>
+                <a href="about.html">About</a>
+                <a href="blog.html">Blog</a>
+                <a href="status.html">Status</a>
+                <a href="security.html">Security</a>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Legal</h4>
+                <a href="terms.html">Terms</a>
+                <a href="privacy.html">Privacy</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <span>© 2026 Verity Systems. All rights reserved.</span>
+            <div class="footer-links">
+                <a href="mailto:support@veritysystems.app">Contact</a>
+                <a href="https://github.com/seetsele/vrsystems">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

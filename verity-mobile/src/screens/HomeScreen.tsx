@@ -1,440 +1,349 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, Dimensions, Easing } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Path, Defs, LinearGradient as SvgGradient, Stop, Polyline, Text as SvgText, Circle } from 'react-native-svg';
+import Svg, { Path, Defs, LinearGradient as SvgGradient, Stop, Polyline } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { useApp } from '../context/AppContext';
-import { fonts } from '../../App';
+import { colors } from '../theme/colors';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
-// Premium Amber/Gold editorial color palette
-const colors = {
-  bg: '#0a0a0b',
-  bgGradient: '#0d0d0e',
-  surface: '#111113',
-  surfaceElevated: '#18181b',
-  surfaceHover: '#1c1c20',
-  border: 'rgba(255,255,255,0.06)',
-  borderSubtle: 'rgba(255,255,255,0.04)',
-  borderAccent: 'rgba(245,158,11,0.2)',
-  text: '#fafafa',
-  textMuted: '#a3a3a3',
-  textSubtle: '#525252',
-  accent: '#f59e0b',
-  accentMuted: '#fbbf24',
-};
-
-// Floating Shield Animation
-function FloatingShield({ delay, scale = 1, x, y }: { delay: number; scale?: number; x: number; y: number }) {
-  const translateY = useRef(new Animated.Value(0)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
+// Hero Badge - matches test site .hero-badge
+function HeroBadge() {
   const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      Animated.timing(opacity, {
-        toValue: 0.04,
-        duration: 2000,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.cubic),
-      }).start();
-
-      Animated.loop(
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(translateY, { toValue: -12, duration: 4500, useNativeDriver: true, easing: Easing.inOut(Easing.sin) }),
-            Animated.timing(rotate, { toValue: 1, duration: 7000, useNativeDriver: true, easing: Easing.inOut(Easing.sin) }),
-          ]),
-          Animated.parallel([
-            Animated.timing(translateY, { toValue: 12, duration: 4500, useNativeDriver: true, easing: Easing.inOut(Easing.sin) }),
-            Animated.timing(rotate, { toValue: -1, duration: 7000, useNativeDriver: true, easing: Easing.inOut(Easing.sin) }),
-          ]),
-        ])
-      ).start();
-    }, delay);
-
-    return () => clearTimeout(timeout);
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 500, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
+    ]).start();
   }, []);
 
-  const rotateInterpolate = rotate.interpolate({
-    inputRange: [-1, 1],
-    outputRange: ['-4deg', '4deg'],
-  });
-
-  const size = 50 * scale;
-
   return (
-    <Animated.View style={{ position: 'absolute', left: x, top: y, opacity, transform: [{ translateY }, { rotate: rotateInterpolate }] }}>
-      <Svg width={size} height={size * 1.2} viewBox="0 0 100 120">
-        <Path 
-          fill="none" 
-          stroke="rgba(255,255,255,0.5)"
-          strokeWidth="2" 
-          d="M50 8 L88 28 L88 65 C88 92 50 110 50 110 C50 110 12 92 12 65 L12 28 Z"
-        />
-        <Polyline 
-          fill="none" 
-          stroke="rgba(255,255,255,0.5)"
-          strokeWidth="3" 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-          points="32,58 44,72 68,46"
-        />
-      </Svg>
+    <Animated.View style={[styles.heroBadge, { opacity, transform: [{ translateY }] }]}>
+      <View style={styles.heroBadgeDot} />
+      <Text style={styles.heroBadgeText}>All Systems Operational</Text>
     </Animated.View>
   );
 }
 
-// Refined Verity Logo
+// Verity Logo with shield
 function VerityLogo() {
-  const logoOpacity = useRef(new Animated.Value(0)).current;
-  const logoScale = useRef(new Animated.Value(0.95)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0.95)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(logoOpacity, { toValue: 1, duration: 800, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      Animated.spring(logoScale, { toValue: 1, tension: 50, friction: 8, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 1, duration: 800, useNativeDriver: true }),
+      Animated.spring(scale, { toValue: 1, tension: 50, friction: 8, useNativeDriver: true }),
     ]).start();
   }, []);
 
   return (
-    <Animated.View style={[styles.logoContainer, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}>
-      <Svg width={150} height={45} viewBox="0 0 300 80">
-        <Defs>
-          <SvgGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <Stop offset="0%" stopColor="#f59e0b" stopOpacity="1" />
-            <Stop offset="50%" stopColor="#fbbf24" stopOpacity="1" />
-            <Stop offset="100%" stopColor="#fcd34d" stopOpacity="1" />
-          </SvgGradient>
-        </Defs>
-        <SvgText
-          x="150"
-          y="55"
-          textAnchor="middle"
-          fill="url(#logoGradient)"
-          fontSize="48"
-          fontWeight="300"
-          fontFamily="System"
-          letterSpacing="8"
-        >verity</SvgText>
-      </Svg>
-      
-      {/* Shield mark with gradient */}
-      <Svg width={22} height={26} viewBox="0 0 100 120" style={{ marginTop: 14, opacity: 0.65 }}>
-        <Defs>
-          <SvgGradient id="shieldMarkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <Stop offset="0%" stopColor="#f59e0b" stopOpacity="0.9" />
-            <Stop offset="100%" stopColor="#d97706" stopOpacity="0.7" />
-          </SvgGradient>
-        </Defs>
-        <Path 
-          fill="none" 
-          stroke="url(#shieldMarkGrad)" 
-          strokeWidth="5" 
-          d="M50 8 L88 28 L88 65 C88 92 50 110 50 110 C50 110 12 92 12 65 L12 28 Z"
-        />
-        <Polyline 
-          fill="none" 
-          stroke="url(#shieldMarkGrad)" 
-          strokeWidth="6" 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-          points="32,58 44,72 68,46"
-        />
-      </Svg>
-    </Animated.View>
-  );
-}
-
-// Premium action row with haptic feedback feel
-function ActionRow({ icon, label, description, onPress, delay }: any) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(16)).current;
-  const scale = useRef(new Animated.Value(1)).current;
-  const iconRotate = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    setTimeout(() => {
-      Animated.parallel([
-        Animated.timing(opacity, { toValue: 1, duration: 600, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-        Animated.timing(translateY, { toValue: 0, duration: 600, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      ]).start();
-    }, delay);
-  }, []);
-
-  const handlePressIn = () => {
-    Animated.parallel([
-      Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, tension: 400, friction: 20 }),
-      Animated.timing(iconRotate, { toValue: 1, duration: 150, useNativeDriver: true }),
-    ]).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.parallel([
-      Animated.spring(scale, { toValue: 1, useNativeDriver: true, tension: 400, friction: 20 }),
-      Animated.timing(iconRotate, { toValue: 0, duration: 200, useNativeDriver: true }),
-    ]).start();
-  };
-
-  const iconRotateInterpolate = iconRotate.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '-5deg'],
-  });
-
-  return (
-    <Animated.View style={{ opacity, transform: [{ translateY }, { scale }] }}>
-      <TouchableOpacity 
-        onPress={onPress} 
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        activeOpacity={1}
-        style={styles.actionRow}
-      >
-        <Animated.View style={[styles.actionIconWrap, { transform: [{ rotate: iconRotateInterpolate }] }]}>
-          <Ionicons name={icon} size={20} color={colors.text} />
-        </Animated.View>
-        <View style={styles.actionContent}>
-          <Text style={styles.actionLabel}>{label}</Text>
-          <Text style={styles.actionDesc}>{description}</Text>
-        </View>
-        <View style={styles.actionArrow}>
-          <Svg width={18} height={18} viewBox="0 0 24 24">
-            <Path 
-              d="M9 6l6 6-6 6" 
-              fill="none" 
-              stroke={colors.textMuted} 
-              strokeWidth="1.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            />
-          </Svg>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
-
-// Enhanced stat display with animated numbers
-function StatDisplay({ value, label, delay }: { value: number; label: string; delay: number }) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(0.9)).current;
-
-  useEffect(() => {
-    setTimeout(() => {
-      Animated.parallel([
-        Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-        Animated.spring(scale, { toValue: 1, tension: 60, friction: 10, useNativeDriver: true }),
-      ]).start();
-    }, delay);
-  }, []);
-
-  return (
-    <Animated.View style={[styles.statDisplay, { opacity, transform: [{ scale }] }]}>
-      <Text style={styles.statNumber}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </Animated.View>
-  );
-}
-
-// Queue preview item - eden.so card style
-function QueuePreview({ item, delay }: { item: any; delay: number }) {
-  const opacity = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    setTimeout(() => {
-      Animated.timing(opacity, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-    }, delay);
-  }, []);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'processing': return '#888888';
-      case 'completed': return '#666666';
-      default: return '#444444';
-    }
-  };
-
-  return (
-    <Animated.View style={[styles.queuePreview, { opacity }]}>
-      <View style={[styles.queueStatusDot, { backgroundColor: getStatusColor(item.status) }]} />
-      <View style={styles.queuePreviewContent}>
-        <Text style={styles.queuePreviewTitle} numberOfLines={1}>{item.title || 'Untitled'}</Text>
-        <Text style={styles.queuePreviewStatus}>{item.status}</Text>
+    <Animated.View style={[styles.logoContainer, { opacity, transform: [{ scale }] }]}>
+      <View style={styles.logoRow}>
+        <Svg width={32} height={36} viewBox="0 0 100 120">
+          <Defs>
+            <SvgGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <Stop offset="0%" stopColor={colors.amber} />
+              <Stop offset="100%" stopColor={colors.amberLight} />
+            </SvgGradient>
+          </Defs>
+          <Path 
+            fill="none" 
+            stroke="url(#logoGrad)" 
+            strokeWidth="6" 
+            d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"
+          />
+          <Polyline 
+            fill="none" 
+            stroke="url(#logoGrad)" 
+            strokeWidth="7" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            points="35,60 45,72 65,48"
+          />
+        </Svg>
+        <Text style={styles.logoText}>Verity</Text>
       </View>
-      {item.status === 'completed' && item.score !== undefined && (
-        <Text style={styles.queuePreviewScore}>{item.score}</Text>
-      )}
     </Animated.View>
   );
 }
 
-// Section header component
-function SectionHeader({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
+// Hero Section with animated headline
+function HeroSection() {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 500, delay: 100, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 500, delay: 100, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={[styles.heroSection, { opacity, transform: [{ translateY }] }]}>
+      <Text style={styles.heroTitle}>
+        Stop Publishing{'\n'}
+        <Text style={styles.heroTitleAccent}>Misinformation.</Text>
+      </Text>
+      <Text style={styles.heroSubtitle}>
+        The only fact-checker that shows its work—every source, every time.
+      </Text>
+    </Animated.View>
+  );
+}
+
+// Stats Row - matches test site .hero-stats
+function StatsRow() {
+  const { history } = useApp();
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, { toValue: 1, duration: 500, delay: 400, useNativeDriver: true }).start();
+  }, []);
+
+  return (
+    <Animated.View style={[styles.statsRow, { opacity }]}>
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>40+</Text>
+        <Text style={styles.statLabel}>AI Models & Sources</Text>
+      </View>
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>9</Text>
+        <Text style={styles.statLabel}>Point Verification</Text>
+      </View>
+      <View style={styles.statItem}>
+        <Text style={styles.statValue}>{history.length}</Text>
+        <Text style={styles.statLabel}>Claims Verified</Text>
+      </View>
+    </Animated.View>
+  );
+}
+
+// Terminal Demo - matches test site demo
+function TerminalDemo() {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 600, delay: 500, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 600, delay: 500, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={[styles.terminal, { opacity, transform: [{ translateY }] }]}>
+      <View style={styles.terminalHeader}>
+        <View style={styles.terminalDots}>
+          <View style={[styles.terminalDot, { backgroundColor: '#ef4444' }]} />
+          <View style={[styles.terminalDot, { backgroundColor: '#eab308' }]} />
+          <View style={[styles.terminalDot, { backgroundColor: '#22c55e' }]} />
+        </View>
+        <Text style={styles.terminalTitle}>verity-cli</Text>
+        <View style={{ width: 40 }} />
+      </View>
+      <View style={styles.terminalBody}>
+        <View style={styles.terminalLine}>
+          <Text style={styles.terminalPrompt}>$</Text>
+          <Text style={styles.terminalCommand}>verity verify "The Earth is approximately 4.5 billion years old"</Text>
+        </View>
+        <View style={styles.terminalOutput}>
+          <View style={styles.outputVerdict}>
+            <View style={styles.verdictBadge}>
+              <Text style={styles.verdictBadgeText}>✓ VERIFIED TRUE</Text>
+            </View>
+            <Text style={styles.confidence}>98.7%</Text>
+          </View>
+          <Text style={styles.outputSources}>Sources: 847 · Claude, GPT-4, Gemini, Wikipedia</Text>
+        </View>
+      </View>
+    </Animated.View>
+  );
+}
+
+// Feature Card - matches test site .feature-card
+function FeatureCard({ icon, title, description, delay = 0 }: { icon: string; title: string; description: string; delay?: number }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 500, delay, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 500, delay, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={[styles.featureCard, { opacity, transform: [{ translateY }] }]}>
+      <View style={styles.featureIcon}>
+        <Text style={{ fontSize: 24 }}>{icon}</Text>
+      </View>
+      <Text style={styles.featureTitle}>{title}</Text>
+      <Text style={styles.featureDesc}>{description}</Text>
+    </Animated.View>
+  );
+}
+
+// Section Header - matches test site .section-header
+function SectionHeader({ label, title, subtitle }: { label: string; title: string; subtitle?: string }) {
   return (
     <View style={styles.sectionHeader}>
+      <View style={styles.sectionLabel}>
+        <Text style={styles.sectionLabelText}>{label}</Text>
+      </View>
       <Text style={styles.sectionTitle}>{title}</Text>
-      {action && (
-        <TouchableOpacity onPress={onAction}>
-          <Text style={styles.sectionAction}>{action}</Text>
+      {subtitle && <Text style={styles.sectionSubtitle}>{subtitle}</Text>}
+    </View>
+  );
+}
+
+// Provider Card - matches test site .provider-card
+function ProviderCard({ icon, name, models }: { icon: string; name: string; models: string }) {
+  return (
+    <View style={styles.providerCard}>
+      <View style={styles.providerIcon}>
+        <Text style={{ fontSize: 20 }}>{icon}</Text>
+      </View>
+      <Text style={styles.providerName}>{name}</Text>
+      <Text style={styles.providerModels}>{models}</Text>
+    </View>
+  );
+}
+
+// CTA Section - matches test site .cta-section
+function CTASection() {
+  const navigation = useNavigation<any>();
+
+  return (
+    <View style={styles.ctaSection}>
+      <Text style={styles.ctaTitle}>Ready to verify with confidence?</Text>
+      <Text style={styles.ctaSubtitle}>Join newsrooms, researchers, and enterprises who trust Verity.</Text>
+      <View style={styles.ctaButtons}>
+        <TouchableOpacity 
+          style={styles.ctaPrimaryBtn}
+          onPress={() => navigation.navigate('Verify')}
+        >
+          <Text style={styles.ctaPrimaryBtnText}>Start Verifying</Text>
+          <Ionicons name="arrow-forward" size={18} color="#000" />
         </TouchableOpacity>
-      )}
+        <TouchableOpacity 
+          style={styles.ctaOutlineBtn}
+          onPress={() => navigation.navigate('Tools')}
+        >
+          <Text style={styles.ctaOutlineBtnText}>View Tools</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
-  const { queue, history, desktopConnected } = useApp();
   
-  const pendingCount = queue.filter(q => q.status === 'pending').length;
-  const processingCount = queue.filter(q => q.status === 'processing').length;
-  const completedToday = history.filter(h => {
-    const today = new Date().toDateString();
-    return new Date(h.timestamp).toDateString() === today;
-  }).length;
-
-  const fadeIn = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(fadeIn, { toValue: 1, duration: 1000, useNativeDriver: true, easing: Easing.out(Easing.cubic) }).start();
-  }, []);
-
   return (
     <View style={styles.container}>
-      {/* Floating product elements */}
-      <FloatingShield delay={0} scale={1.3} x={-15} y={80} />
-      <FloatingShield delay={600} scale={0.9} x={width - 50} y={200} />
-      <FloatingShield delay={1200} scale={0.7} x={30} y={height * 0.6} />
-      <FloatingShield delay={1800} scale={0.5} x={width - 70} y={height * 0.75} />
-      
       <ScrollView 
         style={styles.scroll} 
-        showsVerticalScrollIndicator={false} 
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Header with logo */}
-        <Animated.View style={[styles.header, { opacity: fadeIn }]}>
+        {/* Navigation */}
+        <View style={styles.nav}>
           <VerityLogo />
-          
-          {/* Connection indicator - minimal */}
-          <View style={styles.connectionIndicator}>
-            <View style={[styles.connectionDot, { backgroundColor: desktopConnected ? '#666666' : '#333333' }]} />
-            <Text style={styles.connectionLabel}>
-              {desktopConnected ? 'Synced' : 'Offline'}
-            </Text>
-          </View>
-        </Animated.View>
-
-        {/* Stats section - Eden.so inspired large numbers */}
-        <View style={styles.statsSection}>
-          <SectionHeader title="Today" />
-          <View style={styles.statsGrid}>
-            <StatDisplay value={pendingCount} label="Queued" delay={200} />
-            <View style={styles.statsDivider} />
-            <StatDisplay value={processingCount} label="Processing" delay={300} />
-            <View style={styles.statsDivider} />
-            <StatDisplay value={completedToday} label="Verified" delay={400} />
-          </View>
+          <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Settings')}>
+            <Ionicons name="settings-outline" size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
         </View>
 
-        {/* Actions section - refined list */}
-        <View style={styles.actionsSection}>
-          <SectionHeader title="Verify" />
-          <View style={styles.actionsCard}>
-            <ActionRow
-              icon="camera-outline"
-              label="Camera"
-              description="Capture and verify visual content"
-              onPress={() => navigation.navigate('Capture', { type: 'camera' })}
-              delay={300}
+        {/* Hero */}
+        <View style={styles.hero}>
+          <HeroBadge />
+          <HeroSection />
+          <StatsRow />
+        </View>
+
+        {/* Terminal Demo */}
+        <View style={styles.demoSection}>
+          <TerminalDemo />
+        </View>
+
+        {/* Features Section */}
+        <View style={styles.featuresSection}>
+          <SectionHeader 
+            label="Capabilities"
+            title="Built for Professionals Who Can't Afford to Be Wrong"
+            subtitle="Enterprise-grade verification with complete transparency."
+          />
+          <View style={styles.featuresGrid}>
+            <FeatureCard 
+              icon="🔒" 
+              title="Your Data Never Leaves Your Control" 
+              description="Zero retention policy. AES-256-GCM encryption, GDPR-compliant."
+              delay={600}
             />
-            <View style={styles.actionDivider} />
-            <ActionRow
-              icon="document-text-outline"
-              label="Text"
-              description="Paste or type content to verify"
-              onPress={() => navigation.navigate('Capture', { type: 'text' })}
-              delay={350}
+            <FeatureCard 
+              icon="🤖" 
+              title="Multi-Model Consensus" 
+              description="20+ AI models must agree. We flag uncertainty—never guess."
+              delay={700}
             />
-            <View style={styles.actionDivider} />
-            <ActionRow
-              icon="link-outline"
-              label="URL"
-              description="Analyze articles and web pages"
-              onPress={() => navigation.navigate('Capture', { type: 'link' })}
-              delay={400}
+            <FeatureCard 
+              icon="⚡" 
+              title="Sub-Second Verification" 
+              description="Parallel processing across 40+ sources."
+              delay={800}
             />
-            <View style={styles.actionDivider} />
-            <ActionRow
-              icon="share-outline"
-              label="Share"
-              description="Import content from other apps"
-              onPress={() => navigation.navigate('Capture', { type: 'share' })}
-              delay={450}
+            <FeatureCard 
+              icon="📋" 
+              title="Full Audit Trail" 
+              description="Tamper-proof logs with cryptographic verification."
+              delay={900}
             />
           </View>
         </View>
 
-        {/* Analytics Preview - New Feature */}
-        <View style={styles.actionsSection}>
-          <SectionHeader title="Insights" action="Details" onAction={() => navigation.navigate('Settings')} />
-          <View style={styles.actionsCard}>
-            <View style={styles.analyticsRow}>
-              <View style={styles.analyticItem}>
-                <Text style={styles.analyticValue}>{history.length}</Text>
-                <Text style={styles.analyticLabel}>Total Verified</Text>
-              </View>
-              <View style={styles.analyticDivider} />
-              <View style={styles.analyticItem}>
-                <Text style={styles.analyticValue}>{history.filter(h => h.score >= 70).length}</Text>
-                <Text style={styles.analyticLabel}>True</Text>
-              </View>
-              <View style={styles.analyticDivider} />
-              <View style={styles.analyticItem}>
-                <Text style={styles.analyticValue}>{history.filter(h => h.score < 40).length}</Text>
-                <Text style={styles.analyticLabel}>False</Text>
-              </View>
-              <View style={styles.analyticDivider} />
-              <View style={styles.analyticItem}>
-                <Text style={styles.analyticValue}>{history.length > 0 ? Math.round(history.reduce((a, h) => a + h.score, 0) / history.length) : 0}%</Text>
-                <Text style={styles.analyticLabel}>Avg Score</Text>
-              </View>
+        {/* Providers Section */}
+        <View style={styles.providersSection}>
+          <SectionHeader 
+            label="Infrastructure"
+            title="World-Class AI Infrastructure"
+            subtitle="Aggregate results from leading AI providers."
+          />
+          <View style={styles.providersGrid}>
+            <ProviderCard icon="🧠" name="OpenAI" models="GPT-4, GPT-4o" />
+            <ProviderCard icon="🎭" name="Anthropic" models="Claude 3.5" />
+            <ProviderCard icon="✨" name="Google" models="Gemini Pro" />
+            <ProviderCard icon="⚡" name="Groq" models="Ultra-fast" />
+            <ProviderCard icon="🔍" name="Perplexity" models="Real-time" />
+            <ProviderCard icon="📚" name="Wikipedia" models="Knowledge" />
+          </View>
+          <View style={styles.providersSummary}>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryCount}>15+</Text>
+              <Text style={styles.summaryLabel}>AI Providers</Text>
+            </View>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryCount}>27+</Text>
+              <Text style={styles.summaryLabel}>Data Sources</Text>
+            </View>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryCount}>12+</Text>
+              <Text style={styles.summaryLabel}>Fact-Check Orgs</Text>
             </View>
           </View>
         </View>
 
-        {/* Queue preview - if items exist */}
-        {queue.length > 0 && (
-          <View style={styles.queueSection}>
-            <SectionHeader 
-              title="Queue" 
-              action="View all" 
-              onAction={() => navigation.navigate('Queue')} 
-            />
-            <View style={styles.queueCard}>
-              {queue.slice(0, 3).map((item, index) => (
-                <React.Fragment key={item.id}>
-                  {index > 0 && <View style={styles.queueDivider} />}
-                  <QueuePreview item={item} delay={500 + index * 50} />
-                </React.Fragment>
-              ))}
-            </View>
-          </View>
-        )}
+        {/* CTA */}
+        <CTASection />
 
-        {/* Empty state - minimal */}
-        {queue.length === 0 && history.length === 0 && (
-          <View style={styles.emptySection}>
-            <View style={styles.emptyIconWrap}>
-              <Ionicons name="layers-outline" size={28} color={colors.textSubtle} />
-            </View>
-            <Text style={styles.emptyTitle}>No verifications yet</Text>
-            <Text style={styles.emptyDesc}>Select an action above to begin</Text>
-          </View>
-        )}
-
-        <View style={{ height: 60 }} />
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>© 2026 Verity Systems. All rights reserved.</Text>
+        </View>
       </ScrollView>
     </View>
   );
@@ -446,273 +355,410 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg,
   },
   scroll: { flex: 1 },
-  scrollContent: { paddingTop: 70 },
+  scrollContent: { paddingBottom: 40 },
 
-  // Header
-  header: { 
-    alignItems: 'center', 
-    paddingHorizontal: 24,
-    paddingBottom: 44,
-  },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  connectionIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 22,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    backgroundColor: colors.surface,
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 8,
-  },
-  connectionDot: { 
-    width: 6, 
-    height: 6, 
-    borderRadius: 3,
-  },
-  connectionLabel: { 
-    color: colors.textSubtle, 
-    fontSize: 11, 
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-  },
-
-  // Section headers
-  sectionHeader: {
+  // Navigation
+  nav: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 4,
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 20,
   },
-  sectionTitle: {
-    color: colors.textMuted,
-    fontSize: 11,
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  sectionAction: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontFamily: 'Inter_500Medium',
-  },
-
-  // Stats section
-  statsSection: {
-    paddingHorizontal: 24,
-    marginBottom: 36,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: 20,
+  navBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.border,
-    paddingVertical: 28,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  statDisplay: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statNumber: {
-    color: colors.text,
-    fontSize: 40,
-    fontFamily: 'Newsreader_400Regular',
-    letterSpacing: -2,
-  },
-  statLabel: {
-    color: colors.textSubtle,
-    fontSize: 10,
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 1.5,
-    marginTop: 8,
-    textTransform: 'uppercase',
-  },
-  statsDivider: {
-    width: 1,
-    height: 50,
-    backgroundColor: colors.border,
-  },
-
-  // Actions section
-  actionsSection: {
-    paddingHorizontal: 24,
-    marginBottom: 36,
-  },
-  actionsCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 18,
-    paddingHorizontal: 18,
-  },
-  actionIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: colors.surfaceElevated,
-    borderWidth: 1,
-    borderColor: colors.borderSubtle,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  actionContent: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  actionLabel: {
-    color: colors.text,
-    fontSize: 16,
-    fontFamily: 'Inter_500Medium',
-    letterSpacing: 0.2,
-  },
-  actionDesc: {
-    color: colors.textSubtle,
-    fontSize: 13,
-    marginTop: 3,
-    letterSpacing: 0.1,
-  },
-  actionArrow: {
-    opacity: 0.6,
-  },
-  actionDivider: {
-    height: 1,
-    backgroundColor: colors.borderSubtle,
-    marginLeft: 78,
-  },
 
-  // Analytics section
-  analyticsRow: {
+  // Logo
+  logoContainer: {},
+  logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 10,
+    gap: 8,
   },
-  analyticItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  analyticValue: {
-    color: colors.text,
+  logoText: {
     fontSize: 22,
-    fontFamily: 'Newsreader_400Regular',
+    fontWeight: '600',
+    color: colors.textPrimary,
     letterSpacing: -0.5,
   },
-  analyticLabel: {
-    color: colors.textSubtle,
-    fontSize: 11,
-    marginTop: 4,
-    letterSpacing: 0.3,
-    textTransform: 'uppercase',
-  },
-  analyticDivider: {
-    width: 1,
-    height: 32,
-    backgroundColor: colors.borderSubtle,
-  },
 
-  // Queue section
-  queueSection: {
+  // Hero
+  hero: {
     paddingHorizontal: 24,
-    marginBottom: 36,
+    paddingTop: 40,
+    paddingBottom: 60,
+    alignItems: 'center',
   },
-  queueCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  queuePreview: {
+  heroBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 18,
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: colors.greenSoft,
+    borderWidth: 1,
+    borderColor: colors.greenBorder,
+    borderRadius: 100,
+    marginBottom: 24,
   },
-  queueStatusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  heroBadgeDot: {
+    width: 6,
+    height: 6,
+    backgroundColor: colors.green,
+    borderRadius: 3,
   },
-  queuePreviewContent: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  queuePreviewTitle: {
-    color: colors.accentMuted,
-    fontSize: 15,
-    fontFamily: 'Inter_500Medium',
-  },
-  queuePreviewStatus: {
-    color: colors.textSubtle,
+  heroBadgeText: {
     fontSize: 12,
-    marginTop: 3,
-    textTransform: 'capitalize',
-  },
-  queuePreviewScore: {
-    color: colors.textMuted,
-    fontSize: 20,
-    fontFamily: 'Newsreader_400Regular',
-  },
-  queueDivider: {
-    height: 1,
-    backgroundColor: colors.borderSubtle,
-    marginLeft: 40,
+    color: colors.green,
+    fontWeight: '500',
   },
 
-  // Empty state
-  emptySection: {
+  // Hero Section
+  heroSection: {
     alignItems: 'center',
-    paddingVertical: 56,
-    paddingHorizontal: 24,
+    marginBottom: 32,
   },
-  emptyIconWrap: {
-    width: 64,
-    height: 64,
-    borderRadius: 18,
-    backgroundColor: colors.surface,
+  heroTitle: {
+    fontSize: 36,
+    fontWeight: '400',
+    color: colors.textPrimary,
+    textAlign: 'center',
+    lineHeight: 42,
+    letterSpacing: -1,
+  },
+  heroTitleAccent: {
+    fontStyle: 'italic',
+    color: colors.amber,
+  },
+  heroSubtitle: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 16,
+    lineHeight: 24,
+    paddingHorizontal: 20,
+  },
+
+  // Stats
+  statsRow: {
+    flexDirection: 'row',
+    gap: 32,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 28,
+    fontWeight: '500',
+    color: colors.amber,
+    letterSpacing: -0.5,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: colors.textMuted,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+
+  // Demo Section
+  demoSection: {
+    paddingHorizontal: 20,
+    marginBottom: 60,
+  },
+
+  // Terminal
+  terminal: {
+    backgroundColor: colors.bgCard,
     borderWidth: 1,
     borderColor: colors.border,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  terminalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: colors.bgElevated,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  terminalDots: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  terminalDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  terminalTitle: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontFamily: 'monospace',
+  },
+  terminalBody: {
+    padding: 16,
+  },
+  terminalLine: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  terminalPrompt: {
+    fontSize: 14,
+    color: colors.amber,
+    fontFamily: 'monospace',
+  },
+  terminalCommand: {
+    fontSize: 13,
+    color: colors.textPrimary,
+    fontFamily: 'monospace',
+    flex: 1,
+  },
+  terminalOutput: {
+    padding: 12,
+    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.15)',
+    borderRadius: 10,
+  },
+  outputVerdict: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  verdictBadge: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: colors.greenSoft,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.25)',
+    borderRadius: 6,
+  },
+  verdictBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.green,
+    fontFamily: 'monospace',
+  },
+  confidence: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    fontFamily: 'monospace',
+  },
+  outputSources: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+
+  // Features Section
+  featuresSection: {
+    paddingHorizontal: 20,
+    marginBottom: 60,
+  },
+  sectionHeader: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  sectionLabel: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    backgroundColor: colors.amberSoft,
+    borderWidth: 1,
+    borderColor: colors.amberBorder,
+    borderRadius: 100,
+    marginBottom: 16,
+  },
+  sectionLabelText: {
+    fontSize: 12,
+    color: colors.amber,
+    fontWeight: '500',
+  },
+  sectionTitle: {
+    fontSize: 26,
+    fontWeight: '400',
+    color: colors.textPrimary,
+    textAlign: 'center',
+    letterSpacing: -0.5,
+    marginBottom: 8,
+  },
+  sectionSubtitle: {
+    fontSize: 15,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  featuresGrid: {
+    gap: 12,
+  },
+  featureCard: {
+    backgroundColor: colors.bgCard,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 16,
+    padding: 20,
+  },
+  featureIcon: {
+    width: 48,
+    height: 48,
+    backgroundColor: colors.bgElevated,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 14,
+  },
+  featureTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginBottom: 6,
+  },
+  featureDesc: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    lineHeight: 20,
+  },
+
+  // Providers Section
+  providersSection: {
+    paddingHorizontal: 20,
+    marginBottom: 60,
+  },
+  providersGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
     marginBottom: 20,
   },
-  emptyTitle: {
-    color: colors.textMuted,
-    fontSize: 16,
-    fontFamily: 'Inter_500Medium',
+  providerCard: {
+    width: (width - 60) / 3,
+    backgroundColor: colors.bgCard,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
   },
-  emptyDesc: {
-    color: colors.textSubtle,
-    fontSize: 14,
-    marginTop: 6,
+  providerIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.bgElevated,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  providerName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginBottom: 2,
+  },
+  providerModels: {
+    fontSize: 11,
+    color: colors.textMuted,
+  },
+  providersSummary: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: colors.bgCard,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+  },
+  summaryItem: {
+    alignItems: 'center',
+  },
+  summaryCount: {
+    fontSize: 24,
+    fontWeight: '500',
+    color: colors.amber,
+  },
+  summaryLabel: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+
+  // CTA Section
+  ctaSection: {
+    marginHorizontal: 20,
+    padding: 32,
+    backgroundColor: 'rgba(245, 158, 11, 0.08)',
+    borderWidth: 1,
+    borderColor: colors.amberBorder,
+    borderRadius: 24,
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  ctaTitle: {
+    fontSize: 24,
+    fontWeight: '400',
+    color: colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  ctaSubtitle: {
+    fontSize: 15,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  ctaButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  ctaPrimaryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: colors.amber,
+    borderRadius: 10,
+  },
+  ctaPrimaryBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#000',
+  },
+  ctaOutlineBtn: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.borderHover,
+    borderRadius: 10,
+  },
+  ctaOutlineBtnText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.textPrimary,
+  },
+
+  // Footer
+  footer: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    marginHorizontal: 20,
+  },
+  footerText: {
+    fontSize: 13,
+    color: colors.textMuted,
   },
 });

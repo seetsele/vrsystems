@@ -12,8 +12,8 @@
         botName: 'Verity AI',
         welcomeMessage: 'Hi! I\'m Verity AI, your desktop verification assistant. I can help you verify claims, answer questions about our platform, or explain how fact-checking works. What would you like to know?',
         placeholderText: 'Ask me anything or verify a claim...',
-        primaryColor: '#22d3ee',
-        secondaryColor: '#6366f1'
+        primaryColor: '#f59e0b',
+        secondaryColor: '#fbbf24'
     };
 
     // Inject styles
@@ -28,7 +28,7 @@
             background: linear-gradient(135deg, ${CHATBOT_CONFIG.primaryColor}, ${CHATBOT_CONFIG.secondaryColor});
             border: none;
             cursor: pointer;
-            box-shadow: 0 8px 32px rgba(34, 211, 238, 0.4);
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4);
             z-index: 10000;
             display: flex;
             align-items: center;
@@ -38,7 +38,7 @@
 
         .verity-chatbot-toggle:hover {
             transform: scale(1.1);
-            box-shadow: 0 12px 40px rgba(34, 211, 238, 0.5);
+            box-shadow: 0 12px 40px rgba(245, 158, 11, 0.5);
         }
 
         .verity-chatbot-toggle svg {
@@ -99,7 +99,7 @@
 
         .verity-chatbot-header {
             padding: 14px 18px;
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(99, 102, 241, 0.05));
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05));
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             align-items: center;
@@ -329,7 +329,7 @@
 
         .verity-chatbot-input:focus {
             border-color: ${CHATBOT_CONFIG.primaryColor};
-            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
         }
 
         .verity-chatbot-send {
@@ -348,7 +348,7 @@
 
         .verity-chatbot-send:hover {
             transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(34, 211, 238, 0.4);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
         }
 
         .verity-chatbot-send:disabled {
@@ -381,8 +381,8 @@
         }
 
         .verity-chatbot-quick-action:hover {
-            background: rgba(34, 211, 238, 0.1);
-            border-color: rgba(34, 211, 238, 0.3);
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
             color: ${CHATBOT_CONFIG.primaryColor};
         }
 
