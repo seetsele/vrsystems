@@ -2096,6 +2096,94 @@ body {
     height: 18px;
 }
 
+/* === Plan Selector === */
+.plan-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.plan-option {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.plan-option:hover {
+    border-color: var(--accent-amber);
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.plan-option.selected {
+    border-color: var(--accent-amber);
+    background: rgba(245, 158, 11, 0.1);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.plan-option.featured {
+    grid-column: span 3;
+    flex-direction: row;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05));
+    border-color: var(--accent-amber);
+}
+
+.plan-badge {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 8px;
+    background: linear-gradient(135deg, var(--accent-amber), #fbbf24);
+    color: #000;
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.plan-option.featured .plan-badge {
+    position: static;
+    transform: none;
+}
+
+.plan-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.plan-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-amber);
+    margin-top: 2px;
+}
+
+.auth-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: var(--accent-amber);
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
 /* === Toast === */
 .toast-container {
     position: fixed;

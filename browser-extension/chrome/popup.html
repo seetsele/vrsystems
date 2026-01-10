@@ -20,44 +20,70 @@
       --amber: #f59e0b;
       --amber-soft: rgba(245, 158, 11, 0.12);
       --amber-glow: rgba(245, 158, 11, 0.25);
+      --gold: #fbbf24;
       --green: #10b981;
       --green-soft: rgba(16, 185, 129, 0.12);
       --red: #ef4444;
       --red-soft: rgba(239, 68, 68, 0.12);
       --yellow: #eab308;
       --yellow-soft: rgba(234, 179, 8, 0.12);
+      --violet: #8b5cf6;
+      --violet-soft: rgba(139, 92, 246, 0.12);
     }
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      width: 400px;
+      width: 420px;
+      min-height: 520px;
       background: var(--bg-dark);
       color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
+    
+    /* === Enhanced Animations === */
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.85); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 20px var(--amber-glow); } 50% { box-shadow: 0 0 35px var(--amber-glow); } }
+    @keyframes scaleIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
     
     /* Header */
     .header {
-      background: var(--bg-card);
+      background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-dark) 100%);
       border-bottom: 1px solid var(--border);
-      padding: 20px 24px;
+      padding: 18px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--amber), transparent);
+      opacity: 0.5;
     }
     
     .logo {
       display: flex;
       align-items: center;
       gap: 10px;
+      animation: slideIn 0.4s ease;
     }
     
-    .logo-icon {
-      width: 36px;
-      height: 40px;
-    }
+    .logo-icon { width: 34px; height: 40px; }
     
     .logo-text {
       font-family: 'Newsreader', Georgia, serif;
@@ -66,22 +92,39 @@
       letter-spacing: -0.02em;
     }
     
-    .logo-text span {
-      color: var(--amber);
+    .logo-text span { color: var(--amber); }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     
-    .status-badge {
+    .tier-badge {
       display: flex;
       align-items: center;
       gap: 6px;
       padding: 5px 10px;
-      background: var(--green-soft);
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      background: var(--amber-soft);
+      border: 1px solid rgba(245, 158, 11, 0.2);
       border-radius: 100px;
       font-size: 11px;
-      color: var(--green);
-      font-weight: 500;
+      color: var(--amber);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+    
+    .tier-badge:hover {
+      background: rgba(245, 158, 11, 0.18);
+      transform: translateY(-1px);
+    }
+    
+    .tier-badge.free { background: var(--bg-elevated); color: var(--text-secondary); border-color: var(--border); }
+    .tier-badge.pro { background: var(--violet-soft); color: var(--violet); border-color: rgba(139, 92, 246, 0.2); }
+    .tier-badge.enterprise { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.08)); color: #14b8a6; }
     
     .status-dot {
       width: 6px;
@@ -91,28 +134,87 @@
       animation: pulse 2s infinite;
     }
     
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(0.85); }
+    /* === Tab Navigation === */
+    .tab-nav {
+      display: flex;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
     }
     
+    .tab-btn {
+      flex: 1;
+      padding: 12px 8px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    
+    .tab-btn:hover { color: var(--text-secondary); }
+    .tab-btn.active { color: var(--amber); }
+    
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: var(--amber);
+      border-radius: 2px 2px 0 0;
+    }
+    
+    .tab-btn svg { width: 14px; height: 14px; }
+    
+    .tab-badge {
+      padding: 2px 6px;
+      background: var(--amber);
+      color: #000;
+      font-size: 9px;
+      font-weight: 700;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    
+    .tab-badge.pro { background: linear-gradient(135deg, var(--violet), #a855f7); color: #fff; }
+    
+    /* === Tab Panels === */
+    .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+    .tab-panel.active { display: block; }
+
     /* Main Content */
-    .main {
-      padding: 20px 24px;
-    }
+    .main { padding: 16px 20px; }
     
-    .input-section {
-      margin-bottom: 16px;
+    .input-section { margin-bottom: 14px; }
+    
+    .input-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
     }
     
     .input-label {
-      display: block;
       font-size: 12px;
       font-weight: 500;
       color: var(--text-secondary);
-      margin-bottom: 8px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+    
+    .char-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
     }
     
     textarea {
@@ -136,18 +238,43 @@
       box-shadow: 0 0 0 3px var(--amber-soft), 0 8px 24px rgba(0, 0, 0, 0.3);
     }
     
-    textarea::placeholder {
-      color: var(--text-muted);
+    textarea::placeholder { color: var(--text-muted); }
+    
+    /* === Model Selector === */
+    .model-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
     }
+    
+    .model-chip {
+      padding: 6px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .model-chip:hover { border-color: var(--amber); color: var(--amber); }
+    .model-chip.active { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); }
+    .model-chip.locked { opacity: 0.5; cursor: not-allowed; }
+    .model-chip .lock-icon { width: 10px; height: 10px; }
     
     /* Verify Button */
     .verify-btn {
       width: 100%;
-      background: linear-gradient(135deg, var(--amber), #fbbf24);
+      background: linear-gradient(135deg, var(--amber), var(--gold));
       color: #000;
       border: none;
       padding: 14px 20px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-family: inherit;
       font-size: 14px;
       font-weight: 600;
@@ -161,22 +288,22 @@
       overflow: hidden;
     }
     
-    .verify-btn::after {
+    .verify-btn::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%);
-      opacity: 0;
-      transition: opacity 0.3s;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
     }
     
-    .verify-btn:hover::after {
-      opacity: 1;
-    }
+    .verify-btn:hover::before { left: 100%; }
     
     .verify-btn:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 12px 24px var(--amber-glow);
+      box-shadow: 0 12px 30px var(--amber-glow);
     }
     
     .verify-btn:disabled {
@@ -185,10 +312,53 @@
       transform: none;
     }
     
-    .verify-btn svg {
-      width: 18px;
-      height: 18px;
+    .verify-btn svg { width: 18px; height: 18px; }
+    
+    /* === Tier Info Bar === */
+    .tier-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 14px;
+      font-size: 12px;
     }
+    
+    .tier-usage {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .usage-bar {
+      width: 80px;
+      height: 4px;
+      background: var(--bg-elevated);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .usage-fill {
+      height: 100%;
+      background: var(--amber);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    
+    .usage-fill.warning { background: var(--yellow); }
+    .usage-fill.danger { background: var(--red); }
+    
+    .tier-upgrade {
+      color: var(--amber);
+      font-weight: 500;
+      text-decoration: none;
+      font-size: 11px;
+    }
+    
+    .tier-upgrade:hover { text-decoration: underline; }
     
     /* Spinner */
     .spinner {
@@ -200,45 +370,34 @@
       animation: spin 0.8s linear infinite;
     }
     
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
     /* Error */
     .error-msg {
       background: var(--red-soft);
       color: var(--red);
-      padding: 12px 14px;
-      border-radius: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
       border: 1px solid rgba(239, 68, 68, 0.2);
-      font-size: 13px;
-      margin-top: 16px;
+      font-size: 12px;
+      margin-top: 12px;
       display: none;
     }
     
-    .error-msg.visible { display: block; }
+    .error-msg.visible { display: block; animation: slideIn 0.3s ease; }
     
     /* Result */
     .result {
-      margin-top: 20px;
+      margin-top: 16px;
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
       display: none;
-      opacity: 0;
-      transform: translateY(10px);
-      animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     
-    @keyframes slideIn {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .result.visible { display: block; }
+    .result.visible { display: block; animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     
     .result-header {
-      padding: 16px 18px;
+      padding: 14px 16px;
       background: var(--bg-elevated);
       border-bottom: 1px solid var(--border);
       display: flex;
@@ -253,75 +412,65 @@
       padding: 6px 12px;
       border-radius: 8px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
     }
     
-    .verdict-true { 
-      background: var(--green-soft); 
-      color: var(--green); 
-      border: 1px solid rgba(16, 185, 129, 0.25);
-    }
-    .verdict-mostly_true { 
-      background: rgba(34, 197, 94, 0.12); 
-      color: #22c55e; 
-      border: 1px solid rgba(34, 197, 94, 0.25);
-    }
-    .verdict-mixed { 
-      background: var(--yellow-soft); 
-      color: var(--yellow); 
-      border: 1px solid rgba(234, 179, 8, 0.25);
-    }
-    .verdict-mostly_false { 
-      background: rgba(249, 115, 22, 0.12); 
-      color: #f97316; 
-      border: 1px solid rgba(249, 115, 22, 0.25);
-    }
-    .verdict-false { 
-      background: var(--red-soft); 
-      color: var(--red); 
-      border: 1px solid rgba(239, 68, 68, 0.25);
-    }
-    .verdict-unverifiable { 
-      background: rgba(107, 114, 128, 0.12); 
-      color: #9ca3af; 
-      border: 1px solid rgba(107, 114, 128, 0.25);
-    }
+    .verdict-true { background: var(--green-soft); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.25); }
+    .verdict-mostly_true { background: rgba(34, 197, 94, 0.12); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.25); }
+    .verdict-mixed { background: var(--yellow-soft); color: var(--yellow); border: 1px solid rgba(234, 179, 8, 0.25); }
+    .verdict-mostly_false { background: rgba(249, 115, 22, 0.12); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.25); }
+    .verdict-false { background: var(--red-soft); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.25); }
+    .verdict-unverifiable { background: rgba(107, 114, 128, 0.12); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.25); }
     
     .confidence {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-secondary);
     }
     
-    .confidence strong {
-      color: var(--amber);
-    }
+    .confidence strong { color: var(--amber); }
     
-    .result-body {
-      padding: 18px;
-    }
+    .result-body { padding: 16px; }
     
     .explanation {
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.65;
       color: var(--text-secondary);
     }
     
+    .result-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    .meta-item svg { width: 12px; height: 12px; color: var(--amber); }
+    
     .sources {
-      margin-top: 16px;
-      padding-top: 16px;
+      margin-top: 14px;
+      padding-top: 14px;
       border-top: 1px solid var(--border);
     }
     
     .sources-title {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     
     .source-item {
@@ -329,36 +478,29 @@
       align-items: center;
       gap: 8px;
       color: var(--amber);
-      font-size: 13px;
+      font-size: 12px;
       text-decoration: none;
-      padding: 6px 0;
+      padding: 5px 0;
       transition: color 0.2s;
     }
     
-    .source-item:hover {
-      color: #fbbf24;
-    }
-    
-    .source-item svg {
-      width: 14px;
-      height: 14px;
-      opacity: 0.6;
-    }
+    .source-item:hover { color: var(--gold); }
+    .source-item svg { width: 12px; height: 12px; opacity: 0.6; }
     
     /* Providers Badge */
     .providers-used {
-      margin-top: 16px;
-      padding-top: 16px;
+      margin-top: 14px;
+      padding-top: 14px;
       border-top: 1px solid var(--border);
     }
     
     .providers-label {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     
     .provider-tags {
@@ -372,13 +514,176 @@
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       border-radius: 6px;
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-secondary);
+    }
+    
+    /* === Settings Panel Styles === */
+    .settings-section {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .settings-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+    
+    .setting-label { font-size: 13px; color: var(--text-primary); }
+    .setting-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    
+    .toggle {
+      width: 40px;
+      height: 22px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    
+    .toggle.active { background: var(--amber-soft); border-color: var(--amber); }
+    .toggle.active::after { left: 20px; background: var(--amber); }
+    
+    /* === Pricing Card === */
+    .pricing-section { padding: 16px 20px; }
+    
+    .pricing-card {
+      background: linear-gradient(135deg, var(--amber-soft), rgba(251, 191, 36, 0.05));
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+    
+    .pricing-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    
+    .pricing-current {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    .pricing-limit { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+    
+    .upgrade-btn {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, var(--amber), var(--gold));
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .upgrade-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px var(--amber-glow);
+    }
+    
+    .plan-tiers { margin-top: 16px; text-align: left; }
+    
+    .plan-tier {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .plan-tier:hover { border-color: var(--amber); }
+    .plan-tier.current { border-color: var(--amber); background: var(--amber-soft); }
+    .plan-name { font-size: 13px; font-weight: 500; }
+    .plan-price { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--amber); }
+    
+    /* === History Panel === */
+    .history-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    
+    .history-empty svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.3; }
+    .history-list { padding: 8px 0; }
+    
+    .history-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .history-item:hover { background: var(--bg-card); }
+    
+    .history-claim {
+      font-size: 13px;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .history-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    .history-verdict {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
     }
     
     /* Footer */
     .footer {
-      padding: 16px 24px;
+      padding: 14px 20px;
       background: var(--bg-card);
       border-top: 1px solid var(--border);
       display: flex;
@@ -387,20 +692,15 @@
     }
     
     .footer-link {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       text-decoration: none;
       transition: color 0.2s;
     }
     
-    .footer-link:hover {
-      color: var(--amber);
-    }
+    .footer-link:hover { color: var(--amber); }
     
-    .footer-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .footer-actions { display: flex; gap: 6px; }
     
     .icon-btn {
       background: none;
@@ -417,10 +717,7 @@
       background: var(--bg-elevated);
     }
     
-    .icon-btn svg {
-      width: 18px;
-      height: 18px;
-    }
+    .icon-btn svg { width: 16px; height: 16px; }
   </style>
 </head>
 <body>
@@ -440,63 +737,189 @@
       </svg>
       <span class="logo-text">verity<span>.</span></span>
     </div>
-    <div class="status-badge">
-      <span class="status-dot"></span>
-      32 AI Models
+    <div class="header-right">
+      <div class="tier-badge" id="tier-badge" title="Click to upgrade">
+        <span class="status-dot"></span>
+        <span id="tier-name">Pro</span>
+      </div>
     </div>
   </header>
   
-  <main class="main">
-    <div class="input-section">
-      <label class="input-label" for="claim">Verify a claim</label>
-      <textarea id="claim" placeholder="Paste or type any claim, statement, or headline to fact-check with 32+ AI models..."></textarea>
-    </div>
-    
-    <button class="verify-btn" id="verify-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L4 6v6c0 5.5 3.5 10.7 8 12 4.5-1.3 8-6.5 8-12V6l-8-4z"/>
-        <path d="M9 12l2 2 4-4"/>
+  <!-- Tab Navigation -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="verify">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
       </svg>
-      Verify with 32 AI Models
+      Verify
     </button>
-    
-    <div class="error-msg" id="error"></div>
-    
-    <div class="result" id="result">
-      <div class="result-header">
-        <span class="verdict-badge" id="verdict-badge">✓ TRUE</span>
-        <div class="confidence" id="confidence">Confidence: <strong>98%</strong></div>
+    <button class="tab-btn" data-tab="history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      History
+    </button>
+    <button class="tab-btn" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      Settings
+    </button>
+  </nav>
+  
+  <!-- Verify Tab -->
+  <div class="tab-panel active" id="panel-verify">
+    <main class="main">
+      <div class="input-section">
+        <div class="input-header">
+          <label class="input-label" for="claim">Verify a claim</label>
+          <span class="char-count"><span id="char-count">0</span>/500</span>
+        </div>
+        <textarea id="claim" placeholder="Paste or type any claim, headline, or statement to fact-check..." maxlength="500"></textarea>
       </div>
-      <div class="result-body">
-        <p class="explanation" id="explanation"></p>
-        
-        <div class="providers-used" id="providers-section">
-          <div class="providers-label">Verified by</div>
-          <div class="provider-tags" id="provider-tags"></div>
+      
+      <div class="model-selector" id="model-selector">
+        <div class="model-chip active" data-models="quick">Quick (5 AI)</div>
+        <div class="model-chip" data-models="standard">Standard (12 AI)</div>
+        <div class="model-chip" data-models="deep" id="deep-chip">Deep (20+ AI) <span class="tab-badge pro">PRO</span></div>
+      </div>
+      
+      <button class="verify-btn" id="verify-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L4 6v6c0 5.5 3.5 10.7 8 12 4.5-1.3 8-6.5 8-12V6l-8-4z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+        <span id="btn-text">Verify Now</span>
+      </button>
+      
+      <div class="tier-info" id="tier-info">
+        <div class="tier-usage">
+          <span id="usage-text">1,700 / 2,500</span>
+          <div class="usage-bar">
+            <div class="usage-fill" id="usage-fill" style="width: 68%"></div>
+          </div>
         </div>
-        
-        <div class="sources" id="sources">
-          <div class="sources-title">Sources</div>
+        <a href="https://vrsystemss.vercel.app/pricing.html" target="_blank" class="tier-upgrade">Upgrade →</a>
+      </div>
+      
+      <div class="error-msg" id="error"></div>
+      
+      <div class="result" id="result">
+        <div class="result-header">
+          <span class="verdict-badge" id="verdict-badge">✓ TRUE</span>
+          <div class="confidence" id="confidence">Confidence: <strong>98%</strong></div>
         </div>
+        <div class="result-body">
+          <p class="explanation" id="explanation"></p>
+          
+          <div class="result-meta">
+            <div class="meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="time-taken">1.2s</span>
+            </div>
+            <div class="meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span id="models-used">12 AI models</span>
+            </div>
+            <div class="meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="sources-count">8 sources</span>
+            </div>
+          </div>
+          
+          <div class="providers-used" id="providers-section">
+            <div class="providers-label">Verified by</div>
+            <div class="provider-tags" id="provider-tags"></div>
+          </div>
+          
+          <div class="sources" id="sources">
+            <div class="sources-title">Sources</div>
+            <div id="sources-list"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- History Tab -->
+  <div class="tab-panel" id="panel-history">
+    <div class="history-empty" id="history-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <p>No verification history yet</p>
+    </div>
+    <div class="history-list" id="history-list"></div>
+  </div>
+  
+  <!-- Settings Tab -->
+  <div class="tab-panel" id="panel-settings">
+    <div class="settings-section">
+      <div class="settings-title">Preferences</div>
+      <div class="setting-item">
+        <div>
+          <div class="setting-label">Auto-verify selection</div>
+          <div class="setting-desc">Verify when text is selected on page</div>
+        </div>
+        <div class="toggle active" id="toggle-auto"></div>
+      </div>
+      <div class="setting-item">
+        <div>
+          <div class="setting-label">Show notifications</div>
+          <div class="setting-desc">Get alerts for verification results</div>
+        </div>
+        <div class="toggle active" id="toggle-notif"></div>
+      </div>
+      <div class="setting-item">
+        <div>
+          <div class="setting-label">Dark mode</div>
+          <div class="setting-desc">Always use dark theme</div>
+        </div>
+        <div class="toggle active" id="toggle-dark"></div>
       </div>
     </div>
-  </main>
+    
+    <div class="pricing-section">
+      <div class="pricing-card">
+        <div class="pricing-title">Your Plan</div>
+        <div class="pricing-current" id="plan-name">Pro Plan</div>
+        <div class="pricing-limit" id="plan-limit">2,500 verifications/month</div>
+        <button class="upgrade-btn" onclick="window.open('https://vrsystemss.vercel.app/pricing.html', '_blank')">
+          View All Plans
+        </button>
+      </div>
+      
+      <div class="plan-tiers">
+        <div class="plan-tier"><span class="plan-name">Free</span><span class="plan-price">$0/mo • 300/mo</span></div>
+        <div class="plan-tier"><span class="plan-name">Starter</span><span class="plan-price">$49/mo • 1,200/mo</span></div>
+        <div class="plan-tier current"><span class="plan-name">Pro</span><span class="plan-price">$99/mo • 2,500/mo</span></div>
+        <div class="plan-tier"><span class="plan-name">Professional ⭐</span><span class="plan-price">$199/mo • 5,000/mo</span></div>
+        <div class="plan-tier"><span class="plan-name">Business</span><span class="plan-price">$599/mo • 15,000/mo</span></div>
+        <div class="plan-tier"><span class="plan-name">Enterprise</span><span class="plan-price">$2,999+/mo • 75,000+/mo</span></div>
+      </div>
+    </div>
+  </div>
   
   <footer class="footer">
     <a href="https://vrsystemss.vercel.app" target="_blank" class="footer-link">
-      verity-systems.com
+      vrsystemss.vercel.app
     </a>
     <div class="footer-actions">
-      <button class="icon-btn" id="history-btn" title="History">
+      <button class="icon-btn" title="Keyboard shortcuts" onclick="alert('Shortcuts:\n\nCtrl+Shift+V - Quick verify selection\nCtrl+Shift+H - View history')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
       </button>
-      <button class="icon-btn" id="settings-btn" title="Settings">
+      <button class="icon-btn" title="Open full dashboard" onclick="window.open('https://vrsystemss.vercel.app/dashboard.html', '_blank')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
         </svg>
       </button>
     </div>

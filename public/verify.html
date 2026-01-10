@@ -37,12 +37,20 @@
         .nav-badge.pro{background:linear-gradient(135deg,var(--violet),#a855f7);color:#fff}
         .nav-badge.live{background:var(--red);color:#fff;animation:pulse 2s infinite}
         .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
-        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px}
+        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px;cursor:pointer;transition:all .2s}
+        .tier-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,158,11,0.15)}
         .tier-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.25rem}
         .tier-name{font-family:'Newsreader',Georgia,serif;font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
         .tier-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
-        .tier-fill{height:100%;background:var(--amber);border-radius:4px}
+        .tier-fill{height:100%;background:var(--amber);border-radius:4px;transition:width .3s}
+        .tier-fill.warning{background:#eab308}
+        .tier-fill.danger{background:var(--red)}
         .tier-text{font-size:.75rem;color:var(--muted);margin-top:.35rem}
+        .tier-upgrade{display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:.75rem;padding:.6rem;background:rgba(245,158,11,0.1);border-radius:8px;color:var(--amber);font-size:.8rem;font-weight:600;text-decoration:none;transition:all .2s}
+        .tier-upgrade:hover{background:rgba(245,158,11,0.2)}
+        .tier-limits{margin-top:.75rem;padding-top:.75rem;border-top:1px solid rgba(245,158,11,0.15)}
+        .tier-limit-item{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:.35rem}
+        .tier-limit-item span:last-child{color:var(--amber);font-weight:500}
         
         .main{margin-left:var(--sidebar-w);min-height:100vh}
         
@@ -243,11 +251,20 @@
             <div class="nav-section"><a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a></div>
         </nav>
         <div class="sidebar-footer">
-            <div class="tier-card" id="tierCard">
+            <div class="tier-card" id="tierCard" onclick="window.location.href='pricing.html'">
                 <div class="tier-label">Current Plan</div>
                 <div class="tier-name" id="tierName">Pro Plan</div>
                 <div class="tier-bar"><div class="tier-fill" id="tierFill" style="width:68%"></div></div>
                 <div class="tier-text" id="tierText">1,700 / 2,500 verifications</div>
+                <div class="tier-limits">
+                    <div class="tier-limit-item"><span>AI Models</span><span id="tierModels">12</span></div>
+                    <div class="tier-limit-item"><span>Deep Analysis</span><span id="tierDeep">✓</span></div>
+                    <div class="tier-limit-item"><span>Document Scan</span><span id="tierDoc">✓</span></div>
+                </div>
+                <a href="pricing.html" class="tier-upgrade">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    View All Plans
+                </a>
             </div>
         </div>
     </aside>
@@ -571,8 +588,74 @@
             switchMode('quick');
         }
         
-        // Tier detection (demo)
+        // === Tier-Based System ===
+        const TIER_CONFIG = {
+            free: { name: 'Free', limit: 300, models: 3, deep: false, doc: false, image: false, video: false, price: 0 },
+            starter: { name: 'Starter', limit: 1200, models: 5, deep: false, doc: true, image: false, video: false, price: 49 },
+            pro: { name: 'Pro', limit: 2500, models: 12, deep: true, doc: true, image: false, video: false, price: 99 },
+            professional: { name: 'Professional ⭐', limit: 5000, models: 20, deep: true, doc: true, image: true, video: false, price: 199 },
+            business: { name: 'Business', limit: 15000, models: 25, deep: true, doc: true, image: true, video: false, price: 599 },
+            business_plus: { name: 'Business+', limit: 25000, models: 30, deep: true, doc: true, image: true, video: true, price: 999 },
+            enterprise: { name: 'Enterprise', limit: 75000, models: 32, deep: true, doc: true, image: true, video: true, price: 2999 }
+        };
+        
         const tier = localStorage.getItem('userTier') || 'pro';
+        const used = parseInt(localStorage.getItem('usedVerifications') || '1700');
+        
+        function updateTierUI() {
+            const config = TIER_CONFIG[tier] || TIER_CONFIG.pro;
+            const percentage = Math.min((used / config.limit) * 100, 100);
+            
+            document.getElementById('tierName').textContent = config.name + ' Plan';
+            document.getElementById('tierText').textContent = `${used.toLocaleString()} / ${config.limit.toLocaleString()} verifications`;
+            document.getElementById('tierFill').style.width = percentage + '%';
+            document.getElementById('tierModels').textContent = config.models;
+            document.getElementById('tierDeep').textContent = config.deep ? '✓' : '—';
+            document.getElementById('tierDoc').textContent = config.doc ? '✓' : '—';
+            
+            // Update fill color based on usage
+            const fill = document.getElementById('tierFill');
+            fill.classList.remove('warning', 'danger');
+            if (percentage >= 90) fill.classList.add('danger');
+            else if (percentage >= 70) fill.classList.add('warning');
+            
+            // Lock/unlock features based on tier
+            const imageTabs = document.querySelectorAll('[data-type="image"]');
+            const videoTabs = document.querySelectorAll('[data-type="video"]');
+            
+            imageTabs.forEach(tab => {
+                if (!config.image) {
+                    tab.classList.add('locked');
+                    tab.onclick = () => { window.location.href = 'pricing.html'; };
+                } else {
+                    tab.classList.remove('locked');
+                    tab.querySelector('.lock')?.remove();
+                }
+            });
+            
+            videoTabs.forEach(tab => {
+                if (!config.video) {
+                    tab.classList.add('locked');
+                    tab.onclick = () => { window.location.href = 'pricing.html'; };
+                } else {
+                    tab.classList.remove('locked');
+                    tab.querySelector('.lock')?.remove();
+                }
+            });
+            
+            // Update quick mode features
+            const quickFeatures = document.querySelector('.quick-features');
+            if (quickFeatures) {
+                quickFeatures.innerHTML = `
+                    <div class="quick-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>${config.models} AI models</div>
+                    <div class="quick-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>${config.deep ? 'Deep analysis' : 'Basic sources'}</div>
+                    <div class="quick-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>~${config.models > 10 ? '5' : '3'} second response</div>
+                `;
+            }
+        }
+        
+        // Initialize tier UI
+        updateTierUI();
     </script>
 </body>
 </html>
