@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,6 +8,22 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppProvider, useApp } from './src/context/AppContext';
+import { useFonts } from 'expo-font';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from '@expo-google-fonts/inter';
+import {
+  Newsreader_400Regular,
+  Newsreader_500Medium,
+  Newsreader_600SemiBold,
+} from '@expo-google-fonts/newsreader';
+import {
+  JetBrainsMono_400Regular,
+  JetBrainsMono_500Medium,
+} from '@expo-google-fonts/jetbrains-mono';
 
 // Screens - Companion App (Capture & Monitor)
 import SplashScreen from './src/screens/SplashScreen';
@@ -211,8 +227,22 @@ function AppWithNavigation() {
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  
+  // Load custom fonts
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Newsreader_400Regular,
+    Newsreader_500Medium,
+    Newsreader_600SemiBold,
+    JetBrainsMono_400Regular,
+    JetBrainsMono_500Medium,
+  });
 
-  if (showSplash) {
+  // Show splash while fonts load
+  if (!fontsLoaded || showSplash) {
     return (
       <>
         <StatusBar style="light" />
@@ -229,3 +259,16 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+// Export font family names for use in screens
+export const fonts = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semibold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+  serif: 'Newsreader_400Regular',
+  serifMedium: 'Newsreader_500Medium',
+  serifSemibold: 'Newsreader_600SemiBold',
+  mono: 'JetBrainsMono_400Regular',
+  monoMedium: 'JetBrainsMono_500Medium',
+};

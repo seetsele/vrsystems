@@ -34,6 +34,9 @@
         "projectId": "verity-companion"
       }
     },
-    "owner": "veritysystems"
+    "owner": "veritysystems",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

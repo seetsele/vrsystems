@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Defs, LinearGradient as SvgGradient, Stop, Polyline, Text as SvgText, Circle } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { useApp } from '../context/AppContext';
+import { fonts } from '../../App';
 
 const { width, height } = Dimensions.get('window');
 
@@ -476,7 +477,7 @@ const styles = StyleSheet.create({
   connectionLabel: { 
     color: colors.textSubtle, 
     fontSize: 11, 
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
@@ -492,14 +493,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: colors.textMuted,
     fontSize: 11,
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     letterSpacing: 2,
     textTransform: 'uppercase',
   },
   sectionAction: {
     color: colors.textMuted,
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: 'Inter_500Medium',
   },
 
   // Stats section
@@ -528,13 +529,13 @@ const styles = StyleSheet.create({
   statNumber: {
     color: colors.text,
     fontSize: 40,
-    fontWeight: '200',
+    fontFamily: 'Newsreader_400Regular',
     letterSpacing: -2,
   },
   statLabel: {
     color: colors.textSubtle,
     fontSize: 10,
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     letterSpacing: 1.5,
     marginTop: 8,
     textTransform: 'uppercase',
@@ -585,7 +586,7 @@ const styles = StyleSheet.create({
   actionLabel: {
     color: colors.text,
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Inter_500Medium',
     letterSpacing: 0.2,
   },
   actionDesc: {
@@ -617,7 +618,7 @@ const styles = StyleSheet.create({
   analyticValue: {
     color: colors.text,
     fontSize: 22,
-    fontWeight: '200',
+    fontFamily: 'Newsreader_400Regular',
     letterSpacing: -0.5,
   },
   analyticLabel: {
@@ -668,7 +669,7 @@ const styles = StyleSheet.create({
   queuePreviewTitle: {
     color: colors.accentMuted,
     fontSize: 15,
-    fontWeight: '500',
+    fontFamily: 'Inter_500Medium',
   },
   queuePreviewStatus: {
     color: colors.textSubtle,
@@ -679,7 +680,7 @@ const styles = StyleSheet.create({
   queuePreviewScore: {
     color: colors.textMuted,
     fontSize: 20,
-    fontWeight: '200',
+    fontFamily: 'Newsreader_400Regular',
   },
   queueDivider: {
     height: 1,
@@ -707,7 +708,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     color: colors.textMuted,
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Inter_500Medium',
   },
   emptyDesc: {
     color: colors.textSubtle,

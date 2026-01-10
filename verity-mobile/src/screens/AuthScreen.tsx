@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Defs, LinearGradient as SvgGradient, Stop, Polyline, Text as SvgText, Circle, G, Rect } from 'react-native-svg';
 import { useApp } from '../context/AppContext';
 import { authenticateAdmin, logAuditEvent, isValidEmail } from '../utils/security';
+import { fonts } from '../../App';
 
 const { width, height } = Dimensions.get('window');
 
@@ -619,7 +620,7 @@ const styles = StyleSheet.create({
   successTitle: {
     color: colors.text,
     fontSize: 24,
-    fontWeight: '300',
+    fontFamily: 'Newsreader_400Regular',
     letterSpacing: 1,
     marginTop: 24,
   },
@@ -638,7 +639,7 @@ const styles = StyleSheet.create({
   tagline: {
     color: colors.textSubtle,
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: 'Inter_500Medium',
     letterSpacing: 2,
     textTransform: 'uppercase',
     marginTop: 20,
@@ -687,7 +688,7 @@ const styles = StyleSheet.create({
   label: { 
     color: colors.textMuted, 
     fontSize: 12, 
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     letterSpacing: 0.5,
     marginLeft: 4,
     textTransform: 'uppercase',
@@ -707,6 +708,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.text,
     fontSize: 15,
+    fontFamily: 'Inter_400Regular',
     paddingVertical: 16,
     letterSpacing: 0.2,
   },
@@ -749,7 +751,7 @@ const styles = StyleSheet.create({
   submitText: { 
     color: colors.bg, 
     fontSize: 15, 
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     letterSpacing: 0.4,
   },
 
