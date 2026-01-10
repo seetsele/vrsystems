@@ -64,7 +64,7 @@ class Config:
     REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "false").lower() == "true"
     
     # ==========================================================================
-    # ALL AI PROVIDER API KEYS - 20+ PROVIDERS
+    # ALL AI PROVIDER API KEYS - 32+ PROVIDERS
     # ==========================================================================
     
     # Tier 1: Primary Providers (fastest, most reliable)
@@ -96,8 +96,17 @@ class Config:
     LEPTON_API_KEY = os.getenv("LEPTON_API_KEY")
     ANYSCALE_API_KEY = os.getenv("ANYSCALE_API_KEY")
     NVIDIA_NIM_API_KEY = os.getenv("NVIDIA_NIM_API_KEY")
-    CLOUDFLARE_API_KEY = os.getenv("CLOUDFLARE_ACCOUNT_ID")  # Cloudflare Workers AI
+    CLOUDFLARE_API_KEY = os.getenv("CLOUDFLARE_API_TOKEN")  # Cloudflare Workers AI
     CLOUDFLARE_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID")
+    
+    # Tier 6: xAI Alternatives (NEW)
+    SILICONFLOW_API_KEY = os.getenv("SILICONFLOW_API_KEY")
+    HYPERBOLIC_API_KEY = os.getenv("HYPERBOLIC_API_KEY")
+    LAMBDA_API_KEY = os.getenv("LAMBDA_API_KEY")
+    ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY")
+    DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY")  # Alibaba Qwen
+    MOONSHOT_API_KEY = os.getenv("MOONSHOT_API_KEY")
+    BAICHUAN_API_KEY = os.getenv("BAICHUAN_API_KEY")
     
     # Search & Research APIs
     TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
@@ -566,7 +575,7 @@ def sanitize_claim(claim: str) -> str:
 # =============================================================================
 
 def get_all_provider_checks():
-    """Get ALL provider checks - single source of truth"""
+    """Get ALL provider checks - single source of truth (32+ providers)"""
     return [
         # Tier 1: Primary (fastest)
         ("groq", Config.GROQ_API_KEY),
@@ -601,6 +610,16 @@ def get_all_provider_checks():
         ("brave", Config.BRAVE_API_KEY),
         ("serper", Config.SERPER_API_KEY),
         ("exa", Config.EXA_API_KEY),
+        # Tier 8: xAI Alternatives (NEW - 10 providers)
+        ("cloudflare", Config.CLOUDFLARE_API_KEY and Config.CLOUDFLARE_ACCOUNT_ID),
+        ("siliconflow", Config.SILICONFLOW_API_KEY),
+        ("hyperbolic", Config.HYPERBOLIC_API_KEY),
+        ("lambdalabs", Config.LAMBDA_API_KEY),
+        ("ollama", os.getenv("OLLAMA_HOST")),  # Local provider
+        ("zhipu", Config.ZHIPU_API_KEY),
+        ("alibaba", Config.DASHSCOPE_API_KEY),
+        ("moonshot", Config.MOONSHOT_API_KEY),
+        ("baichuan", Config.BAICHUAN_API_KEY),
     ]
 
 def get_search_provider_checks():
@@ -1388,6 +1407,343 @@ class AIProviders:
         return {"success": False, "status_code": 0}
 
     # =========================================================================
+    # TIER 8: ADDITIONAL xAI ALTERNATIVES
+    # =========================================================================
+
+    async def verify_with_cloudflare(self, claim: str) -> Dict:
+        """Verify claim using Cloudflare Workers AI (Free tier available)"""
+        account_id = Config.CLOUDFLARE_ACCOUNT_ID
+        api_key = Config.CLOUDFLARE_API_KEY
+        if not account_id or not api_key:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims and provide verdicts: true/false/partially_true/unverifiable. Include confidence (0-1) and brief explanation."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and data.get("result"):
+                    content = data["result"].get("response", "")
+                    return {"provider": "cloudflare", "model": "llama-3.3-70b-instruct", "response": content, "success": True}
+                return {"success": False, "status_code": response.status_code}
+            else:
+                logger.error(f"Cloudflare error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Cloudflare exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_replicate(self, claim: str) -> Dict:
+        """Verify claim using Replicate (Meta Llama, Mixtral, etc.)"""
+        if not Config.REPLICATE_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.replicate.com/v1/predictions",
+                headers={
+                    "Authorization": f"Bearer {Config.REPLICATE_API_KEY}",
+                    "Content-Type": "application/json",
+                    "Prefer": "wait"  # Wait for completion
+                },
+                json={
+                    "version": "meta/llama-3.3-70b-instruct",
+                    "input": {
+                        "prompt": f"You are a fact-checker. Verify this claim and provide a verdict (true/false/partially_true/unverifiable), confidence (0-1), and brief explanation.\n\nClaim: {claim}\n\nVerdict:",
+                        "max_tokens": 500,
+                        "temperature": 0.1
+                    }
+                }
+            )
+            
+            if response.status_code == 200 or response.status_code == 201:
+                data = response.json()
+                output = data.get("output", "")
+                if isinstance(output, list):
+                    output = "".join(output)
+                return {"provider": "replicate", "model": "llama-3.3-70b-instruct", "response": output, "success": True}
+            else:
+                logger.error(f"Replicate error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Replicate exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_siliconflow(self, claim: str) -> Dict:
+        """Verify claim using SiliconFlow (Free tier with Llama, Qwen, DeepSeek)"""
+        api_key = os.getenv("SILICONFLOW_API_KEY")
+        if not api_key:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.siliconflow.cn/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": "deepseek-ai/DeepSeek-V3",
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts: true/false/partially_true/unverifiable."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "siliconflow", "model": "DeepSeek-V3", "response": content, "success": True}
+            else:
+                logger.error(f"SiliconFlow error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"SiliconFlow exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_hyperbolic(self, claim: str) -> Dict:
+        """Verify claim using Hyperbolic (Fast inference, Llama 405B)"""
+        api_key = os.getenv("HYPERBOLIC_API_KEY")
+        if not api_key:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.hyperbolic.xyz/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": "meta-llama/Llama-3.3-70B-Instruct",
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "hyperbolic", "model": "Llama-3.3-70B-Instruct", "response": content, "success": True}
+            else:
+                logger.error(f"Hyperbolic error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Hyperbolic exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_lambdalabs(self, claim: str) -> Dict:
+        """Verify claim using Lambda Labs (GPU cloud with Llama)"""
+        api_key = os.getenv("LAMBDA_API_KEY")
+        if not api_key:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.lambdalabs.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": "hermes-3-llama-3.1-405b-fp8-128k",
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "lambdalabs", "model": "hermes-3-llama-405b", "response": content, "success": True}
+            else:
+                logger.error(f"Lambda error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Lambda exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_ollama(self, claim: str) -> Dict:
+        """Verify claim using local Ollama (free, runs locally)"""
+        ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        
+        try:
+            response = await self.http_client.post(
+                f"{ollama_host}/api/chat",
+                json={
+                    "model": "llama3.3:70b",
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "stream": False,
+                    "options": {"temperature": 0.1}
+                },
+                timeout=60.0
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data.get("message", {}).get("content", "")
+                return {"provider": "ollama", "model": "llama3.3:70b", "response": content, "success": True}
+            else:
+                logger.debug(f"Ollama not available: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.debug(f"Ollama not available: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_zhipu(self, claim: str) -> Dict:
+        """Verify claim using Zhipu AI (GLM-4, Chinese AI leader)"""
+        api_key = os.getenv("ZHIPU_API_KEY")
+        if not api_key:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": "glm-4-plus",
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts: true/false/partially_true/unverifiable."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "zhipu", "model": "glm-4-plus", "response": content, "success": True}
+            else:
+                logger.error(f"Zhipu error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Zhipu exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_alibaba(self, claim: str) -> Dict:
+        """Verify claim using Alibaba Qwen (via DashScope)"""
+        api_key = os.getenv("DASHSCOPE_API_KEY")
+        if not api_key:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": "qwen-max",
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "alibaba", "model": "qwen-max", "response": content, "success": True}
+            else:
+                logger.error(f"Alibaba error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Alibaba exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_moonshot(self, claim: str) -> Dict:
+        """Verify claim using Moonshot AI (Kimi)"""
+        api_key = os.getenv("MOONSHOT_API_KEY")
+        if not api_key:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.moonshot.cn/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": "moonshot-v1-128k",
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "moonshot", "model": "moonshot-v1-128k", "response": content, "success": True}
+            else:
+                logger.error(f"Moonshot error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Moonshot exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    async def verify_with_baichuan(self, claim: str) -> Dict:
+        """Verify claim using Baichuan AI"""
+        api_key = os.getenv("BAICHUAN_API_KEY")
+        if not api_key:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.baichuan-ai.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": "Baichuan4",
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "baichuan", "model": "Baichuan4", "response": content, "success": True}
+            else:
+                logger.error(f"Baichuan error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Baichuan exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    # =========================================================================
     # TIER 7: SEARCH & FACT-CHECK APIs
     # =========================================================================
     
@@ -1725,30 +2081,47 @@ class AIProviders:
         logger.info(f"[VERIFY] Starting {tier} tier verification with {max_loops} loops")
         logger.info(f"[VERIFY] Available providers: {len(self.available_providers)}: {self.available_providers}")
         
-        # Map provider names to functions (22 AI providers)
+        # Map provider names to functions (32 AI providers + xAI alternatives)
         provider_functions = {
+            # Tier 1: Primary (fastest)
             "groq": self.verify_with_groq,
             "perplexity": self.verify_with_perplexity,
             "google": self.verify_with_google,
+            # Tier 2: Major Providers
             "openai": self.verify_with_openai,
             "anthropic": self.verify_with_anthropic,
             "mistral": self.verify_with_mistral,
             "cohere": self.verify_with_cohere,
+            # Tier 3: Specialized
             "cerebras": self.verify_with_cerebras,
             "sambanova": self.verify_with_sambanova,
             "fireworks": self.verify_with_fireworks,
             "deepseek": self.verify_with_deepseek,
+            # Tier 4: Aggregators
             "openrouter": self.verify_with_openrouter,
             "huggingface": self.verify_with_huggingface,
             "together": self.verify_with_together,
+            # Tier 5: Additional
             "xai": self.verify_with_xai,
             "ai21": self.verify_with_ai21,
             "lepton": self.verify_with_lepton,
             "anyscale": self.verify_with_anyscale,
             "nvidia": self.verify_with_nvidia,
+            # Tier 6: Research AI
             "you": self.verify_with_you,
             "jina": self.verify_with_jina,
             "novita": self.verify_with_novita,
+            # Tier 8: xAI Alternatives (NEW)
+            "cloudflare": self.verify_with_cloudflare,
+            "replicate": self.verify_with_replicate,
+            "siliconflow": self.verify_with_siliconflow,
+            "hyperbolic": self.verify_with_hyperbolic,
+            "lambdalabs": self.verify_with_lambdalabs,
+            "ollama": self.verify_with_ollama,
+            "zhipu": self.verify_with_zhipu,
+            "alibaba": self.verify_with_alibaba,
+            "moonshot": self.verify_with_moonshot,
+            "baichuan": self.verify_with_baichuan,
         }
         
         # Search API functions for gathering evidence (8 search/fact-check APIs)
@@ -2171,11 +2544,14 @@ async def rate_limit_middleware(request: Request, call_next):
 async def root():
     return {
         "name": "Verity Verification API",
-        "version": "9.2.0",
-        "providers": "22+ AI providers",
+        "version": "10.0.0",
+        "providers": "32+ AI providers",
+        "features": ["JWT Auth", "Stripe Payments", "Multi-provider verification"],
         "endpoints": {
             "/verify": "POST - Verify a claim",
             "/v3/verify": "POST - V3 API",
+            "/auth/*": "POST/GET - Authentication",
+            "/stripe/*": "POST/GET - Payments",
             "/tools/*": "POST - Enterprise tools",
             "/health": "GET - Health check",
             "/providers": "GET - List providers"
@@ -2190,10 +2566,12 @@ async def health():
     return {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "9.2.0",
+        "version": "10.0.0",
         "environment": Config.ENV,
         "providers_available": len(providers),
-        "providers": providers
+        "providers": providers,
+        "auth_enabled": True,
+        "stripe_configured": bool(Config.STRIPE_SECRET_KEY)
     }
 
 
@@ -2817,25 +3195,347 @@ async def realtime_stream(request: ToolRequest):
 
 
 # =============================================================================
-# STRIPE INTEGRATION (Ready for activation)
+# USER DATABASE (In-Memory - Replace with PostgreSQL in production)
 # =============================================================================
 
+import jwt
+import bcrypt
+from datetime import datetime, timedelta
+
+# In-memory user store (replace with database in production)
+USERS_DB: Dict[str, Dict] = {}
+SESSIONS_DB: Dict[str, Dict] = {}
+
+# JWT Configuration
+JWT_SECRET = os.getenv("JWT_SECRET", Config.SECRET_KEY)
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_HOURS = 24
+
+class UserAuth:
+    """User authentication and session management"""
+    
+    @staticmethod
+    def hash_password(password: str) -> str:
+        """Hash a password using bcrypt"""
+        return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    
+    @staticmethod
+    def verify_password(password: str, hashed: str) -> bool:
+        """Verify a password against its hash"""
+        return bcrypt.checkpw(password.encode(), hashed.encode())
+    
+    @staticmethod
+    def create_token(user_id: str, email: str, tier: str = "free") -> str:
+        """Create a JWT token"""
+        payload = {
+            "user_id": user_id,
+            "email": email,
+            "tier": tier,
+            "exp": datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS),
+            "iat": datetime.utcnow()
+        }
+        return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    
+    @staticmethod
+    def verify_token(token: str) -> Optional[Dict]:
+        """Verify and decode a JWT token"""
+        try:
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            return payload
+        except jwt.ExpiredSignatureError:
+            return None
+        except jwt.InvalidTokenError:
+            return None
+    
+    @staticmethod
+    def register_user(email: str, password: str, name: str = "") -> Dict:
+        """Register a new user"""
+        if email in USERS_DB:
+            raise ValueError("Email already registered")
+        
+        user_id = secrets.token_hex(16)
+        USERS_DB[email] = {
+            "user_id": user_id,
+            "email": email,
+            "name": name,
+            "password_hash": UserAuth.hash_password(password),
+            "tier": "free",
+            "stripe_customer_id": None,
+            "stripe_subscription_id": None,
+            "verifications_used": 0,
+            "created_at": datetime.utcnow().isoformat(),
+            "last_login": None
+        }
+        return {"user_id": user_id, "email": email}
+    
+    @staticmethod
+    def login_user(email: str, password: str) -> Optional[Dict]:
+        """Authenticate user and return token"""
+        user = USERS_DB.get(email)
+        if not user:
+            return None
+        if not UserAuth.verify_password(password, user["password_hash"]):
+            return None
+        
+        user["last_login"] = datetime.utcnow().isoformat()
+        token = UserAuth.create_token(user["user_id"], email, user["tier"])
+        return {
+            "token": token,
+            "user_id": user["user_id"],
+            "email": email,
+            "tier": user["tier"],
+            "name": user.get("name", "")
+        }
+
+
+# Pricing Tiers with verification limits
+PRICING_TIERS = {
+    "free": {"verifications_per_month": 300, "providers": 2, "loops": 4},
+    "starter": {"verifications_per_month": 2000, "providers": 4, "loops": 5},
+    "pro": {"verifications_per_month": 5000, "providers": 8, "loops": 5},
+    "professional": {"verifications_per_month": 15000, "providers": 15, "loops": 6},
+    "business": {"verifications_per_month": 60000, "providers": 17, "loops": 6},
+    "business_plus": {"verifications_per_month": 75000, "providers": 17, "loops": 7},
+    "enterprise": {"verifications_per_month": None, "providers": 17, "loops": 7}  # Unlimited
+}
+
+
+# =============================================================================
+# AUTH ENDPOINTS
+# =============================================================================
+
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    name: str = ""
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+@app.post("/auth/register")
+async def register(request: RegisterRequest):
+    """Register a new user"""
+    try:
+        result = UserAuth.register_user(request.email, request.password, request.name)
+        token = UserAuth.create_token(result["user_id"], request.email, "free")
+        return {
+            "success": True,
+            "user_id": result["user_id"],
+            "email": request.email,
+            "token": token,
+            "tier": "free"
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/auth/login")
+async def login(request: LoginRequest):
+    """Login user and get JWT token"""
+    result = UserAuth.login_user(request.email, request.password)
+    if not result:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"success": True, **result}
+
+@app.get("/auth/me")
+async def get_current_user(authorization: Optional[str] = Header(None)):
+    """Get current user from JWT token"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+    
+    token = authorization.split(" ")[1]
+    payload = UserAuth.verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user = USERS_DB.get(payload["email"])
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {
+        "user_id": user["user_id"],
+        "email": user["email"],
+        "name": user.get("name", ""),
+        "tier": user["tier"],
+        "verifications_used": user["verifications_used"],
+        "verifications_limit": PRICING_TIERS[user["tier"]]["verifications_per_month"],
+        "created_at": user["created_at"]
+    }
+
+
+# =============================================================================
+# STRIPE INTEGRATION (Full Implementation)
+# =============================================================================
+
+import stripe
+
+# Configure Stripe
+stripe.api_key = Config.STRIPE_SECRET_KEY
+
+# Stripe Price IDs (set these in your .env)
+STRIPE_PRICES = {
+    "starter": os.getenv("STRIPE_STARTER_PRICE_ID"),
+    "pro": os.getenv("STRIPE_PRO_PRICE_ID"),
+    "professional": os.getenv("STRIPE_PROFESSIONAL_PRICE_ID"),
+    "business": os.getenv("STRIPE_BUSINESS_PRICE_ID"),
+    "business_plus": os.getenv("STRIPE_BUSINESS_PLUS_PRICE_ID"),
+    "enterprise": os.getenv("STRIPE_ENTERPRISE_PRICE_ID")
+}
+
+class CheckoutRequest(BaseModel):
+    tier: str
+    success_url: str = "https://verity-systems.com/success"
+    cancel_url: str = "https://verity-systems.com/pricing"
+
 @app.post("/stripe/create-checkout")
-async def create_checkout_session():
-    """Create Stripe checkout session"""
+async def create_checkout_session(request: CheckoutRequest, authorization: Optional[str] = Header(None)):
+    """Create Stripe checkout session for subscription"""
     if not Config.STRIPE_SECRET_KEY:
         raise HTTPException(status_code=503, detail="Stripe not configured")
     
-    # Stripe integration ready - implement when needed
-    return {"status": "ready", "message": "Stripe integration available"}
+    if request.tier not in STRIPE_PRICES:
+        raise HTTPException(status_code=400, detail=f"Invalid tier: {request.tier}")
+    
+    price_id = STRIPE_PRICES.get(request.tier)
+    if not price_id:
+        raise HTTPException(status_code=503, detail=f"Price ID not configured for tier: {request.tier}")
+    
+    # Get user email if authenticated
+    customer_email = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1]
+        payload = UserAuth.verify_token(token)
+        if payload:
+            customer_email = payload.get("email")
+    
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{"price": price_id, "quantity": 1}],
+            mode="subscription",
+            success_url=request.success_url + "?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url=request.cancel_url,
+            customer_email=customer_email
+        )
+        return {
+            "session_id": session.id,
+            "url": session.url,
+            "tier": request.tier
+        }
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/stripe/webhook")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks"""
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+    
+    if not webhook_secret:
+        raise HTTPException(status_code=503, detail="Webhook secret not configured")
+    
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except stripe.error.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid signature")
+    
+    # Handle subscription events
+    if event["type"] == "customer.subscription.created":
+        subscription = event["data"]["object"]
+        customer_id = subscription["customer"]
+        # Update user tier based on subscription
+        customer = stripe.Customer.retrieve(customer_id)
+        email = customer.get("email")
+        if email and email in USERS_DB:
+            # Determine tier from price
+            price_id = subscription["items"]["data"][0]["price"]["id"]
+            for tier, pid in STRIPE_PRICES.items():
+                if pid == price_id:
+                    USERS_DB[email]["tier"] = tier
+                    USERS_DB[email]["stripe_customer_id"] = customer_id
+                    USERS_DB[email]["stripe_subscription_id"] = subscription["id"]
+                    break
+    
+    elif event["type"] == "customer.subscription.deleted":
+        subscription = event["data"]["object"]
+        customer_id = subscription["customer"]
+        customer = stripe.Customer.retrieve(customer_id)
+        email = customer.get("email")
+        if email and email in USERS_DB:
+            USERS_DB[email]["tier"] = "free"
+            USERS_DB[email]["stripe_subscription_id"] = None
+    
+    return {"received": True}
+
+@app.get("/stripe/subscription")
+async def get_subscription(authorization: Optional[str] = Header(None)):
+    """Get user's current subscription"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authorization")
+    
+    token = authorization.split(" ")[1]
+    payload = UserAuth.verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user = USERS_DB.get(payload["email"])
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    subscription_id = user.get("stripe_subscription_id")
+    if not subscription_id:
+        return {
+            "tier": user["tier"],
+            "status": "free",
+            "subscription": None
+        }
+    
+    try:
+        subscription = stripe.Subscription.retrieve(subscription_id)
+        return {
+            "tier": user["tier"],
+            "status": subscription.status,
+            "current_period_end": subscription.current_period_end,
+            "cancel_at_period_end": subscription.cancel_at_period_end
+        }
+    except stripe.error.StripeError as e:
+        return {"tier": user["tier"], "status": "error", "error": str(e)}
+
+@app.post("/stripe/cancel")
+async def cancel_subscription(authorization: Optional[str] = Header(None)):
+    """Cancel user's subscription"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authorization")
+    
+    token = authorization.split(" ")[1]
+    payload = UserAuth.verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user = USERS_DB.get(payload["email"])
+    if not user or not user.get("stripe_subscription_id"):
+        raise HTTPException(status_code=400, detail="No active subscription")
+    
+    try:
+        subscription = stripe.Subscription.modify(
+            user["stripe_subscription_id"],
+            cancel_at_period_end=True
+        )
+        return {"status": "canceled", "cancel_at": subscription.cancel_at}
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/stripe/config")
 async def get_stripe_config():
     """Get Stripe public configuration"""
     return {
         "publishable_key": Config.STRIPE_PUBLISHABLE_KEY if Config.STRIPE_PUBLISHABLE_KEY else None,
-        "configured": bool(Config.STRIPE_SECRET_KEY and Config.STRIPE_PUBLISHABLE_KEY)
+        "configured": bool(Config.STRIPE_SECRET_KEY and Config.STRIPE_PUBLISHABLE_KEY),
+        "tiers": {
+            tier: {"price": f"${price['verifications_per_month']} verifications/month"}
+            for tier, price in PRICING_TIERS.items()
+        }
     }
 
 
@@ -2866,18 +3566,22 @@ async def get_stats():
     providers = get_available_providers()
     
     return {
-        "version": "9.2.0",
+        "version": "10.0.0",
         "providers_active": len(providers),
         "providers_list": providers,
         "rate_limit": {
             "requests_per_minute": Config.RATE_LIMIT_REQUESTS,
             "window_seconds": Config.RATE_LIMIT_WINDOW
         },
+        "auth_enabled": True,
+        "stripe_configured": bool(Config.STRIPE_SECRET_KEY),
         "features": {
             "claim_verification": True,
             "batch_verification": True,
             "social_media_analysis": True,
             "source_credibility": True,
+            "jwt_authentication": True,
+            "stripe_payments": True,
             "statistics_validation": True,
             "image_forensics": True,
             "research_assistant": True,
