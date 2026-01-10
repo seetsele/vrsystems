@@ -33,8 +33,11 @@ from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+# Load .env from the script's directory, not the working directory
+_script_dir = Path(__file__).parent
+load_dotenv(_script_dir / ".env")
 
 # =============================================================================
 # CONFIGURATION - ALL PROVIDERS
@@ -101,6 +104,16 @@ class Config:
     EXA_API_KEY = os.getenv("EXA_API_KEY")
     BRAVE_API_KEY = os.getenv("BRAVE_API_KEY")
     SERPER_API_KEY = os.getenv("SERPER_API_KEY")
+    YOU_API_KEY = os.getenv("YOU_API_KEY")
+    JINA_API_KEY = os.getenv("JINA_API_KEY")
+    
+    # Fact-Check & Academic APIs
+    GOOGLE_FACTCHECK_API_KEY = os.getenv("GOOGLE_FACTCHECK_API_KEY")
+    CLAIMBUSTER_API_KEY = os.getenv("CLAIMBUSTER_API_KEY")
+    SEMANTIC_SCHOLAR_API_KEY = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
+    
+    # Additional AI Providers
+    NOVITA_API_KEY = os.getenv("NOVITA_API_KEY")
     
     # Stripe
     STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
@@ -154,6 +167,11 @@ LATEST_MODELS = {
     "anyscale": "meta-llama/Llama-3.3-70B-Instruct",
     "nvidia": "meta/llama-3.1-70b-instruct",
     "cloudflare": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    
+    # Tier 6: Search & Research AI
+    "you": "you-chat",
+    "jina": "jina-embeddings-v3",
+    "novita": "meta-llama/llama-3.3-70b-instruct",
 }
 
 
@@ -251,7 +269,50 @@ provider_health = ProviderHealth()
 
 
 # =============================================================================
-# AI PROVIDERS - ALL 12 PROVIDERS WITH ROBUST FAILOVER
+# PROVIDER CONFIGURATION - SINGLE SOURCE OF TRUTH
+# =============================================================================
+
+def get_all_provider_checks():
+    """Get ALL provider checks - single source of truth"""
+    return [
+        # Tier 1: Primary (fastest)
+        ("groq", Config.GROQ_API_KEY),
+        ("perplexity", Config.PERPLEXITY_API_KEY),
+        ("google", Config.GOOGLE_AI_API_KEY),
+        # Tier 2: Major Providers
+        ("openai", Config.OPENAI_API_KEY),
+        ("anthropic", Config.ANTHROPIC_API_KEY),
+        ("mistral", Config.MISTRAL_API_KEY),
+        ("cohere", Config.COHERE_API_KEY),
+        # Tier 3: Specialized
+        ("cerebras", Config.CEREBRAS_API_KEY),
+        ("sambanova", Config.SAMBANOVA_API_KEY),
+        ("fireworks", Config.FIREWORKS_API_KEY),
+        ("deepseek", Config.DEEPSEEK_API_KEY),
+        # Tier 4: Aggregators
+        ("openrouter", Config.OPENROUTER_API_KEY),
+        ("huggingface", Config.HUGGINGFACE_API_KEY),
+        ("together", Config.TOGETHER_API_KEY),
+        ("replicate", Config.REPLICATE_API_KEY),
+        # Tier 5: Additional
+        ("xai", Config.XAI_API_KEY),
+        ("ai21", Config.AI21_API_KEY),
+        ("lepton", Config.LEPTON_API_KEY),
+        ("anyscale", Config.ANYSCALE_API_KEY),
+        ("nvidia", Config.NVIDIA_NIM_API_KEY),
+        # Tier 6: Search & Research AI
+        ("you", Config.YOU_API_KEY),
+        ("jina", Config.JINA_API_KEY),
+        ("novita", Config.NOVITA_API_KEY),
+    ]
+
+def get_available_providers():
+    """Get list of available provider names"""
+    return [name for name, key in get_all_provider_checks() if key]
+
+
+# =============================================================================
+# AI PROVIDERS - ALL 22+ PROVIDERS WITH ROBUST FAILOVER
 # =============================================================================
 
 class AIProviders:
@@ -271,40 +332,9 @@ class AIProviders:
             await self.http_client.aclose()
     
     async def _check_providers(self):
-        """Check which providers are available"""
-        provider_checks = [
-            # Tier 1
-            ("groq", Config.GROQ_API_KEY),
-            ("perplexity", Config.PERPLEXITY_API_KEY),
-            ("google", Config.GOOGLE_AI_API_KEY),
-            # Tier 2
-            ("openai", Config.OPENAI_API_KEY),
-            ("anthropic", Config.ANTHROPIC_API_KEY),
-            ("mistral", Config.MISTRAL_API_KEY),
-            ("cohere", Config.COHERE_API_KEY),
-            # Tier 3
-            ("cerebras", Config.CEREBRAS_API_KEY),
-            ("sambanova", Config.SAMBANOVA_API_KEY),
-            ("fireworks", Config.FIREWORKS_API_KEY),
-            ("deepseek", Config.DEEPSEEK_API_KEY),
-            # Tier 4
-            ("openrouter", Config.OPENROUTER_API_KEY),
-            ("huggingface", Config.HUGGINGFACE_API_KEY),
-            ("together", Config.TOGETHER_API_KEY),
-            ("replicate", Config.REPLICATE_API_KEY),
-            # Tier 5
-            ("xai", Config.XAI_API_KEY),
-            ("ai21", Config.AI21_API_KEY),
-            ("lepton", Config.LEPTON_API_KEY),
-            ("anyscale", Config.ANYSCALE_API_KEY),
-            ("nvidia", Config.NVIDIA_NIM_API_KEY),
-        ]
-        
-        for name, key in provider_checks:
-            if key:
-                self.available_providers.append(name)
-        
-        logger.info(f"Available providers ({len(self.available_providers)}): {self.available_providers}")
+        """Check which providers are available - uses global helper"""
+        self.available_providers = get_available_providers()
+        logger.info(f"[PROVIDERS] {len(self.available_providers)} available: {self.available_providers}")
     
     async def _call_with_retry(self, provider: str, call_func, max_retries: int = 2) -> Dict:
         """Call a provider with automatic retry and health tracking"""
@@ -692,6 +722,33 @@ class AIProviders:
         
         return {"success": False, "status_code": 0}
     
+    async def verify_with_huggingface(self, claim: str) -> Dict:
+        """Verify claim using HuggingFace Inference API"""
+        if not Config.HUGGINGFACE_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                f"https://api-inference.huggingface.co/models/{LATEST_MODELS['huggingface']}",
+                headers={"Authorization": f"Bearer {Config.HUGGINGFACE_API_KEY}"},
+                json={
+                    "inputs": f"<s>[INST] You are a fact-checker. Verify this claim and provide verdict (true/false/partially_true), confidence (0-1), and explanation.\n\nClaim: {claim} [/INST]",
+                    "parameters": {"max_new_tokens": 500, "temperature": 0.1}
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data[0]["generated_text"] if isinstance(data, list) else str(data)
+                return {"provider": "huggingface", "model": LATEST_MODELS["huggingface"], "response": content, "success": True}
+            else:
+                logger.error(f"HuggingFace error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"HuggingFace exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
     # =========================================================================
     # TIER 5: ADDITIONAL PROVIDERS
     # =========================================================================
@@ -923,6 +980,99 @@ class AIProviders:
         return {"success": False, "status_code": 0}
 
     # =========================================================================
+    # TIER 6: SEARCH & RESEARCH AI PROVIDERS
+    # =========================================================================
+    
+    async def verify_with_you(self, claim: str) -> Dict:
+        """Verify claim using You.com AI (with web search)"""
+        if not Config.YOU_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.get(
+                "https://api.ydc-index.io/search",
+                headers={"X-API-Key": Config.YOU_API_KEY},
+                params={
+                    "query": f"fact check: {claim}",
+                    "num_web_results": 5
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                # Extract search results as verification context
+                snippets = []
+                if "hits" in data:
+                    for hit in data["hits"][:3]:
+                        if "snippets" in hit:
+                            snippets.extend(hit["snippets"][:2])
+                
+                content = f"Search results for claim verification:\n" + "\n".join(snippets[:5]) if snippets else "No results found"
+                return {"provider": "you", "model": "you-search", "response": content, "success": True}
+            else:
+                logger.error(f"You.com error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"You.com exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
+    async def verify_with_jina(self, claim: str) -> Dict:
+        """Verify claim using Jina AI Reader (web content extraction)"""
+        if not Config.JINA_API_KEY:
+            return None
+        
+        try:
+            # Use Jina Reader to search and extract content
+            response = await self.http_client.get(
+                f"https://s.jina.ai/{claim}",
+                headers={"Authorization": f"Bearer {Config.JINA_API_KEY}"}
+            )
+            
+            if response.status_code == 200:
+                content = response.text[:2000]  # Limit response size
+                return {"provider": "jina", "model": "jina-reader", "response": content, "success": True}
+            else:
+                logger.error(f"Jina error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Jina exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+    
+    async def verify_with_novita(self, claim: str) -> Dict:
+        """Verify claim using Novita AI (LLM inference)"""
+        if not Config.NOVITA_API_KEY:
+            return None
+        
+        try:
+            response = await self.http_client.post(
+                "https://api.novita.ai/v3/openai/chat/completions",
+                headers={"Authorization": f"Bearer {Config.NOVITA_API_KEY}"},
+                json={
+                    "model": LATEST_MODELS.get("novita", "meta-llama/llama-3.3-70b-instruct"),
+                    "messages": [
+                        {"role": "system", "content": "You are a fact-checker. Verify claims with verdicts."},
+                        {"role": "user", "content": f"Fact-check: {claim}"}
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": 500
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return {"provider": "novita", "model": LATEST_MODELS.get("novita", "llama-3.3-70b"), "response": content, "success": True}
+            else:
+                logger.error(f"Novita error: {response.status_code}")
+                return {"success": False, "status_code": response.status_code}
+        except Exception as e:
+            logger.error(f"Novita exception: {e}")
+        
+        return {"success": False, "status_code": 0}
+
+    # =========================================================================
     # MAIN VERIFICATION WITH GUARANTEED FALLBACK
     # =========================================================================
     
@@ -947,19 +1097,23 @@ class AIProviders:
             "fireworks": self.verify_with_fireworks,
             "deepseek": self.verify_with_deepseek,
             "openrouter": self.verify_with_openrouter,
+            "huggingface": self.verify_with_huggingface,
             "together": self.verify_with_together,
             "xai": self.verify_with_xai,
             "ai21": self.verify_with_ai21,
             "lepton": self.verify_with_lepton,
             "anyscale": self.verify_with_anyscale,
             "nvidia": self.verify_with_nvidia,
+            "you": self.verify_with_you,
+            "jina": self.verify_with_jina,
+            "novita": self.verify_with_novita,
         }
         
-        # Priority order - fastest and most reliable first (20 providers)
+        # Priority order - fastest and most reliable first (22 providers)
         priority_order = [
             "groq", "perplexity", "mistral", "cerebras", "fireworks", "deepseek",
-            "openrouter", "cohere", "sambanova", "together", "lepton", "anyscale",
-            "google", "openai", "anthropic", "xai", "ai21", "nvidia"
+            "openrouter", "cohere", "sambanova", "together", "huggingface", "lepton", "anyscale",
+            "google", "openai", "anthropic", "xai", "ai21", "nvidia", "you", "jina", "novita"
         ]
         
         # Filter to healthy and available providers
@@ -1125,22 +1279,8 @@ async def verify_api_key(
 async def lifespan(app: FastAPI):
     logger.info(f"[START] Verity API v9 ({Config.ENV})")
     
-    # Check all providers
-    provider_checks = [
-        ("groq", Config.GROQ_API_KEY),
-        ("perplexity", Config.PERPLEXITY_API_KEY),
-        ("google", Config.GOOGLE_AI_API_KEY),
-        ("openai", Config.OPENAI_API_KEY),
-        ("mistral", Config.MISTRAL_API_KEY),
-        ("cohere", Config.COHERE_API_KEY),
-        ("cerebras", Config.CEREBRAS_API_KEY),
-        ("sambanova", Config.SAMBANOVA_API_KEY),
-        ("fireworks", Config.FIREWORKS_API_KEY),
-        ("openrouter", Config.OPENROUTER_API_KEY),
-        ("together", Config.TOGETHER_API_KEY),
-    ]
-    
-    providers = [name for name, key in provider_checks if key]
+    # Use single source of truth for provider checks
+    providers = get_available_providers()
     logger.info(f"[PROVIDERS] {len(providers)} available: {providers}")
     
     yield
@@ -1149,8 +1289,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Verity Verification API",
-    description="AI-powered fact verification with 10+ providers",
-    version="9.1.0",
+    description="AI-powered fact verification with 22+ providers",
+    version="9.2.0",
     docs_url="/docs",
     lifespan=lifespan
 )
@@ -1205,8 +1345,8 @@ async def rate_limit_middleware(request: Request, call_next):
 async def root():
     return {
         "name": "Verity Verification API",
-        "version": "9.1.0",
-        "providers": "10+ AI providers",
+        "version": "9.2.0",
+        "providers": "22+ AI providers",
         "endpoints": {
             "/verify": "POST - Verify a claim",
             "/v3/verify": "POST - V3 API",
@@ -1219,26 +1359,12 @@ async def root():
 
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
-    provider_checks = [
-        ("groq", Config.GROQ_API_KEY),
-        ("perplexity", Config.PERPLEXITY_API_KEY),
-        ("google", Config.GOOGLE_AI_API_KEY),
-        ("openai", Config.OPENAI_API_KEY),
-        ("mistral", Config.MISTRAL_API_KEY),
-        ("cohere", Config.COHERE_API_KEY),
-        ("cerebras", Config.CEREBRAS_API_KEY),
-        ("sambanova", Config.SAMBANOVA_API_KEY),
-        ("fireworks", Config.FIREWORKS_API_KEY),
-        ("openrouter", Config.OPENROUTER_API_KEY),
-        ("together", Config.TOGETHER_API_KEY),
-    ]
-    
-    providers = [name for name, key in provider_checks if key]
+    providers = get_available_providers()
     
     return {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "9.1.0",
+        "version": "9.2.0",
         "environment": Config.ENV,
         "providers_available": len(providers),
         "providers": providers
@@ -1248,25 +1374,14 @@ async def health():
 @app.get("/providers")
 async def list_providers():
     """List all available providers with their models and health status"""
-    provider_checks = [
-        ("groq", Config.GROQ_API_KEY, LATEST_MODELS.get("groq")),
-        ("perplexity", Config.PERPLEXITY_API_KEY, LATEST_MODELS.get("perplexity")),
-        ("google", Config.GOOGLE_AI_API_KEY, LATEST_MODELS.get("google")),
-        ("openai", Config.OPENAI_API_KEY, LATEST_MODELS.get("openai")),
-        ("mistral", Config.MISTRAL_API_KEY, LATEST_MODELS.get("mistral")),
-        ("cohere", Config.COHERE_API_KEY, LATEST_MODELS.get("cohere")),
-        ("cerebras", Config.CEREBRAS_API_KEY, LATEST_MODELS.get("cerebras")),
-        ("sambanova", Config.SAMBANOVA_API_KEY, LATEST_MODELS.get("sambanova")),
-        ("fireworks", Config.FIREWORKS_API_KEY, LATEST_MODELS.get("fireworks")),
-        ("openrouter", Config.OPENROUTER_API_KEY, LATEST_MODELS.get("openrouter")),
-        ("together", Config.TOGETHER_API_KEY, LATEST_MODELS.get("together")),
-    ]
+    all_checks = get_all_provider_checks()
     
     health_status = provider_health.get_status()
     available = []
     unavailable = []
     
-    for name, key, model in provider_checks:
+    for name, key in all_checks:
+        model = LATEST_MODELS.get(name, "unknown")
         if key:
             is_healthy = provider_health.is_healthy(name)
             status = "active" if is_healthy else "cooldown"
@@ -1285,7 +1400,7 @@ async def list_providers():
         "total_available": len(available),
         "total_healthy": sum(1 for p in available if p["healthy"]),
         "total_in_cooldown": len(health_status["in_cooldown"]),
-        "total_configured": len(provider_checks),
+        "total_configured": len(all_checks),
         "available": available,
         "unavailable": unavailable,
         "health": health_status
@@ -1653,24 +1768,10 @@ async def batch_verify(request: BatchRequest):
 @app.get("/stats")
 async def get_stats():
     """Get API statistics"""
-    provider_checks = [
-        ("groq", Config.GROQ_API_KEY),
-        ("perplexity", Config.PERPLEXITY_API_KEY),
-        ("google", Config.GOOGLE_AI_API_KEY),
-        ("openai", Config.OPENAI_API_KEY),
-        ("mistral", Config.MISTRAL_API_KEY),
-        ("cohere", Config.COHERE_API_KEY),
-        ("cerebras", Config.CEREBRAS_API_KEY),
-        ("sambanova", Config.SAMBANOVA_API_KEY),
-        ("fireworks", Config.FIREWORKS_API_KEY),
-        ("openrouter", Config.OPENROUTER_API_KEY),
-        ("together", Config.TOGETHER_API_KEY),
-    ]
-    
-    providers = [name for name, key in provider_checks if key]
+    providers = get_available_providers()
     
     return {
-        "version": "9.1.0",
+        "version": "9.2.0",
         "providers_active": len(providers),
         "providers_list": providers,
         "rate_limit": {

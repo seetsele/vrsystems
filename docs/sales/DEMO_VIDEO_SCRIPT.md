@@ -14,7 +14,7 @@
 **[VISUAL: Logo transforms into product interface]**
 
 **NARRATOR:**
-"Meet Verity. Real-time AI fact-checking, powered by 15+ AI providers."
+"Meet Verity. Real-time AI fact-checking, powered by 20+ AI providers."
 
 ---
 

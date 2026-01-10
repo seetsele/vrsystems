@@ -174,7 +174,7 @@ Implemented professional pricing tiers:
 
 ### **Professional** ($199/month) ⭐ Most Popular
 - 15,000 verifications/month
-- 15+ AI providers
+- 20+ AI providers
 - 5 team members
 - Advanced analytics
 
@@ -190,7 +190,7 @@ Implemented professional pricing tiers:
 
 ### **Enterprise** (Custom)
 - Unlimited verifications
-- 15+ AI providers
+- 20+ AI providers
 - 24/7 dedicated support
 - Custom integrations
 - SLA guarantee

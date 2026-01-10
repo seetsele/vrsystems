@@ -56,7 +56,7 @@ Verity Systems has been comprehensively enhanced to become a premium, production
    
 4. Professional ($199/month) ⭐ Most Popular
    - 15,000 verifications/month
-   - 15+ AI providers, 5 team members
+   - 20+ AI providers, 5 team members
    
 5. Business ($599/month)
    - 60,000 verifications/month

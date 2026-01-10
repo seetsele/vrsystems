@@ -11,19 +11,19 @@
 
 ### Tagline (60 characters max)
 ```
-Real-time AI fact-checking API with 15+ provider consensus
+Real-time AI fact-checking API with 20+ provider consensus
 ```
 
 ### Short Description (260 characters max)
 ```
-Verify any claim with 15+ AI providers. No more single-model hallucinations. Get a confidence score, source citations, and explainable reasoning. Free tier: 300 verifications/month. Python & Node.js SDKs included.
+Verify any claim with 20+ AI providers. No more single-model hallucinations. Get a confidence score, source citations, and explainable reasoning. Free tier: 300 verifications/month. Python & Node.js SDKs included.
 ```
 
 ### Full Description
 ```
 🔍 What is Verity?
 
-Verity is a real-time fact-checking API that uses 15+ AI providers to verify claims with unprecedented accuracy. Instead of trusting one model that might hallucinate, Verity queries OpenAI, Anthropic, Google, Perplexity, and more providers simultaneously.
+Verity is a real-time fact-checking API that uses 20+ AI providers to verify claims with unprecedented accuracy. Instead of trusting one model that might hallucinate, Verity queries OpenAI, Anthropic, Google, Perplexity, and more providers simultaneously.
 
 Our Bayesian consensus engine synthesizes their responses into a single verdict with:
 • Confidence score (0-100%)
@@ -70,7 +70,7 @@ I built this because I was frustrated with two things:
 
 2. **Single AI models lie.** ChatGPT, Claude, even Perplexity—they all hallucinate sometimes. Ask them about recent events, niche topics, or anything their training data didn't cover, and you'll get confident-sounding nonsense.
 
-The solution seemed obvious: **what if we asked 15+ AI providers the same question and let them vote?**
+The solution seemed obvious: **what if we asked 20+ AI providers the same question and let them vote?**
 
 That's Verity. Multi-model consensus eliminates the single-point-of-failure problem. When OpenAI, Anthropic, Google, and Perplexity all agree something is true, you can trust it.
 
@@ -97,7 +97,7 @@ Would love your feedback! Happy to answer any questions about the tech, pricing,
 
 ### Gallery Images (1270x760px recommended)
 1. **Hero shot:** Verification interface with result
-2. **How it works:** 15+ AI providers → Consensus Engine → Result
+2. **How it works:** 20+ AI providers → Consensus Engine → Result
 3. **Dashboard:** Analytics and API usage
 4. **Code example:** API request/response
 5. **Pricing:** Tier comparison
@@ -141,11 +141,11 @@ Would love your feedback! Happy to answer any questions about the tech, pricing,
 ```
 🚀 Just launched on Product Hunt!
 
-Verity: Real-time AI fact-checking with 15+ provider consensus.
+Verity: Real-time AI fact-checking with 20+ provider consensus.
 
 Why? Because single AI models hallucinate. A lot.
 
-Our solution: Query 15+ providers, synthesize with Bayesian consensus.
+Our solution: Query 20+ providers, synthesize with Bayesian consensus.
 
 Free tier: 300 verifications/month. 
 
@@ -165,7 +165,7 @@ The problem:
 
 ```
 Our solution:
-• 15+ AI providers (OpenAI, Anthropic, Google, etc.)
+• 20+ AI providers (OpenAI, Anthropic, Google, etc.)
 • Cross-verification consensus
 • Confidence scoring
 • Source citations
@@ -201,7 +201,7 @@ If you find this useful, would love an upvote on @ProductHunt:
 ```
 Excited to announce Verity is now live on Product Hunt! 🚀
 
-We've built a real-time AI fact-checking API that uses 15+ AI providers to verify claims with unprecedented accuracy.
+We've built a real-time AI fact-checking API that uses 20+ AI providers to verify claims with unprecedented accuracy.
 
 The problem we're solving:
 → Manual fact-checking takes 30-60 minutes per claim
@@ -209,7 +209,7 @@ The problem we're solving:
 → Misinformation costs enterprises $78B annually
 
 Our solution:
-→ Query 15+ AI providers simultaneously
+→ Query 20+ AI providers simultaneously
 → Bayesian consensus engine synthesizes results
 → Confidence scoring + source citations
 → Fast response times

@@ -10,7 +10,7 @@ Misinformation costs enterprises $78B annually. Manual fact-checking takes 30-60
 ### The Solution
 **Verity delivers multi-model AI verification in under 2 seconds.**
 
-- **15+ AI providers** cross-verify every claim
+- **20+ AI providers** cross-verify every claim
 - **Bayesian confidence scoring** eliminates single-model bias
 - **Real-time API** for seamless integration
 - **Enterprise SLA** with 99.9% uptime guarantee
@@ -20,7 +20,7 @@ Misinformation costs enterprises $78B annually. Manual fact-checking takes 30-60
 ### How It Works
 
 ```
-Your App → Verity API → 15+ AI Providers → Consensus Engine → Verified Result + Sources
+Your App → Verity API → 20+ AI Providers → Consensus Engine → Verified Result + Sources
 ```
 
 **Response includes:**

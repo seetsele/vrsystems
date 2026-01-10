@@ -37,7 +37,7 @@ You now have the most comprehensive AI-powered fact-checking system ever created
 │                              │                                          │
 │                              ▼                                          │
 │  ┌─────────────────────────────────────────────────────────────────┐   │
-│  │ PHASE 3: 15+ AI PROVIDER QUERIES (Parallel)                     │   │
+│  │ PHASE 3: 20+ AI PROVIDER QUERIES (Parallel)                     │   │
 │  │                                                                  │   │
 │  │  TIER 1: Claude 3.5, GPT-4, Gemini Pro, Groq                    │   │
 │  │  TIER 2: Mistral, Cohere, DeepSeek, Together AI                 │   │
@@ -266,7 +266,7 @@ print(response.json())
 | `verity_social_media_analyzer.py` | 600 | Bot/viral/misinfo detection |
 | `verity_realtime_pipeline.py` | 500 | Circuit breakers & caching |
 | `verity_adaptive_learning.py` | 350 | Learning from verifications |
-| `ultimate_providers.py` | 700 | 15+ AI provider integrations |
+| `ultimate_providers.py` | 700 | 20+ AI provider integrations |
 | `verity_api_v2.py` | 500 | FastAPI server |
 
 **TOTAL: ~8,700 lines of proprietary code**
@@ -277,7 +277,7 @@ print(response.json())
 
 What makes this different from everything else:
 
-1. **Multi-Model Consensus** - Not just one AI, but 15+ providers voting
+1. **Multi-Model Consensus** - Not just one AI, but 20+ providers voting
 2. **7-Layer Verification** - Multiple validation layers, not single pass
 3. **Monte Carlo Confidence** - Statistical rigor, not just "probably true"
 4. **Propaganda Detection** - Catches manipulation attempts

@@ -1,4 +1,4 @@
-﻿# VERITY SYSTEMS - COMPREHENSIVE TEST REPORT
+# VERITY SYSTEMS - COMPREHENSIVE TEST REPORT
 # Generated: 2026-01-09 09:31:58
 # ============================================
 

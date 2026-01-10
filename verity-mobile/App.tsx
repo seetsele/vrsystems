@@ -18,6 +18,9 @@ import HistoryScreen from './src/screens/HistoryScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import AuthScreen from './src/screens/AuthScreen';
 
+// Chatbot component
+import Chatbot, { ChatbotFAB } from './src/components/Chatbot';
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -185,10 +188,23 @@ function AppNavigator() {
 
 // Wrapper to provide context to navigator
 function AppWithNavigation() {
+  const [chatbotVisible, setChatbotVisible] = useState(false);
+  const [showFAB, setShowFAB] = useState(true);
+
   return (
     <NavigationContainer theme={DarkTheme}>
       <StatusBar style="light" />
       <AppNavigator />
+      {showFAB && (
+        <ChatbotFAB 
+          onPress={() => setChatbotVisible(true)} 
+          hasNotification={!chatbotVisible}
+        />
+      )}
+      <Chatbot 
+        visible={chatbotVisible} 
+        onClose={() => setChatbotVisible(false)} 
+      />
     </NavigationContainer>
   );
 }

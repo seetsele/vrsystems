@@ -16,7 +16,7 @@
 ## Slide 3: The Solution
 **Multi-Model AI Verification in < 2 Seconds**
 
-- 15+ AI providers cross-verify every claim
+- 20+ AI providers cross-verify every claim
 - Bayesian confidence scoring eliminates single-model bias
 - Real-time API for seamless integration
 - 300 free verifications/month to start
@@ -26,7 +26,7 @@
 ## Slide 4: How It Works
 ```
 1. Submit claim via API → 
-2. 15+ AI providers analyze → 
+2. 20+ AI providers analyze → 
 3. Consensus engine synthesizes → 
 4. Return verdict + sources + confidence
 ```
@@ -58,7 +58,7 @@
 
 ## Slide 7: Traction
 - ✅ Production API live on Railway
-- ✅ 15+ AI provider integrations
+- ✅ 20+ AI provider integrations
 - ✅ Fast response times achieved
 - ✅ Chrome extension, iOS app, desktop app built
 - 🎯 $10K ARR target: Month 2
@@ -157,7 +157,7 @@
 
 ### Key Talking Points:
 1. **Pain point resonance:** "Every company publishing content faces misinformation risk"
-2. **Technical moat:** "15+ AI providers is hard to replicate - took months of integration work"
+2. **Technical moat:** "20+ AI providers is hard to replicate - took months of integration work"
 3. **Business model clarity:** "$199/month for 15K verifications = $0.013 per verification"
 4. **Urgency:** "Misinformation damage is accelerating - companies need this now"
 
