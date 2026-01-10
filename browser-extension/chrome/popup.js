@@ -1,5 +1,6 @@
 /**
  * Verity Browser Extension - Popup Script
+ * Updated for v10.0.0 dark amber theme
  */
 
 // Elements
@@ -10,17 +11,40 @@ const verdictBadge = document.getElementById('verdict-badge');
 const confidenceDiv = document.getElementById('confidence');
 const explanationDiv = document.getElementById('explanation');
 const sourcesDiv = document.getElementById('sources');
+const providersUsedDiv = document.getElementById('providers-used');
 const errorDiv = document.getElementById('error');
 const settingsBtn = document.getElementById('settings-btn');
 
-// Verdict mappings
-const verdictText = {
-  'true': '✓ TRUE',
-  'mostly_true': '✓ MOSTLY TRUE',
-  'mixed': '⚠ MIXED',
-  'mostly_false': '✗ MOSTLY FALSE',
-  'false': '✗ FALSE',
-  'unverifiable': '? UNVERIFIABLE'
+// Verdict mappings with icons
+const verdictConfig = {
+  'true': { text: 'VERIFIED TRUE', class: 'verdict-true', icon: '✓' },
+  'mostly_true': { text: 'MOSTLY TRUE', class: 'verdict-mostly-true', icon: '✓' },
+  'mixed': { text: 'MIXED EVIDENCE', class: 'verdict-mixed', icon: '⚠' },
+  'mostly_false': { text: 'MOSTLY FALSE', class: 'verdict-mostly-false', icon: '✗' },
+  'false': { text: 'VERIFIED FALSE', class: 'verdict-false', icon: '✗' },
+  'unverifiable': { text: 'UNVERIFIABLE', class: 'verdict-unverifiable', icon: '?' }
+};
+
+// Provider name mappings for display
+const providerNames = {
+  'openai': 'OpenAI GPT-4',
+  'anthropic': 'Claude 3.5',
+  'google': 'Google Gemini',
+  'mistral': 'Mistral AI',
+  'together': 'Together AI',
+  'groq': 'Groq',
+  'cohere': 'Cohere',
+  'perplexity': 'Perplexity',
+  'huggingface': 'HuggingFace',
+  'deepseek': 'DeepSeek',
+  'github': 'GitHub Copilot',
+  'azure': 'Azure OpenAI',
+  'qwen': 'Qwen',
+  'llama': 'Meta Llama',
+  'gemma': 'Google Gemma',
+  'falcon': 'TII Falcon',
+  'yi': 'Yi AI',
+  'phi': 'Microsoft Phi'
 };
 
 // Initialize
@@ -105,23 +129,57 @@ async function verifyClaim(claim) {
 }
 
 /**
- * Show verification result
+ * Show verification result with providers used
  */
 function showResult(result) {
   const verdict = result.verdict || 'unverifiable';
   const confidence = result.confidence || 0;
   const explanation = result.explanation || 'No explanation available';
   const sources = result.sources || [];
+  const providers = result.providers_used || result.providersUsed || [];
+  
+  // Get verdict config
+  const config = verdictConfig[verdict] || verdictConfig['unverifiable'];
   
   // Update verdict badge
-  verdictBadge.textContent = verdictText[verdict] || verdict.toUpperCase();
-  verdictBadge.className = `verdict-badge verdict-${verdict}`;
+  verdictBadge.textContent = config.text;
+  verdictBadge.className = `verdict-badge ${config.class}`;
   
-  // Update confidence
-  confidenceDiv.textContent = `${confidence}% confidence`;
+  // Update confidence with visual bar
+  const confidenceBar = `
+    <div class="confidence-label">${confidence}% Confidence</div>
+    <div class="confidence-bar">
+      <div class="confidence-fill" style="width: ${confidence}%"></div>
+    </div>
+  `;
+  confidenceDiv.innerHTML = confidenceBar;
   
   // Update explanation
   explanationDiv.textContent = explanation;
+  
+  // Update providers used
+  if (providersUsedDiv && providers.length > 0) {
+    providersUsedDiv.innerHTML = '<div class="providers-title">AI Models Used</div>';
+    const tagsContainer = document.createElement('div');
+    tagsContainer.className = 'provider-tags';
+    
+    providers.slice(0, 8).forEach(provider => {
+      const tag = document.createElement('span');
+      tag.className = 'provider-tag';
+      tag.textContent = providerNames[provider] || provider;
+      tagsContainer.appendChild(tag);
+    });
+    
+    if (providers.length > 8) {
+      const moreTag = document.createElement('span');
+      moreTag.className = 'provider-tag provider-more';
+      moreTag.textContent = `+${providers.length - 8} more`;
+      tagsContainer.appendChild(moreTag);
+    }
+    
+    providersUsedDiv.appendChild(tagsContainer);
+    providersUsedDiv.style.display = 'block';
+  }
   
   // Update sources
   sourcesDiv.innerHTML = '<div class="sources-title">Sources</div>';
@@ -132,18 +190,24 @@ function showResult(result) {
       link.href = source.url;
       link.target = '_blank';
       link.rel = 'noopener';
-      link.textContent = source.name || source.title || source.url;
+      link.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        ${source.name || source.title || new URL(source.url).hostname}
+      `;
       sourcesDiv.appendChild(link);
     });
   } else {
     const noSources = document.createElement('span');
-    noSources.style.fontSize = '13px';
-    noSources.style.color = '#9CA3AF';
+    noSources.className = 'no-sources';
     noSources.textContent = 'No external sources available';
     sourcesDiv.appendChild(noSources);
   }
   
-  // Show result
+  // Show result with animation
   resultDiv.classList.add('visible');
 }
 
