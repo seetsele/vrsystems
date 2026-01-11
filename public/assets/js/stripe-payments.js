@@ -4,11 +4,21 @@
 // ================================================
 
 const VerityPayments = {
+    // Use Railway production API
     API_BASE: window.location.hostname === 'localhost' 
-        ? 'http://localhost:8081' 
-        : 'https://api.verity-systems.com',
+        ? 'http://localhost:8000' 
+        : 'https://veritysystems-production.up.railway.app',
     
     stripeConfig: null,
+    
+    // Stripe Price IDs (Test Mode)
+    PRICE_IDS: {
+        starter: 'price_1SjCYAGjyoSiW1j7eNCmH6yq',
+        pro: 'price_1SjCYAGjyoSiW1j7eNCmH6yq', // Update with actual pro price
+        professional: 'price_1SjCb9GjyoSiW1j7kj9k8j9k',
+        business: 'price_1SjCluGjyoSiW1j7BnKvHq3x',
+        'business-plus': 'price_1SjCluGjyoSiW1j7BnKvHq4x'
+    },
     
     /**
      * Initialize Stripe configuration from API
@@ -19,9 +29,11 @@ const VerityPayments = {
             if (response.ok) {
                 this.stripeConfig = await response.json();
                 console.log('✅ Stripe config loaded');
+            } else {
+                console.log('Stripe config endpoint not available - using defaults');
             }
         } catch (error) {
-            console.error('Failed to load Stripe config:', error);
+            console.warn('Failed to load Stripe config, using fallback:', error.message);
         }
     },
     

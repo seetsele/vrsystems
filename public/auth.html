@@ -279,5 +279,237 @@
             showForm('signup');
         }
     </script>
+    
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    
+    <!-- Authentication Handler -->
+    <script>
+        // ================================================
+        // AUTH FORM HANDLERS
+        // ================================================
+        
+        // Loading state management
+        function setLoading(button, loading) {
+            if (loading) {
+                button.disabled = true;
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = `<svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"/></svg> Processing...`;
+                button.style.opacity = '0.7';
+            } else {
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || 'Submit';
+                button.style.opacity = '1';
+            }
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                padding: 1rem 1.5rem;
+                background: ${type === 'error' ? 'var(--red)' : type === 'success' ? 'var(--green)' : 'var(--amber)'};
+                color: ${type === 'success' || type === 'error' ? '#fff' : '#000'};
+                border-radius: 12px;
+                font-weight: 500;
+                font-size: 0.9rem;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+        
+        // Handle Sign In
+        async function handleSignIn(e) {
+            e.preventDefault();
+            const form = e.target;
+            const email = form.querySelector('input[type="email"]').value;
+            const password = form.querySelector('input[type="password"]').value;
+            const submitBtn = form.querySelector('.btn-submit');
+            
+            if (!email || !password) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            setLoading(submitBtn, true);
+            
+            try {
+                const { data, error } = await VerityAuth.signIn(email, password);
+                
+                if (error) {
+                    showToast(error.message || 'Sign in failed', 'error');
+                    return;
+                }
+                
+                // Store user info
+                localStorage.setItem('verity_user', JSON.stringify(data.user));
+                localStorage.setItem('verity_session', JSON.stringify(data.session));
+                
+                showToast('Welcome back! Redirecting...', 'success');
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    const redirectUrl = new URLSearchParams(window.location.search).get('redirect') || 'dashboard.html';
+                    window.location.href = redirectUrl;
+                }, 1000);
+                
+            } catch (err) {
+                console.error('Sign in error:', err);
+                showToast('An error occurred. Please try again.', 'error');
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        }
+        
+        // Handle Sign Up
+        async function handleSignUp(e) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.querySelector('input[type="text"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+            const password = form.querySelector('input[type="password"]').value;
+            const submitBtn = form.querySelector('.btn-submit');
+            
+            if (!name || !email || !password) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showToast('Password must be at least 8 characters', 'error');
+                return;
+            }
+            
+            setLoading(submitBtn, true);
+            
+            try {
+                const { data, error } = await VerityAuth.signUp(email, password, { 
+                    full_name: name,
+                    tier: 'free'
+                });
+                
+                if (error) {
+                    showToast(error.message || 'Sign up failed', 'error');
+                    return;
+                }
+                
+                showToast('Account created! Check your email to verify.', 'success');
+                
+                // If email confirmation not required, redirect
+                if (data.session) {
+                    localStorage.setItem('verity_user', JSON.stringify(data.user));
+                    localStorage.setItem('verity_session', JSON.stringify(data.session));
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html?welcome=1';
+                    }, 1500);
+                } else {
+                    // Show verification message
+                    setTimeout(() => {
+                        showForm('signin');
+                        showToast('Please check your email and verify your account before signing in.', 'info');
+                    }, 2000);
+                }
+                
+            } catch (err) {
+                console.error('Sign up error:', err);
+                showToast('An error occurred. Please try again.', 'error');
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        }
+        
+        // Handle OAuth Sign In (Google/GitHub)
+        async function handleOAuth(provider) {
+            try {
+                showToast(`Connecting to ${provider}...`, 'info');
+                const { data, error } = await VerityAuth.signInWithOAuth(provider);
+                
+                if (error) {
+                    showToast(error.message || `${provider} sign in failed`, 'error');
+                }
+                // OAuth will redirect automatically
+            } catch (err) {
+                console.error('OAuth error:', err);
+                showToast('OAuth sign in failed. Please try again.', 'error');
+            }
+        }
+        
+        // Handle Password Reset
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = prompt('Enter your email address:');
+            if (!email) return;
+            
+            try {
+                const { error } = await VerityAuth.resetPassword(email);
+                if (error) {
+                    showToast(error.message || 'Password reset failed', 'error');
+                } else {
+                    showToast('Password reset email sent! Check your inbox.', 'success');
+                }
+            } catch (err) {
+                showToast('Password reset failed. Please try again.', 'error');
+            }
+        }
+        
+        // Wire up forms on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sign In Form
+            const signinForm = document.querySelector('#signinForm form');
+            if (signinForm) {
+                signinForm.addEventListener('submit', handleSignIn);
+            }
+            
+            // Sign Up Form
+            const signupForm = document.querySelector('#signupForm form');
+            if (signupForm) {
+                signupForm.addEventListener('submit', handleSignUp);
+            }
+            
+            // OAuth Buttons - Sign In
+            const signinSocialBtns = document.querySelectorAll('#signinForm .social-btn');
+            signinSocialBtns.forEach((btn, i) => {
+                btn.addEventListener('click', () => handleOAuth(i === 0 ? 'google' : 'github'));
+            });
+            
+            // OAuth Buttons - Sign Up
+            const signupSocialBtns = document.querySelectorAll('#signupForm .social-btn');
+            signupSocialBtns.forEach((btn, i) => {
+                btn.addEventListener('click', () => handleOAuth(i === 0 ? 'google' : 'github'));
+            });
+            
+            // Forgot Password Link
+            const forgotLink = document.querySelector('.forgot-link');
+            if (forgotLink) {
+                forgotLink.addEventListener('click', handleForgotPassword);
+            }
+            
+            // Check if already logged in
+            VerityAuth.getCurrentUser().then(({ user }) => {
+                if (user) {
+                    // Already logged in, redirect to dashboard
+                    window.location.href = 'dashboard.html';
+                }
+            });
+        });
+        
+        // Add spinning animation for loading
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin { to { transform: rotate(360deg); } }
+            .spin { animation: spin 1s linear infinite; }
+            @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

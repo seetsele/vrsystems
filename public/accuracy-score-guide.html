@@ -4,21 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Verity Systems - Understanding Accuracy Scores and Confidence Metrics">
-    <meta name="theme-color" content="#050505">
+    <meta name="theme-color" content="#0a0a0b">
     <title>Accuracy Score Guide | Verity Systems</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="assets/css/styles-dark.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120'%3E%3Cpath fill='none' stroke='%23f59e0b' stroke-width='6' d='M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z'/%3E%3Cpolyline fill='none' stroke='%23f59e0b' stroke-width='7' stroke-linecap='round' stroke-linejoin='round' points='35,60 45,72 65,48'/%3E%3C/svg%3E">
     
     <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.08);--text:#fafafa;--muted:#a1a1aa;--dim:#71717a;--amber:#f59e0b;--green:#10b981;--red:#ef4444;--cyan:#22d3ee;--violet:#8b5cf6}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+        html{scroll-behavior:smooth}::selection{background:rgba(245,158,11,0.3)}
+        
+        /* Navigation */
+        nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,11,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+        .nav-c{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center;height:72px}
+        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text);font-weight:600;font-size:1.35rem;letter-spacing:-.03em}
+        .logo svg{width:32px;height:36px}.logo .dot{color:var(--amber)}
+        .nav-m{display:flex;gap:2rem}
+        .nav-m a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:color .2s}
+        .nav-m a:hover{color:var(--text)}
+        .nav-r{display:flex;align-items:center;gap:1rem}
+        .btn-g{padding:.55rem 1rem;color:var(--muted);font-size:.875rem;font-weight:500;text-decoration:none;border-radius:8px;transition:all .2s}
+        .btn-g:hover{color:var(--text);background:rgba(255,255,255,.05)}
+        .btn-p{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.35rem;background:var(--amber);color:#000;border-radius:8px;font-size:.875rem;font-weight:600;text-decoration:none;transition:all .2s}
+        .btn-p:hover{background:#d97706;transform:translateY(-1px);box-shadow:0 10px 30px rgba(245,158,11,.25)}
+        .btn-p svg{width:16px;height:16px}
+        .mob-btn{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:.5rem}
+        .mob-btn span{width:22px;height:2px;background:var(--text);border-radius:1px}
+
         /* Accuracy Score Documentation Styles */
         .accuracy-container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 140px 20px 60px;
         }
 
         .page-header {
@@ -27,8 +49,10 @@
         }
 
         .page-header h1 {
+            font-family: 'Newsreader', Georgia, serif;
             font-size: 3.5rem;
-            background: linear-gradient(135deg, #6366f1, #22d3ee);
+            font-weight: 400;
+            background: linear-gradient(135deg, var(--amber), #fbbf24, var(--cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -37,7 +61,7 @@
 
         .page-header p {
             font-size: 1.1rem;
-            color: #a0a0a0;
+            color: var(--muted);
             max-width: 600px;
             margin: 0 auto;
         }
@@ -47,16 +71,18 @@
         }
 
         .section-title {
+            font-family: 'Newsreader', Georgia, serif;
             font-size: 2rem;
-            color: #ffffff;
+            font-weight: 500;
+            color: var(--text);
             margin-bottom: 30px;
-            border-left: 4px solid #6366f1;
+            border-left: 4px solid var(--amber);
             padding-left: 20px;
         }
 
         .section-subtitle {
             font-size: 1.3rem;
-            color: #22d3ee;
+            color: var(--amber);
             margin-bottom: 20px;
             margin-top: 30px;
         }
@@ -69,47 +95,51 @@
         }
 
         .confidence-band {
-            border: 2px solid rgba(99, 102, 241, 0.3);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 25px;
-            background: rgba(99, 102, 241, 0.05);
+            background: var(--card);
             transition: all 0.3s ease;
         }
 
         .confidence-band:hover {
-            border-color: #6366f1;
-            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(255,255,255,.15);
+            background: var(--elevated);
             transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0,0,0,.3);
         }
 
         .confidence-band.high {
-            border-color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
             background: rgba(16, 185, 129, 0.05);
         }
 
         .confidence-band.high:hover {
-            border-color: #10b981;
+            border-color: var(--green);
             background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.15);
         }
 
         .confidence-band.medium {
-            border-color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
             background: rgba(245, 158, 11, 0.05);
         }
 
         .confidence-band.medium:hover {
-            border-color: #f59e0b;
+            border-color: var(--amber);
             background: rgba(245, 158, 11, 0.1);
+            box-shadow: 0 10px 40px rgba(245, 158, 11, 0.15);
         }
 
         .confidence-band.low {
-            border-color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
             background: rgba(239, 68, 68, 0.05);
         }
 
         .confidence-band.low:hover {
-            border-color: #ef4444;
+            border-color: var(--red);
             background: rgba(239, 68, 68, 0.1);
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.15);
         }
 
         .confidence-header {
@@ -122,24 +152,24 @@
         .confidence-range {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #ffffff;
+            color: var(--text);
             font-family: 'JetBrains Mono', monospace;
         }
 
         .confidence-label {
             font-size: 0.9rem;
-            color: #a0a0a0;
+            color: var(--muted);
             margin-top: 10px;
         }
 
         .methodology-formula {
-            background: rgba(34, 211, 238, 0.05);
-            border: 1px solid rgba(34, 211, 238, 0.2);
-            border-radius: 8px;
-            padding: 20px;
+            background: var(--card);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 12px;
+            padding: 24px;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.95rem;
-            color: #22d3ee;
+            color: var(--amber);
             margin: 20px 0;
             overflow-x: auto;
         }
@@ -151,41 +181,43 @@
         }
 
         .tier-card {
-            border-left: 4px solid #6366f1;
-            background: rgba(99, 102, 241, 0.05);
-            border-radius: 8px;
-            padding: 20px;
+            border-left: 4px solid var(--amber);
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .tier-card:hover {
+            background: var(--elevated);
+            transform: translateX(4px);
         }
 
         .tier-card.tier-1 {
-            border-left-color: #10b981;
-            background: rgba(16, 185, 129, 0.05);
+            border-left-color: var(--green);
         }
 
         .tier-card.tier-2 {
-            border-left-color: #f59e0b;
-            background: rgba(245, 158, 11, 0.05);
+            border-left-color: var(--amber);
         }
 
         .tier-card.tier-3 {
-            border-left-color: #6366f1;
-            background: rgba(99, 102, 241, 0.05);
+            border-left-color: var(--cyan);
         }
 
         .tier-card.tier-4 {
-            border-left-color: #ef4444;
-            background: rgba(239, 68, 68, 0.05);
+            border-left-color: var(--red);
         }
 
         .tier-title {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #ffffff;
+            color: var(--text);
             margin-bottom: 10px;
         }
 
         .tier-description {
-            color: #a0a0a0;
+            color: var(--muted);
             font-size: 0.95rem;
             line-height: 1.6;
         }
@@ -193,39 +225,51 @@
         .source-examples {
             margin-top: 12px;
             padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--border);
         }
 
         .source-item {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--elevated);
             padding: 6px 12px;
-            border-radius: 4px;
+            border-radius: 6px;
             margin: 4px 8px 4px 0;
             font-size: 0.85rem;
-            color: #e0e0e0;
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .source-item:hover {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber);
         }
 
         .example-verification {
-            background: rgba(22, 163, 74, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            border-radius: 8px;
-            padding: 20px;
+            background: var(--card);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 24px;
             margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .example-verification:hover {
+            border-color: var(--green);
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.1);
         }
 
         .example-title {
-            color: #22c55e;
+            color: var(--green);
             font-weight: 600;
             margin-bottom: 15px;
         }
 
         .example-claim {
             background: rgba(0, 0, 0, 0.3);
-            border-left: 3px solid #22c55e;
+            border-left: 3px solid var(--green);
             padding: 15px;
             margin: 15px 0;
-            border-radius: 4px;
+            border-radius: 8px;
             font-style: italic;
         }
 
@@ -237,21 +281,27 @@
         }
 
         .breakdown-item {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 6px;
-            padding: 12px;
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .breakdown-item:hover {
+            border-color: rgba(245, 158, 11, 0.3);
+            transform: translateY(-2px);
         }
 
         .breakdown-label {
-            color: #a0a0a0;
+            color: var(--muted);
             font-size: 0.85rem;
             margin-bottom: 6px;
         }
 
         .breakdown-value {
-            color: #22d3ee;
+            color: var(--amber);
             font-family: 'JetBrains Mono', monospace;
             font-weight: 600;
             font-size: 1.2rem;
@@ -259,60 +309,90 @@
 
         .faq-item {
             margin-bottom: 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
             padding-bottom: 20px;
         }
 
         .faq-question {
-            color: #22d3ee;
+            color: var(--amber);
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 10px;
         }
 
         .faq-answer {
-            color: #a0a0a0;
+            color: var(--muted);
             line-height: 1.8;
         }
 
         .highlight {
-            background: rgba(34, 211, 238, 0.2);
-            color: #22d3ee;
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--amber);
             padding: 2px 6px;
-            border-radius: 3px;
+            border-radius: 4px;
             font-weight: 500;
         }
 
         .warning-box {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            padding: 20px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 12px;
+            padding: 24px;
             margin: 20px 0;
             color: #fca5a5;
         }
 
         .info-box {
-            background: rgba(34, 211, 238, 0.1);
-            border: 1px solid rgba(34, 211, 238, 0.3);
-            border-radius: 8px;
-            padding: 20px;
+            background: var(--card);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            padding: 24px;
             margin: 20px 0;
-            color: #a5f3fc;
+            color: var(--muted);
+        }
+
+        .info-box strong {
+            color: var(--amber);
         }
 
         .back-to-home {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             margin-bottom: 40px;
-            color: #6366f1;
+            color: var(--amber);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
         }
 
         .back-to-home:hover {
-            color: #22d3ee;
+            color: #fbbf24;
             transform: translateX(-5px);
+        }
+
+        /* Footer */
+        footer{border-top:1px solid var(--border);padding:4rem 2rem;background:var(--card);margin-top:80px}
+        .footer-c{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem}
+        .footer-brand{max-width:280px}
+        .footer-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--text);font-weight:600;font-size:1.25rem;margin-bottom:1rem}
+        .footer-logo svg{width:28px;height:32px}
+        .footer-brand p{font-size:.9rem;color:var(--muted);line-height:1.7}
+        .footer-col h4{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);margin-bottom:1.25rem}
+        .footer-col a{display:block;color:var(--muted);text-decoration:none;font-size:.9rem;margin-bottom:.75rem;transition:color .2s}
+        .footer-col a:hover{color:var(--text)}
+        .footer-bottom{max-width:1200px;margin:3rem auto 0;padding-top:2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .footer-bottom span{font-size:.85rem;color:var(--dim)}
+        .footer-links{display:flex;gap:1.5rem}
+        .footer-links a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+        .footer-links a:hover{color:var(--text)}
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .nav-m{display:none}
+            .mob-btn{display:flex}
+            .nav-r .btn-g{display:none}
+            .footer-c{grid-template-columns:1fr 1fr}
         }
 
         @media (max-width: 768px) {
@@ -328,39 +408,36 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 600px) {
+            .accuracy-container {
+                padding: 120px 1.5rem 40px;
+            }
+            .footer-c{grid-template-columns:1fr}
+            .footer-bottom{flex-direction:column;text-align:center}
+        }
     </style>
 </head>
 <body>
-    <div class="noise-overlay"></div>
-    <div class="grid-background"></div>
-
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
+    <nav>
+        <div class="nav-c">
             <a href="index.html" class="logo">
-                <svg class="logo-icon" viewBox="0 0 40 40" width="32" height="32">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#6366f1"/>
-                            <stop offset="100%" stop-color="#22d3ee"/>
-                        </linearGradient>
-                    </defs>
-                    <path fill="none" stroke="url(#logoGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M8 20 L14 26 L32 8"/>
-                </svg>
-                <span class="logo-text">Verity</span>
+                <svg viewBox="0 0 100 120"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                verity<span class="dot">.</span>
             </a>
-            
-            <div class="nav-links">
-                <a href="index.html#features" class="nav-link">Features</a>
-                <a href="index.html#api" class="nav-link">API</a>
-                <a href="index.html#providers" class="nav-link">Providers</a>
-                <a href="index.html#security" class="nav-link">Security</a>
-                <a href="API_DOCUMENTATION.md" class="nav-link">Docs</a>
+            <div class="nav-m">
+                <a href="index.html#features">Features</a>
+                <a href="tools.html">Tools</a>
+                <a href="verify.html">Verify</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="api-docs.html">Docs</a>
             </div>
-            
-            <div class="nav-actions">
-                <a href="index.html#demo" class="btn btn-ghost">Try Demo</a>
-                <a href="index.html#start" class="btn btn-primary">Get Started</a>
+            <div class="nav-r">
+                <a href="index.html#demo" class="btn-g">Try Demo</a>
+                <a href="auth.html" class="btn-g">Sign In</a>
+                <a href="waitlist.html" class="btn-p">Join Waitlist<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                <button class="mob-btn"><span></span><span></span><span></span></button>
             </div>
         </div>
     </nav>
@@ -378,7 +455,7 @@
         <div class="section">
             <h2 class="section-title">📊 Confidence Scale Explained</h2>
             
-            <p style="color: #a0a0a0; margin-bottom: 30px;">
+            <p style="color: var(--muted); margin-bottom: 30px;">
                 Our confidence scores range from 0% to 100% and indicate how strongly evidence supports or contradicts a claim.
                 Here's what each range means:
             </p>
@@ -390,7 +467,7 @@
                     </div>
                     <div class="confidence-label">
                         <strong>Highly Verified</strong>
-                        <p style="margin-top: 8px; font-size: 0.9rem;">Strong agreement across all sources and AI providers. Multiple independent confirmations.</p>
+                        <p style="margin-top: 8px; font-size: 0.9rem; color: var(--muted);">Strong agreement across all sources and AI providers. Multiple independent confirmations.</p>
                     </div>
                 </div>
 
@@ -400,7 +477,7 @@
                     </div>
                     <div class="confidence-label">
                         <strong>Likely True</strong>
-                        <p style="margin-top: 8px; font-size: 0.9rem;">Good evidence supporting the claim with minimal dissenting sources.</p>
+                        <p style="margin-top: 8px; font-size: 0.9rem; color: var(--muted);">Good evidence supporting the claim with minimal dissenting sources.</p>
                     </div>
                 </div>
 
@@ -410,7 +487,7 @@
                     </div>
                     <div class="confidence-label">
                         <strong>Disputed/Unclear</strong>
-                        <p style="margin-top: 8px; font-size: 0.9rem;">Mixed evidence or conflicting sources. Requires additional context.</p>
+                        <p style="margin-top: 8px; font-size: 0.9rem; color: var(--muted);">Mixed evidence or conflicting sources. Requires additional context.</p>
                     </div>
                 </div>
 
@@ -420,7 +497,7 @@
                     </div>
                     <div class="confidence-label">
                         <strong>Likely False</strong>
-                        <p style="margin-top: 8px; font-size: 0.9rem;">Strong evidence contradicting the claim or unable to be verified.</p>
+                        <p style="margin-top: 8px; font-size: 0.9rem; color: var(--muted);">Strong evidence contradicting the claim or unable to be verified.</p>
                     </div>
                 </div>
             </div>
@@ -435,7 +512,7 @@
         <div class="section">
             <h2 class="section-title">⚙️ How We Calculate Scores</h2>
             
-            <p style="color: #a0a0a0; margin-bottom: 20px;">
+            <p style="color: var(--muted); margin-bottom: 20px;">
                 Our confidence score is calculated using a weighted combination of four key factors:
             </p>
 
@@ -498,7 +575,7 @@ Confidence Score =
         <div class="section">
             <h2 class="section-title">🏛️ Source Credibility Hierarchy</h2>
             
-            <p style="color: #a0a0a0; margin-bottom: 20px;">
+            <p style="color: var(--muted); margin-bottom: 20px;">
                 Different sources carry different weight in our calculations based on their reliability:
             </p>
 
@@ -574,7 +651,7 @@ Confidence Score =
                     The Earth is approximately 4.54 billion years old.
                 </div>
 
-                <p style="color: #a0a0a0; margin: 15px 0;">Final Confidence Score: <span class="highlight">98.7%</span></p>
+                <p style="color: var(--muted); margin: 15px 0;">Final Confidence Score: <span class="highlight">98.7%</span></p>
 
                 <div class="score-breakdown">
                     <div class="breakdown-item">
@@ -595,22 +672,22 @@ Confidence Score =
                     </div>
                 </div>
 
-                <p style="color: #a0a0a0; margin-top: 15px;">
-                    <strong>Why this is so high:</strong> This claim is supported by overwhelming scientific consensus. 
+                <p style="color: var(--muted); margin-top: 15px;">
+                    <strong style="color: var(--text);">Why this is so high:</strong> This claim is supported by overwhelming scientific consensus. 
                     Multiple radiometric dating methods (U-Pb zircon dating), meteorite analysis, and lunar samples 
                     all converge on this age. Zero reputable scientists dispute it.
                 </p>
             </div>
 
             <!-- Example 2 -->
-            <div class="example-verification" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3);">
-                <div class="example-title" style="color: #fbbf24;">⚠ Example 2: "Red wine has health benefits"</div>
+            <div class="example-verification" style="background: var(--card); border-color: rgba(245, 158, 11, 0.3);">
+                <div class="example-title" style="color: var(--amber);">⚠ Example 2: "Red wine has health benefits"</div>
                 
                 <div class="example-claim">
                     Drinking red wine in moderation has cardiovascular health benefits.
                 </div>
 
-                <p style="color: #a0a0a0; margin: 15px 0;">Final Confidence Score: <span class="highlight">58%</span></p>
+                <p style="color: var(--muted); margin: 15px 0;">Final Confidence Score: <span class="highlight">58%</span></p>
 
                 <div class="score-breakdown">
                     <div class="breakdown-item">
@@ -631,22 +708,22 @@ Confidence Score =
                     </div>
                 </div>
 
-                <p style="color: #a0a0a0; margin-top: 15px;">
-                    <strong>Why this is disputed:</strong> Some studies suggest resveratrol in red wine has cardioprotective effects, 
+                <p style="color: var(--muted); margin-top: 15px;">
+                    <strong style="color: var(--text);">Why this is disputed:</strong> Some studies suggest resveratrol in red wine has cardioprotective effects, 
                     but recent meta-analyses challenge this. The potential risks of alcohol may outweigh benefits. 
                     Major health organizations disagree on recommendations. Context matters: "moderation" is poorly defined.
                 </p>
             </div>
 
             <!-- Example 3 -->
-            <div class="example-verification" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+            <div class="example-verification" style="background: var(--card); border-color: rgba(239, 68, 68, 0.3);">
                 <div class="example-title" style="color: #fca5a5;">✗ Example 3: "Humans only use 10% of their brain"</div>
                 
                 <div class="example-claim">
                     We only use 10% of our brain capacity.
                 </div>
 
-                <p style="color: #a0a0a0; margin: 15px 0;">Final Confidence Score: <span class="highlight">15%</span></p>
+                <p style="color: var(--muted); margin: 15px 0;">Final Confidence Score: <span class="highlight">15%</span></p>
 
                 <div class="score-breakdown">
                     <div class="breakdown-item">
@@ -667,8 +744,8 @@ Confidence Score =
                     </div>
                 </div>
 
-                <p style="color: #a0a0a0; margin-top: 15px;">
-                    <strong>Why this is false:</strong> Neuroscience confirms we use virtually all parts of our brain, 
+                <p style="color: var(--muted); margin-top: 15px;">
+                    <strong style="color: var(--text);">Why this is false:</strong> Neuroscience confirms we use virtually all parts of our brain, 
                     and even "unused" brain regions perform important functions. This myth has been repeatedly debunked 
                     by brain imaging (fMRI), neurological studies, and major institutions (NIH, Mayo Clinic, Snopes).
                 </p>
@@ -771,10 +848,10 @@ Confidence Score =
                 </ul>
             </div>
 
-            <div class="info-box" style="border-color: rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.05);">
-                <strong>🔬 Our Approach:</strong> 
-                <p style="margin-top: 10px; color: #a0aabb;">
-                    We believe in <strong>transparency over speed</strong>. Rather than giving you quick answers, 
+            <div class="info-box" style="border-color: rgba(34, 211, 238, 0.25); background: var(--card);">
+                <strong style="color: var(--cyan);">🔬 Our Approach:</strong> 
+                <p style="margin-top: 10px; color: var(--muted);">
+                    We believe in <strong style="color: var(--text);">transparency over speed</strong>. Rather than giving you quick answers, 
                     we show you detailed reasoning, actual sources, and AI provider consensus. 
                     You can verify our work and understand how we reached each conclusion.
                 </p>
@@ -785,7 +862,7 @@ Confidence Score =
         <div class="section">
             <h2 class="section-title">🔌 Using Scores in Your Application</h2>
             
-            <p style="color: #a0a0a0; margin-bottom: 20px;">
+            <p style="color: var(--muted); margin-bottom: 20px;">
                 When integrating Verity into your application, use these score ranges for decision-making:
             </p>
 
@@ -817,69 +894,48 @@ if (confidence_score >= 80) {
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 80px; padding-top: 40px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-            <p style="color: #a0a0a0; margin-bottom: 20px;">Have more questions about accuracy scoring?</p>
-            <a href="API_DOCUMENTATION.md" class="btn btn-primary">View API Documentation</a>
+        <div style="text-align: center; margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--border);">
+            <p style="color: var(--muted); margin-bottom: 20px;">Have more questions about accuracy scoring?</p>
+            <a href="api-docs.html" class="btn-p">View API Documentation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="footer" style="margin-top: 100px;">
-        <div class="footer-container">
-            <div class="footer-main">
-                <div class="footer-brand">
-                    <a href="#" class="logo">
-                        <svg class="logo-icon" viewBox="0 0 40 40" width="32" height="32">
-                            <defs>
-                                <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#6366f1"/>
-                                    <stop offset="100%" stop-color="#22d3ee"/>
-                                </linearGradient>
-                            </defs>
-                            <path fill="none" stroke="url(#footerLogoGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M8 20 L14 26 L32 8"/>
-                        </svg>
-                        <span class="logo-text">Verity</span>
-                    </a>
-                    <p class="footer-tagline">AI-powered truth verification for the modern web.</p>
-                </div>
-
-                <div class="footer-links-grid">
-                    <div class="footer-link-group">
-                        <h4>Product</h4>
-                        <ul>
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="index.html#demo">Demo</a></li>
-                            <li><a href="index.html#pricing">Pricing</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-link-group">
-                        <h4>Docs</h4>
-                        <ul>
-                            <li><a href="API_DOCUMENTATION.md">API Docs</a></li>
-                            <li><a href="accuracy-score-guide.html">Accuracy Guide</a></li>
-                            <li><a href="API_DOCUMENTATION.md">Integration</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-link-group">
-                        <h4>Company</h4>
-                        <ul>
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Contact</a></li>
-                        </ul>
-                    </div>
-                </div>
+    <footer>
+        <div class="footer-c">
+            <div class="footer-brand">
+                <a href="index.html" class="footer-logo">
+                    <svg viewBox="0 0 100 120"><path fill="none" stroke="currentColor" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                    Verity
+                </a>
+                <p>AI-powered fact-checking that shows its work. Built for professionals who can't afford to be wrong.</p>
             </div>
-
-            <div class="footer-divider"></div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2025 Verity Systems. All rights reserved.</p>
-                <div class="footer-links-horizontal">
-                    <a href="#">Privacy</a>
-                    <a href="#">Terms</a>
-                    <a href="#">Security</a>
-                </div>
+            <div class="footer-col">
+                <h4>Product</h4>
+                <a href="verify.html">Verify Claims</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="api-docs.html">API</a>
+                <a href="tools.html">Tools</a>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <a href="api-docs.html">API Docs</a>
+                <a href="accuracy-score-guide.html">Accuracy Guide</a>
+                <a href="blog.html">Blog</a>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <a href="about.html">About</a>
+                <a href="status.html">Status</a>
+                <a href="security.html">Security</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Verity Systems. All rights reserved.</span>
+            <div class="footer-links">
+                <a href="terms.html">Terms</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="security.html">Security</a>
             </div>
         </div>
     </footer>

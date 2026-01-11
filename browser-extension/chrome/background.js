@@ -4,9 +4,10 @@
  * Updated for API v3 with WebSocket support
  */
 
-const API_BASE_URL = 'https://api.verity-systems.com';
+// Production Railway API
+const API_BASE_URL = 'https://veritysystems-production.up.railway.app';
 const DEV_API_URL = 'http://localhost:8000';
-const WS_BASE_URL = 'wss://api.verity-systems.com';
+const WS_BASE_URL = 'wss://veritysystems-production.up.railway.app';
 const DEV_WS_URL = 'ws://localhost:8000';
 
 // Configuration

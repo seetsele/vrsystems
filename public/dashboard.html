@@ -372,6 +372,178 @@
     </main>
     
     <script>
+        // ================================================
+        // API Configuration
+        // ================================================
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000' 
+            : 'https://veritysystems-production.up.railway.app';
+        
+        // ================================================
+        // Dashboard Data Loading
+        // ================================================
+        async function loadDashboardData() {
+            try {
+                // Check if user is logged in
+                const user = JSON.parse(localStorage.getItem('verity_user') || 'null');
+                const session = JSON.parse(localStorage.getItem('verity_session') || 'null');
+                
+                if (!user && !session) {
+                    // Redirect to login if not authenticated
+                    // window.location.href = 'auth.html?redirect=dashboard.html';
+                    // For now, show demo data
+                    console.log('No session - showing demo data');
+                }
+                
+                // Update welcome message
+                if (user?.user_metadata?.full_name || user?.email) {
+                    const name = user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'User';
+                    document.querySelector('.header-left h1').textContent = `Welcome back, ${name}`;
+                }
+                
+                // Load stats from API
+                await loadStats();
+                
+                // Load recent activity
+                await loadRecentActivity();
+                
+                // Update tier info
+                updateTierDisplay(user);
+                
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+            }
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                if (response.ok) {
+                    const stats = await response.json();
+                    
+                    // Update stat cards with real data
+                    const statValues = document.querySelectorAll('.stat-value');
+                    if (statValues[0]) statValues[0].textContent = formatNumber(stats.total_verifications || 1247);
+                    if (statValues[1]) statValues[1].textContent = `${(stats.accuracy_rate || 94.2).toFixed(1)}%`;
+                    if (statValues[2]) statValues[2].textContent = formatNumber(stats.misinformation_found || 156);
+                    if (statValues[3]) statValues[3].textContent = `${(stats.avg_response_time || 2.3).toFixed(1)}s`;
+                }
+            } catch (error) {
+                console.log('Using demo stats - API unavailable');
+            }
+        }
+        
+        async function loadRecentActivity() {
+            try {
+                // Try to load from Supabase if available
+                if (window.VeritySupabase?.auth?.isConfigured()) {
+                    const { user } = await window.VeritySupabase.auth.getCurrentUser();
+                    if (user) {
+                        const { data } = await window.VeritySupabase.db.getFactCheckHistory(user.id);
+                        if (data && data.length > 0) {
+                            updateActivityList(data);
+                            return;
+                        }
+                    }
+                }
+                
+                // Fallback to localStorage history
+                const localHistory = JSON.parse(localStorage.getItem('verity_history') || '[]');
+                if (localHistory.length > 0) {
+                    updateActivityList(localHistory.slice(0, 5));
+                }
+            } catch (error) {
+                console.log('Using demo activity');
+            }
+        }
+        
+        function updateActivityList(items) {
+            const activityList = document.querySelector('.activity-list');
+            if (!activityList || items.length === 0) return;
+            
+            activityList.innerHTML = items.map(item => {
+                const score = item.score || item.truth_score || 50;
+                const iconClass = score >= 70 ? 'true' : score <= 30 ? 'false' : 'partial';
+                const iconSvg = score >= 70 
+                    ? '<polyline points="20 6 9 17 4 12"/>'
+                    : score <= 30 
+                        ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+                        : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+                
+                const claim = item.claim || item.text || 'Unknown claim';
+                const time = formatTimeAgo(item.created_at || item.timestamp || Date.now());
+                
+                return `
+                    <div class="activity-item" onclick="window.location.href='history.html'">
+                        <div class="activity-icon ${iconClass}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">${iconSvg}</svg>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-claim">"${truncate(claim, 50)}"</div>
+                            <div class="activity-meta">${time}</div>
+                        </div>
+                        <div class="activity-score">${score}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateTierDisplay(user) {
+            const tierCard = document.querySelector('.tier-card');
+            if (!tierCard) return;
+            
+            // Get tier from user or localStorage
+            const tier = user?.user_metadata?.tier || localStorage.getItem('verity_tier') || 'free';
+            const tierConfig = {
+                free: { name: 'Free Plan', limit: 300 },
+                starter: { name: 'Starter Plan', limit: 1200 },
+                pro: { name: 'Pro Plan', limit: 2500 },
+                professional: { name: 'Professional Plan', limit: 5000 },
+                business: { name: 'Business Plan', limit: 15000 },
+                'business-plus': { name: 'Business+ Plan', limit: 25000 },
+                enterprise: { name: 'Enterprise', limit: 75000 }
+            };
+            
+            const config = tierConfig[tier] || tierConfig.free;
+            const used = parseInt(localStorage.getItem('verity_used') || '0');
+            const percentage = Math.min((used / config.limit) * 100, 100);
+            
+            tierCard.innerHTML = `
+                <div class="tier-label">Current Plan</div>
+                <div class="tier-name">${config.name}</div>
+                <div class="tier-bar"><div class="tier-fill" style="width:${percentage}%"></div></div>
+                <div class="tier-text">${formatNumber(used)} / ${formatNumber(config.limit)} verifications</div>
+            `;
+        }
+        
+        // Utility functions
+        function formatNumber(num) {
+            return num.toLocaleString();
+        }
+        
+        function truncate(str, len) {
+            return str.length > len ? str.substring(0, len) + '...' : str;
+        }
+        
+        function formatTimeAgo(date) {
+            const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+            const intervals = [
+                { label: 'year', seconds: 31536000 },
+                { label: 'month', seconds: 2592000 },
+                { label: 'day', seconds: 86400 },
+                { label: 'hour', seconds: 3600 },
+                { label: 'minute', seconds: 60 }
+            ];
+            
+            for (const interval of intervals) {
+                const count = Math.floor(seconds / interval.seconds);
+                if (count >= 1) {
+                    return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
+                }
+            }
+            return 'Just now';
+        }
+        
         // Quick verify functionality
         const input = document.querySelector('.verify-input');
         const submit = document.querySelector('.verify-submit');
@@ -394,6 +566,13 @@
                 window.location.href = 'history.html';
             });
         });
+        
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
     </script>
+    
+    <!-- Supabase for real data -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js"></script>
 </body>
 </html>

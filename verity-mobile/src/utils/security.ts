@@ -9,11 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Security Constants
 // ==========================================
 
-// Admin credentials (in production, this would be environment-secured)
-const ADMIN_CREDENTIALS = {
-  email: 'admin@veritysystems.app',
-  passwordHash: hashPassword('VerityAdmin2024!'), // Pre-hashed
-};
+// API Configuration - Use environment or Railway production
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://veritysystems-production.up.railway.app';
 
 // Encryption key derivation (simplified for demo - use proper KDF in production)
 const ENCRYPTION_KEY_BASE = 'verity_secure_2024';
@@ -50,7 +47,7 @@ export function verifyPassword(password: string, storedHash: string): boolean {
 }
 
 // ==========================================
-// Admin Authentication
+// API Authentication
 // ==========================================
 
 export interface AuthResult {
@@ -58,9 +55,15 @@ export interface AuthResult {
   error?: string;
   isAdmin?: boolean;
   sessionToken?: string;
+  user?: {
+    id: string;
+    email: string;
+    tier: string;
+    name?: string;
+  };
 }
 
-export async function authenticateAdmin(email: string, password: string): Promise<AuthResult> {
+export async function authenticateUser(email: string, password: string): Promise<AuthResult> {
   // Check for lockout
   const lockoutStatus = await checkLockout();
   if (lockoutStatus.isLocked) {
@@ -83,44 +86,98 @@ export async function authenticateAdmin(email: string, password: string): Promis
   // Normalize email
   const normalizedEmail = email.toLowerCase().trim();
 
-  // Check admin credentials
-  if (normalizedEmail === ADMIN_CREDENTIALS.email.toLowerCase()) {
-    const passwordHash = hashPassword(password);
-    
-    if (passwordHash === ADMIN_CREDENTIALS.passwordHash) {
+  try {
+    // Authenticate via API
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: normalizedEmail,
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.access_token) {
       // Success - clear failed attempts
       await clearLoginAttempts();
-      
-      // Generate session token
-      const sessionToken = generateSessionToken();
+
+      // Store session
+      const sessionToken = data.access_token;
       await storeSession(sessionToken);
       
+      // Store user data
+      await AsyncStorage.setItem('verity_user', JSON.stringify(data.user || { email: normalizedEmail }));
+
       return {
         success: true,
-        isAdmin: true,
+        isAdmin: data.user?.role === 'admin',
         sessionToken,
+        user: data.user,
+      };
+    } else {
+      // Failed attempt - increment counter
+      await recordFailedAttempt();
+      const attempts = await getLoginAttempts();
+      const remaining = MAX_LOGIN_ATTEMPTS - attempts;
+
+      if (remaining <= 0) {
+        await inititateLockout();
+        return {
+          success: false,
+          error: 'Account locked due to too many failed attempts. Try again in 15 minutes.',
+        };
+      }
+
+      return {
+        success: false,
+        error: data.detail || data.message || `Invalid credentials. ${remaining} attempts remaining.`,
       };
     }
+  } catch (error) {
+    console.error('Auth API error:', error);
+    
+    // Fallback to demo mode if API unavailable
+    return handleDemoAuth(normalizedEmail, password);
+  }
+}
+
+// Demo mode fallback when API is unavailable
+async function handleDemoAuth(email: string, password: string): Promise<AuthResult> {
+  // Allow demo login for testing
+  if (email === 'demo@verity.app' && password === 'demo1234') {
+    await clearLoginAttempts();
+    const sessionToken = generateSessionToken();
+    await storeSession(sessionToken);
+    
+    return {
+      success: true,
+      isAdmin: false,
+      sessionToken,
+      user: {
+        id: 'demo-user',
+        email: 'demo@verity.app',
+        tier: 'free',
+        name: 'Demo User',
+      },
+    };
   }
 
-  // Failed attempt - increment counter
   await recordFailedAttempt();
   const attempts = await getLoginAttempts();
   const remaining = MAX_LOGIN_ATTEMPTS - attempts;
 
-  if (remaining <= 0) {
-    await inititateLockout();
-    return {
-      success: false,
-      error: 'Account locked due to too many failed attempts. Try again in 15 minutes.',
-    };
-  }
-
   return {
     success: false,
-    error: `Invalid credentials. ${remaining} attempt${remaining > 1 ? 's' : ''} remaining.`,
+    error: `Invalid credentials or server unavailable. ${remaining} attempts remaining.`,
   };
 }
+
+// Legacy alias for backward compatibility
+export const authenticateAdmin = authenticateUser;
 
 // ==========================================
 // Session Management
