@@ -430,16 +430,27 @@
         // Handle OAuth Sign In (Google/GitHub)
         async function handleOAuth(provider) {
             try {
+                // Check if we're in demo mode or OAuth not configured
+                if (!VerityAuth.isConfigured()) {
+                    showToast(`OAuth requires Supabase setup. Use email sign-in for now.`, 'error');
+                    return;
+                }
+                
                 showToast(`Connecting to ${provider}...`, 'info');
                 const { data, error } = await VerityAuth.signInWithOAuth(provider);
                 
                 if (error) {
-                    showToast(error.message || `${provider} sign in failed`, 'error');
+                    // More helpful error messages
+                    if (error.message.includes('provider') || error.message.includes('not enabled')) {
+                        showToast(`${provider} OAuth is not configured yet. Please use email sign-in or contact support.`, 'error');
+                    } else {
+                        showToast(error.message || `${provider} sign in failed`, 'error');
+                    }
                 }
-                // OAuth will redirect automatically
+                // OAuth will redirect automatically if successful
             } catch (err) {
                 console.error('OAuth error:', err);
-                showToast('OAuth sign in failed. Please try again.', 'error');
+                showToast(`${provider} is not available. Please use email sign-in.`, 'error');
             }
         }
         
