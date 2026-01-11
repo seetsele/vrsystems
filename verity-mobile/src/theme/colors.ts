@@ -1,6 +1,6 @@
 /**
  * Verity Systems - Design Theme
- * Matches the test website exactly: https://vrsystemss.vercel.app/index-v2-test.html
+ * Matches the production website: https://vrsystemss.vercel.app/
  */
 
 export const colors = {

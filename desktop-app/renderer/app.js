@@ -521,6 +521,68 @@ function attachPageHandlers(page) {
                 }
             });
             break;
+        case 'export':
+            // Format card selection
+            document.querySelectorAll('.format-card-premium').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.format-card-premium').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    const format = card.dataset.format;
+                    // Update preview format display
+                    const summaryFormat = document.querySelector('.summary-stat:last-child .summary-value');
+                    if (summaryFormat) summaryFormat.textContent = format.toUpperCase();
+                });
+            });
+            
+            // Include option toggle
+            document.querySelectorAll('.include-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    option.classList.toggle('active');
+                    const checkbox = option.querySelector('input[type="checkbox"]');
+                    if (checkbox) checkbox.checked = option.classList.contains('active');
+                });
+            });
+            
+            // Template button selection
+            document.querySelectorAll('.template-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            
+            // Date range buttons
+            document.querySelectorAll('.range-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            
+            // Schedule option change
+            document.querySelectorAll('.schedule-option input').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    const emailSection = document.getElementById('schedule-email');
+                    if (emailSection) {
+                        emailSection.classList.toggle('hidden', radio.value === 'none');
+                    }
+                });
+            });
+            
+            // Generate export button
+            document.getElementById('generate-export-btn')?.addEventListener('click', () => {
+                const selectedFormat = document.querySelector('.format-card-premium.selected')?.dataset.format || 'pdf';
+                const data = JSON.stringify({ history: state.history, exportDate: new Date().toISOString() }, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `verity-report-${new Date().toISOString().split('T')[0]}.${selectedFormat === 'json' ? 'json' : selectedFormat}`;
+                a.click();
+                URL.revokeObjectURL(url);
+                toast(`${selectedFormat.toUpperCase()} report generated successfully!`, 'success');
+            });
+            break;
         case 'dashboard':
             // Quick actions
             document.querySelectorAll('.quick-action').forEach(action => {

@@ -1,6 +1,6 @@
 /**
  * Verity AI Chatbot Component - Website Edition
- * Matches the test website design: https://vrsystemss.vercel.app/index-v2-test.html
+ * Matches the production website design: https://vrsystemss.vercel.app/
  * Amber/Gold theme with Newsreader + Inter fonts
  */
 
