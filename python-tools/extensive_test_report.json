@@ -1,0 +1,562 @@
+{
+  "summary": {
+    "total_claims": 25,
+    "correct": 18,
+    "incorrect": 5,
+    "errors": 2,
+    "accuracy_rate": 72.0,
+    "total_time": "0:24:58.614096",
+    "avg_response_time": 54.1,
+    "avg_confidence": 0.94
+  },
+  "by_category": {
+    "Scientific Fact": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Historical Fact": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Research Paper": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Current Events": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Medical Fact": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Health Misinformation": {
+      "accuracy": 100.0,
+      "correct": 2,
+      "total": 2
+    },
+    "Scientific Misinformation": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 1
+    },
+    "Historical Misinformation": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Political Misinformation": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Nuanced Science": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 1
+    },
+    "Economic Claim": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Technology Claim": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 1
+    },
+    "Environmental": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 1
+    },
+    "Nutrition": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 1
+    },
+    "Complex Research": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Recent Research": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 1
+    },
+    "Statistical Claim": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Deepfake/Fabricated": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Subtle Misinformation": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "URL Verification": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "PDF Research": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 1
+    },
+    "Outdated Information": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Partially True": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    },
+    "Viral Misinformation": {
+      "accuracy": 100.0,
+      "correct": 1,
+      "total": 1
+    }
+  },
+  "by_expected_verdict": {
+    "true": {
+      "accuracy": 87.5,
+      "correct": 7,
+      "total": 8
+    },
+    "false": {
+      "accuracy": 83.33,
+      "correct": 10,
+      "total": 12
+    },
+    "mixed": {
+      "accuracy": 20.0,
+      "correct": 1,
+      "total": 5
+    }
+  },
+  "failed_claims": [
+    {
+      "id": 7,
+      "category": "Scientific Misinformation",
+      "claim": "The Earth is flat and NASA has been hiding this truth for decades....",
+      "expected": "false",
+      "actual": "timeout",
+      "confidence": 0
+    },
+    {
+      "id": 11,
+      "category": "Nuanced Science",
+      "claim": "Coffee is bad for your health.",
+      "expected": "mixed",
+      "actual": "false",
+      "confidence": 0.965
+    },
+    {
+      "id": 13,
+      "category": "Technology Claim",
+      "claim": "Artificial intelligence will replace all human jobs within 10 years.",
+      "expected": "mixed",
+      "actual": "false",
+      "confidence": 0.94
+    },
+    {
+      "id": 14,
+      "category": "Environmental",
+      "claim": "Electric vehicles are completely carbon-neutral.",
+      "expected": "mixed",
+      "actual": "false",
+      "confidence": 0.915
+    },
+    {
+      "id": 15,
+      "category": "Nutrition",
+      "claim": "Eating eggs every day is dangerous for heart health due to cholesterol.",
+      "expected": "mixed",
+      "actual": "false",
+      "confidence": 0.89
+    },
+    {
+      "id": 17,
+      "category": "Recent Research",
+      "claim": "Room temperature superconductivity was achieved by LK-99 in 2023.",
+      "expected": "false",
+      "actual": "unverifiable",
+      "confidence": 0.915
+    },
+    {
+      "id": 22,
+      "category": "PDF Research",
+      "claim": "The IPCC Sixth Assessment Report states that human activities have unequivocally caused global warmi...",
+      "expected": "true",
+      "actual": "timeout",
+      "confidence": 0
+    }
+  ],
+  "all_results": [
+    {
+      "claim_id": 1,
+      "category": "Scientific Fact",
+      "claim": "Water molecules consist of two hydrogen atoms and one oxygen atom (H2O).",
+      "expected": "true",
+      "actual_verdict": "true",
+      "confidence": 0.98,
+      "correct": true,
+      "response_time": 60.464616775512695,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**Verdict: true**\n\nThe chemical formula of water is **H\u2082O**, meaning each water molecule consists of **two hydrogen atoms** covalently bonded to **one oxygen atom**[1][2][3][4][5][6][7][8][9]. This co",
+      "error": null
+    },
+    {
+      "claim_id": 2,
+      "category": "Historical Fact",
+      "claim": "The Berlin Wall fell on November 9, 1989.",
+      "expected": "true",
+      "actual_verdict": "true",
+      "confidence": 0.94,
+      "correct": true,
+      "response_time": 57.084697246551514,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "Verdict: true\nConfidence: 1\nExplanation: The Berlin Wall, which divided East and West Berlin during the Cold War, indeed fell on November 9, 1989, marking a significant event in modern history. This d",
+      "error": null
+    },
+    {
+      "claim_id": 3,
+      "category": "Research Paper",
+      "claim": "The 2012 CRISPR-Cas9 paper by Doudna and Charpentier demonstrated programmable genome editing.",
+      "expected": "true",
+      "actual_verdict": "true",
+      "confidence": 0.94,
+      "correct": true,
+      "response_time": 50.826500415802,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "Verdict: **true**\nConfidence: 0.99\nExplanation: The 2012 paper by Jennifer Doudna and Emmanuelle Charpentier, titled \"A programmable dual-RNA\u2013guided DNA endonuclease in adaptive bacterial immunity\", i",
+      "error": null
+    },
+    {
+      "claim_id": 4,
+      "category": "Current Events",
+      "claim": "The James Webb Space Telescope launched in December 2021 and is positioned at Lagrange point L2.",
+      "expected": "true",
+      "actual_verdict": "true",
+      "confidence": 0.965,
+      "correct": true,
+      "response_time": 43.29383969306946,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "Verdict: True\nConfidence: 1.0\nExplanation: The James Webb Space Telescope (JWST) indeed launched on December 25, 2021, and it is positioned at the second Lagrange point (L2), which is a gravitationall",
+      "error": null
+    },
+    {
+      "claim_id": 5,
+      "category": "Medical Fact",
+      "claim": "mRNA vaccines work by instructing cells to produce a protein that triggers an immune response.",
+      "expected": "true",
+      "actual_verdict": "true",
+      "confidence": 0.965,
+      "correct": true,
+      "response_time": 49.33328461647034,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**Verdict: true**\n\nmRNA vaccines deliver synthetic mRNA into cells, which instructs the cells' ribosomes to produce a specific viral protein (such as the SARS-CoV-2 spike protein), triggering an immun",
+      "error": null
+    },
+    {
+      "claim_id": 6,
+      "category": "Health Misinformation",
+      "claim": "5G cell towers cause COVID-19 infections by weakening the immune system.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.965,
+      "correct": true,
+      "response_time": 63.051772117614746,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nThe claim that 5G cell towers cause COVID-19 infections by weakening the immune system is a baseless conspiracy theory lacking scientific support[1][2][3][5][8]. COVID-19 is caused by the ",
+      "error": null
+    },
+    {
+      "claim_id": 7,
+      "category": "Scientific Misinformation",
+      "claim": "The Earth is flat and NASA has been hiding this truth for decades....",
+      "expected": "false",
+      "actual_verdict": "timeout",
+      "confidence": 0,
+      "correct": false,
+      "response_time": 120,
+      "providers_used": [],
+      "sources_found": 0,
+      "explanation": "",
+      "error": "Request timed out after 120 seconds"
+    },
+    {
+      "claim_id": 8,
+      "category": "Historical Misinformation",
+      "claim": "The Great Wall of China is visible from the Moon with the naked eye.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.915,
+      "correct": true,
+      "response_time": 51.0608913898468,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "Verdict: False\nConfidence: 1.0\nExplanation: This claim is a common myth that has been debunked by astronauts and satellite images. The Great Wall of China is only about 30 feet wide and blends in with",
+      "error": null
+    },
+    {
+      "claim_id": 9,
+      "category": "Health Misinformation",
+      "claim": "Drinking bleach or injecting disinfectants cures viral infections including COVID-19.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.94,
+      "correct": true,
+      "response_time": 49.93862223625183,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nDrinking bleach or injecting disinfectants does not cure viral infections, including COVID-19, and is extremely dangerous, potentially causing poisoning, organ damage, disability, or death",
+      "error": null
+    },
+    {
+      "claim_id": 10,
+      "category": "Political Misinformation",
+      "claim": "Voter fraud through mail-in ballots changed the outcome of the 2020 US presidential election.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.98,
+      "correct": true,
+      "response_time": 70.73475313186646,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nNo credible evidence shows voter fraud via mail-in ballots changed the 2020 US presidential election outcome. Extensive analyses confirm mail-in ballot fraud is exceedingly rare, occurring",
+      "error": null
+    },
+    {
+      "claim_id": 11,
+      "category": "Nuanced Science",
+      "claim": "Coffee is bad for your health.",
+      "expected": "mixed",
+      "actual_verdict": "false",
+      "confidence": 0.965,
+      "correct": false,
+      "response_time": 52.03618669509888,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**Verdict: mostly_false.**\n\nThe claim that \"coffee is bad for your health\" is not supported by evidence; extensive reviews and studies show that **moderate coffee consumption** (typically 3-5 cups per",
+      "error": null
+    },
+    {
+      "claim_id": 12,
+      "category": "Economic Claim",
+      "claim": "Raising minimum wage always leads to job losses.",
+      "expected": "mixed",
+      "actual_verdict": "mixed",
+      "confidence": 0.865,
+      "correct": true,
+      "response_time": 48.418906927108765,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nThe claim that raising the minimum wage *always* leads to job losses is incorrect, as empirical evidence shows varied outcomes: many studies find no employment effects or only small disemp",
+      "error": null
+    },
+    {
+      "claim_id": 13,
+      "category": "Technology Claim",
+      "claim": "Artificial intelligence will replace all human jobs within 10 years.",
+      "expected": "mixed",
+      "actual_verdict": "false",
+      "confidence": 0.94,
+      "correct": false,
+      "response_time": 37.27986764907837,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nNo credible sources predict or provide evidence that artificial intelligence will replace **all human jobs** within 10 years (by 2036).[1][2][3][4][5][7] While experts like Geoffrey Hinton",
+      "error": null
+    },
+    {
+      "claim_id": 14,
+      "category": "Environmental",
+      "claim": "Electric vehicles are completely carbon-neutral.",
+      "expected": "mixed",
+      "actual_verdict": "false",
+      "confidence": 0.915,
+      "correct": false,
+      "response_time": 40.54189419746399,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nElectric vehicles (EVs) are not completely carbon-neutral, as they produce lifecycle greenhouse gas emissions from manufacturing (especially batteries), electricity generation for charging",
+      "error": null
+    },
+    {
+      "claim_id": 15,
+      "category": "Nutrition",
+      "claim": "Eating eggs every day is dangerous for heart health due to cholesterol.",
+      "expected": "mixed",
+      "actual_verdict": "false",
+      "confidence": 0.89,
+      "correct": false,
+      "response_time": 56.3327317237854,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**Verdict: Mostly false**\n\nThe claim that eating eggs every day is dangerous for heart health due to cholesterol is not supported by current medical consensus, though the evidence is more nuanced than",
+      "error": null
+    },
+    {
+      "claim_id": 16,
+      "category": "Complex Research",
+      "claim": "The Stanford Prison Experiment's findings about human behavior are scientifically valid and replicab...",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.84,
+      "correct": true,
+      "response_time": 64.32808876037598,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**Verdict: false**\n\nThe Stanford Prison Experiment (SPE) is widely regarded as scientifically invalid due to methodological flaws, researcher bias, demand characteristics, and lack of replicability, a",
+      "error": null
+    },
+    {
+      "claim_id": 17,
+      "category": "Recent Research",
+      "claim": "Room temperature superconductivity was achieved by LK-99 in 2023.",
+      "expected": "false",
+      "actual_verdict": "unverifiable",
+      "confidence": 0.915,
+      "correct": false,
+      "response_time": 49.638988971710205,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "Verdict: 'unverifiable' \nConfidence: 0.5\nExplanation: There is no publicly available information or credible sources confirming that a material or team named \"LK-99\" achieved room temperature supercon",
+      "error": null
+    },
+    {
+      "claim_id": 18,
+      "category": "Statistical Claim",
+      "claim": "More people die from medical errors than car accidents in the United States annually.",
+      "expected": "true",
+      "actual_verdict": "true",
+      "confidence": 0.94,
+      "correct": true,
+      "response_time": 56.22592520713806,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**Verdict: mostly_false**\n\nThe claim that more people die from medical errors than car accidents annually in the US is not supported by reliable, current data. In 2023, motor vehicle traffic deaths to",
+      "error": null
+    },
+    {
+      "claim_id": 19,
+      "category": "Deepfake/Fabricated",
+      "claim": "Pope Francis endorsed Donald Trump for president in 2016.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.965,
+      "correct": true,
+      "response_time": 55.91127038002014,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nPope Francis did not endorse Donald Trump for president in 2016; this claim originated from fake news stories that spread widely on social media, such as a false headline from \"WTO5 News\" ",
+      "error": null
+    },
+    {
+      "claim_id": 20,
+      "category": "Subtle Misinformation",
+      "claim": "NASA's budget is 25% of the US federal budget.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.915,
+      "correct": true,
+      "response_time": 57.34446930885315,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "Verdict: False\nConfidence: 0.9\nExplanation: NASA's budget is actually a very small fraction of the US federal budget. According to the NASA website and official US government budget documents, NASA's ",
+      "error": null
+    },
+    {
+      "claim_id": 21,
+      "category": "URL Verification",
+      "claim": "According to the WHO, microplastics in drinking water pose no significant health risk based on curre...",
+      "expected": "true",
+      "actual_verdict": "true",
+      "confidence": 0.915,
+      "correct": true,
+      "response_time": 58.729727268218994,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**Verdict: Mostly true**\n\nThe WHO has stated that microplastics in drinking water pose a **low health risk** based on current evidence, though the organization emphasizes this conclusion is based on l",
+      "error": null
+    },
+    {
+      "claim_id": 22,
+      "category": "PDF Research",
+      "claim": "The IPCC Sixth Assessment Report states that human activities have unequivocally caused global warmi...",
+      "expected": "true",
+      "actual_verdict": "timeout",
+      "confidence": 0,
+      "correct": false,
+      "response_time": 120,
+      "providers_used": [],
+      "sources_found": 0,
+      "explanation": "",
+      "error": "Request timed out after 120 seconds"
+    },
+    {
+      "claim_id": 23,
+      "category": "Outdated Information",
+      "claim": "Pluto is classified as the ninth planet in our solar system.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.965,
+      "correct": true,
+      "response_time": 58.600414752960205,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nPluto was classified as the ninth planet from 1930 until 2006, when the International Astronomical Union (IAU) reclassified it as a **dwarf planet** because it fails to meet the third crit",
+      "error": null
+    },
+    {
+      "claim_id": 24,
+      "category": "Partially True",
+      "claim": "Humans only use 10% of their brains.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.94,
+      "correct": true,
+      "response_time": 56.38242483139038,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "**False.**\n\nThe claim that humans only use 10% of their brains is a widespread myth, debunked by neuroscientists using evidence from brain imaging and biological function[1][2][3][4][5]. PET scans and",
+      "error": null
+    },
+    {
+      "claim_id": 25,
+      "category": "Viral Misinformation",
+      "claim": "The 2004 Indian Ocean tsunami was caused by underwater nuclear testing by the US military.",
+      "expected": "false",
+      "actual_verdict": "false",
+      "confidence": 0.965,
+      "correct": true,
+      "response_time": 56.750728130340576,
+      "providers_used": [],
+      "sources_found": 10,
+      "explanation": "Verdict: False\nConfidence: 1.0\nExplanation: The 2004 Indian Ocean tsunami was caused by a massive 9.1-magnitude earthquake off the coast of Indonesia, not by underwater nuclear testing by the US milit",
+      "error": null
+    }
+  ],
+  "timestamp": "2026-01-12T12:03:38.211366"
+}

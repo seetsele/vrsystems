@@ -205,14 +205,40 @@
         </div>
     </div>
     
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    
     <script>
         let count = 2847;
+        
+        // Load actual count from Supabase on page load
+        async function loadWaitlistCount() {
+            try {
+                // Wait for Supabase to be ready
+                if (typeof VerityDB !== 'undefined' && VerityDB.isConfigured()) {
+                    // Use VeritySupabase client to count newsletter subscribers
+                    const client = window.VeritySupabase?.client;
+                    if (client) {
+                        const { count: actualCount, error } = await client
+                            .from('newsletter_subscribers')
+                            .select('*', { count: 'exact', head: true });
+                        
+                        if (!error && actualCount !== null) {
+                            count = 2847 + actualCount; // Base + actual signups
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log('Using estimated count');
+            }
+            animateCount();
+        }
         
         function animateCount() {
             const el = document.getElementById('waitlistCount');
             const target = count;
             const duration = 2000;
-            const start = 0;
             const startTime = performance.now();
             
             function update(currentTime) {
@@ -224,17 +250,51 @@
             }
             requestAnimationFrame(update);
         }
-        animateCount();
         
-        function joinWaitlist(e) {
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadWaitlistCount, 200);
+        });
+        
+        async function joinWaitlist(e) {
             e.preventDefault();
-            const email = document.getElementById('emailInput').value;
-            if (email) {
+            const emailInput = document.getElementById('emailInput');
+            const email = emailInput.value.trim();
+            const submitBtn = document.querySelector('.btn-join');
+            
+            if (!email) return;
+            
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Joining...';
+            
+            try {
+                // Try to save to Supabase
+                if (typeof VerityDB !== 'undefined' && VerityDB.isConfigured()) {
+                    const { error } = await VerityDB.subscribeNewsletter(email);
+                    if (error && !error.message.includes('duplicate')) {
+                        console.warn('Waitlist save warning:', error);
+                    }
+                }
+                
+                // Show success regardless (better UX)
                 count++;
                 document.getElementById('waitlistCount').textContent = count.toLocaleString();
                 document.getElementById('userPosition').textContent = '#' + count.toLocaleString();
                 document.getElementById('successModal').classList.add('active');
-                document.getElementById('emailInput').value = '';
+                emailInput.value = '';
+                
+            } catch (err) {
+                console.error('Waitlist error:', err);
+                // Still show success for better UX
+                count++;
+                document.getElementById('waitlistCount').textContent = count.toLocaleString();
+                document.getElementById('userPosition').textContent = '#' + count.toLocaleString();
+                document.getElementById('successModal').classList.add('active');
+                emailInput.value = '';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Join Waitlist';
             }
         }
         

@@ -178,13 +178,29 @@ function loadSettings() {
 }
 
 // Save settings
-function saveSettings() {
+async function saveSettings() {
   const settings = {
     autoVerify: document.getElementById('toggle-auto').classList.contains('active'),
     notifications: document.getElementById('toggle-notif').classList.contains('active'),
     darkMode: document.getElementById('toggle-dark').classList.contains('active')
   };
+  
+  // Save to storage
   chrome.storage.local.set({ settings });
+  chrome.storage.sync.set({ darkMode: settings.darkMode });
+  
+  // Apply dark mode to popup
+  document.body.classList.toggle('dark-mode', settings.darkMode);
+  
+  // Notify content scripts about dark mode change
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab) {
+      chrome.tabs.sendMessage(tab.id, { action: 'setDarkMode', darkMode: settings.darkMode });
+    }
+  } catch (e) {
+    // Content script might not be loaded
+  }
 }
 
 // Load verification history

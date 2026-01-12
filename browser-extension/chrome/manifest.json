@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Verity - AI Fact Checker",
   "short_name": "Verity",
-  "version": "2.0.0",
-  "description": "Instantly verify claims and detect misinformation with AI-powered fact-checking. Now with WebSocket streaming and multi-language support.",
+  "version": "2.1.0",
+  "description": "Instantly verify claims and detect misinformation with AI-powered fact-checking. Keyboard shortcuts, inline results, and dark/light mode.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
@@ -17,17 +17,41 @@
       "32": "icons/icon32.png",
       "48": "icons/icon48.png"
     },
-    "default_title": "Verity - Fact Check"
+    "default_title": "Verity - Fact Check (Ctrl+Shift+V)"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+V",
+        "mac": "Command+Shift+V"
+      },
+      "description": "Open Verity popup"
+    },
+    "verify_selection": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Verify selected text"
+    },
+    "toggle_inline": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+I",
+        "mac": "Command+Shift+I"
+      },
+      "description": "Toggle inline verification mode"
+    }
   },
   "permissions": [
     "activeTab",
     "contextMenus",
     "storage",
-    "notifications"
+    "notifications",
+    "scripting"
   ],
   "host_permissions": [
-    "https://api.verity-systems.com/*",
-    "wss://api.verity-systems.com/*",
+    "https://api.veritysystems.app/*",
+    "wss://api.veritysystems.app/*",
     "http://localhost:8000/*",
     "ws://localhost:8000/*"
   ],

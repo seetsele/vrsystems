@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Tester | Verity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--gold:#fbbf24;--green:#10b981;--green-soft:rgba(16,185,129,0.12);--red:#ef4444;--red-soft:rgba(239,68,68,0.12);--blue:#3b82f6}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+        ::selection{background:rgba(245,158,11,0.3)}
+        
+        .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,11,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem}
+        .nav-container{max-width:1400px;margin:0 auto;height:70px;display:flex;align-items:center;justify-content:space-between}
+        .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+        .nav-logo svg{width:32px;height:36px}
+        .nav-logo span{font-family:'Newsreader',Georgia,serif;font-size:1.5rem;font-weight:500;color:var(--text)}
+        .nav-logo .dot{color:var(--amber)}
+        .nav-links{display:flex;gap:2rem}
+        .nav-link{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+        .nav-link:hover,.nav-link.active{color:var(--amber)}
+        
+        .main{padding:5rem 2rem 2rem;max-width:1400px;margin:0 auto}
+        
+        h1{font-family:'Newsreader',Georgia,serif;font-size:2.5rem;font-weight:400;margin-bottom:1rem}
+        h1 .accent{color:var(--amber)}
+        .subtitle{color:var(--muted);margin-bottom:2rem;font-size:1.1rem}
+        
+        .tester-layout{display:grid;grid-template-columns:350px 1fr;gap:2rem}
+        
+        .sidebar{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;height:fit-content;position:sticky;top:6rem}
+        
+        .config-section{margin-bottom:1.5rem}
+        .config-label{font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:.5rem;display:block}
+        .config-input{width:100%;padding:.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;transition:border-color .2s}
+        .config-input:focus{outline:none;border-color:var(--amber)}
+        
+        .endpoint-list{display:flex;flex-direction:column;gap:.5rem}
+        .endpoint-btn{padding:.75rem 1rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.85rem;text-align:left;cursor:pointer;transition:all .2s;display:flex;justify-content:space-between;align-items:center}
+        .endpoint-btn:hover{border-color:var(--amber)}
+        .endpoint-btn.active{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+        .endpoint-method{font-family:'JetBrains Mono',monospace;font-size:.75rem;padding:.2rem .5rem;border-radius:4px;font-weight:600}
+        .endpoint-method.get{background:var(--green-soft);color:var(--green)}
+        .endpoint-method.post{background:var(--amber-soft);color:var(--amber)}
+        
+        .main-content{display:flex;flex-direction:column;gap:1.5rem}
+        
+        .panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+        .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+        .panel-title{font-size:1rem;font-weight:600}
+        
+        .request-url{display:flex;gap:.75rem;margin-bottom:1rem}
+        .request-method{padding:.75rem 1rem;background:var(--green-soft);border:none;border-radius:10px;color:var(--green);font-family:'JetBrains Mono',monospace;font-weight:600;font-size:.9rem}
+        .request-path{flex:1;padding:.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--text)}
+        
+        .code-editor{width:100%;min-height:150px;padding:1rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text);resize:vertical;line-height:1.6}
+        .code-editor:focus{outline:none;border-color:var(--amber)}
+        
+        .btn-send{padding:.85rem 2rem;background:linear-gradient(135deg,var(--amber),#d97706);border:none;border-radius:12px;color:#000;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.5rem}
+        .btn-send:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.3)}
+        .btn-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .btn-send svg{width:18px;height:18px}
+        
+        .response-panel{margin-top:1.5rem}
+        .response-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+        .response-status{display:flex;align-items:center;gap:.75rem}
+        .status-badge{padding:.35rem .75rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600}
+        .status-badge.success{background:var(--green-soft);color:var(--green)}
+        .status-badge.error{background:var(--red-soft);color:var(--red)}
+        .response-time{color:var(--dim);font-size:.85rem}
+        
+        .response-body{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem;max-height:400px;overflow:auto}
+        .response-body pre{font-family:'JetBrains Mono',monospace;font-size:.85rem;white-space:pre-wrap;word-break:break-word;color:var(--text)}
+        .response-body .key{color:var(--amber)}
+        .response-body .string{color:var(--green)}
+        .response-body .number{color:var(--blue)}
+        .response-body .boolean{color:#c084fc}
+        .response-body .null{color:var(--red)}
+        
+        /* Test Suite Panel */
+        .test-suite{margin-top:2rem}
+        .test-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+        .test-card{background:var(--elevated);border:1px solid var(--border);border-radius:12px;padding:1rem;transition:all .3s}
+        .test-card:hover{border-color:rgba(245,158,11,0.3)}
+        .test-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+        .test-card-title{font-weight:600;font-size:.9rem}
+        .test-status{width:10px;height:10px;border-radius:50%;background:var(--dim)}
+        .test-status.pass{background:var(--green)}
+        .test-status.fail{background:var(--red)}
+        .test-status.running{background:var(--amber);animation:pulse 1s infinite}
+        .test-card-endpoint{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
+        .test-card-result{margin-top:.5rem;font-size:.8rem;color:var(--dim)}
+        
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .spin{animation:spin 1s linear infinite}
+        
+        .btn-run-all{padding:.75rem 1.5rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:600;cursor:pointer;transition:all .2s}
+        .btn-run-all:hover{border-color:var(--amber);background:var(--amber-soft)}
+        
+        @media(max-width:900px){
+            .tester-layout{grid-template-columns:1fr}
+            .sidebar{position:static}
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg viewBox="0 0 100 120" fill="none"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs><path fill="none" stroke="url(#lg)" stroke-width="6" d="M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z"/><polyline fill="none" stroke="url(#lg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" points="35,60 45,72 65,48"/></svg>
+                <span>verity<span class="dot">.</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="api-docs.html" class="nav-link">API Docs</a>
+                <a href="api-tester.html" class="nav-link active">API Tester</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main">
+        <h1>API <span class="accent">Tester</span></h1>
+        <p class="subtitle">Test and explore the Verity API endpoints in real-time</p>
+        
+        <div class="tester-layout">
+            <aside class="sidebar">
+                <div class="config-section">
+                    <label class="config-label">API Base URL</label>
+                    <input type="text" class="config-input" id="baseUrl" value="https://api.veritysystems.app" placeholder="https://api.veritysystems.app">
+                </div>
+                <div class="config-section">
+                    <label class="config-label">API Key (optional)</label>
+                    <input type="password" class="config-input" id="apiKey" placeholder="Enter your API key">
+                </div>
+                
+                <div class="config-section">
+                    <label class="config-label">Endpoints</label>
+                    <div class="endpoint-list">
+                        <button class="endpoint-btn active" data-method="GET" data-path="/" data-body="">
+                            <span>Health Check</span>
+                            <span class="endpoint-method get">GET</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="GET" data-path="/providers" data-body="">
+                            <span>List Providers</span>
+                            <span class="endpoint-method get">GET</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="GET" data-path="/providers/health" data-body="">
+                            <span>Provider Health</span>
+                            <span class="endpoint-method get">GET</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="GET" data-path="/stats" data-body="">
+                            <span>API Statistics</span>
+                            <span class="endpoint-method get">GET</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="POST" data-path="/verify" data-body='{"claim": "The Earth is round", "min_providers": 3}'>
+                            <span>Verify Claim</span>
+                            <span class="endpoint-method post">POST</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="POST" data-path="/v3/verify" data-body='{"claim": "Water boils at 100°C at sea level", "mode": "balanced"}'>
+                            <span>V3 Verify</span>
+                            <span class="endpoint-method post">POST</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="POST" data-path="/v3/batch-verify" data-body='{"claims": ["The Earth is round", "The moon is made of cheese"]}'>
+                            <span>Batch Verify</span>
+                            <span class="endpoint-method post">POST</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="POST" data-path="/tools/source-credibility" data-body='{"url": "https://reuters.com"}'>
+                            <span>Source Credibility</span>
+                            <span class="endpoint-method post">POST</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="POST" data-path="/tools/statistics-validator" data-body='{"claim": "73% of Americans support this policy"}'>
+                            <span>Stats Validator</span>
+                            <span class="endpoint-method post">POST</span>
+                        </button>
+                        <button class="endpoint-btn" data-method="POST" data-path="/tools/research-assistant" data-body='{"topic": "climate change", "depth": "summary"}'>
+                            <span>Research Assistant</span>
+                            <span class="endpoint-method post">POST</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+            
+            <div class="main-content">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Request</h3>
+                    </div>
+                    
+                    <div class="request-url">
+                        <div class="request-method" id="methodDisplay">GET</div>
+                        <input type="text" class="request-path" id="pathInput" value="/">
+                    </div>
+                    
+                    <label class="config-label">Request Body (JSON)</label>
+                    <textarea class="code-editor" id="requestBody" placeholder='{"key": "value"}'></textarea>
+                    
+                    <div style="margin-top:1rem;display:flex;gap:1rem;align-items:center">
+                        <button class="btn-send" id="sendBtn" onclick="sendRequest()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Send Request
+                        </button>
+                        <span id="loadingIndicator" style="display:none;color:var(--amber)">
+                            <svg class="spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"/></svg>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="panel response-panel" id="responsePanel" style="display:none">
+                    <div class="response-header">
+                        <div class="response-status">
+                            <span class="status-badge" id="statusBadge">200 OK</span>
+                            <span class="response-time" id="responseTime">0ms</span>
+                        </div>
+                    </div>
+                    <div class="response-body">
+                        <pre id="responseBody"></pre>
+                    </div>
+                </div>
+                
+                <!-- Test Suite -->
+                <div class="test-suite panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Quick Test Suite</h3>
+                        <button class="btn-run-all" onclick="runAllTests()">Run All Tests</button>
+                    </div>
+                    <div class="test-grid" id="testGrid">
+                        <div class="test-card" data-test="health">
+                            <div class="test-card-header">
+                                <span class="test-card-title">Health Check</span>
+                                <span class="test-status" id="test-health-status"></span>
+                            </div>
+                            <div class="test-card-endpoint">GET /</div>
+                            <div class="test-card-result" id="test-health-result">Not run</div>
+                        </div>
+                        <div class="test-card" data-test="providers">
+                            <div class="test-card-header">
+                                <span class="test-card-title">Providers List</span>
+                                <span class="test-status" id="test-providers-status"></span>
+                            </div>
+                            <div class="test-card-endpoint">GET /providers</div>
+                            <div class="test-card-result" id="test-providers-result">Not run</div>
+                        </div>
+                        <div class="test-card" data-test="verify">
+                            <div class="test-card-header">
+                                <span class="test-card-title">Verification</span>
+                                <span class="test-status" id="test-verify-status"></span>
+                            </div>
+                            <div class="test-card-endpoint">POST /verify</div>
+                            <div class="test-card-result" id="test-verify-result">Not run</div>
+                        </div>
+                        <div class="test-card" data-test="v3verify">
+                            <div class="test-card-header">
+                                <span class="test-card-title">V3 Verification</span>
+                                <span class="test-status" id="test-v3verify-status"></span>
+                            </div>
+                            <div class="test-card-endpoint">POST /v3/verify</div>
+                            <div class="test-card-result" id="test-v3verify-result">Not run</div>
+                        </div>
+                        <div class="test-card" data-test="source">
+                            <div class="test-card-header">
+                                <span class="test-card-title">Source Credibility</span>
+                                <span class="test-status" id="test-source-status"></span>
+                            </div>
+                            <div class="test-card-endpoint">POST /tools/source-credibility</div>
+                            <div class="test-card-result" id="test-source-result">Not run</div>
+                        </div>
+                        <div class="test-card" data-test="stats">
+                            <div class="test-card-header">
+                                <span class="test-card-title">Stats Validator</span>
+                                <span class="test-status" id="test-stats-status"></span>
+                            </div>
+                            <div class="test-card-endpoint">POST /tools/statistics-validator</div>
+                            <div class="test-card-result" id="test-stats-result">Not run</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // State
+        let currentMethod = 'GET';
+        let isLoading = false;
+        
+        // Endpoint buttons
+        document.querySelectorAll('.endpoint-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.endpoint-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const method = btn.dataset.method;
+                const path = btn.dataset.path;
+                const body = btn.dataset.body;
+                
+                currentMethod = method;
+                document.getElementById('methodDisplay').textContent = method;
+                document.getElementById('methodDisplay').className = 'request-method';
+                document.getElementById('methodDisplay').style.background = method === 'GET' ? 'var(--green-soft)' : 'var(--amber-soft)';
+                document.getElementById('methodDisplay').style.color = method === 'GET' ? 'var(--green)' : 'var(--amber)';
+                
+                document.getElementById('pathInput').value = path;
+                document.getElementById('requestBody').value = body ? JSON.stringify(JSON.parse(body), null, 2) : '';
+            });
+        });
+        
+        // Syntax highlighting for JSON
+        function highlightJSON(json) {
+            if (typeof json === 'string') {
+                try {
+                    json = JSON.parse(json);
+                } catch {
+                    return json;
+                }
+            }
+            
+            const str = JSON.stringify(json, null, 2);
+            return str.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, (match) => {
+                let cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key';
+                    } else {
+                        cls = 'string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return `<span class="${cls}">${match}</span>`;
+            });
+        }
+        
+        // Send request
+        async function sendRequest() {
+            if (isLoading) return;
+            
+            const baseUrl = document.getElementById('baseUrl').value.replace(/\/$/, '');
+            const apiKey = document.getElementById('apiKey').value;
+            const path = document.getElementById('pathInput').value;
+            const bodyText = document.getElementById('requestBody').value;
+            
+            const sendBtn = document.getElementById('sendBtn');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            isLoading = true;
+            sendBtn.disabled = true;
+            loadingIndicator.style.display = 'inline';
+            
+            const startTime = performance.now();
+            
+            try {
+                const options = {
+                    method: currentMethod,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (apiKey) {
+                    options.headers['Authorization'] = `Bearer ${apiKey}`;
+                }
+                
+                if (currentMethod === 'POST' && bodyText.trim()) {
+                    options.body = bodyText;
+                }
+                
+                const response = await fetch(baseUrl + path, options);
+                const endTime = performance.now();
+                const latency = Math.round(endTime - startTime);
+                
+                let data;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+                
+                // Display response
+                const responsePanel = document.getElementById('responsePanel');
+                const statusBadge = document.getElementById('statusBadge');
+                const responseTime = document.getElementById('responseTime');
+                const responseBody = document.getElementById('responseBody');
+                
+                responsePanel.style.display = 'block';
+                
+                if (response.ok) {
+                    statusBadge.className = 'status-badge success';
+                    statusBadge.textContent = `${response.status} OK`;
+                } else {
+                    statusBadge.className = 'status-badge error';
+                    statusBadge.textContent = `${response.status} Error`;
+                }
+                
+                responseTime.textContent = `${latency}ms`;
+                
+                if (typeof data === 'object') {
+                    responseBody.innerHTML = highlightJSON(data);
+                } else {
+                    responseBody.textContent = data;
+                }
+                
+            } catch (error) {
+                const responsePanel = document.getElementById('responsePanel');
+                const statusBadge = document.getElementById('statusBadge');
+                const responseBody = document.getElementById('responseBody');
+                
+                responsePanel.style.display = 'block';
+                statusBadge.className = 'status-badge error';
+                statusBadge.textContent = 'Error';
+                responseBody.innerHTML = `<span style="color:var(--red)">${error.message}</span>\n\nTip: Make sure the API server is running and CORS is enabled.`;
+            } finally {
+                isLoading = false;
+                sendBtn.disabled = false;
+                loadingIndicator.style.display = 'none';
+            }
+        }
+        
+        // Test definitions
+        const tests = {
+            health: { method: 'GET', path: '/' },
+            providers: { method: 'GET', path: '/providers' },
+            verify: { method: 'POST', path: '/verify', body: { claim: 'The Earth is round', min_providers: 2 } },
+            v3verify: { method: 'POST', path: '/v3/verify', body: { claim: 'Water is wet', mode: 'fast' } },
+            source: { method: 'POST', path: '/tools/source-credibility', body: { url: 'https://reuters.com' } },
+            stats: { method: 'POST', path: '/tools/statistics-validator', body: { claim: '90% of scientists agree' } }
+        };
+        
+        // Run single test
+        async function runTest(testId) {
+            const test = tests[testId];
+            const statusEl = document.getElementById(`test-${testId}-status`);
+            const resultEl = document.getElementById(`test-${testId}-result`);
+            
+            statusEl.className = 'test-status running';
+            resultEl.textContent = 'Running...';
+            
+            const baseUrl = document.getElementById('baseUrl').value.replace(/\/$/, '');
+            const apiKey = document.getElementById('apiKey').value;
+            
+            const startTime = performance.now();
+            
+            try {
+                const options = {
+                    method: test.method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                
+                if (apiKey) options.headers['Authorization'] = `Bearer ${apiKey}`;
+                if (test.body) options.body = JSON.stringify(test.body);
+                
+                const response = await fetch(baseUrl + test.path, options);
+                const latency = Math.round(performance.now() - startTime);
+                
+                if (response.ok) {
+                    statusEl.className = 'test-status pass';
+                    resultEl.textContent = `✓ ${response.status} (${latency}ms)`;
+                    return true;
+                } else {
+                    statusEl.className = 'test-status fail';
+                    resultEl.textContent = `✗ ${response.status} (${latency}ms)`;
+                    return false;
+                }
+            } catch (error) {
+                statusEl.className = 'test-status fail';
+                resultEl.textContent = `✗ ${error.message.substring(0, 30)}`;
+                return false;
+            }
+        }
+        
+        // Run all tests
+        async function runAllTests() {
+            let passed = 0;
+            let total = Object.keys(tests).length;
+            
+            for (const testId of Object.keys(tests)) {
+                const result = await runTest(testId);
+                if (result) passed++;
+                await new Promise(r => setTimeout(r, 300));
+            }
+            
+            alert(`Tests Complete: ${passed}/${total} passed`);
+        }
+        
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                sendRequest();
+            }
+        });
+    </script>
+</body>
+</html>

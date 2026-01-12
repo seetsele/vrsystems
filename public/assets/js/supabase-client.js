@@ -9,13 +9,75 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Check if Supabase is configured
 const isSupabaseConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
 
-// Initialize Supabase client (or null if not configured)
-let supabase = null;
-if (isSupabaseConfigured && window.supabase) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('✅ Supabase client initialized');
-} else {
-    console.warn('⚠️ Supabase not configured - using demo mode. Set SUPABASE_URL and SUPABASE_ANON_KEY in supabase-client.js');
+// Initialize Supabase client - use a different variable name to avoid conflict with window.supabase
+let supabaseClient = null;
+
+// Try to initialize immediately or wait for library to load
+function initSupabase() {
+    if (supabaseClient) return true; // Already initialized
+    
+    // The CDN creates window.supabase with createClient method
+    // Check multiple possible locations for the library
+    let createClientFn = null;
+    
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+        createClientFn = window.supabase.createClient;
+    } else if (window.Supabase && typeof window.Supabase.createClient === 'function') {
+        createClientFn = window.Supabase.createClient;
+    }
+    
+    if (isSupabaseConfigured && createClientFn) {
+        try {
+            supabaseClient = createClientFn(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    autoRefreshToken: true,
+                    persistSession: true,
+                    detectSessionInUrl: true,
+                    flowType: 'pkce'
+                }
+            });
+            // Also set legacy reference for compatibility
+            window.supabaseClient = supabaseClient;
+            console.log('✅ Supabase client initialized successfully');
+            return true;
+        } catch (e) {
+            console.error('❌ Supabase initialization error:', e);
+            return false;
+        }
+    }
+    return false;
+}
+
+// Retry initialization with increasing delays
+let initAttempts = 0;
+const maxAttempts = 10;
+
+function retryInit() {
+    if (initSupabase()) {
+        console.log('✅ Supabase ready after', initAttempts, 'attempts');
+        // Dispatch custom event to notify waiting code
+        window.dispatchEvent(new CustomEvent('supabaseReady'));
+        return;
+    }
+    
+    initAttempts++;
+    if (initAttempts < maxAttempts) {
+        const delay = Math.min(100 * initAttempts, 500);
+        setTimeout(retryInit, delay);
+    } else {
+        console.error('❌ Failed to initialize Supabase after', maxAttempts, 'attempts');
+    }
+}
+
+// Start initialization
+if (!initSupabase()) {
+    console.warn('⚠️ Supabase library not yet loaded - retrying...');
+    // Wait for DOM and then retry
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', retryInit);
+    } else {
+        retryInit();
+    }
 }
 
 // ================================================
@@ -25,51 +87,78 @@ if (isSupabaseConfigured && window.supabase) {
 const VerityAuth = {
     // Check if Supabase is available
     isConfigured() {
-        return isSupabaseConfigured && supabase !== null;
+        // Try to initialize if not already done
+        if (!supabaseClient) initSupabase();
+        return isSupabaseConfigured && supabaseClient !== null;
+    },
+
+    // Ensure client is ready
+    ensureClient() {
+        if (!supabaseClient) initSupabase();
+        if (!supabaseClient) {
+            throw new Error('Supabase client not initialized. Please refresh the page.');
+        }
+        return supabaseClient;
     },
 
     // Sign up with email and password
     async signUp(email, password, metadata = {}) {
         if (!this.isConfigured()) {
-            return { data: null, error: { message: 'Supabase not configured - using demo mode' } };
+            return { data: null, error: { message: 'Authentication service not available. Please refresh the page.' } };
         }
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                data: metadata
-            }
-        });
-        return { data, error };
+        try {
+            const { data, error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: metadata,
+                    emailRedirectTo: `${window.location.origin}/dashboard.html`
+                }
+            });
+            return { data, error };
+        } catch (e) {
+            console.error('SignUp error:', e);
+            return { data: null, error: { message: e.message || 'Sign up failed' } };
+        }
     },
 
     // Sign in with email and password
     async signIn(email, password) {
         if (!this.isConfigured()) {
-            return { data: null, error: { message: 'Supabase not configured - using demo mode' } };
+            return { data: null, error: { message: 'Authentication service not available. Please refresh the page.' } };
         }
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-        return { data, error };
+        try {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
+            return { data, error };
+        } catch (e) {
+            console.error('SignIn error:', e);
+            return { data: null, error: { message: e.message || 'Sign in failed' } };
+        }
     },
 
     // Sign in with OAuth provider (Google, GitHub, Apple, etc.)
     async signInWithOAuth(provider, options = {}) {
         if (!this.isConfigured()) {
-            return { data: null, error: { message: 'Supabase not configured - using demo mode' } };
+            return { data: null, error: { message: 'Authentication service not available. Please refresh the page.' } };
         }
         
-        const defaultOptions = {
-            redirectTo: `${window.location.origin}/dashboard.html`
-        };
-        
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider,  // 'google', 'github', 'apple', 'discord', etc.
-            options: { ...defaultOptions, ...options }
-        });
-        return { data, error };
+        try {
+            const defaultOptions = {
+                redirectTo: `${window.location.origin}/dashboard.html`
+            };
+            
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                provider,  // 'google', 'github', 'apple', 'discord', etc.
+                options: { ...defaultOptions, ...options }
+            });
+            return { data, error };
+        } catch (e) {
+            console.error('OAuth error:', e);
+            return { data: null, error: { message: e.message || `${provider} sign in failed` } };
+        }
     },
 
     // Sign out
@@ -80,7 +169,7 @@ const VerityAuth = {
             localStorage.removeItem('verity_stats');
             return { error: null };
         }
-        const { error } = await supabase.auth.signOut();
+        const { error } = await supabaseClient.auth.signOut();
         // Also clear any local storage
         localStorage.removeItem('verity_user');
         localStorage.removeItem('verity_stats');
@@ -94,7 +183,7 @@ const VerityAuth = {
             const demoUser = localStorage.getItem('verity_user');
             return { user: demoUser ? JSON.parse(demoUser) : null, error: null };
         }
-        const { data: { user }, error } = await supabase.auth.getUser();
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
         return { user, error };
     },
 
@@ -104,7 +193,7 @@ const VerityAuth = {
             const demoUser = localStorage.getItem('verity_user');
             return { session: demoUser ? { user: JSON.parse(demoUser) } : null, error: null };
         }
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
         return { session, error };
     },
 
@@ -114,7 +203,7 @@ const VerityAuth = {
             // For demo mode, just return a no-op unsubscribe
             return { data: { subscription: { unsubscribe: () => {} } } };
         }
-        return supabase.auth.onAuthStateChange((event, session) => {
+        return supabaseClient.auth.onAuthStateChange((event, session) => {
             callback(event, session);
         });
     },
@@ -124,7 +213,7 @@ const VerityAuth = {
         if (!this.isConfigured()) {
             return { data: null, error: { message: 'Supabase not configured - password reset not available' } };
         }
-        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/reset-password.html`
         });
         return { data, error };
@@ -136,9 +225,16 @@ const VerityAuth = {
 // ================================================
 
 const VerityDB = {
+    // Check if configured
+    isConfigured() {
+        if (!supabaseClient) initSupabase();
+        return isSupabaseConfigured && supabaseClient !== null;
+    },
+
     // Fact check submissions
     async submitFactCheck(claim, userId = null) {
-        const { data, error } = await supabase
+        if (!this.isConfigured()) return { data: null, error: { message: 'Database not available' } };
+        const { data, error } = await supabaseClient
             .from('fact_checks')
             .insert({
                 claim,
@@ -152,7 +248,8 @@ const VerityDB = {
 
     // Get user's fact check history
     async getFactCheckHistory(userId) {
-        const { data, error } = await supabase
+        if (!this.isConfigured()) return { data: null, error: { message: 'Database not available' } };
+        const { data, error } = await supabaseClient
             .from('fact_checks')
             .select('*')
             .eq('user_id', userId)
@@ -162,7 +259,8 @@ const VerityDB = {
 
     // Get single fact check by ID
     async getFactCheck(id) {
-        const { data, error } = await supabase
+        if (!this.isConfigured()) return { data: null, error: { message: 'Database not available' } };
+        const { data, error } = await supabaseClient
             .from('fact_checks')
             .select('*')
             .eq('id', id)
@@ -172,7 +270,8 @@ const VerityDB = {
 
     // Contact form submissions
     async submitContactForm(formData) {
-        const { data, error } = await supabase
+        if (!this.isConfigured()) return { data: null, error: { message: 'Database not available' } };
+        const { data, error } = await supabaseClient
             .from('contact_submissions')
             .insert({
                 name: formData.name,
@@ -187,7 +286,8 @@ const VerityDB = {
 
     // Newsletter signup
     async subscribeNewsletter(email) {
-        const { data, error } = await supabase
+        if (!this.isConfigured()) return { data: null, error: { message: 'Database not available' } };
+        const { data, error } = await supabaseClient
             .from('newsletter_subscribers')
             .upsert({
                 email,
@@ -205,7 +305,8 @@ const VerityDB = {
 const VerityRealtime = {
     // Subscribe to fact check updates
     subscribeToFactCheck(factCheckId, callback) {
-        return supabase
+        if (!supabaseClient) return null;
+        return supabaseClient
             .channel(`fact_check:${factCheckId}`)
             .on('postgres_changes', {
                 event: 'UPDATE',
@@ -218,7 +319,9 @@ const VerityRealtime = {
 
     // Unsubscribe from channel
     unsubscribe(channel) {
-        supabase.removeChannel(channel);
+        if (supabaseClient && channel) {
+            supabaseClient.removeChannel(channel);
+        }
     }
 };
 
@@ -229,8 +332,9 @@ const VerityRealtime = {
 const VerityStorage = {
     // Upload document for fact-checking
     async uploadDocument(file, userId) {
+        if (!supabaseClient) return { data: null, error: { message: 'Storage not available' } };
         const fileName = `${userId}/${Date.now()}_${file.name}`;
-        const { data, error } = await supabase.storage
+        const { data, error } = await supabaseClient.storage
             .from('documents')
             .upload(fileName, file);
         return { data, error };
@@ -238,7 +342,8 @@ const VerityStorage = {
 
     // Get document URL
     getDocumentUrl(path) {
-        const { data } = supabase.storage
+        if (!supabaseClient) return null;
+        const { data } = supabaseClient.storage
             .from('documents')
             .getPublicUrl(path);
         return data.publicUrl;
@@ -246,7 +351,8 @@ const VerityStorage = {
 
     // Delete document
     async deleteDocument(path) {
-        const { error } = await supabase.storage
+        if (!supabaseClient) return { error: { message: 'Storage not available' } };
+        const { error } = await supabaseClient.storage
             .from('documents')
             .remove([path]);
         return { error };
@@ -255,11 +361,15 @@ const VerityStorage = {
 
 // Export for use in other modules
 window.VeritySupabase = {
-    client: supabase,
+    get client() { return supabaseClient; },
     auth: VerityAuth,
     db: VerityDB,
     realtime: VerityRealtime,
     storage: VerityStorage
 };
+
+// Also expose VerityAuth and VerityDB globally for easier access
+window.VerityAuth = VerityAuth;
+window.VerityDB = VerityDB;
 
 console.log('Verity Supabase client initialized');

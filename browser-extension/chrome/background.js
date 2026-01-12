@@ -51,6 +51,41 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log('Verity extension installed');
 });
 
+// Handle keyboard shortcuts
+chrome.commands.onCommand.addListener(async (command) => {
+  console.log('Command received:', command);
+  
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab) return;
+  
+  if (command === 'verify_selection') {
+    // Get selected text from page and verify
+    try {
+      const [{ result: selectedText }] = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => window.getSelection()?.toString()
+      });
+      
+      if (selectedText && selectedText.trim()) {
+        await verifyText(selectedText.trim(), tab.id);
+      } else {
+        // Notify user to select text first
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: 'icons/icon128.png',
+          title: 'Verity',
+          message: 'Please select text to verify first.'
+        });
+      }
+    } catch (error) {
+      console.error('Error getting selection:', error);
+    }
+  } else if (command === 'toggle_inline') {
+    // Toggle inline verification mode
+    chrome.tabs.sendMessage(tab.id, { action: 'toggleInlineMode' });
+  }
+});
+
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === 'verity-check' && info.selectionText) {

@@ -6,6 +6,43 @@
 // State
 let isVerifying = false;
 let currentTooltip = null;
+let inlineModeEnabled = true;
+let darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+// Load preferences
+chrome.storage.sync.get(['inlineMode', 'darkMode'], (result) => {
+  inlineModeEnabled = result.inlineMode !== false;
+  if (result.darkMode !== undefined) {
+    darkMode = result.darkMode;
+  }
+  applyDarkMode();
+});
+
+// Apply dark mode to Verity elements
+function applyDarkMode() {
+  const style = document.getElementById('verity-dark-mode');
+  if (darkMode && !style) {
+    const darkStyles = document.createElement('style');
+    darkStyles.id = 'verity-dark-mode';
+    darkStyles.textContent = `
+      .verity-tooltip.verity-dark {
+        background: #1e293b !important;
+        color: #e2e8f0 !important;
+        border-color: #334155 !important;
+      }
+      .verity-tooltip.verity-dark .verity-tooltip-header {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+      }
+      .verity-tooltip.verity-dark .verity-sources a {
+        color: #818cf8 !important;
+      }
+    `;
+    document.head.appendChild(darkStyles);
+  } else if (!darkMode && style) {
+    style.remove();
+  }
+}
 
 // Listen for messages from background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -21,11 +58,46 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       hideLoadingIndicator();
       showError(request.error);
       break;
+    case 'toggleInlineMode':
+      inlineModeEnabled = !inlineModeEnabled;
+      chrome.storage.sync.set({ inlineMode: inlineModeEnabled });
+      showModeNotification(inlineModeEnabled);
+      sendResponse({ inlineMode: inlineModeEnabled });
+      break;
+    case 'setDarkMode':
+      darkMode = request.darkMode;
+      applyDarkMode();
+      sendResponse({ darkMode });
+      break;
   }
 });
 
+// Show mode toggle notification
+function showModeNotification(enabled) {
+  const notification = document.createElement('div');
+  notification.className = 'verity-mode-notification';
+  notification.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 12l2 2 4-4"/>
+      <circle cx="12" cy="12" r="10"/>
+    </svg>
+    <span>Inline verification ${enabled ? 'enabled' : 'disabled'}</span>
+  `;
+  notification.style.cssText = `
+    position: fixed; bottom: 20px; right: 20px; padding: 12px 16px;
+    background: ${enabled ? '#22c55e' : '#6b7280'}; color: white;
+    border-radius: 8px; display: flex; align-items: center; gap: 8px;
+    font-family: system-ui, sans-serif; font-size: 14px; z-index: 999999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: verity-fade-in 0.3s ease;
+  `;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 2000);
+}
+
 // Handle text selection
 document.addEventListener('mouseup', (event) => {
+  if (!inlineModeEnabled) return;
+  
   const selection = window.getSelection();
   const selectedText = selection.toString().trim();
   

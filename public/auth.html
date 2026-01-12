@@ -144,10 +144,10 @@
             
             <div class="brand-footer">
                 <div class="testimonial">
-                    <div class="testimonial-text">"Verity has transformed how our newsroom validates information. We've reduced fact-checking time by 80%."</div>
+                    <div class="testimonial-text">"Join the growing community of researchers, journalists, and fact-checkers building a more informed world."</div>
                     <div class="testimonial-author">
-                        <div class="author-avatar">SL</div>
-                        <div class="author-info"><strong>Sarah Lin</strong><span>Editor-in-Chief, TechDaily</span></div>
+                        <div class="author-avatar">VS</div>
+                        <div class="author-info"><strong>Verity Systems</strong><span>AI-Powered Verification</span></div>
                     </div>
                 </div>
             </div>
@@ -331,7 +331,7 @@
         async function handleSignIn(e) {
             e.preventDefault();
             const form = e.target;
-            const email = form.querySelector('input[type="email"]').value;
+            const email = form.querySelector('input[type="email"]').value.trim();
             const password = form.querySelector('input[type="password"]').value;
             const submitBtn = form.querySelector('.btn-submit');
             
@@ -343,10 +343,30 @@
             setLoading(submitBtn, true);
             
             try {
+                // Ensure Supabase is initialized
+                if (!VerityAuth.isConfigured()) {
+                    showToast('Authentication is loading. Please wait and try again.', 'error');
+                    setLoading(submitBtn, false);
+                    return;
+                }
+                
                 const { data, error } = await VerityAuth.signIn(email, password);
                 
                 if (error) {
-                    showToast(error.message || 'Sign in failed', 'error');
+                    // Provide helpful error messages based on error type
+                    let errorMessage = 'Sign in failed. Please check your credentials.';
+                    if (error.message) {
+                        if (error.message.includes('Invalid login credentials')) {
+                            errorMessage = 'Invalid email or password. Please try again.';
+                        } else if (error.message.includes('Email not confirmed')) {
+                            errorMessage = 'Please confirm your email address first.';
+                        } else if (error.message.includes('Too many requests')) {
+                            errorMessage = 'Too many login attempts. Please wait a moment.';
+                        } else {
+                            errorMessage = error.message;
+                        }
+                    }
+                    showToast(errorMessage, 'error');
                     return;
                 }
                 
@@ -364,7 +384,7 @@
                 
             } catch (err) {
                 console.error('Sign in error:', err);
-                showToast('An error occurred. Please try again.', 'error');
+                showToast('Connection error. Please check your internet and try again.', 'error');
             } finally {
                 setLoading(submitBtn, false);
             }
@@ -429,28 +449,41 @@
         
         // Handle OAuth Sign In (Google/GitHub)
         async function handleOAuth(provider) {
+            const providerName = provider.charAt(0).toUpperCase() + provider.slice(1);
+            
+            // Check if Supabase is configured and ready
+            if (!VerityAuth.isConfigured()) {
+                showToast(`Please wait for the page to fully load, then try again.`, 'error');
+                return;
+            }
+            
             try {
-                // Check if we're in demo mode or OAuth not configured
-                if (!VerityAuth.isConfigured()) {
-                    showToast(`OAuth requires Supabase setup. Use email sign-in for now.`, 'error');
-                    return;
-                }
+                showToast(`Connecting to ${providerName}...`, 'info');
                 
-                showToast(`Connecting to ${provider}...`, 'info');
                 const { data, error } = await VerityAuth.signInWithOAuth(provider);
                 
                 if (error) {
-                    // More helpful error messages
-                    if (error.message.includes('provider') || error.message.includes('not enabled')) {
-                        showToast(`${provider} OAuth is not configured yet. Please use email sign-in or contact support.`, 'error');
+                    console.error('OAuth error:', error);
+                    // Provide helpful error messages
+                    if (error.message && error.message.includes('provider')) {
+                        showToast(`${providerName} sign-in is being configured. Please use email sign-in for now.`, 'error');
+                    } else if (error.message && error.message.includes('not enabled')) {
+                        showToast(`${providerName} sign-in is not enabled. Please use email sign-in.`, 'error');
                     } else {
-                        showToast(error.message || `${provider} sign in failed`, 'error');
+                        showToast(error.message || `${providerName} sign-in failed. Please try email sign-in.`, 'error');
                     }
+                    return;
                 }
+                
                 // OAuth will redirect automatically if successful
+                // data.url contains the OAuth redirect URL
+                if (data && data.url) {
+                    window.location.href = data.url;
+                }
+                
             } catch (err) {
-                console.error('OAuth error:', err);
-                showToast(`${provider} is not available. Please use email sign-in.`, 'error');
+                console.error('OAuth exception:', err);
+                showToast(`${providerName} sign-in encountered an issue. Please use email sign-in or try again.`, 'error');
             }
         }
         

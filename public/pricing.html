@@ -42,21 +42,21 @@
         .toggle.annual{background:var(--amber-soft);border-color:rgba(245,158,11,0.3)}
         .save-badge{padding:.4rem .75rem;background:var(--green-soft);border:1px solid rgba(16,185,129,0.3);border-radius:100px;font-size:.75rem;font-weight:600;color:var(--green);animation:float 3s ease-in-out infinite}
         
-        .pricing-container{max-width:1400px;margin:0 auto;padding:0 1.5rem 4rem}
-        .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:4rem}
+        .pricing-container{max-width:1600px;margin:0 auto;padding:0 1.5rem 4rem}
+        .pricing-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1rem;margin-bottom:4rem}
         
-        .plan-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2rem;position:relative;transition:all .3s ease;display:flex;flex-direction:column;overflow:hidden}
+        .plan-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem;position:relative;transition:all .3s ease;display:flex;flex-direction:column;overflow:hidden}
         .plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:transparent;transition:background .3s}
         .plan-card:hover{border-color:var(--border-bright);transform:translateY(-4px)}
         .plan-card:hover::before{background:var(--amber)}
         .plan-card.featured{border-color:rgba(245,158,11,0.4);background:linear-gradient(180deg,rgba(245,158,11,0.05),var(--card))}
         .plan-card.featured::before{background:linear-gradient(90deg,var(--amber),#fbbf24)}
-        .plan-card.featured::after{content:'⭐ MOST POPULAR';position:absolute;top:16px;right:-30px;padding:.35rem 2rem;background:linear-gradient(135deg,var(--amber),#fbbf24);color:#000;font-size:.65rem;font-weight:700;transform:rotate(45deg);letter-spacing:.03em}
+        .plan-card.featured::after{content:'⭐ POPULAR';position:absolute;top:12px;right:-35px;padding:.3rem 2rem;background:linear-gradient(135deg,var(--amber),#fbbf24);color:#000;font-size:.55rem;font-weight:700;transform:rotate(45deg);letter-spacing:.03em}
         
-        .plan-name{font-size:1.35rem;font-weight:700;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem}
-        .plan-target{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;min-height:40px}
-        .plan-price{font-family:'Newsreader',Georgia,serif;font-size:3rem;font-weight:400;margin-bottom:.25rem;line-height:1}
-        .plan-price span{font-size:1rem;color:var(--muted);font-family:'Inter',sans-serif}
+        .plan-name{font-size:1.1rem;font-weight:700;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
+        .plan-target{font-size:.75rem;color:var(--muted);margin-bottom:1rem;min-height:36px}
+        .plan-price{font-family:'Newsreader',Georgia,serif;font-size:2.25rem;font-weight:400;margin-bottom:.25rem;line-height:1}
+        .plan-price span{font-size:.85rem;color:var(--muted);font-family:'Inter',sans-serif}
         .plan-billing{font-size:.8rem;color:var(--dim);margin-bottom:1.5rem;min-height:20px}
         
         .plan-includes{background:linear-gradient(90deg,var(--amber-soft),transparent);border-radius:12px;padding:1rem;margin-bottom:1.5rem}
@@ -160,7 +160,9 @@
         footer{padding:2rem;text-align:center;border-top:1px solid var(--border);color:var(--dim);font-size:.85rem}
         footer a{color:var(--amber);text-decoration:none}
         
-        @media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,1fr)}.api-grid{grid-template-columns:1fr}}
+        @media(max-width:1400px){.pricing-grid{grid-template-columns:repeat(4,1fr)}}
+        @media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(3,1fr)}.api-grid{grid-template-columns:1fr}}
+        @media(max-width:900px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
         @media(max-width:768px){.pricing-grid{grid-template-columns:1fr}.nav-links{display:none}.enterprise-features{flex-direction:column;align-items:center}}
     </style>
 </head>
@@ -186,80 +188,130 @@
 
     <div class="pricing-container">
         <div class="pricing-grid">
+            <!-- Tier 1: Free -->
             <div class="plan-card">
                 <div class="plan-name">Free</div>
-                <div class="plan-target">Perfect for testing and personal use</div>
+                <div class="plan-target">Testing & personal use</div>
                 <div class="plan-price">$0<span>/mo</span></div>
                 <div class="plan-billing">Free forever</div>
                 <div class="plan-includes">
-                    <div class="plan-includes-title">Included monthly</div>
+                    <div class="plan-includes-title">Monthly</div>
                     <div class="plan-includes-value">300 verifications</div>
                 </div>
                 <ul class="plan-features">
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>9-Point Verification System</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 AI models</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>2 AI models</li>
                     <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 data sources</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Web dashboard</li>
                     <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>7-day history</li>
                 </ul>
-                <a href="auth.html?plan=free" class="plan-btn">Get Started Free</a>
+                <a href="auth.html?plan=free" class="plan-btn">Get Started</a>
             </div>
 
+            <!-- Tier 2: Starter $49 -->
+            <div class="plan-card">
+                <div class="plan-name">Starter</div>
+                <div class="plan-target">Individual creators</div>
+                <div class="plan-price" id="starterPrice">$49<span>/mo</span></div>
+                <div class="plan-billing" id="starterBilling">or $490/yr (save 17%)</div>
+                <div class="plan-includes">
+                    <div class="plan-includes-title">Monthly</div>
+                    <div class="plan-includes-value">1,200 verifications</div>
+                </div>
+                <ul class="plan-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>4 AI models</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>15 data sources</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Email support</li>
+                </ul>
+                <a href="auth.html?plan=starter" class="plan-btn">Start Trial</a>
+            </div>
+
+            <!-- Tier 3: Pro $99 -->
             <div class="plan-card">
                 <div class="plan-name">Pro</div>
-                <div class="plan-target">For journalists & researchers</div>
+                <div class="plan-target">Journalists & researchers</div>
                 <div class="plan-price" id="proPrice">$99<span>/mo</span></div>
-                <div class="plan-billing" id="proBilling">or $999/yr (save 17%)</div>
+                <div class="plan-billing" id="proBilling">or $990/yr (save 17%)</div>
                 <div class="plan-includes">
-                    <div class="plan-includes-title">Included monthly</div>
+                    <div class="plan-includes-title">Monthly</div>
                     <div class="plan-includes-value">2,500 verifications</div>
                 </div>
                 <ul class="plan-features">
-                    <li class="highlight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Everything in Free</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>12 AI models (premium)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>8 AI models</li>
                     <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>27 data sources</li>
                     <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3 API keys</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>90-day history</li>
                 </ul>
-                <a href="auth.html?plan=pro" class="plan-btn">Start 14-Day Trial</a>
+                <a href="auth.html?plan=pro" class="plan-btn">Start Trial</a>
             </div>
 
+            <!-- Tier 4: Professional $199 (FEATURED) -->
             <div class="plan-card featured">
                 <div class="plan-name">Professional</div>
-                <div class="plan-target">For newsrooms & agencies</div>
+                <div class="plan-target">Newsrooms & agencies</div>
                 <div class="plan-price" id="professionalPrice">$199<span>/mo</span></div>
                 <div class="plan-billing" id="professionalBilling">or $1,990/yr (save 17%)</div>
                 <div class="plan-includes">
-                    <div class="plan-includes-title">Included monthly</div>
+                    <div class="plan-includes-title">Monthly</div>
                     <div class="plan-includes-value">5,000 verifications</div>
                 </div>
                 <ul class="plan-features">
-                    <li class="highlight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Everything in Pro</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>15+ AI models (all)</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>10 team members</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Batch processing</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority support (12h)</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>20+ AI providers</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 team members</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>12h priority support</li>
                 </ul>
-                <a href="auth.html?plan=professional" class="plan-btn">Start 14-Day Trial</a>
+                <a href="auth.html?plan=professional" class="plan-btn">Start Trial</a>
             </div>
 
+            <!-- Tier 5: Business $599 -->
             <div class="plan-card">
                 <div class="plan-name">Business</div>
-                <div class="plan-target">For publishers & enterprises</div>
+                <div class="plan-target">Publishers & enterprises</div>
                 <div class="plan-price" id="businessPrice">$599<span>/mo</span></div>
                 <div class="plan-billing" id="businessBilling">or $5,990/yr (save 17%)</div>
                 <div class="plan-includes">
-                    <div class="plan-includes-title">Included monthly</div>
+                    <div class="plan-includes-title">Monthly</div>
                     <div class="plan-includes-value">15,000 verifications</div>
                 </div>
                 <ul class="plan-features">
-                    <li class="highlight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Everything in Professional</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>25 team members</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>99.5% SLA uptime</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SSO included</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>15 team members</li>
                     <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated CSM</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom integrations</li>
                 </ul>
                 <a href="auth.html?plan=business" class="plan-btn">Contact Sales</a>
+            </div>
+
+            <!-- Tier 6: Business+ $999 -->
+            <div class="plan-card">
+                <div class="plan-name">Business+</div>
+                <div class="plan-target">High-volume teams</div>
+                <div class="plan-price" id="businessPlusPrice">$999<span>/mo</span></div>
+                <div class="plan-billing" id="businessPlusBilling">or $9,990/yr (save 17%)</div>
+                <div class="plan-includes">
+                    <div class="plan-includes-title">Monthly</div>
+                    <div class="plan-includes-value">25,000 verifications</div>
+                </div>
+                <ul class="plan-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited team</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>99.9% SLA</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
+                </ul>
+                <a href="auth.html?plan=business-plus" class="plan-btn">Contact Sales</a>
+            </div>
+
+            <!-- Tier 7: Enterprise $2,999+ -->
+            <div class="plan-card">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-target">Fortune 500 & custom</div>
+                <div class="plan-price" id="enterprisePrice">$2,999+<span>/mo</span></div>
+                <div class="plan-billing" id="enterpriseBilling">Annual contracts available</div>
+                <div class="plan-includes">
+                    <div class="plan-includes-title">Monthly</div>
+                    <div class="plan-includes-value">75,000+ verifications</div>
+                </div>
+                <ul class="plan-features">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>24/7 support</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Private deployment</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom AI training</li>
+                </ul>
+                <a href="mailto:enterprise@veritysystems.app" class="plan-btn">Contact Sales</a>
             </div>
         </div>
 

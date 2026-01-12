@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test | Verity</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; background: #0a0a0b; color: #fafafa; min-height: 100vh; padding: 2rem; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { margin-bottom: 1rem; color: #f59e0b; }
+        .status { padding: 1rem; background: #18181b; border-radius: 8px; margin-bottom: 1rem; }
+        .status.error { border-left: 4px solid #ef4444; }
+        .status.success { border-left: 4px solid #10b981; }
+        .status.info { border-left: 4px solid #3b82f6; }
+        button { padding: 0.75rem 1.5rem; background: #f59e0b; color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin: 0.5rem 0.5rem 0.5rem 0; }
+        button:hover { background: #fbbf24; }
+        input { padding: 0.75rem; background: #18181b; border: 1px solid #333; border-radius: 8px; color: #fff; width: 100%; margin-bottom: 0.5rem; }
+        .section { margin: 2rem 0; padding: 1.5rem; background: #111; border-radius: 12px; }
+        h2 { margin-bottom: 1rem; font-size: 1.2rem; }
+        pre { background: #18181b; padding: 1rem; border-radius: 8px; overflow: auto; font-size: 0.85rem; }
+        .log { max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Verity Auth Debug</h1>
+        
+        <div id="status" class="status info">Loading Supabase...</div>
+        
+        <div class="section">
+            <h2>1. Supabase Connection</h2>
+            <div id="supabase-status"></div>
+        </div>
+        
+        <div class="section">
+            <h2>2. OAuth Test</h2>
+            <button onclick="testGoogle()">🔵 Test Google OAuth</button>
+            <button onclick="testGitHub()">⚫ Test GitHub OAuth</button>
+            <div id="oauth-result" style="margin-top: 1rem;"></div>
+        </div>
+        
+        <div class="section">
+            <h2>3. Email/Password Test</h2>
+            <input type="email" id="email" placeholder="Email" value="test@example.com">
+            <input type="password" id="password" placeholder="Password (min 8 chars)" value="TestPassword123!">
+            <br>
+            <button onclick="testSignUp()">📝 Sign Up</button>
+            <button onclick="testSignIn()">🔑 Sign In</button>
+            <button onclick="testSignOut()">🚪 Sign Out</button>
+            <div id="email-result" style="margin-top: 1rem;"></div>
+        </div>
+        
+        <div class="section">
+            <h2>4. Current Session</h2>
+            <button onclick="checkSession()">🔄 Check Session</button>
+            <div id="session-result" style="margin-top: 1rem;"></div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Debug Log</h2>
+            <div id="log" class="log"><pre></pre></div>
+        </div>
+    </div>
+    
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    
+    <script>
+        function log(msg, type = 'info') {
+            const logEl = document.querySelector('#log pre');
+            const time = new Date().toLocaleTimeString();
+            logEl.innerHTML += `[${time}] ${msg}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(msg);
+        }
+        
+        function showResult(elementId, message, isError = false) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="status ${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+        
+        function checkSupabaseStatus() {
+            const statusEl = document.getElementById('status');
+            const supabaseEl = document.getElementById('supabase-status');
+            
+            if (typeof window.VerityAuth === 'undefined') {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ VerityAuth not defined!';
+                supabaseEl.innerHTML = '<div class="status error">supabase-client.js failed to load</div>';
+                log('ERROR: VerityAuth not defined');
+                return false;
+            }
+            
+            log('VerityAuth available');
+            
+            const isConfigured = VerityAuth.isConfigured();
+            log('Supabase configured: ' + isConfigured);
+            
+            if (isConfigured) {
+                statusEl.className = 'status success';
+                statusEl.textContent = '✅ Supabase connected and ready!';
+                supabaseEl.innerHTML = `
+                    <div class="status success">
+                        <strong>URL:</strong> https://zxgydzavblgetojqdtir.supabase.co<br>
+                        <strong>Status:</strong> Connected ✅
+                    </div>`;
+                log('Supabase client initialized successfully');
+                checkSession();
+                return true;
+            } else {
+                statusEl.className = 'status info';
+                statusEl.textContent = '⏳ Waiting for Supabase to initialize...';
+                return false;
+            }
+        }
+        
+        // Check Supabase on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            log('Page loaded, checking Supabase...');
+            
+            // Check if already ready
+            if (checkSupabaseStatus()) return;
+            
+            // Wait for supabaseReady event
+            window.addEventListener('supabaseReady', () => {
+                log('Received supabaseReady event');
+                checkSupabaseStatus();
+            });
+            
+            // Also retry a few times with delay
+            for (let i = 0; i < 10; i++) {
+                await new Promise(r => setTimeout(r, 300));
+                if (checkSupabaseStatus()) return;
+            }
+            
+            // Final check - show error if still not ready
+            const statusEl = document.getElementById('status');
+            const supabaseEl = document.getElementById('supabase-status');
+            statusEl.className = 'status error';
+            statusEl.textContent = '❌ Supabase initialization timed out';
+            supabaseEl.innerHTML = '<div class="status error">Could not connect to Supabase. Check console for details.</div>';
+            log('ERROR: Supabase initialization timed out');
+        });
+        
+        async function testGoogle() {
+            log('Testing Google OAuth...');
+            try {
+                const { data, error } = await VerityAuth.signInWithOAuth('google');
+                if (error) {
+                    showResult('oauth-result', `Error: ${error.message}`, true);
+                    log('Google OAuth error: ' + error.message);
+                } else {
+                    showResult('oauth-result', 'Redirecting to Google...', false);
+                    log('Google OAuth initiated: ' + JSON.stringify(data));
+                }
+            } catch (e) {
+                showResult('oauth-result', `Exception: ${e.message}`, true);
+                log('Google OAuth exception: ' + e.message);
+            }
+        }
+        
+        async function testGitHub() {
+            log('Testing GitHub OAuth...');
+            try {
+                const { data, error } = await VerityAuth.signInWithOAuth('github');
+                if (error) {
+                    showResult('oauth-result', `Error: ${error.message}`, true);
+                    log('GitHub OAuth error: ' + error.message);
+                } else {
+                    showResult('oauth-result', 'Redirecting to GitHub...', false);
+                    log('GitHub OAuth initiated: ' + JSON.stringify(data));
+                }
+            } catch (e) {
+                showResult('oauth-result', `Exception: ${e.message}`, true);
+                log('GitHub OAuth exception: ' + e.message);
+            }
+        }
+        
+        async function testSignUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            log(`Testing sign up with ${email}...`);
+            
+            try {
+                const { data, error } = await VerityAuth.signUp(email, password, { full_name: 'Test User' });
+                if (error) {
+                    showResult('email-result', `Sign Up Error: ${error.message}`, true);
+                    log('Sign up error: ' + error.message);
+                } else {
+                    showResult('email-result', `Sign Up Success! Check ${email} for verification email.`, false);
+                    log('Sign up success: ' + JSON.stringify(data));
+                }
+            } catch (e) {
+                showResult('email-result', `Exception: ${e.message}`, true);
+                log('Sign up exception: ' + e.message);
+            }
+        }
+        
+        async function testSignIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            log(`Testing sign in with ${email}...`);
+            
+            try {
+                const { data, error } = await VerityAuth.signIn(email, password);
+                if (error) {
+                    showResult('email-result', `Sign In Error: ${error.message}`, true);
+                    log('Sign in error: ' + error.message);
+                } else {
+                    showResult('email-result', `Sign In Success! Welcome ${data.user?.email}`, false);
+                    log('Sign in success: ' + JSON.stringify(data));
+                }
+            } catch (e) {
+                showResult('email-result', `Exception: ${e.message}`, true);
+                log('Sign in exception: ' + e.message);
+            }
+        }
+        
+        async function testSignOut() {
+            log('Testing sign out...');
+            try {
+                const { error } = await VerityAuth.signOut();
+                if (error) {
+                    showResult('email-result', `Sign Out Error: ${error.message}`, true);
+                    log('Sign out error: ' + error.message);
+                } else {
+                    showResult('email-result', 'Signed out successfully!', false);
+                    log('Sign out success');
+                }
+            } catch (e) {
+                showResult('email-result', `Exception: ${e.message}`, true);
+                log('Sign out exception: ' + e.message);
+            }
+        }
+        
+        async function checkSession() {
+            log('Checking current session...');
+            try {
+                const { user, error } = await VerityAuth.getCurrentUser();
+                if (error) {
+                    showResult('session-result', `Error: ${error.message}`, true);
+                    log('Session check error: ' + error.message);
+                } else if (user) {
+                    showResult('session-result', `<strong>Logged in as:</strong> ${user.email}<br><strong>ID:</strong> ${user.id}`, false);
+                    log('Session found: ' + user.email);
+                } else {
+                    showResult('session-result', 'No active session (not logged in)', false);
+                    log('No session');
+                }
+            } catch (e) {
+                showResult('session-result', `Exception: ${e.message}`, true);
+                log('Session check exception: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Allow main pages
+Allow: /index.html
+Allow: /verify.html
+Allow: /pricing.html
+Allow: /api-docs.html
+Allow: /tools.html
+Allow: /auth.html
+Allow: /waitlist.html
+
+# Disallow authenticated pages
+Disallow: /dashboard.html
+Disallow: /settings.html
+Disallow: /billing.html
+Disallow: /api-keys.html
+Disallow: /history.html
+
+# Disallow assets
+Disallow: /assets/
+
+# Sitemap
+Sitemap: https://veritysystems.app/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
