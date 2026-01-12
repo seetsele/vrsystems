@@ -1,5 +1,7 @@
 // ================================================
 // VERITY SYSTEMS - SUPABASE CLIENT
+// Version: 2.0.1 - Fixed initialization timing
+// Last Updated: 2026-01-12
 // ================================================
 
 // Supabase Configuration - PRODUCTION CREDENTIALS
