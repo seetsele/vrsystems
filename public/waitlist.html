@@ -268,16 +268,42 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Joining...';
             
+            let saved = false;
+            
             try {
-                // Try to save to Supabase
-                if (typeof VerityDB !== 'undefined' && VerityDB.isConfigured()) {
-                    const { error } = await VerityDB.subscribeNewsletter(email);
-                    if (error && !error.message.includes('duplicate')) {
-                        console.warn('Waitlist save warning:', error);
-                    }
+                // Wait for Supabase to be ready (up to 3 seconds)
+                let attempts = 0;
+                while (!window.VeritySupabase?.client && attempts < 30) {
+                    await new Promise(r => setTimeout(r, 100));
+                    attempts++;
                 }
                 
-                // Show success regardless (better UX)
+                const client = window.VeritySupabase?.client;
+                if (client) {
+                    console.log('Saving email to waitlist:', email);
+                    const { data, error } = await client
+                        .from('newsletter_subscribers')
+                        .upsert({
+                            email: email,
+                            subscribed_at: new Date().toISOString()
+                        }, { onConflict: 'email' })
+                        .select();
+                    
+                    if (error) {
+                        console.warn('Waitlist save warning:', error.message);
+                        // If duplicate, still count as success
+                        if (error.message.includes('duplicate') || error.code === '23505') {
+                            saved = true;
+                        }
+                    } else {
+                        console.log('Waitlist save success:', data);
+                        saved = true;
+                    }
+                } else {
+                    console.warn('Supabase not available, showing success anyway');
+                }
+                
+                // Show success (better UX even if save failed)
                 count++;
                 document.getElementById('waitlistCount').textContent = count.toLocaleString();
                 document.getElementById('userPosition').textContent = '#' + count.toLocaleString();

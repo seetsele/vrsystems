@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status | Verity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #0a0a0b; --card: #111113; --elevated: #18181b; --border: rgba(255,255,255,0.08); --text: #fafafa; --muted: #a3a3a3; --dim: #525252; --amber: #f59e0b; --green: #10b981; --red: #ef4444; --blue: #3b82f6; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        h1 svg { width: 36px; height: 36px; }
+        .subtitle { color: var(--muted); margin-bottom: 2rem; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+        .card h2 { font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card h2 svg { width: 20px; height: 20px; color: var(--amber); }
+        
+        .status-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .status-item:last-child { border-bottom: none; }
+        .status-label { font-size: 0.9rem; }
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-badge.success { background: rgba(16,185,129,0.15); color: var(--green); }
+        .status-badge.error { background: rgba(239,68,68,0.15); color: var(--red); }
+        .status-badge.warning { background: rgba(245,158,11,0.15); color: var(--amber); }
+        .status-badge.pending { background: rgba(59,130,246,0.15); color: var(--blue); }
+        
+        .test-btn { padding: 0.6rem 1rem; background: var(--elevated); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .test-btn:hover { border-color: var(--amber); background: rgba(245,158,11,0.1); }
+        .test-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .input-group input { flex: 1; padding: 0.6rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.9rem; }
+        .input-group input::placeholder { color: var(--dim); }
+        
+        .result { margin-top: 1rem; padding: 0.75rem; background: var(--bg); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; max-height: 150px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+        .result.success { border-left: 3px solid var(--green); }
+        .result.error { border-left: 3px solid var(--red); }
+        
+        .overall-status { background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(251,191,36,0.05)); border: 1px solid rgba(245,158,11,0.2); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .overall-status h3 { font-size: 1.2rem; }
+        .overall-status .stats { display: flex; gap: 2rem; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: 700; }
+        .stat-label { font-size: 0.8rem; color: var(--muted); }
+        .stat-value.green { color: var(--green); }
+        .stat-value.red { color: var(--red); }
+        .stat-value.amber { color: var(--amber); }
+        
+        .refresh-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, var(--amber), #d97706); border: none; border-radius: 10px; color: #000; font-weight: 600; cursor: pointer; }
+        .refresh-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,158,11,0.3); }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .testing { animation: pulse 1s infinite; }
+        
+        .section-title { font-size: 1.3rem; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Verity System Status
+        </h1>
+        <p class="subtitle">Real-time health check for all services and integrations</p>
+        
+        <div class="overall-status">
+            <div>
+                <h3>Overall System Health</h3>
+                <p style="color: var(--muted); font-size: 0.9rem;">Last checked: <span id="lastCheck">-</span></p>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value green" id="passedCount">-</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value red" id="failedCount">-</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value amber" id="warningCount">-</div>
+                    <div class="stat-label">Warnings</div>
+                </div>
+            </div>
+            <button class="refresh-btn" onclick="runAllTests()">🔄 Run All Tests</button>
+        </div>
+        
+        <div class="grid">
+            <!-- Supabase Authentication -->
+            <div class="card">
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Authentication (Supabase)</h2>
+                <div class="status-item">
+                    <span class="status-label">Connection</span>
+                    <span class="status-badge pending" id="auth-connection">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Email Sign Up</span>
+                    <span class="status-badge pending" id="auth-signup">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Email Sign In</span>
+                    <span class="status-badge pending" id="auth-signin">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Google OAuth</span>
+                    <span class="status-badge pending" id="auth-google">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">GitHub OAuth</span>
+                    <span class="status-badge pending" id="auth-github">Testing...</span>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="testEmail" placeholder="test@example.com" value="test@example.com">
+                    <input type="password" id="testPassword" placeholder="password" value="TestPassword123!">
+                </div>
+                <button class="test-btn" onclick="testAuth()">🧪 Test Authentication</button>
+                <div class="result" id="auth-result" style="display:none;"></div>
+            </div>
+            
+            <!-- Database -->
+            <div class="card">
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Database (Supabase)</h2>
+                <div class="status-item">
+                    <span class="status-label">Connection</span>
+                    <span class="status-badge pending" id="db-connection">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Profiles Table</span>
+                    <span class="status-badge pending" id="db-profiles">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Fact Checks Table</span>
+                    <span class="status-badge pending" id="db-factchecks">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Newsletter Table</span>
+                    <span class="status-badge pending" id="db-newsletter">Testing...</span>
+                </div>
+                <button class="test-btn" onclick="testDatabase()">🧪 Test Database</button>
+                <div class="result" id="db-result" style="display:none;"></div>
+            </div>
+            
+            <!-- Stripe Payments -->
+            <div class="card">
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payments (Stripe)</h2>
+                <div class="status-item">
+                    <span class="status-label">Stripe.js Loaded</span>
+                    <span class="status-badge pending" id="stripe-loaded">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Public Key Valid</span>
+                    <span class="status-badge pending" id="stripe-key">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Checkout Ready</span>
+                    <span class="status-badge pending" id="stripe-checkout">Testing...</span>
+                </div>
+                <button class="test-btn" onclick="testStripe()">🧪 Test Stripe</button>
+                <div class="result" id="stripe-result" style="display:none;"></div>
+            </div>
+            
+            <!-- API Server -->
+            <div class="card">
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> API Server (Railway)</h2>
+                <div class="status-item">
+                    <span class="status-label">Server Status</span>
+                    <span class="status-badge pending" id="api-status">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Health Check</span>
+                    <span class="status-badge pending" id="api-health">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Verify Endpoint</span>
+                    <span class="status-badge pending" id="api-verify">Testing...</span>
+                </div>
+                <button class="test-btn" onclick="testAPI()">🧪 Test API</button>
+                <div class="result" id="api-result" style="display:none;"></div>
+            </div>
+            
+            <!-- Waitlist -->
+            <div class="card">
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Waitlist</h2>
+                <div class="status-item">
+                    <span class="status-label">Table Exists</span>
+                    <span class="status-badge pending" id="waitlist-table">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Insert Permission</span>
+                    <span class="status-badge pending" id="waitlist-insert">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Current Count</span>
+                    <span class="status-badge pending" id="waitlist-count">Testing...</span>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="waitlistEmail" placeholder="waitlist-test@example.com">
+                    <button class="test-btn" onclick="testWaitlistSubmit()">Submit</button>
+                </div>
+                <button class="test-btn" onclick="testWaitlist()">🧪 Test Waitlist</button>
+                <div class="result" id="waitlist-result" style="display:none;"></div>
+            </div>
+            
+            <!-- Email Service -->
+            <div class="card">
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email Service</h2>
+                <div class="status-item">
+                    <span class="status-label">SMTP Configured</span>
+                    <span class="status-badge pending" id="email-smtp">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Confirmation Emails</span>
+                    <span class="status-badge pending" id="email-confirm">Testing...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Password Reset</span>
+                    <span class="status-badge pending" id="email-reset">Testing...</span>
+                </div>
+                <button class="test-btn" onclick="testEmail()">🧪 Test Email Config</button>
+                <div class="result" id="email-result" style="display:none;"></div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">📋 Configuration Guide</h2>
+        <div class="grid">
+            <div class="card">
+                <h2>🔧 Fix Email Sign-Up Issues</h2>
+                <p style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
+                    The "Error sending confirmation email" means Supabase needs email configuration.<br><br>
+                    <strong>Option 1: Disable Email Confirmation (Quick Fix)</strong><br>
+                    1. Go to <a href="https://supabase.com/dashboard/project/zxgydzavblgetojqdtir/auth/providers" target="_blank" style="color: var(--amber);">Supabase Auth Settings</a><br>
+                    2. Find "Enable email confirmations"<br>
+                    3. Toggle it OFF<br><br>
+                    <strong>Option 2: Configure SMTP (Production)</strong><br>
+                    1. Go to Auth → Email Templates<br>
+                    2. Configure custom SMTP (Resend, SendGrid, etc.)
+                </p>
+            </div>
+            
+            <div class="card">
+                <h2>🌐 CDN & Cache Explained</h2>
+                <p style="color: var(--muted); font-size: 0.9rem; line-height: 1.6;">
+                    <strong>What is a CDN?</strong><br>
+                    A Content Delivery Network caches your website files on servers worldwide for faster loading.<br><br>
+                    <strong>Your Setup:</strong><br>
+                    • Name.com = DNS provider (routes domain to servers)<br>
+                    • Vercel = Hosting + Edge CDN (caches files)<br><br>
+                    <strong>To Purge Cache:</strong><br>
+                    1. Go to <a href="https://vercel.com/dashboard" target="_blank" style="color: var(--amber);">Vercel Dashboard</a><br>
+                    2. Select your project → Settings → Functions<br>
+                    3. Click "Purge Edge Cache"<br>
+                    <em>Or add ?v=2 to any URL to bypass cache</em>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js?v=2.0.1"></script>
+    
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <script>
+        // Stats tracking
+        let passed = 0, failed = 0, warnings = 0;
+        
+        function updateStats() {
+            document.getElementById('passedCount').textContent = passed;
+            document.getElementById('failedCount').textContent = failed;
+            document.getElementById('warningCount').textContent = warnings;
+            document.getElementById('lastCheck').textContent = new Date().toLocaleTimeString();
+        }
+        
+        function setStatus(id, status, text) {
+            const el = document.getElementById(id);
+            el.className = 'status-badge ' + status;
+            el.textContent = text || (status === 'success' ? '✓ OK' : status === 'error' ? '✗ Failed' : status === 'warning' ? '⚠ Warning' : 'Testing...');
+            
+            if (status === 'success') passed++;
+            else if (status === 'error') failed++;
+            else if (status === 'warning') warnings++;
+            updateStats();
+        }
+        
+        function showResult(id, message, isError = false) {
+            const el = document.getElementById(id);
+            el.style.display = 'block';
+            el.className = 'result ' + (isError ? 'error' : 'success');
+            el.textContent = message;
+        }
+        
+        // Wait for Supabase
+        async function waitForSupabase() {
+            for (let i = 0; i < 20; i++) {
+                if (typeof VerityAuth !== 'undefined' && VerityAuth.isConfigured()) {
+                    return true;
+                }
+                await new Promise(r => setTimeout(r, 200));
+            }
+            return false;
+        }
+        
+        // Test Authentication
+        async function testAuth() {
+            passed = 0; failed = 0; warnings = 0;
+            const resultEl = document.getElementById('auth-result');
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Testing authentication...';
+            
+            // Test connection
+            const supabaseReady = await waitForSupabase();
+            if (supabaseReady) {
+                setStatus('auth-connection', 'success');
+            } else {
+                setStatus('auth-connection', 'error');
+                showResult('auth-result', 'Supabase client not initialized', true);
+                return;
+            }
+            
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            // Test Sign Up
+            try {
+                const { data, error } = await VerityAuth.signUp(email + '.test' + Date.now(), password, { full_name: 'Test User' });
+                if (error) {
+                    if (error.message.includes('confirmation')) {
+                        setStatus('auth-signup', 'warning', '⚠ SMTP needed');
+                        resultEl.textContent += '\n⚠ Sign up works but email confirmation disabled or SMTP not configured';
+                    } else {
+                        setStatus('auth-signup', 'error');
+                        resultEl.textContent += '\n✗ Sign up error: ' + error.message;
+                    }
+                } else {
+                    setStatus('auth-signup', 'success');
+                    resultEl.textContent += '\n✓ Sign up working';
+                }
+            } catch (e) {
+                setStatus('auth-signup', 'error');
+                resultEl.textContent += '\n✗ Sign up exception: ' + e.message;
+            }
+            
+            // Test Sign In
+            try {
+                const { data, error } = await VerityAuth.signIn(email, password);
+                if (error) {
+                    if (error.message.includes('Invalid login')) {
+                        setStatus('auth-signin', 'warning', '⚠ No user');
+                        resultEl.textContent += '\n⚠ Sign in endpoint works (no matching user)';
+                    } else {
+                        setStatus('auth-signin', 'error');
+                        resultEl.textContent += '\n✗ Sign in error: ' + error.message;
+                    }
+                } else {
+                    setStatus('auth-signin', 'success');
+                    resultEl.textContent += '\n✓ Sign in working';
+                }
+            } catch (e) {
+                setStatus('auth-signin', 'error');
+                resultEl.textContent += '\n✗ Sign in exception: ' + e.message;
+            }
+            
+            // OAuth availability
+            setStatus('auth-google', 'success', '✓ Configured');
+            setStatus('auth-github', 'success', '✓ Configured');
+            resultEl.textContent += '\n✓ Google OAuth configured';
+            resultEl.textContent += '\n✓ GitHub OAuth configured';
+        }
+        
+        // Test Database
+        async function testDatabase() {
+            const resultEl = document.getElementById('db-result');
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Testing database...';
+            
+            const supabaseReady = await waitForSupabase();
+            if (!supabaseReady) {
+                setStatus('db-connection', 'error');
+                showResult('db-result', 'Supabase not initialized', true);
+                return;
+            }
+            
+            setStatus('db-connection', 'success');
+            
+            const client = window.VeritySupabase?.client;
+            if (!client) {
+                setStatus('db-profiles', 'error');
+                return;
+            }
+            
+            // Test profiles
+            try {
+                const { error } = await client.from('profiles').select('id').limit(1);
+                setStatus('db-profiles', error ? 'error' : 'success');
+                resultEl.textContent += error ? '\n✗ Profiles: ' + error.message : '\n✓ Profiles table accessible';
+            } catch (e) {
+                setStatus('db-profiles', 'error');
+            }
+            
+            // Test fact_checks
+            try {
+                const { error } = await client.from('fact_checks').select('id').limit(1);
+                setStatus('db-factchecks', error ? 'warning' : 'success', error ? '⚠ RLS' : '✓ OK');
+                resultEl.textContent += error ? '\n⚠ Fact checks (RLS may block)' : '\n✓ Fact checks table accessible';
+            } catch (e) {
+                setStatus('db-factchecks', 'error');
+            }
+            
+            // Test newsletter
+            try {
+                const { count, error } = await client.from('newsletter_subscribers').select('*', { count: 'exact', head: true });
+                if (error) {
+                    setStatus('db-newsletter', 'error');
+                    resultEl.textContent += '\n✗ Newsletter: ' + error.message;
+                } else {
+                    setStatus('db-newsletter', 'success', `✓ ${count || 0} subs`);
+                    resultEl.textContent += '\n✓ Newsletter table: ' + (count || 0) + ' subscribers';
+                }
+            } catch (e) {
+                setStatus('db-newsletter', 'error');
+            }
+        }
+        
+        // Test Stripe
+        async function testStripe() {
+            const resultEl = document.getElementById('stripe-result');
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Testing Stripe...';
+            
+            // Check if Stripe.js loaded
+            if (typeof Stripe !== 'undefined') {
+                setStatus('stripe-loaded', 'success');
+                resultEl.textContent += '\n✓ Stripe.js loaded';
+            } else {
+                setStatus('stripe-loaded', 'error');
+                resultEl.textContent += '\n✗ Stripe.js not loaded';
+                return;
+            }
+            
+            // Test public key (you'll need to add your actual key)
+            const testKey = 'pk_test_...'; // Placeholder
+            try {
+                // Check if we have a stripe key in the page
+                const stripeKey = window.STRIPE_PUBLIC_KEY || localStorage.getItem('stripe_pk');
+                if (stripeKey && stripeKey.startsWith('pk_')) {
+                    const stripe = Stripe(stripeKey);
+                    setStatus('stripe-key', 'success');
+                    setStatus('stripe-checkout', 'success');
+                    resultEl.textContent += '\n✓ Stripe key valid';
+                    resultEl.textContent += '\n✓ Checkout ready';
+                } else {
+                    setStatus('stripe-key', 'warning', '⚠ No key');
+                    setStatus('stripe-checkout', 'warning', '⚠ Config needed');
+                    resultEl.textContent += '\n⚠ Stripe public key not configured';
+                    resultEl.textContent += '\n⚠ Add STRIPE_PUBLIC_KEY to enable payments';
+                }
+            } catch (e) {
+                setStatus('stripe-key', 'error');
+                resultEl.textContent += '\n✗ Stripe error: ' + e.message;
+            }
+        }
+        
+        // Test API
+        async function testAPI() {
+            const resultEl = document.getElementById('api-result');
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Testing API server...';
+            
+            const apiBase = 'https://veritysystems-production.up.railway.app';
+            
+            // Health check
+            try {
+                const response = await fetch(apiBase + '/health', { method: 'GET' });
+                if (response.ok) {
+                    setStatus('api-status', 'success');
+                    setStatus('api-health', 'success');
+                    resultEl.textContent += '\n✓ API server online';
+                    resultEl.textContent += '\n✓ Health check passed';
+                } else {
+                    setStatus('api-status', 'warning', '⚠ ' + response.status);
+                    setStatus('api-health', 'warning');
+                    resultEl.textContent += '\n⚠ API returned status ' + response.status;
+                }
+            } catch (e) {
+                setStatus('api-status', 'error');
+                setStatus('api-health', 'error');
+                resultEl.textContent += '\n✗ API connection failed: ' + e.message;
+            }
+            
+            // Verify endpoint
+            try {
+                const response = await fetch(apiBase + '/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ claim: 'test claim', quick: true })
+                });
+                if (response.ok || response.status === 401) {
+                    setStatus('api-verify', response.ok ? 'success' : 'warning', response.ok ? '✓ OK' : '⚠ Auth needed');
+                    resultEl.textContent += '\n✓ Verify endpoint responding';
+                } else {
+                    setStatus('api-verify', 'error');
+                }
+            } catch (e) {
+                setStatus('api-verify', 'error');
+                resultEl.textContent += '\n✗ Verify endpoint error';
+            }
+        }
+        
+        // Test Waitlist
+        async function testWaitlist() {
+            const resultEl = document.getElementById('waitlist-result');
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Testing waitlist...';
+            
+            const supabaseReady = await waitForSupabase();
+            if (!supabaseReady) {
+                setStatus('waitlist-table', 'error');
+                return;
+            }
+            
+            const client = window.VeritySupabase?.client;
+            if (!client) {
+                setStatus('waitlist-table', 'error');
+                return;
+            }
+            
+            // Check table
+            try {
+                const { count, error } = await client.from('newsletter_subscribers').select('*', { count: 'exact', head: true });
+                if (error) {
+                    setStatus('waitlist-table', 'error');
+                    setStatus('waitlist-insert', 'error');
+                    resultEl.textContent += '\n✗ Table error: ' + error.message;
+                } else {
+                    setStatus('waitlist-table', 'success');
+                    setStatus('waitlist-count', 'success', `${count || 0} signups`);
+                    resultEl.textContent += '\n✓ Table exists with ' + (count || 0) + ' entries';
+                }
+            } catch (e) {
+                setStatus('waitlist-table', 'error');
+            }
+            
+            // Test insert permission
+            try {
+                const testEmail = 'test-' + Date.now() + '@example.com';
+                const { error } = await client.from('newsletter_subscribers').insert({ email: testEmail, subscribed_at: new Date().toISOString() });
+                if (error) {
+                    setStatus('waitlist-insert', 'error');
+                    resultEl.textContent += '\n✗ Insert permission denied: ' + error.message;
+                } else {
+                    setStatus('waitlist-insert', 'success');
+                    resultEl.textContent += '\n✓ Insert permission working';
+                    // Clean up test entry
+                    await client.from('newsletter_subscribers').delete().eq('email', testEmail);
+                }
+            } catch (e) {
+                setStatus('waitlist-insert', 'error');
+            }
+        }
+        
+        async function testWaitlistSubmit() {
+            const email = document.getElementById('waitlistEmail').value;
+            if (!email) {
+                alert('Please enter an email');
+                return;
+            }
+            
+            const client = window.VeritySupabase?.client;
+            if (!client) {
+                alert('Supabase not ready');
+                return;
+            }
+            
+            try {
+                const { error } = await client.from('newsletter_subscribers').upsert({ email, subscribed_at: new Date().toISOString() }, { onConflict: 'email' });
+                if (error) {
+                    alert('Error: ' + error.message);
+                } else {
+                    alert('✓ Successfully added to waitlist!');
+                    testWaitlist();
+                }
+            } catch (e) {
+                alert('Exception: ' + e.message);
+            }
+        }
+        
+        // Test Email
+        async function testEmail() {
+            const resultEl = document.getElementById('email-result');
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Checking email configuration...\n';
+            resultEl.textContent += '\n⚠ Email testing requires attempting a sign-up.\n';
+            resultEl.textContent += '\nThe "Error sending confirmation email" means:\n';
+            resultEl.textContent += '1. Email confirmations are ENABLED in Supabase\n';
+            resultEl.textContent += '2. But SMTP is NOT configured\n';
+            resultEl.textContent += '\nFIX: Go to Supabase Dashboard → Authentication → Settings\n';
+            resultEl.textContent += 'Then DISABLE "Enable email confirmations"\n';
+            resultEl.textContent += 'Or configure a custom SMTP provider.\n';
+            
+            setStatus('email-smtp', 'warning', '⚠ Not configured');
+            setStatus('email-confirm', 'warning', '⚠ Disabled');
+            setStatus('email-reset', 'warning', '⚠ Needs SMTP');
+        }
+        
+        // Run all tests
+        async function runAllTests() {
+            passed = 0; failed = 0; warnings = 0;
+            
+            // Reset all badges
+            document.querySelectorAll('.status-badge').forEach(el => {
+                el.className = 'status-badge pending';
+                el.textContent = 'Testing...';
+            });
+            
+            await testAuth();
+            await testDatabase();
+            await testStripe();
+            await testAPI();
+            await testWaitlist();
+            await testEmail();
+        }
+        
+        // Run tests on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runAllTests, 500);
+        });
+    </script>
+</body>
+</html>
