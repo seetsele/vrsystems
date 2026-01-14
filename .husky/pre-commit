@@ -2,4 +2,4 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # Prevent commits that introduce new console.log occurrences
-npm run lint:console:staged || exit 1
+npx --no-install lint-staged || npm run lint:console:staged || exit 1

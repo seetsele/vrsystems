@@ -3,8 +3,8 @@ const path = require('path');
 const log = require('./logger-node');
 
 const root = path.resolve(__dirname, '..');
-const include = ['public', 'desktop-app', 'browser-extension', 'scripts'];
-const exts = ['.js', '.html'];
+const include = ['public', 'desktop-app', 'browser-extension', 'scripts', 'verity-mobile'];
+const exts = ['.js', '.html', '.ts', '.tsx'];
 let found = [];
 
 function walk(dir) {

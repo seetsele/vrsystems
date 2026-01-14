@@ -88,7 +88,7 @@ class OfflineQueueManager {
     this.isOnline = state.isConnected ?? false;
     
     if (!wasOnline && this.isOnline) {
-      console.log('Network restored, processing queue...');
+      console.debug('Network restored, processing queue...');
       this.processQueue();
       
       // Notify user
@@ -173,7 +173,7 @@ class OfflineQueueManager {
     this.isSyncing = true;
     this.notifyListeners();
     
-    console.log(`Processing ${pendingItems.length} items...`);
+    console.debug(`Processing ${pendingItems.length} items...`);
     
     for (const item of pendingItems) {
       if (!this.isOnline) break;
@@ -393,7 +393,7 @@ class OfflineQueueManager {
       const stored = await AsyncStorage.getItem('verity_offline_queue');
       if (stored) {
         this.queue = JSON.parse(stored);
-        console.log(`Loaded ${this.queue.length} items from queue`);
+        console.debug(`Loaded ${this.queue.length} items from queue`);
       }
     } catch (error) {
       console.error('Failed to load queue:', error);

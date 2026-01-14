@@ -5,25 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verity Systems - Exhaustive Test Suite</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/verity-theme.css" />
     <style>
-        body { background: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; margin: 0; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
-        .test-list { margin: 2rem 0; }
-        .test-item { background: #1e293b; border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1rem; border: 1px solid #334155; }
-        .test-item.pass { border-left: 6px solid #10b981; }
-        .test-item.fail { border-left: 6px solid #ef4444; }
-        .test-item .claim { font-size: 1.1rem; font-weight: 500; }
-        .test-item .category { color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .test-item .expected { font-size: 0.9rem; }
-        .test-item .result { font-size: 1rem; font-weight: 600; margin-top: 0.5rem; }
-        .run-btn { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border: none; border-radius: 0.5rem; padding: 0.75rem 2rem; font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 2rem; }
-        .run-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .summary { background: #1e293b; border-radius: 0.75rem; padding: 1.5rem; margin-top: 2rem; border: 1px solid #334155; }
-        .summary h2 { font-size: 1.25rem; margin-bottom: 1rem; }
-        .summary .stat { font-size: 1.1rem; margin-bottom: 0.5rem; }
-        .summary .stat span { font-weight: 700; }
-        .error { color: #ef4444; font-size: 0.95rem; margin-top: 0.5rem; }
+      /* minor overrides specific to test suite */
+      .run-btn { background: linear-gradient(135deg, var(--accent-2), var(--accent)); }
+      .test-item { background: linear-gradient(180deg,var(--panel),#0b1220); border: 1px solid rgba(255,255,255,0.03); }
     </style>
 </head>
 <body>

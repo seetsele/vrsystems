@@ -9,6 +9,11 @@
     "lint:console:staged": "node scripts/find-console-staged.js",
     "prepare": "husky install"
   },
+  "lint-staged": {
+    "*.{js,html,ts,tsx}": [
+      "node scripts/find-console-staged.js"
+    ]
+  },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3"
   },

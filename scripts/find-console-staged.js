@@ -15,7 +15,9 @@ function getStagedFiles() {
 }
 
 const staged = getStagedFiles();
-const exts = ['.js', '.html'];
+const exts = ['.js', '.html', '.ts', '.tsx'];
+const includeDirs = ['public', 'desktop-app', 'browser-extension', 'scripts', 'verity-mobile'];
+
 let found = [];
 
 staged.forEach(f => {

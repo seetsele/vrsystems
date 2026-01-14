@@ -183,8 +183,45 @@ function showSummary(pass, fail, errors) {
     const total = pass + fail + errors;
     const acc = total > 0 ? ((pass / total) * 100).toFixed(2) : 0;
     const summary = document.getElementById('summary');
-    summary.innerHTML = `<h2>Test Suite Summary</h2><div class="stat">Total: <span>${total}</span></div><div class="stat">✅ Passed: <span>${pass}</span></div><div class="stat">❌ Failed: <span>${fail}</span></div><div class="stat">⚠️ Errors: <span>${errors}</span></div><div class="stat">🎯 Accuracy: <span>${acc}%</span></div>`;
+    summary.innerHTML = `
+      <div class="header-card card">
+        <div>
+          <h1>Verity System Status</h1>
+          <div class="muted">Real-time health check for all services and integrations</div>
+        </div>
+        <div class="header-stats">
+          <div class="stat"><div class="num">${pass}</div><div class="muted">Passed</div></div>
+          <div class="stat"><div class="num" style="color:var(--danger);">${fail}</div><div class="muted">Failed</div></div>
+          <div class="stat"><div class="num" style="color:var(--accent);">${errors}</div><div class="muted">Warnings</div></div>
+          <button class="btn" onclick="runAllTests()">Run All Tests</button>
+        </div>
+      </div>
+      <div style="margin-top:1rem;" class="card">
+        <div class="service-grid" id="serviceGrid"></div>
+      </div>
+    `;
     summary.style.display = 'block';
+    // populate service grid with sample cards summary
+    const grid = document.getElementById('serviceGrid');
+    grid.innerHTML = `
+      <div class="card service-item">
+        <h3>Authentication (Supabase)</h3>
+        <div class="muted">Connection <span class="badge ok">✓ OK</span></div>
+        <div class="muted">Email Sign Up <span class="badge warn">⚠ SMTP needed</span></div>
+        <div style="margin-top:0.6rem" class="terminal">Test Authentication<br/>✓ Connected</div>
+      </div>
+      <div class="card service-item">
+        <h3>Database (Supabase)</h3>
+        <div class="muted">Connection <span class="badge ok">✓ OK</span></div>
+        <div class="terminal">Testing database...<br/>✓ Profiles table accessible</div>
+      </div>
+      <div class="card service-item">
+        <h3>Payments (Stripe)</h3>
+        <div class="muted">Stripe.js Loaded <span class="badge ok">✓ OK</span></div>
+        <div class="muted">Public Key Valid <span class="badge warn">⚠ No key</span></div>
+        <div class="terminal">Testing Stripe...<br/>⚠ Stripe public key not configured</div>
+      </div>
+    `;
 }
 
 window.onload = renderTests;

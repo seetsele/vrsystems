@@ -22,9 +22,18 @@
             <input id="simProvider" placeholder="provider (e.g., groq)" />
             <input id="simCount" type="number" placeholder="count/limit" style="width:120px" />
             <input id="simIdentifier" placeholder="identifier (for rate limit)" style="width:220px" />
-            <button onclick="runSim()">Run Simulate</button>
+            <button class="btn" onclick="runSim()">Run Simulate</button>
         </div>
         <div id="simResult" style="margin-top:0.75rem;color:#cde"></div>
+    </div>
+    <div class="card">
+        <h2>Quick Dashboard</h2>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <button class="small-btn" onclick="checkProviders()">Check Providers</button>
+            <button class="small-btn" onclick="runSmallSuite()">Run Small Test Suite</button>
+            <button class="small-btn" onclick="runRateLimitStress()">Run Rate Limit Stress</button>
+        </div>
+        <div id="quickResults" style="margin-top:0.75rem;color:#cde"></div>
     </div>
 
     <div class="card">

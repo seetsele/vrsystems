@@ -77,7 +77,7 @@ class NotificationService {
    */
   async registerForPushNotifications(): Promise<string | null> {
     if (!Device.isDevice) {
-      console.log('Push notifications only work on physical devices');
+      console.debug('Push notifications only work on physical devices');
       return null;
     }
 
@@ -91,7 +91,7 @@ class NotificationService {
       }
 
       if (finalStatus !== 'granted') {
-        console.log('Notification permission not granted');
+        console.debug('Notification permission not granted');
         return null;
       }
 
@@ -138,7 +138,7 @@ class NotificationService {
     // Handle received notifications
     this.notificationListener = Notifications.addNotificationReceivedListener(
       (notification) => {
-        console.log('Notification received:', notification);
+        console.debug('Notification received:', notification);
         this.handleNotification(notification);
       }
     );
@@ -146,7 +146,7 @@ class NotificationService {
     // Handle notification taps
     this.responseListener = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log('Notification tapped:', response);
+        console.debug('Notification tapped:', response);
         this.handleNotificationTap(response);
       }
     );
@@ -180,7 +180,7 @@ class NotificationService {
     
     // Navigate based on notification type
     // This would typically use navigation ref
-    console.log('Navigate to:', data?.type);
+    console.debug('Navigate to:', data?.type);
   }
 
   /**
