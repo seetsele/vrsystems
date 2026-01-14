@@ -17,6 +17,10 @@ jobs:
           node-version: '18'
       - name: Lint for console.log occurrences
         run: npm run lint:console
+      - name: Install Node dependencies
+        run: npm ci
+      - name: Run Node tooling tests
+        run: npm run test:node
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
