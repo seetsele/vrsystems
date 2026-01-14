@@ -24,6 +24,8 @@ staged.forEach(f => {
   const p = path.resolve(f);
   if (!exts.includes(path.extname(p))) return;
   if (!fs.existsSync(p)) return;
+  // ignore test files (they may intentionally contain console calls)
+  if (p.includes(`${path.sep}tests${path.sep}`)) return;
   const content = fs.readFileSync(p, 'utf8');
   const lines = content.split(/\r?\n/);
   lines.forEach((line, i) => {
