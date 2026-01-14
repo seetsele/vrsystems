@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Download Verity & Companion Apps</title>
+  <link rel="stylesheet" href="/assets/css/global.css">
+</head>
+<body>
+  <main style="max-width:900px;margin:3rem auto;padding:1rem;font-family:Inter,system-ui,Arial;">
+    <h1>Download Verity & Companion Apps</h1>
+
+    <section>
+      <h2>Desktop (Verity)</h2>
+      <p>Install the desktop app for Windows, macOS, or Linux.</p>
+      <ul>
+        <li><a href="/releases/verity-1.0.0/verity-setup-1.0.0.exe">Windows installer (.exe)</a> — 64-bit</li>
+        <li><a href="/releases/verity-1.0.0/verity-1.0.0.dmg">macOS installer (.dmg)</a></li>
+        <li><a href="/releases/verity-1.0.0/verity-1.0.0.AppImage">Linux (.AppImage)</a></li>
+      </ul>
+      <p>If you need offline installers or other architectures, contact <a href="mailto:team@veritysystems.app">team@veritysystems.app</a>.</p>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Browser Extension — Verity Companion App</h2>
+      <p>Install from the Chrome Web Store when published (link will appear here after publishing).</p>
+      <p>Dev install: open <code>chrome://extensions</code>, enable Developer Mode → "Load unpacked" → select <code>browser-extension/chrome/</code></p>
+      <p>Publish status: <strong id="extension-status">Not Published</strong></p>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Web / PWA — Verity Companion App</h2>
+      <p>Your PWA is available at: <a href="/">https://www.veritysystems.app/</a></p>
+      <p>To install: open site in Chrome/Edge and use the browser install prompt or select "Install" from browser menu.</p>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Mobile (Native)</h2>
+      <p>Native builds are available via the App Store / Play Store after publishing.</p>
+      <p>If you need an ad-hoc or enterprise build, contact <a href="mailto:team@veritysystems.app">team@veritysystems.app</a>.</p>
+    </section>
+
+    <hr>
+
+    <section>
+      <h3>Developer & Release Tools</h3>
+      <ul>
+        <li><a href="/scripts/publish_extension.sh">scripts/publish_extension.sh</a> — Package and upload Chrome extension (requires API credentials)</li>
+        <li><a href="/scripts/publish_desktop_release.sh">scripts/publish_desktop_release.sh</a> — Create GitHub release and upload assets (uses gh CLI)</li>
+        <li><a href="/scripts/purge_vercel_cache.sh">scripts/purge_vercel_cache.sh</a> — Redeploy / force refresh Vercel cache</li>
+      </ul>
+    </section>
+
+  </main>
+</body>
+</html>

@@ -109,7 +109,7 @@ function createMainWindow() {
         y: y !== undefined ? y : undefined,
         minWidth: 1024,
         minHeight: 700,
-        title: 'Verity',
+            title: 'Verity',
         icon: hasIcon ? iconPath : undefined,
         backgroundColor: '#09090b',
         darkTheme: true,

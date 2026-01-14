@@ -41,6 +41,11 @@ def run_tests():
             ("Einstein failed math in school", "false"),
             ("The Great Wall of China is visible from space", "false"),
             ("Humans only use 10% of their brain", "false"),
+            # Previously failed nuanced/absolute claims
+            ("Coffee is bad for your health.", "mixed"),
+            ("Artificial intelligence will replace all human jobs within 10 years.", "mixed"),
+            ("Electric vehicles are completely carbon-neutral.", "mixed"),
+            ("Eating eggs every day is dangerous for heart health due to cholesterol.", "mixed"),
         ],
         "HARD - Complex/Debatable": [
             ("AI will replace most jobs in the next 10 years", "mixed"),
@@ -48,12 +53,21 @@ def run_tests():
             ("Breakfast is the most important meal of the day", "mixed"),
             ("Reading in dim light damages your eyes", "false"),
             ("Cracking your knuckles causes arthritis", "false"),
+            # Recent research/controversial
+            ("Room temperature superconductivity was achieved by LK-99 in 2023.", "false"),
         ],
         "CONTROVERSIAL - Sensitive Topics": [
             ("Climate change is primarily caused by human activity", "true"),
             ("Vaccines cause autism", "false"),
             ("The 2020 US election was secure and fair", "true"),
             ("COVID-19 originated from a lab leak", "unverifiable"),
+            # PDF/timeout/complex
+            ("The IPCC Sixth Assessment Report states that human activities have unequivocally caused global warming.", "true"),
+            ("The Earth is flat and NASA has been hiding this truth for decades.", "false"),
+        ],
+        "PROVIDER/ERROR HANDLING": [
+            ("This claim should trigger a provider timeout.", "error"),
+            ("This claim should trigger a provider rate limit.", "error"),
         ],
     }
     

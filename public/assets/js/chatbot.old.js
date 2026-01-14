@@ -1,6 +1,8 @@
 /**
- * Verity AI Chatbot Component
- * A floating chatbot powered by the Verity verification API
+ * Verity AI Chatbot Component (ARCHIVED)
+ * This legacy file is retained for reference only. Please do not use in production.
+ * If you need this behavior, copy to `public/assets/js/chatbot.js` and import deliberately.
+ * Consider moving to `repo-archive/` or delete if no longer required.
  */
 
 (function() {
@@ -694,5 +696,9 @@
         }
     });
 
-    console.log('✓ Verity Chatbot loaded');
+    if (window && window.verityLogger && window.verityLogger.info) {
+        window.verityLogger.info('✓ Verity Chatbot loaded');
+    } else {
+        console.info('✓ Verity Chatbot loaded');
+    }
 })();

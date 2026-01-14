@@ -49,7 +49,7 @@
         // Log to console if enabled
         log(...args) {
             if (this.config.enableConsole) {
-                console.log('[VerityMonitor]', ...args);
+                (window.verityLogger || console).info('[VerityMonitor]', ...args);
             }
         },
 

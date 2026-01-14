@@ -351,7 +351,7 @@
                 includeMetadata: document.getElementById('includeMetadata').checked,
                 includeSummary: document.getElementById('includeSummary').checked
             };
-            console.log('Generating export with config:', config);
+            (window.verityLogger || console).info('Generating export with config:', config);
             alert(`Generating ${selectedFormat.toUpperCase()} export...\n\nIn production, this would download the file.`);
         }
 

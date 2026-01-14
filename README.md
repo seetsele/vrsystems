@@ -11,11 +11,13 @@
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white)](https://github.com/features/actions)
 
+[![CI Status](https://github.com/tests/test_update_readme_badge.py/actions/workflows/ci.yml/badge.svg)](https://github.com/seetsele/vrsystems/actions/workflows/ci.yml) <!-- Replace <owner>/<repo> if needed -->
+
 **?? Enterprise AI-Powered Fact-Checking Platform**
 
 *Verify claims with 20+ AI providers, fact-checkers, and data sources in real-time*
 
-[Live Demo](https://verity.systems) • [API Docs](docs/API.md) • [Quick Start](#-quick-start) • [SDKs](#-sdks) • [Deploy](#-deployment)
+[Live Demo](https://verity.systems) ï¿½ [API Docs](docs/API.md) ï¿½ [Quick Start](#-quick-start) ï¿½ [SDKs](#-sdks) ï¿½ [Deploy](#-deployment)
 
 </div>
 
@@ -324,28 +326,28 @@ kubectl apply -f deploy/kubernetes/
 ```
 verity-systems/
 +-- python-tools/               # Backend
-¦   +-- api_server_ultimate.py  # Main FastAPI server
-¦   +-- verity_master_orchestrator_v2.py  # Core orchestration
-¦   +-- verity_fusion_engine.py # Fusion algorithms
-¦   +-- verity_redis_cache.py   # Distributed caching
-¦   +-- verity_metrics.py       # Prometheus metrics
-¦   +-- free_providers_*.py     # Provider implementations
-¦   +-- requirements.txt
+ï¿½   +-- api_server_ultimate.py  # Main FastAPI server
+ï¿½   +-- verity_master_orchestrator_v2.py  # Core orchestration
+ï¿½   +-- verity_fusion_engine.py # Fusion algorithms
+ï¿½   +-- verity_redis_cache.py   # Distributed caching
+ï¿½   +-- verity_metrics.py       # Prometheus metrics
+ï¿½   +-- free_providers_*.py     # Provider implementations
+ï¿½   +-- requirements.txt
 +-- public/                     # Frontend
-¦   +-- index.html             # Landing page
-¦   +-- verify.html            # Verification UI
-¦   +-- dashboard.html         # Analytics dashboard
-¦   +-- assets/
+ï¿½   +-- index.html             # Landing page
+ï¿½   +-- verify.html            # Verification UI
+ï¿½   +-- dashboard.html         # Analytics dashboard
+ï¿½   +-- assets/
 +-- browser-extension/          # Chrome/Firefox extension
 +-- slack-bot/                  # Slack integration
 +-- discord-bot/                # Discord integration
 +-- sdk/
-¦   +-- python/                # Python SDK
-¦   +-- nodejs/                # Node.js SDK
+ï¿½   +-- python/                # Python SDK
+ï¿½   +-- nodejs/                # Node.js SDK
 +-- tests/                      # Test suite
 +-- deploy/
-¦   +-- kubernetes/            # K8s manifests
-¦   +-- aws-cloudformation.yaml
+ï¿½   +-- kubernetes/            # K8s manifests
+ï¿½   +-- aws-cloudformation.yaml
 +-- helm/                       # Helm charts
 +-- terraform/                  # Infrastructure as code
 +-- monitoring/                 # Prometheus/Grafana configs
@@ -357,6 +359,32 @@ verity-systems/
 
 - **Prometheus**: Metrics collection at `/metrics`
 - **Grafana**: Pre-built dashboards for API, providers, cache
+
+## Grafana & Prometheus (Local setup)
+
+You can run a local monitoring stack that scrapes the Verity metrics and imports the starter dashboard.
+
+1) Start Prometheus + Grafana (from the repository):
+
+   - cd docker/prometheus
+   - docker-compose up -d
+
+2) Open Grafana: http://localhost:3000 (default admin/admin)
+
+3) The Prometheus data source is pre-configured (provisioning). The provider dashboard is mounted and will be automatically imported on Grafana startup via the provisioning files.
+
+   - If automatic import doesn't occur, manually import `public/grafana_provider_dashboard.json` from the Grafana UI (Dashboards â†’ Import).
+
+4) What to monitor:
+
+   - verity_provider_failures{provider="<name>"}
+   - verity_provider_in_cooldown{provider="<name>"}
+   - verity_cache_hits / verity_cache_misses
+
+Notes:
+- The provisioning files are located under `docker/prometheus/provisioning` and the dashboard JSON file is at `public/grafana_provider_dashboard.json`.
+- For production deployments, secure Grafana and restrict provisioning access.
+
 - **Alertmanager**: Configurable alerts for SLA breaches
 - **Structured Logging**: JSON logs with correlation IDs
 
@@ -401,6 +429,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 **Built with ?? for fighting misinformation**
 
-[Website](https://verity.systems) • [Documentation](https://docs.verity.systems) • [API Status](https://status.verity.systems)
+[Website](https://verity.systems) ï¿½ [Documentation](https://docs.verity.systems) ï¿½ [API Status](https://status.verity.systems)
 
 </div>

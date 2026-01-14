@@ -254,7 +254,7 @@
                         maxDelay
                     );
                     
-                    console.log(`Retry attempt ${attempt + 1}/${maxRetries} in ${delay}ms`);
+                    (window.verityLogger || console).info(`Retry attempt ${attempt + 1}/${maxRetries} in ${delay}ms`);
                     await new Promise(resolve => setTimeout(resolve, delay));
                 }
             }
@@ -322,7 +322,7 @@
             
             // Log in development
             if (window.location.hostname === 'localhost') {
-                console.log('[Analytics]', eventName, properties);
+                (window.verityLogger || console).info('[Analytics]', eventName, properties);
             }
         },
 
@@ -616,7 +616,7 @@
         OfflineQueue.init();
         Performance.trackWebVitals();
         
-        console.log('✅ Verity Core initialized');
+        (window.verityLogger || console).info('✅ Verity Core initialized');
     }
 
     if (document.readyState === 'loading') {

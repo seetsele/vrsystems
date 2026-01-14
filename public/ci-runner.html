@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Verity CI Runner</title>
+    <style>
+        body{font-family:Inter,system-ui,Segoe UI,Roboto,-apple-system,Arial;background:#0b1220;color:#e6eef8;padding:2rem}
+        .card{background:#0f1724;padding:1rem;border-radius:8px;border:1px solid #253044;margin-bottom:1rem}
+        button{background:#6366f1;border:none;color:#fff;padding:0.6rem 1rem;border-radius:6px;cursor:pointer}
+        input,select{padding:0.5rem;border-radius:6px;border:1px solid #2b3442;background:#071029;color:#e6eef8}
+        pre{background:#051226;padding:1rem;border-radius:6px;overflow:auto}
+    </style>
+</head>
+<body>
+    <h1>Verity CI Runner</h1>
+
+    <div class="card">
+        <h2>Simulate (Debug only)</h2>
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+            <select id="simAction"><option value="provider_fail">Provider Fail</option><option value="provider_recover">Provider Recover</option><option value="set_rate_limit">Set Rate Limit</option><option value="trigger_rate_limit">Trigger Rate Limit</option></select>
+            <input id="simProvider" placeholder="provider (e.g., groq)" />
+            <input id="simCount" type="number" placeholder="count/limit" style="width:120px" />
+            <input id="simIdentifier" placeholder="identifier (for rate limit)" style="width:220px" />
+            <button onclick="runSim()">Run Simulate</button>
+        </div>
+        <div id="simResult" style="margin-top:0.75rem;color:#cde"></div>
+    </div>
+
+    <div class="card">
+        <h2>Quick Checks</h2>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <button onclick="checkProviders()">Check Providers Health</button>
+            <button onclick="runSmallSuite()">Run Small Test Suite</button>
+            <button onclick="runRateLimitStress()">Run Rate Limit Stress</button>
+        </div>
+        <div id="quickResults" style="margin-top:0.75rem;color:#cde"></div>
+    </div>
+
+    <div class="card">
+        <h2>Results</h2>
+        <pre id="resultsPre">No runs yet.</pre>
+    </div>
+
+    <script>
+        const API = window.location.hostname === 'localhost' ? 'http://localhost:8000' : (window.location.origin.replace(/:\d+$/,'') + ':8000');
+
+        async function runSim(){
+            const action = document.getElementById('simAction').value;
+            const provider = document.getElementById('simProvider').value.trim();
+            const count = document.getElementById('simCount').value.trim();
+            const identifier = document.getElementById('simIdentifier').value.trim() || 'simulate-client';
+            const body = { action };
+            if(provider) body.provider = provider;
+            if(count) body.count = parseInt(count);
+            if(identifier) body.identifier = identifier;
+            try{
+                const res = await fetch(`${API}/tools/simulate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content: body})});
+                const data = await res.json();
+                document.getElementById('simResult').textContent = JSON.stringify(data, null, 2);
+            }catch(e){ document.getElementById('simResult').textContent = 'Error: '+e.message }
+        }
+
+        async function checkProviders(){
+            try{
+                const res = await fetch(`${API}/providers/health`);
+                const data = await res.json();
+                document.getElementById('quickResults').textContent = `In cooldown: ${JSON.stringify(data.health.in_cooldown)}\nFailures: ${JSON.stringify(data.health.failures)}`;
+            }catch(e){ document.getElementById('quickResults').textContent = 'Error: '+e.message }
+        }
+
+        async function runSmallSuite(){
+            const claims = [
+                'Water molecules consist of H2O',
+                'The Earth is flat and NASA has been hiding this truth for decades',
+                'Coffee is bad for your health'
+            ];
+            const results = [];
+            for(const c of claims){
+                try{
+                    const res = await fetch(`${API}/verify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({claim:c, options:{include_sources:true}})});
+                    const d = await res.json();
+                    results.push({claim: c, verdict: d.verdict, confidence: d.confidence, sources: (d.sources||[]).slice(0,3) });
+                }catch(e){ results.push({claim:c, error: e.message}) }
+            }
+            document.getElementById('resultsPre').textContent = JSON.stringify(results, null, 2);
+        }
+
+        async function runRateLimitStress(){
+            const summary = {};
+            const promises = [];
+            for(let i=0;i<40;i++){
+                promises.push(fetch(`${API}/verify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({claim:'Rate limit stress '+i})}).then(r=>r.status).catch(()=> 'err'))
+            }
+            const res = await Promise.all(promises);
+            res.forEach(s=> summary[s] = (summary[s]||0)+1);
+            document.getElementById('resultsPre').textContent = 'Stress results: ' + JSON.stringify(summary, null, 2);
+        }
+    </script>
+</body>
+</html>

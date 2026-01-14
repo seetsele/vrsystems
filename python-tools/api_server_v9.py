@@ -128,6 +128,13 @@ class Config:
     STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
     STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
+    # Simulation / debug key - set this in env to require a header for simulate endpoints
+    SIMULATE_KEY = os.getenv("SIMULATE_KEY")  # if set, required header X-SIM-KEY must match
+    # Optional: comma-separated list of allowed client IPs for simulation endpoints
+    SIMULATE_ALLOWED_IPS = [ip.strip() for ip in os.getenv("SIMULATE_ALLOWED_IPS", "").split(",") if ip.strip()]
+    # Rate limit for simulate key (requests per minute)
+    SIMULATE_KEY_RATE_LIMIT = int(os.getenv("SIMULATE_KEY_RATE_LIMIT", 60))
+
 
 # =============================================================================
 # LOGGING
@@ -212,7 +219,25 @@ class RateLimiter:
         self.requests[identifier].append(now)
         return True, {"limit": self.max_requests, "remaining": remaining - 1, "reset": self.window_seconds}
 
+# Simulate-key specific rate limiter (simple wrapper with minute window)
+class SimulateKeyRateLimiter:
+    def __init__(self, max_requests_per_minute: int = 60):
+        self.max_requests = max_requests_per_minute
+        self.window_seconds = 60
+        self.requests: Dict[str, List[float]] = defaultdict(list)
+
+    def is_allowed(self, key: str) -> tuple:
+        now = time.time()
+        window_start = now - self.window_seconds
+        self.requests[key] = [ts for ts in self.requests[key] if ts > window_start]
+        if len(self.requests[key]) >= self.max_requests:
+            reset_time = int(self.requests[key][0] + self.window_seconds - now)
+            return False, {"limit": self.max_requests, "remaining": 0, "reset": reset_time}
+        self.requests[key].append(now)
+        return True, {"limit": self.max_requests, "remaining": self.max_requests - len(self.requests[key]), "reset": self.window_seconds}
+
 rate_limiter = RateLimiter(Config.RATE_LIMIT_REQUESTS, Config.RATE_LIMIT_WINDOW)
+simulate_key_limiter = SimulateKeyRateLimiter(Config.SIMULATE_KEY_RATE_LIMIT)
 
 
 # =============================================================================
@@ -2514,7 +2539,7 @@ async def rate_limit_middleware(request: Request, call_next):
     api_key = request.headers.get("X-API-Key", "")
     identifier = api_key if api_key else client_ip
     
-    if request.url.path in ["/health", "/", "/docs", "/openapi.json"]:
+    if request.url.path in ["/health", "/", "/docs", "/openapi.json", "/tools/simulate"]:
         return await call_next(request)
     
     allowed, rate_info = rate_limiter.is_allowed(identifier)
@@ -2540,6 +2565,26 @@ async def rate_limit_middleware(request: Request, call_next):
 # ROUTES
 # =============================================================================
 
+@app.get('/metrics')
+async def prometheus_metrics():
+    """Expose lightweight Prometheus-style metrics: provider_health, cache stats"""
+    health = provider_health.get_status()
+    lines = []
+    # provider up/down (1 healthy 0 cooldown)
+    for provider, failures in health.get('failures', {}).items():
+        is_cooldown = 1 if provider in health.get('in_cooldown', []) else 0
+        lines.append(f"verity_provider_in_cooldown{{provider=\"{provider}\"}} {is_cooldown}")
+        lines.append(f"verity_provider_failures{{provider=\"{provider}\"}} {failures}")
+    # Cache stats
+    try:
+        cache_stats = {"size": getattr(claim_cache, 'hits', 0), "misses": getattr(claim_cache, 'misses', 0)}
+    except Exception:
+        cache_stats = {"size": 0, "misses": 0}
+    lines.append(f"verity_cache_hits {cache_stats.get('hits', 0)}")
+    lines.append(f"verity_cache_misses {cache_stats.get('misses', 0)}")
+    return PlainTextResponse('\n'.join(lines), media_type='text/plain')
+
+
 @app.get("/")
 async def root():
     return {
@@ -2554,7 +2599,10 @@ async def root():
             "/stripe/*": "POST/GET - Payments",
             "/tools/*": "POST - Enterprise tools",
             "/health": "GET - Health check",
-            "/providers": "GET - List providers"
+            "/providers": "GET - List providers",
+            "/tools/provider-health-logs": "GET - Tail provider health log",
+            "/tools/test-runs": "GET - Recent internal test runs",
+            "/metrics": "GET - Prometheus metrics (basic)"
         }
     }
 
@@ -2619,6 +2667,92 @@ async def providers_health():
         "health": provider_health.get_status(),
         "message": "All providers with active failures will auto-recover after cooldown"
     }
+
+
+@app.get("/tools/provider-health-logs")
+async def get_provider_health_logs(lines: int = 200):
+    """Return the tail of the provider health log file (last `lines` entries)."""
+    log_file = Path(_script_dir / "provider_health.log")
+    if not log_file.exists():
+        return {"lines": [], "message": "No provider health log found"}
+    try:
+        with open(log_file, "r", encoding="utf-8") as fh:
+            data = fh.readlines()
+        data = [l.strip() for l in data if l.strip()]
+        return {"lines": data[-lines:]}
+    except Exception as e:
+        logger.exception("Error reading provider health log")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/tools/test-runs")
+async def get_test_runs(limit: int = 20):
+    """Return recent run-internal-tests outputs (tail of test_runs.log)."""
+    runs_file = Path(_script_dir / "test_runs.log")
+    if not runs_file.exists():
+        return {"runs": []}
+    try:
+        with open(runs_file, "r", encoding="utf-8") as fh:
+            data = fh.read()
+        # Split runs by separator
+        parts = [p.strip() for p in data.split('----- RUN') if p.strip()]
+        runs = []
+        for p in parts[-limit:]:
+            header, *body = p.split('\n', 1)
+            runs.append({"header": header.strip(), "output": body[0].strip() if body else ""})
+        return {"runs": runs[::-1]}  # newest first
+    except Exception as e:
+        logger.exception("Error reading test runs log")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post('/tools/github-artifacts')
+async def github_artifacts(request: Request):
+    """Proxy to GitHub Actions artifacts list for a repo.
+    Body: { owner: str, repo: str }
+    Optionally provide header 'Authorization: Bearer <token>' for private repos.
+    Protected by SIMULATE_KEY or DEBUG mode.
+    """
+    sim_key_required = Config.SIMULATE_KEY is not None
+    provided_sim_key = request.headers.get("X-SIM-KEY") or request.headers.get("X-Sim-Key")
+    if sim_key_required:
+        if provided_sim_key != Config.SIMULATE_KEY:
+            raise HTTPException(status_code=403, detail="Invalid or missing simulation key")
+    else:
+        if not Config.DEBUG:
+            raise HTTPException(status_code=403, detail="GitHub artifacts proxy requires DEBUG mode or SIMULATE_KEY")
+
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    owner = payload.get('owner')
+    repo = payload.get('repo')
+    if not owner or not repo:
+        raise HTTPException(status_code=400, detail="owner and repo required in body")
+
+    # Support token from header
+    token = None
+    auth = request.headers.get('Authorization') or request.headers.get('authorization')
+    if auth and auth.lower().startswith('bearer '):
+        token = auth.split(None, 1)[1]
+    else:
+        token = payload.get('token')
+
+    url = f'https://api.github.com/repos/{owner}/{repo}/actions/artifacts'
+    headers = {'Accept': 'application/vnd.github+json'}
+    if token:
+        headers['Authorization'] = f'Bearer {token}'
+
+    import requests
+    try:
+        resp = requests.get(url, headers=headers, timeout=15)
+        return JSONResponse(status_code=resp.status_code, content=resp.json())
+    except Exception as e:
+        logger.exception('GitHub artifacts proxy error')
+        raise HTTPException(status_code=502, detail=str(e))
+
 
 
 @app.post("/verify")
@@ -3039,6 +3173,153 @@ async def check_source_credibility(request: ToolRequest):
         "sources": sources_found,
         "processing_time_ms": round(time.time() * 1000 % 1000, 2)
     }
+
+
+@app.post("/tools/simulate")
+async def tools_simulate(request: Request):
+    # Authorization: require SIMULATE_KEY header if configured; otherwise allow only in DEBUG
+    sim_key_required = Config.SIMULATE_KEY is not None
+    provided_sim_key = request.headers.get("X-SIM-KEY") or request.headers.get("X-Sim-Key")
+
+    # Check allowed IPs if configured
+    if Config.SIMULATE_ALLOWED_IPS:
+        client_ip = request.client.host if request.client else None
+        if client_ip not in Config.SIMULATE_ALLOWED_IPS:
+            raise HTTPException(status_code=403, detail="Client IP not allowed to use simulation endpoints")
+
+    if sim_key_required:
+        if provided_sim_key != Config.SIMULATE_KEY:
+            raise HTTPException(status_code=403, detail="Invalid or missing simulation key")
+        # rate-limit per-sim-key
+        allowed, info = simulate_key_limiter.is_allowed(provided_sim_key)
+        if not allowed:
+            return JSONResponse(status_code=429, content={"error": "Simulation key rate limit exceeded", "info": info})
+    else:
+        if not Config.DEBUG:
+            raise HTTPException(status_code=403, detail="Simulation endpoints are only available in DEBUG mode or with a SIMULATE_KEY configured")
+
+    """Simulation endpoint for testing provider failures, rate limits, and cooldowns.
+    Only available in DEBUG mode to avoid exposure in production.
+    Actions supported:
+      - provider_fail: { provider: str, count: int }
+      - provider_recover: { provider: str }
+      - set_rate_limit: { limit: int }
+      - trigger_rate_limit: { identifier: str, count: int }
+    """
+    if not Config.DEBUG:
+        raise HTTPException(status_code=403, detail="Simulation endpoints are only available in DEBUG mode")
+
+    # Accept both JSON body and ToolRequest-style {"content": <json|string>}
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    body = {}
+    if isinstance(payload, dict) and "content" in payload:
+        content = payload.get("content")
+        if isinstance(content, str):
+            try:
+                import json as _json
+                body = _json.loads(content)
+            except Exception:
+                body = {"action": content}
+        elif isinstance(content, dict):
+            body = content
+        else:
+            body = {}
+    elif isinstance(payload, dict):
+        body = payload
+
+    action = body.get("action")
+
+    if action == "provider_fail":
+        provider = body.get("provider")
+        count = int(body.get("count", provider_health.max_failures))
+        for i in range(count):
+            provider_health.record_failure(provider, status_code=500)
+        return {"status": "ok", "message": f"Simulated {count} failures for {provider}"}
+
+    if action == "provider_recover":
+        provider = body.get("provider")
+        provider_health.record_success(provider)
+        provider_health.failures.pop(provider, None)
+        provider_health.cooldown_until.pop(provider, None)
+        return {"status": "ok", "message": f"Recovered {provider}"}
+
+    if action == "set_rate_limit":
+        limit = int(body.get("limit", Config.RATE_LIMIT_REQUESTS))
+        rate_limiter.max_requests = limit
+        return {"status": "ok", "limit": limit}
+
+    if action == "trigger_rate_limit":
+        identifier = body.get("identifier", "simulate-client")
+        count = int(body.get("count", rate_limiter.max_requests + 1))
+        # Pre-fill the request timestamps to simulate previous requests
+        rate_limiter.requests[identifier] = [time.time() - 1 + i * 0.01 for i in range(count)]
+        allowed, info = rate_limiter.is_allowed(identifier)
+        return {"status": "ok", "allowed": allowed, "info": info}
+
+    raise HTTPException(status_code=400, detail="Unknown simulation action")
+
+
+@app.post("/tools/run-internal-tests")
+async def run_internal_tests(request: Request):
+    """Run a small, safe subset of internal tests on demand (debug-only or with SIMULATE_KEY)
+
+    Runs a pre-defined small test subset to avoid running arbitrary code. Returns the stdout and exit code.
+    """
+    # Authorization
+    # Optional IP allowlist for internal test runner
+    if Config.SIMULATE_ALLOWED_IPS:
+        client_ip = request.client.host if request.client else None
+        if client_ip not in Config.SIMULATE_ALLOWED_IPS:
+            raise HTTPException(status_code=403, detail="Client IP not allowed to use internal test runner")
+
+    sim_key_required = Config.SIMULATE_KEY is not None
+    provided_sim_key = request.headers.get("X-SIM-KEY") or request.headers.get("X-Sim-Key")
+    if sim_key_required:
+        if provided_sim_key != Config.SIMULATE_KEY:
+            raise HTTPException(status_code=403, detail="Invalid or missing simulation key")
+    else:
+        if not Config.DEBUG:
+            raise HTTPException(status_code=403, detail="Internal test runner requires DEBUG mode or SIMULATE_KEY")
+
+    # Accept payload to select suite (default: smoke)
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+    suite = (payload.get("suite") or "smoke").lower()
+
+    # Map suites to safe test files
+    SUITES = {
+        "smoke": ["tests/test_rate_limiter.py", "tests/test_provider_health.py", "tests/test_source_credibility.py"],
+        "extended": ["tests/test_tools_simulate.py", "tests/test_rate_limiter.py", "tests/test_provider_health.py", "tests/test_source_credibility.py"]
+    }
+
+    selected = SUITES.get(suite)
+    if not selected:
+        raise HTTPException(status_code=400, detail=f"Unknown suite {suite}")
+
+    # Run pytest on the selected files (safe, controlled)
+    import subprocess, shlex, asyncio
+    cmd = [sys.executable, "-m", "pytest", "-q", "-k", " or ".join([p.split('/')[-1].replace('.py','') for p in selected])]
+    try:
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=120)
+        out = proc.stdout.decode(errors='replace')
+        # Persist test run output to a log for later inspection
+        try:
+            runs_file = Path(_script_dir / "test_runs.log")
+            with open(runs_file, "a", encoding="utf-8") as fh:
+                fh.write(f"----- RUN {datetime.utcnow().isoformat()} suite={suite} exit={proc.returncode}\n")
+                fh.write(out + "\n")
+        except Exception:
+            logger.exception("Failed to write test run log")
+        return {"exit_code": proc.returncode, "output": out}
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=504, detail="Test runner timed out")
+
 
 
 @app.post("/tools/statistics-validator")

@@ -28,9 +28,9 @@ const VerityPayments = {
             const response = await fetch(`${this.API_BASE}/stripe/config`);
             if (response.ok) {
                 this.stripeConfig = await response.json();
-                console.log('✅ Stripe config loaded');
+                (window.verityLogger || console).info('✅ Stripe config loaded');
             } else {
-                console.log('Stripe config endpoint not available - using defaults');
+                (window.verityLogger || console).warn('Stripe config endpoint not available - using defaults');
             }
         } catch (error) {
             console.warn('Failed to load Stripe config, using fallback:', error.message);

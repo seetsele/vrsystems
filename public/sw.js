@@ -20,11 +20,11 @@ const urlsToCache = [
 
 // Install event - cache core assets
 self.addEventListener('install', event => {
-  console.log('[SW] Installing service worker...');
+  self.verityLogger.info('[SW] Installing service worker...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[SW] Caching core assets');
+        self.verityLogger.info('[SW] Caching core assets');
         return cache.addAll(urlsToCache);
       })
       .then(() => self.skipWaiting())
@@ -33,13 +33,21 @@ self.addEventListener('install', event => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
-  console.log('[SW] Activating service worker...');
+  if (self && self.verityLogger && self.verityLogger.info) {
+    self.verityLogger.info('[SW] Activating service worker...');
+  } else {
+    console.info('[SW] Activating service worker...');
+  }
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Removing old cache:', cacheName);
+            if (self && self.verityLogger && self.verityLogger.info) {
+              self.verityLogger.info('[SW] Removing old cache:', cacheName);
+            } else {
+              console.info('[SW] Removing old cache:', cacheName);
+            }
             return caches.delete(cacheName);
           }
         })
@@ -128,4 +136,4 @@ self.addEventListener('notificationclick', event => {
   );
 });
 
-console.log('[SW] Verity Service Worker loaded');
+self.verityLogger.info('[SW] Verity Service Worker loaded');

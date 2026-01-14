@@ -230,7 +230,7 @@
                     }
                 }
             } catch (e) {
-                console.log('Using estimated count');
+                (window.verityLogger || console).info('Using estimated count');
             }
             animateCount();
         }
@@ -280,7 +280,7 @@
                 
                 const client = window.VeritySupabase?.client;
                 if (client) {
-                    console.log('Saving email to waitlist:', email);
+                    (window.verityLogger || console).info('Saving email to waitlist:', email);
                     const { data, error } = await client
                         .from('newsletter_subscribers')
                         .upsert({
@@ -296,7 +296,7 @@
                             saved = true;
                         }
                     } else {
-                        console.log('Waitlist save success:', data);
+                        (window.verityLogger || console).info('Waitlist save success:', data);
                         saved = true;
                     }
                 } else {

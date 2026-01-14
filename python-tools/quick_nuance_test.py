@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Updated to test enhanced nuance detection
 """
 Quick test of the 3 claims that failed in the first test.
 These were failing because nuance detection wasn't triggering.

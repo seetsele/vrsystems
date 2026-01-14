@@ -457,7 +457,7 @@ class VerityProEngine {
                 return this.transformV6Response(data);
             }
         } catch (error) {
-            console.log('API not available, using demo data');
+            (window.verityLogger || console).warn('API not available, using demo data');
         }
 
         // Fallback to demo result

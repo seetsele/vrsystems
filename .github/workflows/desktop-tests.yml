@@ -1,0 +1,33 @@
+name: Desktop Tests
+
+on:
+  push:
+    paths:
+      - 'desktop-app/**'
+  pull_request:
+    paths:
+      - 'desktop-app/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install packages
+        working-directory: ./desktop-app
+        run: npm ci
+      - name: Lint for console.log occurrences
+        working-directory: ./
+        run: npm run lint:console
+      - name: Run tests and record results
+        working-directory: ./desktop-app
+        run: npm run test:ci
+      - name: Upload test vault artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-test-vault
+          path: test-vault/**

@@ -40,7 +40,7 @@ function initSupabase() {
             });
             // Also set legacy reference for compatibility
             window.supabaseClient = supabaseClient;
-            console.log('✅ Supabase client initialized successfully');
+            (window.verityLogger || console).info('✅ Supabase client initialized successfully');
             return true;
         } catch (e) {
             console.error('❌ Supabase initialization error:', e);
@@ -56,7 +56,7 @@ const maxAttempts = 10;
 
 function retryInit() {
     if (initSupabase()) {
-        console.log('✅ Supabase ready after', initAttempts, 'attempts');
+        (window.verityLogger || console).info('✅ Supabase ready after', initAttempts, 'attempts');
         // Dispatch custom event to notify waiting code
         window.dispatchEvent(new CustomEvent('supabaseReady'));
         return;
@@ -374,4 +374,4 @@ window.VeritySupabase = {
 window.VerityAuth = VerityAuth;
 window.VerityDB = VerityDB;
 
-console.log('Verity Supabase client initialized');
+(window.verityLogger || console).info('Verity Supabase client initialized');

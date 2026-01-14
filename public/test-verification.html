@@ -1130,7 +1130,7 @@ Examples:
                 console.error('Verification error:', error);
                 
                 // Fallback to demo mode if API is unavailable
-                console.log('Using demo mode...');
+                (window.verityLogger || console).info('Using demo mode...');
                 currentResult = generateDemoResult(claim, tier);
                 displayResults(currentResult, tier);
                 

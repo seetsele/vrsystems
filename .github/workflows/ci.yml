@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *'  # nightly at 03:00 UTC
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Lint for console.log occurrences
+        run: npm run lint:console
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' 
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+      - name: Run tests
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q | tee artifacts/pytest_output.txt
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-output
+          path: artifacts/pytest_output.txt
+          retention-days: 7

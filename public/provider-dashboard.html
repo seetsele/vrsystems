@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Provider Dashboard</title>
+  <style>
+    body{font-family:Inter,system-ui;background:#071028;color:#e6eef8;padding:2rem}
+    .card{background:#0f1724;padding:1rem;border-radius:8px;border:1px solid #253044;margin-bottom:1rem}
+    .healthy{color:#10b981}
+    .cooldown{color:#f43f5e}
+  </style>
+</head>
+<body>
+  <h1>Provider Health Dashboard</h1>
+  <div class="card">
+    <button onclick="refresh()">Refresh</button>
+    <div id="summary" style="margin-top:0.8rem"></div>
+    <div id="list" style="margin-top:0.8rem"></div>
+  </div>
+
+  <script>
+    const API = window.location.hostname === 'localhost' ? 'http://localhost:8000' : (window.location.origin.replace(/:\d+$/,'') + ':8000');
+    async function refresh(){
+      try{
+        const res = await fetch(`${API}/providers/health`);
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const data = await res.json();
+        const health = data.health;
+        document.getElementById('summary').innerHTML = `In cooldown: <span class='cooldown'>${health.in_cooldown.join(', ') || 'None'}</span>`;
+        let html = '<ul>';
+        for(const [k,v] of Object.entries(health.failures)){
+          const cls = health.in_cooldown.includes(k) ? 'cooldown' : 'healthy';
+          html += `<li class='${cls}'>${k}: failures=${v}</li>`;
+        }
+        html += '</ul>';
+        document.getElementById('list').innerHTML = html;
+
+        // Fetch tail of provider health logs
+        try{
+          const logsRes = await fetch(`${API}/tools/provider-health-logs`);
+          if(logsRes.ok){
+            const logs = await logsRes.json();
+            const preview = logs.lines.slice(-10).reverse().map(l=>`<div style="font-family:monospace; font-size:12px; margin-bottom:6px;">${l}</div>`).join('');
+            document.getElementById('list').innerHTML += `<h4>Recent Health Log Entries</h4>${preview}`;
+          }
+        }catch(e){ console.warn('log fetch failed', e) }
+
+        // Fetch recent test runs
+        try{
+          const tr = await fetch(`${API}/tools/test-runs`);
+          if(tr.ok){
+            const data = await tr.json();
+            if(data.runs && data.runs.length){
+              const runsHtml = data.runs.slice(0,5).map(r=>`<div style="margin-top:8px;padding:0.6rem;background:#071a2a;border-radius:6px;"><div style="font-size:12px;color:#94a3b8">${r.header}</div><pre style="font-size:12px;white-space:pre-wrap;max-height:140px;overflow:auto;margin:6px 0;">${r.output.slice(0,1000)}</pre></div>`).join('');
+              document.getElementById('list').innerHTML += `<h4>Recent Test Runs</h4>${runsHtml}`;
+            }
+          }
+        }catch(e){ console.warn('test runs fetch failed', e) }
+      }catch(e){ document.getElementById('summary').textContent = 'Error: '+e.message }
+    }
+    refresh(); setInterval(refresh, 60000);
+  </script>
+</body>
+</html>

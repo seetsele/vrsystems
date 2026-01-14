@@ -59,7 +59,7 @@ class VerityVerificationEngine {
             
             if (response.ok) {
                 const data = await response.json();
-                console.log('✅ Verity API Connected:', data);
+                (window.verityLogger || console).info('✅ Verity API Connected:', data);
                 this.apiOnline = true;
             } else {
                 throw new Error('API not responding');

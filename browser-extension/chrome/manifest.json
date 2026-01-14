@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Verity - AI Fact Checker",
-  "short_name": "Verity",
+  "name": "Verity Companion App",
+  "short_name": "Verity Companion App",
   "version": "2.1.0",
   "description": "Instantly verify claims and detect misinformation with AI-powered fact-checking. Keyboard shortcuts, inline results, and dark/light mode.",
   "icons": {

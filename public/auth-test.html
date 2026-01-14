@@ -73,7 +73,7 @@
             const time = new Date().toLocaleTimeString();
             logEl.innerHTML += `[${time}] ${msg}\n`;
             logEl.scrollTop = logEl.scrollHeight;
-            console.log(msg);
+            (window.verityLogger || console).info(msg);
         }
         
         function showResult(elementId, message, isError = false) {

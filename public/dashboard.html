@@ -392,7 +392,7 @@
                     // Redirect to login if not authenticated
                     // window.location.href = 'auth.html?redirect=dashboard.html';
                     // For now, show demo data
-                    console.log('No session - showing demo data');
+                    (window.verityLogger || console).info('No session - showing demo data');
                 }
                 
                 // Update welcome message
@@ -429,7 +429,7 @@
                     if (statValues[3]) statValues[3].textContent = `${(stats.avg_response_time || 2.3).toFixed(1)}s`;
                 }
             } catch (error) {
-                console.log('Using demo stats - API unavailable');
+                (window.verityLogger || console).warn('Using demo stats - API unavailable');
             }
         }
         
@@ -453,7 +453,7 @@
                     updateActivityList(localHistory.slice(0, 5));
                 }
             } catch (error) {
-                console.log('Using demo activity');
+                (window.verityLogger || console).info('Using demo activity');
             }
         }
         

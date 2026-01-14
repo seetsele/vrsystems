@@ -1,0 +1,25 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "verity-provider-health",
+    "title": "Verity Provider Health",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Provider Failures",
+        "targets": [
+          { "expr": "verity_provider_failures", "legendFormat": "{{provider}}" }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "type": "stat",
+        "title": "Providers in Cooldown",
+        "targets": [
+          { "expr": "sum(verity_provider_in_cooldown) by (provider)", "legendFormat": "{{provider}}" }
+        ],
+        "gridPos": {"h": 4, "w": 24, "x": 0, "y": 8}
+      }
+    ]
+  }
+}

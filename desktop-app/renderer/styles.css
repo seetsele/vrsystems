@@ -335,51 +335,9 @@ body {
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+/* Search bar is defined in the PREMIUM SEARCH BAR block further below to provide a single authoritative style. */
 
-.search-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--bg-glass);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    padding: 8px 14px;
-    transition: all 0.2s ease;
-}
-
-.search-bar:hover, .search-bar:focus-within {
-    background: var(--bg-glass-strong);
-    border-color: var(--border-default);
-}
-
-.search-bar .search-icon {
-    width: 16px;
-    height: 16px;
-    color: var(--text-tertiary);
-}
-
-.search-bar input {
-    flex: 1;
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    font-size: 13px;
-    outline: none;
-    min-width: 200px;
-}
-
-.search-bar input::placeholder {
-    color: var(--text-muted);
-}
-
-.search-bar kbd {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    color: var(--text-muted);
-    background: var(--bg-tertiary);
-    padding: 3px 6px;
-    border-radius: 4px;
-}
+/* NOTE: Consolidated search-bar styles are located near the "PREMIUM SEARCH BAR - High-End Design" section to avoid duplication and ensure consistent theming. */
 
 .tb-btn {
     position: relative;
@@ -5659,8 +5617,7 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
     color: var(--text-muted);
     font-weight: 400;
 }
-
-.search-bar kbd {
+ .search-bar kbd {
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
@@ -5673,6 +5630,58 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
     align-items: center;
     gap: 2px;
 }
+
+/* Clear button inside the search bar */
+.search-bar .clear-btn {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background .15s ease, color .15s ease;
+    flex-shrink: 0;
+}
+.search-bar .clear-btn:hover { background: rgba(255,255,255,0.02); color: var(--text-primary); }
+.search-bar .clear-btn svg { width: 14px; height: 14px; }
+
+/* Search results dropdown */
+.search-results {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, rgba(17,17,19,0.98), rgba(16,16,16,0.98));
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    max-height: 320px;
+    overflow: auto;
+    z-index: 80;
+    padding: 8px;
+    animation: slideUp .18s ease both;
+}
+.search-results.hidden { display: none; }
+.search-results .search-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+..search-results .search-item:hover { background: rgba(255,255,255,0.02); }
+.search-results .search-item.selected { background: linear-gradient(90deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02)); outline: none; }
+.search-results .search-item .search-meta { color: var(--text-muted); font-size: 12px; }
+.search-results .search-empty { padding: 14px; color: var(--text-muted); text-align: center; }
+
+/* Makes search-bar container position:relative so the dropdown positions correctly */
+.search-bar { position: relative; }
 
 /* ================================================================
    PREMIUM ANIMATIONS

@@ -15,11 +15,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="/assets/js/logger.js"></script>
     
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120'%3E%3Cpath fill='none' stroke='%23f59e0b' stroke-width='6' d='M50 10 L85 30 L85 70 C85 95 50 105 50 105 C50 105 15 95 15 70 L15 30 Z'/%3E%3Cpolyline fill='none' stroke='%23f59e0b' stroke-width='7' stroke-linecap='round' stroke-linejoin='round' points='35,60 45,72 65,48'/%3E%3C/svg%3E">
     
     <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-    <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(e=>console.log(e));});}</script>
+    <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(e=>{(window.verityLogger || console).error(e);});});}</script>
     
     <style>
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}

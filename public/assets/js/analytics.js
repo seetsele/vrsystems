@@ -57,7 +57,7 @@ class VerityAnalytics {
       this.interactions++;
     });
 
-    console.log('Verity Analytics initialized', { sessionId: this.sessionId });
+    (window.verityLogger || console).info('Verity Analytics initialized', { sessionId: this.sessionId });
   }
 
   /**

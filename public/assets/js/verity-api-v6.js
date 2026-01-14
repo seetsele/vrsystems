@@ -40,7 +40,7 @@ class VerityAPIv6 {
         };
 
         try {
-            if (this.debug) console.log(`[Verity API] ${options.method || 'GET'} ${url}`);
+            if (this.debug) (window.verityLogger || console).debug(`[Verity API] ${options.method || 'GET'} ${url}`);
             
             const response = await fetch(url, config);
             clearTimeout(timeoutId);
@@ -302,4 +302,4 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = VerityAPIv6;
 }
 
-console.log('✅ Verity API v6 Client loaded');
+(window.verityLogger || console).info('✅ Verity API v6 Client loaded');

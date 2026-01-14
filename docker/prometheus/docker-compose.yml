@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - '9090:9090'
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ../../public/grafana_provider_dashboard.json:/var/lib/grafana/dashboards/grafana_provider_dashboard.json:ro
+
+volumes:
+  grafana-storage:

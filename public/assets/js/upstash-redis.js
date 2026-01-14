@@ -442,4 +442,4 @@ if (typeof window !== 'undefined') {
     };
 }
 
-console.log('✅ Upstash Redis client initialized');
+(window.verityLogger || console).info('✅ Upstash Redis client initialized');

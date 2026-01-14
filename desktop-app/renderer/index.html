@@ -64,10 +64,14 @@
             </div>
         </div>
         <div class="titlebar-center">
-            <div class="search-bar" id="global-search">
+            <div class="search-bar" id="global-search" role="search" aria-label="Global search">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                <input type="text" placeholder="Search anything... (Ctrl+K)" id="search-input">
-                <kbd>⌘K</kbd>
+                <input type="text" placeholder="Search anything... (Ctrl/Cmd+K)" id="search-input" autocomplete="off" aria-autocomplete="list" aria-controls="search-results">
+                <button class="clear-btn hidden" id="search-clear" aria-label="Clear search">
+                    <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <kbd id="search-kbd">Ctrl+K</kbd>
+                <div class="search-results hidden" id="search-results" role="listbox" aria-label="Search results"></div>
             </div>
         </div>
         <div class="titlebar-right">
@@ -107,10 +111,10 @@
     </div>
 
     <!-- Auth Modal -->
-    <div class="modal" id="auth-modal">
+    <div class="modal" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-hidden="true">
         <div class="modal-backdrop"></div>
-        <div class="modal-container auth-container">
-            <button class="modal-close" id="close-auth">&times;</button>
+        <div class="modal-container auth-container" role="document">
+            <button class="modal-close" id="close-auth" aria-label="Close authentication dialog">&times;</button>
             <div class="auth-header">
                 <div class="auth-logo">
                     <svg viewBox="0 0 60 60" fill="none">
@@ -119,7 +123,7 @@
                         <path d="M23 28 L28 33 L38 23" stroke="url(#authGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                     </svg>
                 </div>
-                <h2>Welcome to Verity</h2>
+                <h2 id="auth-title">Welcome to Verity</h2>
                 <p>AI-Powered Truth Verification Platform</p>
             </div>
             <div class="auth-tabs">

@@ -6,7 +6,8 @@ async function generatePDF() {
     const htmlPath = path.join(__dirname, 'COMPREHENSIVE_TEST_ANALYSIS.html');
     const pdfPath = path.join(__dirname, 'COMPREHENSIVE_TEST_ANALYSIS.pdf');
     
-    console.log('🚀 Starting PDF generation...');
+    const logger = require('./scripts/logger-node');
+    logger.info('🚀 Starting PDF generation...');
     
     const browser = await puppeteer.launch({
         headless: 'new',
@@ -38,9 +39,9 @@ async function generatePDF() {
     await browser.close();
     
     const stats = fs.statSync(pdfPath);
-    console.log(`✅ PDF created successfully!`);
-    console.log(`📄 File: ${pdfPath}`);
-    console.log(`📊 Size: ${(stats.size / 1024).toFixed(1)} KB`);
+    logger.info('✅ PDF created successfully!');
+    logger.info('📄 File:', pdfPath);
+    logger.info('📊 Size:', `${(stats.size / 1024).toFixed(1)} KB`);
 }
 
 generatePDF().catch(err => {

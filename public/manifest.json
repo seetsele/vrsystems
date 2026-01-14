@@ -1,6 +1,6 @@
 {
-  "name": "Verity - AI Fact Checking",
-  "short_name": "Verity",
+  "name": "Verity Companion App",
+  "short_name": "Verity Companion App",
   "description": "AI-powered fact verification platform with multi-source consensus",
   "start_url": "/",
   "display": "standalone",

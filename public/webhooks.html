@@ -353,7 +353,7 @@
                 return;
             }
 
-            console.log('Creating webhook:', { url, description, secret, events });
+            (window.verityLogger || console).info('Creating webhook:', { url, description, secret, events });
             alert('Webhook created successfully!');
             closeModal();
             loadWebhooks();

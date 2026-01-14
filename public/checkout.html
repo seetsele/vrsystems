@@ -1122,7 +1122,7 @@
                     showFallbackPaymentForm();
                 }
             } catch (error) {
-                console.log('Using demo mode - backend not available');
+                (window.verityLogger || console).warn('Using demo mode - backend not available');
                 showFallbackPaymentForm();
             }
         }
@@ -1215,7 +1215,7 @@
                         document.getElementById('checkoutSuccess').classList.add('show');
                     }
                 } catch (e) {
-                    console.log('Could not verify payment status');
+                    (window.verityLogger || console).error('Could not verify payment status');
                 }
             }
         }

@@ -37,7 +37,7 @@ const DEMO_CONFIG = {
     const now = Date.now();
     if (!lastVisit || (now - parseInt(lastVisit, 10)) > 3600000) {
         sessionStorage.removeItem('verity_demo_attempts');
-        console.log('[Verity] Demo attempts reset (new session)');
+        (window.verityLogger || console).info('[Verity] Demo attempts reset (new session)');
     }
     sessionStorage.setItem('verity_last_visit', now.toString());
 })();
@@ -46,7 +46,7 @@ const DEMO_CONFIG = {
 function getDemoAttempts() {
     const attempts = sessionStorage.getItem('verity_demo_attempts');
     const count = attempts ? parseInt(attempts, 10) : 0;
-    console.log('[Verity] Demo attempts used:', count);
+    (window.verityLogger || console).info('[Verity] Demo attempts used:', count);
     return count;
 }
 
@@ -54,20 +54,20 @@ function incrementDemoAttempts() {
     const current = getDemoAttempts();
     const newCount = current + 1;
     sessionStorage.setItem('verity_demo_attempts', newCount.toString());
-    console.log('[Verity] Incremented demo attempts to:', newCount);
+    (window.verityLogger || console).info('[Verity] Incremented demo attempts to:', newCount);
     return newCount;
 }
 
 function getRemainingAttempts() {
     const remaining = Math.max(0, DEMO_CONFIG.maxAttempts - getDemoAttempts());
-    console.log('[Verity] Remaining attempts:', remaining);
+    (window.verityLogger || console).info('[Verity] Remaining attempts:', remaining);
     return remaining;
 }
 
 // Reset demo attempts (for testing - can call from console: resetDemoAttempts())
 function resetDemoAttempts() {
     sessionStorage.removeItem('verity_demo_attempts');
-    console.log('[Verity] Demo attempts reset');
+    (window.verityLogger || console).info('[Verity] Demo attempts reset');
     updateAttemptsUI();
 }
 
@@ -325,11 +325,11 @@ async function checkApiHealth() {
         
         if (response.ok) {
             const data = await response.json();
-            console.log('✅ Verity API available:', data.version || 'v1');
+            (window.verityLogger || console).info('✅ Verity API available:', data.version || 'v1');
             return true;
         }
     } catch (error) {
-        console.log('ℹ️ API not available, using local knowledge base');
+        (window.verityLogger || console).warn('ℹ️ API not available, using local knowledge base');
     }
     return false;
 }
@@ -422,7 +422,7 @@ async function verifyClaimDemo(claim) {
         try {
             apiAvailable = await checkApiHealth();
         } catch (e) {
-            console.log('API health check failed:', e);
+            (window.verityLogger || console).error('API health check failed:', e);
             apiAvailable = false;
         }
         
@@ -459,12 +459,12 @@ async function verifyClaimDemo(claim) {
         result.request_id = result.request_id || 'req_' + Math.random().toString(36).substr(2, 16);
         result.timestamp = new Date().toISOString();
         
-        console.log('[Verity] Final result object:', JSON.stringify(result, null, 2));
+        (window.verityLogger || console).debug('[Verity] Final result object:', JSON.stringify(result, null, 2));
         
         // Display result with animated score wheel
         try {
             displayEnhancedDemoResult(result);
-            console.log('[Verity] Display function completed successfully');
+            (window.verityLogger || console).debug('[Verity] Display function completed successfully');
         } catch (displayError) {
             console.error('[Verity] Error displaying result:', displayError);
             console.error('[Verity] Error stack:', displayError.stack);
@@ -670,7 +670,7 @@ function createScoreWheel(score, size = 120) {
 }
 
 function animateScoreWheel() {
-    console.log('[Verity] Animating score wheel...');
+    (window.verityLogger || console).debug('[Verity] Animating score wheel...');
     
     const wheel = document.querySelector('.score-wheel-progress');
     const valueEl = document.querySelector('.score-wheel-value');
@@ -683,10 +683,10 @@ function animateScoreWheel() {
     const targetOffset = parseFloat(wheel.dataset.targetOffset) || 0;
     const targetValue = parseFloat(valueEl.dataset.target) || 0;
     
-    console.log('[Verity] Target offset:', targetOffset, 'Target value:', targetValue);
+    (window.verityLogger || console).debug('[Verity] Target offset:', targetOffset, 'Target value:', targetValue);
     
     if (typeof gsap === 'undefined') {
-        console.log('[Verity] GSAP not available, using fallback');
+        (window.verityLogger || console).warn('[Verity] GSAP not available, using fallback');
         // Fallback without animation
         wheel.style.strokeDashoffset = targetOffset;
         valueEl.textContent = Math.round(targetValue);
@@ -710,7 +710,7 @@ function animateScoreWheel() {
         }
     });
     
-    console.log('[Verity] Score wheel animation started');
+    (window.verityLogger || console).debug('[Verity] Score wheel animation started');
 }
 
 // ================================================
@@ -718,7 +718,7 @@ function animateScoreWheel() {
 // ================================================
 
 function displayEnhancedDemoResult(result) {
-    console.log('[Verity] Displaying result:', result);
+    (window.verityLogger || console).debug('[Verity] Displaying result:', result);
     
     const demoResults = document.getElementById('demoResults');
     
@@ -729,11 +729,11 @@ function displayEnhancedDemoResult(result) {
     
     // Get remaining attempts now (after increment)
     const remainingAttempts = getRemainingAttempts();
-    console.log('[Verity] Remaining attempts for display:', remainingAttempts);
+    (window.verityLogger || console).debug('[Verity] Remaining attempts for display:', remainingAttempts);
     
     // Ensure confidence is a valid number
     const confidenceScore = typeof result.confidence === 'number' ? result.confidence : parseFloat(result.confidence) || 50;
-    console.log('[Verity] Confidence score:', confidenceScore);
+    (window.verityLogger || console).debug('[Verity] Confidence score:', confidenceScore);
     
     // Create safe breakdown with fallbacks (compatible with older browsers)
     const breakdown = result.breakdown || {};
@@ -916,9 +916,9 @@ function displayEnhancedDemoResult(result) {
         </div>
     `;
     
-    console.log('[Verity] Setting innerHTML, html length:', html.length);
+    (window.verityLogger || console).debug('[Verity] Setting innerHTML, html length:', html.length);
     demoResults.innerHTML = html;
-    console.log('[Verity] innerHTML set, demoResults.innerHTML length:', demoResults.innerHTML.length);
+    (window.verityLogger || console).debug('[Verity] innerHTML set, demoResults.innerHTML length:', demoResults.innerHTML.length);
     
     // IMPORTANT: Ensure result is visible immediately, before any animations
     const demoResult = demoResults.querySelector('.demo-result');
@@ -982,7 +982,7 @@ function displayEnhancedDemoResult(result) {
         });
     }
     
-    console.log('[Verity] Result should now be visible');
+    (window.verityLogger || console).debug('[Verity] Result should now be visible');
     
     // Animate score wheel
     setTimeout(animateScoreWheel, 300);
@@ -1119,7 +1119,11 @@ function initializeSmoothScroll() {
 
 function initializeScrollAnimations() {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-        console.log('GSAP or ScrollTrigger not available, skipping scroll animations');
+        if (window && window.verityLogger && window.verityLogger.warn) {
+            window.verityLogger.warn('GSAP or ScrollTrigger not available, skipping scroll animations');
+        } else {
+            console.info('GSAP or ScrollTrigger not available, skipping scroll animations');
+        }
         return;
     }
     
@@ -1349,5 +1353,5 @@ window.addEventListener('load', () => {
     }
 });
 
-console.log('%c✓ Verity Systems v2.0 Loaded', 'color: #00d9ff; font-size: 14px; font-weight: bold;');
-console.log('%c  Real API + Local Fallback | 5 Free Verifications', 'color: #6366f1; font-size: 12px;');
+(window.verityLogger || console).info('%c✓ Verity Systems v2.0 Loaded', 'color: #00d9ff; font-size: 14px; font-weight: bold;');
+(window.verityLogger || console).info('%c  Real API + Local Fallback | 5 Free Verifications', 'color: #6366f1; font-size: 12px;');

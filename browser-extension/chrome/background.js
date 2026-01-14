@@ -48,12 +48,12 @@ chrome.runtime.onInstalled.addListener(() => {
     contexts: ['link']
   });
   
-  console.log('Verity extension installed');
+  (this.verityLogger || console).info('Verity extension installed');
 });
 
 // Handle keyboard shortcuts
 chrome.commands.onCommand.addListener(async (command) => {
-  console.log('Command received:', command);
+  (this.verityLogger || console).info('Command received:', command);
   
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab) return;
@@ -309,7 +309,7 @@ function connectWebSocket() {
     ws = new WebSocket(`${wsUrl}/ws`);
     
     ws.onopen = () => {
-      console.log('WebSocket connected');
+      (this.verityLogger || console).info('WebSocket connected');
       wsReconnectAttempts = 0;
     };
     
@@ -323,7 +323,7 @@ function connectWebSocket() {
     };
     
     ws.onclose = () => {
-      console.log('WebSocket disconnected');
+      (this.verityLogger || console).info('WebSocket disconnected');
       if (wsReconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
         wsReconnectAttempts++;
         setTimeout(connectWebSocket, 1000 * wsReconnectAttempts);

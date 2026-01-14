@@ -7,6 +7,9 @@
 (function() {
 'use strict';
 
+// Logger (use electron-log for controllable logging levels)
+const log = require('electron-log');
+
 // ===== CONFIGURATION =====
 const CONFIG = {
     apiEndpoint: 'https://veritysystems-production.up.railway.app',  // Production API (Railway)
@@ -158,7 +161,7 @@ const NAV_ITEMS = [
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-    console.log('🚀 Verity Desktop v3 Initializing...');
+    log.info('🚀 Verity Desktop v3 Initializing...');
     
     await loadStoredState();
     buildNavigation();
@@ -175,7 +178,7 @@ async function init() {
         document.getElementById('loading-screen')?.classList.add('hidden');
     }, 800);
     
-    console.log('✅ Verity Desktop Ready');
+    log.info('✅ Verity Desktop Ready');
 }
 
 async function loadStoredState() {
@@ -3856,7 +3859,13 @@ function setupTitlebar() {
     
     // Sign In button handling
     document.getElementById('signin-btn')?.addEventListener('click', () => {
-        document.getElementById('auth-modal')?.classList.add('active');
+        const modal = document.getElementById('auth-modal');
+        if (!modal) return;
+        modal.dataset.prevFocus = document.activeElement?.id || '';
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        const firstInput = document.getElementById('signin-email') || document.getElementById('signup-name');
+        firstInput?.focus();
     });
     
     // Notifications panel toggle
@@ -3885,17 +3894,39 @@ function setupTitlebar() {
 function setupAuth() {
     const modal = document.getElementById('auth-modal');
     if (!modal) return;
-    
+
+    // Focus trapping & keyboard
+    function closeModal() {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+        const prevId = modal.dataset.prevFocus;
+        if (prevId) {
+            const prevEl = document.getElementById(prevId);
+            prevEl?.focus();
+        } else {
+            document.getElementById('signin-btn')?.focus();
+        }
+        document.removeEventListener('keydown', keyHandler);
+    }
+
+    function keyHandler(e) {
+        if (e.key === 'Escape') return closeModal();
+        if (e.key === 'Tab') {
+            const focusable = modal.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+    }
+
     // Close button
-    document.getElementById('close-auth')?.addEventListener('click', () => {
-        modal.classList.remove('active');
-    });
-    
+    document.getElementById('close-auth')?.addEventListener('click', () => closeModal());
+
     // Backdrop click
-    modal.querySelector('.modal-backdrop')?.addEventListener('click', () => {
-        modal.classList.remove('active');
-    });
-    
+    modal.querySelector('.modal-backdrop')?.addEventListener('click', () => closeModal());
+
     // Tab switching
     modal.querySelectorAll('.auth-tab').forEach(tab => {
         tab.addEventListener('click', () => {
@@ -3904,9 +3935,10 @@ function setupAuth() {
             tab.classList.add('active');
             const formId = tab.dataset.tab === 'signin' ? 'signin-form' : 'signup-form';
             document.getElementById(formId)?.classList.add('active');
+            document.querySelector(`#${formId} input`)?.focus();
         });
     });
-    
+
     // Sign in form
     document.getElementById('signin-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -3915,12 +3947,12 @@ function setupAuth() {
             state.user = { name: email.split('@')[0], email };
             state.authenticated = true;
             saveState();
-            modal.classList.remove('active');
+            closeModal();
             buildNavigation();
             toast('Signed in successfully!', 'success');
         }
     });
-    
+
     // Sign up form
     document.getElementById('signup-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -3930,12 +3962,15 @@ function setupAuth() {
             state.user = { name, email };
             state.authenticated = true;
             saveState();
-            modal.classList.remove('active');
+            closeModal();
             buildNavigation();
             toast('Account created!', 'success');
         }
     });
-}
+
+    // Start listening for key traps when open
+    document.addEventListener('keydown', keyHandler);
+} 
 
 function setupCommandPalette() {
     const cmd = document.getElementById('cmd');
@@ -3943,9 +3978,12 @@ function setupCommandPalette() {
     const results = document.getElementById('cmd-results');
     if (!cmd || !input) return;
     
-    // Toggle with Ctrl+K
+    // Toggle with Ctrl+K (but don't intercept when typing in inputs)
     document.addEventListener('keydown', (e) => {
+        const activeTag = document.activeElement?.tagName;
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            // If user is typing in an input / textarea / contentEditable, let that take precedence
+            if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
             e.preventDefault();
             cmd.classList.toggle('active');
             if (cmd.classList.contains('active')) input.focus();
@@ -3980,7 +4018,8 @@ function setupCommandPalette() {
         
         results.querySelectorAll('.cmd-item').forEach(btn => {
             btn.addEventListener('click', () => {
-                navigate(btn.dataset.page);
+                // Prefer any host-provided navigate (test hooks) but fall back to internal navigate
+                (window.navigate || navigate)(btn.dataset.page);
                 cmd.classList.remove('active');
                 input.value = '';
             });
@@ -4587,13 +4626,156 @@ function renderExport() {
 
 function setupGlobalSearch() {
     const searchInput = document.getElementById('search-input');
+    const resultsEl = document.getElementById('search-results');
+    const clearBtn = document.getElementById('search-clear');
+    const kbdEl = document.getElementById('search-kbd');
     if (!searchInput) return;
-    
-    searchInput.addEventListener('focus', () => {
-        document.getElementById('cmd')?.classList.add('active');
-        document.getElementById('cmd-input')?.focus();
+
+    // Platform-aware shortcut label
+    try {
+        const isMac = /Mac|iPhone|iPad|MacIntel/.test(navigator.platform || '');
+        kbdEl && (kbdEl.textContent = isMac ? '⌘K' : 'Ctrl+K');
+    } catch (e) { /* ignore */ }
+
+    // Helper: debounce
+    function debounce(fn, wait = 180) {
+        let t;
+        return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
+    }
+
+    let selectedIndex = -1;
+
+    // Render results: search NAV_ITEMS and history
+    function renderResults(query) {
+        const q = (query || '').trim().toLowerCase();
+        const navMatches = [];
+        NAV_ITEMS.forEach(section => section.items.forEach(item => navMatches.push({ type: 'nav', id: item.id, label: item.label, icon: item.icon })));
+
+        const historyMatches = (state.history || []).map(h => ({ type: 'history', id: h.id || '', label: h.claim || h.title || 'Recent', meta: h.date ? new Date(h.date).toLocaleString() : '' }));
+
+        const navFiltered = !q ? navMatches.slice(0, 6) : navMatches.filter(n => n.label.toLowerCase().includes(q) || n.id.includes(q));
+        const histFiltered = !q ? historyMatches.slice(0, 6) : historyMatches.filter(h => h.label.toLowerCase().includes(q));
+
+        const items = [...navFiltered.map(i => ({...i, source: 'nav'})), ...histFiltered.map(i => ({...i, source: 'history'}))].slice(0, 10);
+
+        if (!items.length) {
+            resultsEl.innerHTML = `<div class="search-empty">No results</div>`;
+            resultsEl.classList.remove('hidden');
+            selectedIndex = -1;
+            return;
+        }
+
+        resultsEl.innerHTML = items.map((it, idx) => `
+            <div id="search-item-${idx}" class="search-item" data-index="${idx}" data-type="${it.type}" data-id="${it.id}">
+                <div class="search-icon">${ICONS[it.icon] || ''}</div>
+                <div class="search-body">
+                    <div class="search-title">${it.label}</div>
+                    ${it.meta ? `<div class="search-meta">${it.meta}</div>` : ''}
+                </div>
+            </div>
+        `).join('');
+        resultsEl.classList.remove('hidden');
+        selectedIndex = -1;
+
+        // Wire up click handlers
+        resultsEl.querySelectorAll('.search-item').forEach(el => el.addEventListener('click', () => {
+            const type = el.dataset.type;
+            const id = el.dataset.id;
+            if (type === 'nav' && id) {
+                navigate(id);
+            } else if (type === 'history') {
+                navigate('history');
+            }
+            searchInput.value = '';
+            clearBtn?.classList.add('hidden');
+            resultsEl.classList.add('hidden');
+            selectedIndex = -1;
+        }));
+    }
+
+    function updateSelection(deltaOrIndex) {
+        const items = resultsEl.querySelectorAll('.search-item');
+        if (!items.length) return;
+        if (typeof deltaOrIndex === 'number' && deltaOrIndex >= 0 && deltaOrIndex < items.length) {
+            selectedIndex = deltaOrIndex;
+        } else {
+            selectedIndex = Math.max(0, Math.min(items.length - 1, (selectedIndex + deltaOrIndex)));
+        }
+        items.forEach((it, i) => it.classList.toggle('selected', i === selectedIndex));
+        const active = items[selectedIndex];
+        if (active) {
+            resultsEl.setAttribute('aria-activedescendant', active.id);
+            if (typeof active.scrollIntoView === 'function') {
+                active.scrollIntoView({ block: 'nearest' });
+            }
+        } else {
+            resultsEl.removeAttribute('aria-activedescendant');
+        }
+    }
+
+    const onInput = debounce(() => {
+        const q = searchInput.value.trim();
+        if (!q) {
+            // Show default suggestions when empty, but hide the clear button
+            clearBtn?.classList.add('hidden');
+            renderResults('');
+            return;
+        }
+        clearBtn?.classList.remove('hidden');
+        renderResults(q);
+    }, 140);
+
+    searchInput.addEventListener('input', onInput);
+
+    // Keyboard nav (arrow keys + enter)
+    searchInput.addEventListener('keydown', (e) => {
+        const items = resultsEl.querySelectorAll('.search-item');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); updateSelection( (selectedIndex + 1) < items.length ? (selectedIndex + 1) : 0 ); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); updateSelection( (selectedIndex - 1) >= 0 ? (selectedIndex - 1) : (items.length - 1) ); }
+        else if (e.key === 'Enter') {
+            if (selectedIndex >= 0) {
+                items[selectedIndex].click();
+            } else if (items.length > 0) {
+                items[0].click();
+            }
+        } else if (e.key === 'Escape') {
+            resultsEl.classList.add('hidden');
+        }
     });
-}
+
+    // Clear button
+    clearBtn?.addEventListener('click', () => {
+        searchInput.value = '';
+        clearBtn.classList.add('hidden');
+        resultsEl.classList.add('hidden');
+        searchInput.focus();
+        selectedIndex = -1;
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+            renderResults('');
+        }
+        if (e.key === 'Escape') {
+            if (resultsEl) resultsEl.classList.add('hidden');
+            // keep ESC from closing command palette accidentally
+        }
+    });
+
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+        if (!document.getElementById('global-search')?.contains(e.target)) {
+            resultsEl.classList.add('hidden');
+            selectedIndex = -1;
+        }
+    });
+} 
+
 
 async function checkAPIStatus() {
     const statusEl = document.getElementById('api-status');
@@ -4638,5 +4820,8 @@ async function checkAPIStatus() {
 
 // ===== CLOSE IIFE AND START APP =====
 document.addEventListener('DOMContentLoaded', init);
+
+// Expose helper functions for lightweight tests
+window.__verityTest = { setupGlobalSearch, setupCommandPalette, setupAuth };
 
 })();

@@ -319,7 +319,7 @@
             color: white;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 0.85rem;
-            outline: none;
+            /* Keep native outline for accessibility; :focus style applies a visible box-shadow */
             transition: all 0.2s ease;
         }
 
@@ -700,7 +700,8 @@
             }
         });
 
-        console.log('✓ Verity Desktop Chatbot loaded');
+        const log = require('electron-log');
+        log.info('✓ Verity Desktop Chatbot loaded');
     }
 
     // Initialize when DOM is ready

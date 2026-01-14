@@ -25,15 +25,15 @@ async function checkApiHealth() {
             if (response.ok) {
                 API_BASE = url;
                 apiAvailable = true;
-                console.log(`✅ API available at ${url}`);
+                (window.verityLogger || console).info(`✅ API available at ${url}`);
                 return true;
             }
         } catch (e) {
-            console.log(`❌ API not available at ${url}`);
+            (window.verityLogger || console).warn(`❌ API not available at ${url}`);
         }
     }
     apiAvailable = false;
-    console.log('⚠️ Using fallback client-side analysis');
+    (window.verityLogger || console).warn('⚠️ Using fallback client-side analysis');
     return false;
 }
 
@@ -297,7 +297,7 @@ async function callVerityAPI(endpoint, content) {
     
     // Use fallback
     if (FallbackAnalysis[toolName]) {
-        console.log(`Using fallback analysis for ${toolName}`);
+        (window.verityLogger || console).warn(`Using fallback analysis for ${toolName}`);
         return FallbackAnalysis[toolName](content);
     }
     

@@ -388,4 +388,4 @@ function removeAllVerityElements() {
 }
 
 // Log when content script loads
-console.log('Verity content script loaded');
+(this.verityLogger || console).info('Verity content script loaded');
