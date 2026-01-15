@@ -10,13 +10,13 @@ from dotenv import load_dotenv
 # Load local env
 load_dotenv('../.env')
 
-API_BASE = "http://localhost:8000"
+API_BASE = os.getenv('API_BASE', 'http://localhost:8000')  # allow overriding for local servers on other ports (e.g., http://localhost:8001)
 SUPABASE_URL = "https://zxgydzavblgetojqdtir.supabase.co"
 SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4Z3lkemF2YmxnZXRvanFkdGlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3OTk1NTgsImV4cCI6MjA4MjM3NTU1OH0.AVuUK2rFrbjbU5fFqKPKdziaB-jNVaqpdjS2ANPMHYQ"
 
 
 def test_verify():
-    print('\n[VERIFY] Checking /verify endpoint...')
+    print(f'\n[VERIFY] Checking /verify endpoint at {API_BASE}...')
     try:
         r = requests.post(urljoin(API_BASE, '/verify'), json={'claim': 'The sky is blue.'}, timeout=60)
         if r.status_code == 200 and 'verdict' in r.json():
