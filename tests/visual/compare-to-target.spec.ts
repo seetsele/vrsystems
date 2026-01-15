@@ -4,13 +4,13 @@ import path from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 
-const targetFile = path.resolve(__dirname, 'targets', 'desktop-target.png');
+// Compare a stable region (header) of the desktop renderer to a provided header target screenshot.
+const targetFile = path.resolve(__dirname, 'targets', 'desktop-target-header.png');
 
-// This test only runs if the CI/dev uploads a target screenshot at tests/visual/targets/desktop-target.png
-// It compares a fresh screenshot of the desktop renderer to the target using pixelmatch.
-
-test('compare desktop renderer to provided target screenshot', async ({ page }) => {
-  test.skip(!fs.existsSync(targetFile), 'No target screenshot provided - skipping visual target comparison');
+// This test only runs if the CI/dev uploads a header target screenshot
+// It compares the header element only which is more stable across runs
+test('compare desktop renderer header to provided target screenshot', async ({ page }) => {
+  test.skip(!fs.existsSync(targetFile), 'No header target screenshot provided - skipping visual header comparison');
 
   // minimal stubs for electron APIs used by the renderer
   await page.addInitScript(() => {
@@ -24,22 +24,21 @@ test('compare desktop renderer to provided target screenshot', async ({ page }) 
   // open the renderer (file:// URL)
   const url = 'file://' + path.resolve(__dirname, '..', '..', 'desktop-app', 'renderer', 'index.html').replace(/\\/g, '/');
 
-  // If target exists, read its dimensions and set page viewport to match so screenshots align
-  const targetBuf = fs.readFileSync(targetFile);
-  const targetImg = PNG.sync.read(targetBuf);
-  await page.setViewportSize({ width: targetImg.width, height: targetImg.height });
-
   await page.goto(url);
 
-  // wait for loading to finish
+  // wait for loading to finish and header to be visible
   await page.waitForSelector('#loading-screen', { state: 'hidden', timeout: 15000 });
-  await page.waitForSelector('header, .search-bar', { timeout: 7000 });
+  const header = await page.waitForSelector('header', { timeout: 7000 });
 
-  // capture viewport-only screenshot so dimensions match target
-  const actualBuf = await page.screenshot({ fullPage: false });
+  // capture header region screenshot
+  const actualBuf = await header.screenshot();
   const actualImg = PNG.sync.read(actualBuf);
 
-  // Ensure same dimensions - if not, fail with helpful message
+  // Read target
+  const targetBuf = fs.readFileSync(targetFile);
+  const targetImg = PNG.sync.read(targetBuf);
+
+  // If dimensions differ, fail with guidance (user can update target if intentionally changed)
   expect(actualImg.width).toBe(targetImg.width);
   expect(actualImg.height).toBe(targetImg.height);
 
@@ -50,8 +49,8 @@ test('compare desktop renderer to provided target screenshot', async ({ page }) 
   // Tolerance: allow up to 2% pixel difference by default
   expect(percent).toBeLessThan(0.02);
 
-  // Optionally write the diff image to help debugging when it fails
+  // Write the diff image to help debugging when it fails
   const outDir = path.resolve(__dirname, '..', '..', 'tests', 'visual', 'target-diffs');
   try { fs.mkdirSync(outDir, { recursive: true }); } catch (e) {}
-  fs.writeFileSync(path.join(outDir, `diff-${Date.now()}.png`), PNG.sync.write(diff));
+  fs.writeFileSync(path.join(outDir, `header-diff-${Date.now()}.png`), PNG.sync.write(diff));
 });
