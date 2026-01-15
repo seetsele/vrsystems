@@ -5,31 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verity Systems - Exhaustive Test Suite</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/verity-theme.css" />
+    <link rel="stylesheet" href="assets/css/verity-theme.css" />
     <style>
       /* minor overrides specific to test suite */
       .run-btn { background: linear-gradient(135deg, var(--accent-2), var(--accent)); }
-      .test-item { background: linear-gradient(180deg,var(--panel),#0b1220); border: 1px solid rgba(255,255,255,0.03); }
+      .test-item { padding: 0.8rem; border-radius: 8px; }
+      .test-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--gap); margin-top: 1rem; }
+      .test-item .category { font-size: 0.85rem; color: var(--muted); font-weight:700 }
+      .test-item .claim { margin-top: 0.4rem; color: #dbeafe }
+      .test-item .expected { margin-top: 0.5rem; color: var(--muted) }
+      .test-item .result { margin-top: 0.6rem; font-weight:700 }
+      .test-item.pass { border-left: 4px solid var(--success) }
+      .test-item.fail { border-left: 4px solid var(--danger) }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Verity Systems - Exhaustive Test Suite</h1>
-        <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem; flex-wrap:wrap;">
-            <button class="run-btn" id="runAllBtn" onclick="runAllTests()">Run All Tests</button>
-            <div style="display:flex; gap:0.5rem; align-items:center;">
-                <input id="manualClaim" placeholder="Enter a custom claim to test" style="min-width:420px; padding:0.6rem; border-radius:0.5rem; border:1px solid #334155; background:#0b1220; color:#e2e8f0;" />
-                <button class="run-btn" id="runManualBtn" onclick="runManualTest()" style="padding:0.55rem 1rem; background:linear-gradient(135deg,#06b6d4,#3b82f6);">Run Manual</button>
-            </div>
-            <div style="margin-left:auto; display:flex; gap:0.5rem;">
-                <button class="run-btn" id="rateLimitBtn" onclick="runRateLimitTest()" style="padding:0.55rem 1rem; background:linear-gradient(135deg,#f97316,#f43f5e);">Run Rate Limit Test</button>
-                <button class="run-btn" id="checkProvidersBtn" onclick="checkProvidersHealth()" style="padding:0.55rem 1rem; background:linear-gradient(135deg,#10b981,#06b6d4);">Check Providers</button>
-            </div>
+  <div class="container">
+    <div class="card header-card">
+      <div>
+        <h1 style="margin:0">Verity Systems - Exhaustive Test Suite</h1>
+        <div class="muted">Automated and manual verification designed for exhaustive coverage</div>
+      </div>
+      <div style="display:flex; gap:0.6rem; align-items:center;">
+        <div class="search" style="min-width:360px;">
+          <span class="icon">🔎</span>
+          <input id="manualClaim" placeholder="Enter a custom claim to test" />
         </div>
-        <div id="manualResult" style="margin-bottom:1rem; color:#e2e8f0;"></div>
-        <div class="test-list" id="testList"></div>
-        <div class="summary" id="summary" style="display:none;"></div>
+        <button class="btn" id="runAllBtn" onclick="runAllTests()">Run All</button>
+        <button class="small-btn" id="runManualBtn" onclick="runManualTest()">Run Manual</button>
+      </div>
     </div>
+
+    <div id="manualResult" style="margin-top:1rem;"></div>
+
+    <div class="test-list" id="testList"></div>
+
+    <div class="summary" id="summary" style="display:none;"></div>
+  </div>
     <script src="test-suite.js"></script>
 </body>
 </html>

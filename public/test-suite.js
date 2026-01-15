@@ -67,9 +67,18 @@ function renderTests() {
     testList.innerHTML = '';
     TEST_CLAIMS.forEach(tc => {
         const div = document.createElement('div');
-        div.className = 'test-item';
+        div.className = 'card test-item';
         div.id = `test-${tc.id}`;
-        div.innerHTML = `<div class="category">${tc.category}</div><div class="claim">${tc.claim}</div><div class="expected">Expected: <b>${tc.expected.toUpperCase()}</b></div><div class="result" id="result-${tc.id}"></div><div class="error" id="error-${tc.id}"></div>`;
+        div.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+            <div class="category">${tc.category}</div>
+            <div style="display:flex;gap:0.5rem;align-items:center;"><button class="small-btn" onclick="runSingleTest(${tc.id})">Run</button></div>
+          </div>
+          <div class="claim">${tc.claim}</div>
+          <div class="expected">Expected: <b>${tc.expected.toUpperCase()}</b></div>
+          <div class="result" id="result-${tc.id}"></div>
+          <div class="error muted" id="error-${tc.id}"></div>
+        `;
         testList.appendChild(div);
     });
 }
@@ -135,6 +144,39 @@ async function runManualTest() {
         out.innerHTML = `<strong>Verdict:</strong> ${data.verdict} <strong>Confidence:</strong> ${Math.round((data.confidence||0)*100)}% <br/><strong>Sources:</strong> ${ (data.sources || []).slice(0,5).map(s=>s.url||s).join(', ') }`;
     } catch (e) {
         out.textContent = `Error: ${e.message}`;
+    }
+}
+
+// Run a single test card
+async function runSingleTest(id) {
+    const tc = TEST_CLAIMS.find(t => t.id === id);
+    if (!tc) return;
+    const resultDiv = document.getElementById(`result-${id}`);
+    const item = document.getElementById(`test-${id}`);
+    resultDiv.textContent = 'Running...';
+    item.classList.remove('pass','fail');
+    try {
+        const res = await fetch(`${API_URL}/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ claim: tc.claim, options: { include_sources: true } })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        let verdict = (data.verdict || '').toLowerCase();
+        if (verdict === 'mostly_true') verdict = 'true';
+        if (verdict === 'mostly_false') verdict = 'false';
+        const correct = (tc.expected === verdict) || (tc.expected === 'mixed' && (verdict === 'mixed' || verdict === 'unverifiable')) || (tc.expected === 'unverifiable' && verdict === 'unverifiable');
+        if (correct) {
+            resultDiv.textContent = `✅ ${verdict.toUpperCase()} (${Math.round((data.confidence||0)*100)}%)`;
+            item.classList.add('pass');
+        } else {
+            resultDiv.textContent = `❌ ${verdict.toUpperCase()} (${Math.round((data.confidence||0)*100)}%)`;
+            item.classList.add('fail');
+        }
+    } catch (e) {
+        resultDiv.textContent = `Error: ${e.message}`;
+        item.classList.add('fail');
     }
 }
 
