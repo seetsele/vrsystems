@@ -5675,7 +5675,7 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
     color: var(--text-primary);
     cursor: pointer;
 }
-..search-results .search-item:hover { background: rgba(255,255,255,0.02); }
+.search-results .search-item:hover { background: rgba(255,255,255,0.02); }
 .search-results .search-item.selected { background: linear-gradient(90deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02)); outline: none; }
 .search-results .search-item .search-meta { color: var(--text-muted); font-size: 12px; }
 .search-results .search-empty { padding: 14px; color: var(--text-muted); text-align: center; }

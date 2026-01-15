@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white)](https://github.com/features/actions)
 
-[![CI Status](https://github.com/tests/test_update_readme_badge.py/actions/workflows/ci.yml/badge.svg)](https://github.com/seetsele/vrsystems/actions/workflows/ci.yml) <!-- Replace <owner>/<repo> if needed -->
+[![CI Status](https://github.com/-q/actions/workflows/ci.yml/badge.svg)](https://github.com/seetsele/vrsystems/actions/workflows/ci.yml) <!-- Replace <owner>/<repo> if needed -->
 
 **?? Enterprise AI-Powered Fact-Checking Platform**
 

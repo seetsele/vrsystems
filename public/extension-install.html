@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Install Verity Extension</title>
+  <link rel="stylesheet" href="/assets/css/verity-theme.css" />
+  <style>body{font-family:Inter,system-ui;background:var(--bg-primary);color:var(--text-primary);padding:2rem}.card{max-width:760px;margin:2rem auto;padding:1.5rem;border-radius:12px;background:var(--bg-card);border:1px solid rgba(255,255,255,0.03)}.btn{background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:0.65rem 1rem;border-radius:8px;color:#000;font-weight:700;border:none;cursor:pointer}</style>
+</head>
+<body>
+  <main class="card">
+    <h1>Install the Verity Chrome Extension</h1>
+    <p>The Chrome extension cannot be installed silently from a web page for security reasons. Follow these steps to install it locally or use enterprise deployment for managed installs.</p>
+
+    <h3>Local developer install (quick)</h3>
+    <ol>
+      <li>Open the <strong>Extensions</strong> page in Chrome: <button class="btn" id="openExt">Open chrome://extensions</button></li>
+      <li>Enable <strong>Developer Mode</strong> (top-right).</li>
+      <li>Click <strong>Load unpacked</strong>, then select the extension source directory: <code>browser-extension/chrome</code>.</li>
+      <li>The extension will load and you can pin it to the toolbar.</li>
+    </ol>
+
+    <h3>Enterprise / managed install (recommended for teams)</h3>
+    <p>Use Chrome Browser Cloud Management or an enterprise policy to deploy the extension silently across machines. See your browser vendor documentation for "Extension management" or contact your IT admin for help.</p>
+
+    <h3>Need help?</h3>
+    <p>If you'd like, I can open the Extensions page for you and highlight the source dir; let me know and I will proceed.</p>
+    <div style="margin-top: 1rem;"><button class="btn" id="openHelp">Open Extensions</button></div>
+  </main>
+
+  <script>
+    document.getElementById('openExt').addEventListener('click', ()=>{
+      window.open('chrome://extensions/');
+    });
+    document.getElementById('openHelp').addEventListener('click', ()=>{
+      window.open('chrome://extensions/');
+    });
+  </script>
+</body>
+</html>

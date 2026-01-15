@@ -1,0 +1,202 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e5]
+      - generic [ref=e8]: verity.
+    - search "Global search" [ref=e10]:
+      - img [ref=e11]
+      - textbox "Search anything... (Ctrl/Cmd+K)" [ref=e14]
+      - generic [ref=e15]: Ctrl+K
+    - generic [ref=e16]:
+      - button "3" [ref=e17] [cursor=pointer]:
+        - img [ref=e18]
+        - generic [ref=e20]: "3"
+      - button "Sync Status" [ref=e21] [cursor=pointer]:
+        - img [ref=e22]
+      - button "Sign In" [ref=e25] [cursor=pointer]
+      - generic [ref=e26]:
+        - button [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+        - button [ref=e30] [cursor=pointer]:
+          - img [ref=e31]
+        - button [ref=e33] [cursor=pointer]:
+          - img [ref=e34]
+  - generic [ref=e36]:
+    - complementary [ref=e37]:
+      - navigation [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]: Overview
+          - button "Dashboard" [ref=e41] [cursor=pointer]:
+            - img [ref=e43]
+            - generic [ref=e48]: Dashboard
+          - button "Verify Content AI" [ref=e49] [cursor=pointer]:
+            - img [ref=e51]
+            - generic [ref=e54]: Verify Content
+            - generic [ref=e55]: AI
+          - button "History" [ref=e56] [cursor=pointer]:
+            - img [ref=e58]
+            - generic [ref=e61]: History
+          - button "Analytics NEW" [ref=e62] [cursor=pointer]:
+            - img [ref=e64]
+            - generic [ref=e65]: Analytics
+            - generic [ref=e66]: NEW
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - text: AI Tools
+            - generic [ref=e69]: PRO+
+          - button "Source Checker" [ref=e70]:
+            - img [ref=e72]
+            - generic [ref=e75]: Source Checker
+            - img [ref=e77]
+          - button "Content Moderator" [ref=e80]:
+            - img [ref=e82]
+            - generic [ref=e85]: Content Moderator
+            - img [ref=e87]
+          - button "Research Assistant" [ref=e90]:
+            - img [ref=e92]
+            - generic [ref=e95]: Research Assistant
+            - img [ref=e97]
+          - button "Social Monitor" [ref=e100]:
+            - img [ref=e102]
+            - generic [ref=e105]: Social Monitor
+            - img [ref=e107]
+          - button "Stats Validator" [ref=e110]:
+            - img [ref=e112]
+            - generic [ref=e113]: Stats Validator
+            - img [ref=e115]
+          - button "Misinfo Map" [ref=e118]:
+            - img [ref=e120]
+            - generic [ref=e122]: Misinfo Map
+            - img [ref=e124]
+          - button "Realtime Stream" [ref=e127]:
+            - img [ref=e129]
+            - generic [ref=e131]: Realtime Stream
+            - img [ref=e133]
+        - generic [ref=e136]:
+          - generic [ref=e137]: Developer
+          - button "API Tester" [ref=e138] [cursor=pointer]:
+            - img [ref=e140]
+            - generic [ref=e142]: API Tester
+          - button "API Keys" [ref=e143] [cursor=pointer]:
+            - img [ref=e145]
+            - generic [ref=e147]: API Keys
+          - button "Webhooks NEW" [ref=e148] [cursor=pointer]:
+            - img [ref=e150]
+            - generic [ref=e153]: Webhooks
+            - generic [ref=e154]: NEW
+        - generic [ref=e155]:
+          - generic [ref=e156]: Reports
+          - button "Export Reports NEW" [ref=e157] [cursor=pointer]:
+            - img [ref=e159]
+            - generic [ref=e162]: Export Reports
+            - generic [ref=e163]: NEW
+        - generic [ref=e164]:
+          - generic [ref=e165]: Account
+          - button "Billing & Plans" [ref=e166] [cursor=pointer]:
+            - img [ref=e168]
+            - generic [ref=e170]: Billing & Plans
+          - button "Settings" [ref=e171] [cursor=pointer]:
+            - img [ref=e173]
+            - generic [ref=e176]: Settings
+      - generic [ref=e177]:
+        - generic [ref=e180]: API v6 Online
+        - generic [ref=e181]: v3.0.0 Enterprise
+    - main [ref=e182]:
+      - generic [ref=e183]:
+        - heading "Welcome back" [level=1] [ref=e184]
+        - paragraph [ref=e185]: Here's what's happening with your fact-checking today.
+      - generic [ref=e186]:
+        - generic [ref=e187]:
+          - generic [ref=e188]:
+            - img [ref=e190]
+            - generic [ref=e192]: +12%
+          - generic [ref=e193]: "0"
+          - generic [ref=e194]: Verified Claims
+        - generic [ref=e195]:
+          - generic [ref=e196]:
+            - img [ref=e198]
+            - generic [ref=e201]: "-5%"
+          - generic [ref=e202]: "0"
+          - generic [ref=e203]: Flagged Content
+        - generic [ref=e204]:
+          - generic [ref=e205]:
+            - img [ref=e207]
+            - generic [ref=e208]: +3%
+          - generic [ref=e209]: 0%
+          - generic [ref=e210]: Accuracy Score
+        - generic [ref=e211]:
+          - img [ref=e214]
+          - generic [ref=e216]: Offline
+          - generic [ref=e217]: API Status
+      - generic [ref=e218]:
+        - generic [ref=e219]:
+          - generic [ref=e220]:
+            - heading "Quick Verify" [level=3] [ref=e221]
+            - generic [ref=e222]: AI Powered
+          - textbox "Paste any claim, news article, or social media post to fact-check instantly..." [ref=e223]
+          - button "Verify Now" [ref=e225] [cursor=pointer]:
+            - img [ref=e226]
+            - text: Verify Now
+        - generic [ref=e228]:
+          - heading "Quick Actions" [level=3] [ref=e230]
+          - generic [ref=e231]:
+            - button "Verify" [ref=e232] [cursor=pointer]:
+              - img [ref=e234]
+              - generic [ref=e237]: Verify
+            - button "Sources" [ref=e238] [cursor=pointer]:
+              - img [ref=e240]
+              - generic [ref=e243]: Sources
+            - button "Moderate" [ref=e244] [cursor=pointer]:
+              - img [ref=e246]
+              - generic [ref=e249]: Moderate
+            - button "Research" [ref=e250] [cursor=pointer]:
+              - img [ref=e252]
+              - generic [ref=e255]: Research
+            - button "Live Feed" [ref=e256] [cursor=pointer]:
+              - img [ref=e258]
+              - generic [ref=e260]: Live Feed
+            - button "API" [ref=e261] [cursor=pointer]:
+              - img [ref=e263]
+              - generic [ref=e265]: API
+      - generic [ref=e266]:
+        - generic [ref=e267]:
+          - generic [ref=e268]:
+            - heading "Weekly Activity" [level=3] [ref=e269]
+            - combobox [ref=e270] [cursor=pointer]:
+              - option "This Week" [selected]
+              - option "Last Week"
+              - option "This Month"
+          - generic [ref=e271]:
+            - generic [ref=e274]: M
+            - generic [ref=e277]: T
+            - generic [ref=e280]: W
+            - generic [ref=e283]: T
+            - generic [ref=e286]: F
+            - generic [ref=e289]: S
+            - generic [ref=e292]: S
+        - generic [ref=e293]:
+          - generic [ref=e294]:
+            - heading "Recent Activity" [level=3] [ref=e295]
+            - button "View All" [ref=e296] [cursor=pointer]
+          - generic [ref=e297]:
+            - paragraph [ref=e298]: No recent activity
+            - button "Start Verifying" [ref=e299] [cursor=pointer]
+      - generic [ref=e300]:
+        - generic [ref=e301] [cursor=pointer]:
+          - img [ref=e303]
+          - generic [ref=e306]:
+            - heading "AI-Powered Analysis" [level=4] [ref=e307]
+            - paragraph [ref=e308]: GPT-4, Claude & custom models working together
+          - img [ref=e310]
+        - generic [ref=e312] [cursor=pointer]:
+          - img [ref=e314]
+          - generic [ref=e318]:
+            - heading "50M+ Verified Facts" [level=4] [ref=e319]
+            - paragraph [ref=e320]: Cross-reference with our knowledge base
+          - img [ref=e322]
+  - button "Open chat" [ref=e324] [cursor=pointer]:
+    - img [ref=e325]
+```

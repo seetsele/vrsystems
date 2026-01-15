@@ -3306,7 +3306,9 @@ async def run_internal_tests(request: Request):
     import subprocess, shlex, asyncio
     cmd = [sys.executable, "-m", "pytest", "-q", "-k", " or ".join([p.split('/')[-1].replace('.py','') for p in selected])]
     try:
-        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=120)
+        # Run pytest from the repository root to ensure consistent collection environment
+        repo_root = Path(__file__).resolve().parents[1]
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=str(repo_root), timeout=300)
         out = proc.stdout.decode(errors='replace')
         # Persist test run output to a log for later inspection
         try:
