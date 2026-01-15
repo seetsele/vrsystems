@@ -31,8 +31,8 @@ jobs:
           echo "Downloading target from $TARGET_SCREENSHOT_URL"
           curl -fsSL "$TARGET_SCREENSHOT_URL" -o tests/visual/targets/desktop-target.png || true
 
-      - name: Run visual tests (baseline=false)
-        run: npx playwright test tests/visual --reporter=list || true
+      - name: Run Playwright visual tests (headless)
+        run: npx playwright test --project=chromium --reporter=list || true
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
@@ -46,9 +46,9 @@ jobs:
           name: visual-snapshots
           path: tests/visual/**/snapshots/**
 
-      - name: Upload visual diffs
+      - name: Upload visual diffs and targets
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: visual-diffs
-          path: tests/visual/target-diffs/** || true
+          path: tests/visual/target-diffs/**, tests/visual/targets/** || true
