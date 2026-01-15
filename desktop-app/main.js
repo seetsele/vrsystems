@@ -538,6 +538,11 @@ function setupIPC() {
         store.set('recentVerifications', recent.filter(r => r.id !== id));
         return true;
     });
+
+    // Small utility: open DevTools on renderer request
+    ipcMain.on('open-devtools', () => {
+        try { mainWindow?.webContents.openDevTools({ mode: 'detach' }); } catch (e) { log.warn('open-devtools failed', e); }
+    });
     
     // API
     ipcMain.handle('api:getEndpoint', () => store.get('apiEndpoint'));
