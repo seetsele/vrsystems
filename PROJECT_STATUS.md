@@ -18,7 +18,7 @@ Verity Systems is a fully functional AI-powered fact-checking platform deployed 
 
 ### Verification Engine
 - **40+ AI Models** - Groq, OpenAI, Anthropic, Mistral, DeepSeek, and more
-- **9-Point Verification System** - Multi-stage evidence synthesis
+- **21-Point Verification System** - Multi-stage evidence synthesis
 - **Real-Time Processing** - Parallel verification across providers
 - **Cross-Validation** - 3x redundancy for accuracy
 

@@ -14,10 +14,10 @@ const log = require('electron-log');
 const CONFIG = {
     apiEndpoint: 'https://veritysystems-production.up.railway.app',  // Production API (Railway)
     localEndpoint: 'http://localhost:8000',     // Local development
-    version: '9.0.0',
+    version: '21.0.0',
     build: 'Ultimate',
     useLocal: false,  // Set to true for local development
-    ninePointSystem: true  // Enable 9-Point Triple Verification
+    ninePointSystem: true  // Enable 21-Point Verification (flag kept for backwards compatibility)
 };
 
 // ===== APPLICATION STATE =====
@@ -180,6 +180,16 @@ async function init() {
         setTimeout(() => {
             document.getElementById('loading-screen')?.classList.add('hidden');
         }, 800);
+
+        // Watchdog: If the app is still on the loading screen after a while, show diagnostic overlay
+        setTimeout(() => {
+            const loadingVisible = !!document.getElementById('loading-screen') && !document.getElementById('loading-screen').classList.contains('hidden');
+            const hasFatal = !!document.getElementById('fatal-overlay');
+            if (loadingVisible && !hasFatal) {
+                showFatalError('Initialization is taking longer than expected. You can open DevTools or dump logs to diagnose.');
+                document.getElementById('loading-screen')?.classList.add('hidden');
+            }
+        }, 8000);
     }
 }
 
@@ -206,6 +216,7 @@ function showFatalError(message) {
                     <div id="fatal-message" style="margin-bottom:1rem;font-size:0.95rem;color:#cbd5e1">${message}</div>
                     <div style="display:flex;gap:0.5rem;justify-content:flex-end">
                         <button class="small-btn" id="open-dev">Open DevTools</button>
+                        <button class="small-btn" id="dump-logs">Dump Logs</button>
                         <button class="small-btn" id="reload-app">Reload</button>
                     </div>
                 </div>
@@ -214,6 +225,15 @@ function showFatalError(message) {
         document.body.appendChild(overlay);
         document.getElementById('open-dev')?.addEventListener('click', () => {
             try { require('electron').ipcRenderer.send('open-devtools'); } catch (e) { console.warn('open-devtools not available', e); }
+        });
+        document.getElementById('dump-logs')?.addEventListener('click', async () => {
+            try {
+                const path = await window.verity.diagnostics.dumpLogs();
+                window.verity.clipboard.write(path);
+                toast(`Logs saved to ${path} (path copied to clipboard)`, 'info');
+            } catch (e) {
+                toast('Failed to dump logs: ' + (e.message || e), 'error');
+            }
         });
         document.getElementById('reload-app')?.addEventListener('click', () => location.reload());
     } else {
@@ -420,7 +440,7 @@ function attachPageHandlers(page) {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.verify-mode-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                    toast(`Switched to ${tab.dataset.mode === 'quick' ? 'Quick' : 'Full 9-Point'} mode`, 'info');
+                    toast(`Switched to ${tab.dataset.mode === 'quick' ? 'Quick' : 'Full 21-Point'} mode`, 'info');
                 });
             });
             
@@ -887,7 +907,7 @@ function renderVerify() {
     return `
         <div class="page-header animate-fade-in">
             <h1>${ICONS.verify} Verify Content</h1>
-            <p>AI-powered fact-checking with source analysis, credibility scoring, and 9-Point Triple Verification.</p>
+            <p>AI-powered fact-checking with source analysis, credibility scoring, and 21-Point Verification.</p>
         </div>
 
         <!-- Mode Selector Tabs -->
@@ -903,10 +923,10 @@ function renderVerify() {
             <button class="verify-mode-tab" data-mode="full" id="mode-full">
                 ${ICONS.shield}
                 <span class="mode-info">
-                    <strong>Full 9-Point Verification</strong>
+                    <strong>Full 21-Point Verification</strong>
                     <small>Comprehensive AI analysis</small>
                 </span>
-                <span class="mode-badge pro">9-POINT</span>
+                <span class="mode-badge pro">21-POINT</span>
             </button>
         </div>
 
@@ -1121,14 +1141,14 @@ Example: 'The Great Wall of China is visible from space with the naked eye.'"></
                     </div>
                 </div>
 
-                <!-- 9-Point System Info -->
+                <!-- 21-Point System Info -->
                 <div class="card card-9point">
                     <div class="nine-point-badge">
                         <span class="badge-icon">${ICONS.shield}</span>
-                        <span>9-Point System</span>
+                        <span>21-Point System</span>
                     </div>
                     <p class="nine-point-desc">Our proprietary verification methodology checks claims against 9 distinct validation criteria for maximum accuracy.</p>
-                    <button class="btn btn-ghost btn-sm btn-full" onclick="navigate('9-point-info')">
+                    <button class="btn btn-ghost btn-sm btn-full" onclick="navigate('21-point-info')">
                         Learn More ${ICONS.arrow}
                     </button>
                 </div>

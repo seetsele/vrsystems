@@ -241,14 +241,19 @@ export default function App() {
     JetBrainsMono_500Medium,
   });
 
-  // Show splash while fonts load
-  if (!fontsLoaded || showSplash) {
+  // Show splash initially; proceed to app even if fonts are still loading so the app is visible
+  if (showSplash) {
     return (
       <>
         <StatusBar style="light" />
         <SplashScreen onFinish={() => setShowSplash(false)} />
       </>
     );
+  }
+
+  // If fonts haven't loaded yet, continue rendering the app (fonts will hydrate when available)
+  if (!fontsLoaded) {
+    console.warn('Fonts not loaded yet; continuing to render UI with fallbacks');
   }
 
   return (

@@ -543,6 +543,41 @@ function setupIPC() {
     ipcMain.on('open-devtools', () => {
         try { mainWindow?.webContents.openDevTools({ mode: 'detach' }); } catch (e) { log.warn('open-devtools failed', e); }
     });
+
+    // Dump logs to a temporary file and return the path (used for user diagnostics)
+    ipcMain.handle('dump-logs', async () => {
+        try {
+            const fs = require('fs');
+            const os = require('os');
+            const tmpdir = os.tmpdir();
+            const dest = path.join(tmpdir, `verity-logs-${Date.now()}.txt`);
+
+            // Try known electron-log paths
+            let srcPath = null;
+            try { srcPath = log.transports.file?.file; } catch (e) { /* ignore */ }
+            if (!srcPath && log.transports.file && typeof log.transports.file.getFile === 'function') {
+                try { srcPath = log.transports.file.getFile().path; } catch (e) { /* ignore */ }
+            }
+            if (!srcPath) {
+                const fallback = path.join(app.getPath('userData'), 'logs', 'main.log');
+                if (fs.existsSync(fallback)) srcPath = fallback;
+            }
+
+            if (srcPath && fs.existsSync(srcPath)) {
+                fs.copyFileSync(srcPath, dest);
+            } else {
+                // No log file found - write a small diagnostic dump
+                const dump = `No log file found at expected paths. Current timestamp: ${new Date().toISOString()}\n` +
+                    `Store keys: ${Object.keys(store.store).join(', ')}\n`;
+                fs.writeFileSync(dest, dump, 'utf8');
+            }
+
+            return dest;
+        } catch (e) {
+            log.error('dump-logs error', e);
+            throw e;
+        }
+    });
     
     // API
     ipcMain.handle('api:getEndpoint', () => store.get('apiEndpoint'));

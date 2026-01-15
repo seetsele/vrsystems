@@ -11,7 +11,7 @@
         defaults: {
             siteName: 'Verity Systems',
             title: 'Verity — AI Fact-Checking That Shows Its Work',
-            description: 'AI-powered fact-checking platform with 20+ models and 40+ trusted sources. Verify claims instantly with our 9-point verification system.',
+            description: 'AI-powered fact-checking platform with 20+ models and 40+ trusted sources. Verify claims instantly with our 21-point verification system.',
             image: 'https://veritysystems.app/assets/images/og-image.png',
             url: 'https://veritysystems.app',
             twitterHandle: '@veritysystems',
@@ -107,10 +107,10 @@
                     },
                     {
                         "@type": "Question",
-                        "name": "How does the 9-point verification system work?",
+                        "name": "How does the 21-point verification system work?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "Our 9-point system analyzes claims through source verification, cross-referencing, logical analysis, temporal checks, multi-model consensus, and more to provide comprehensive verification."
+                            "text": "Our 21-point system runs 21 independent checks across 7 pillars — source, time, evidence, consensus, logic, method, and bias — and produces a clear summary and confidence score."
                         }
                     },
                     {
@@ -239,7 +239,7 @@
             const pageMeta = {
                 '/verify.html': {
                     title: 'Verify Claims | Verity',
-                    description: 'Instantly verify any claim with our AI-powered 9-point verification system. Cross-reference 40+ trusted sources.'
+                    description: 'Instantly verify any claim with our AI-powered 21-point verification system. Cross-reference 40+ trusted sources.'
                 },
                 '/pricing.html': {
                     title: 'Pricing | Verity',

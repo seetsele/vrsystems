@@ -152,7 +152,7 @@
                 
                 <div class="hero-stats">
                     <div><div class="stat-v">40+</div><div class="stat-l">AI Models & Sources</div></div>
-                    <div><div class="stat-v">9-Point</div><div class="stat-l">Verification System</div></div>
+                    <div><div class="stat-v">21-Point</div><div class="stat-l">Verification System</div></div>
                     <div><div class="stat-v">Real-Time</div><div class="stat-l">Cross-Validation</div></div>
                 </div>
             </div>
@@ -278,7 +278,7 @@
     </section>
 
     <style>
-        /* 9-Point Section */
+        /* 21-Point Section */
         .nine-pt{padding:100px 2rem;background:linear-gradient(180deg,transparent,rgba(245,158,11,.02),transparent)}
         .nine-pt .container{max-width:1000px;margin:0 auto}
         .steps-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:2rem}
@@ -302,13 +302,13 @@
         .sum-label{font-size:.9rem;color:var(--muted)}
     </style>
 
-    <!-- 9-Point Verification -->
+    <!-- 21-Point Verification -->
     <section class="nine-pt">
         <div class="container">
             <div class="sec-head">
-                <span class="sec-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>9-Point Verification</span>
-                <h2>Triple-Check at Every Level</h2>
-                <p>Each claim passes through 3 verification levels, with 3 independent checks at each level.</p>
+                <span class="sec-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>21-Point Verification</span>
+                <h2>21-Point Verification — 7 Pillars × 3 Checks</h2>
+                <p>Each claim passes through 7 pillars with 3 independent checks per pillar (21 total checks).</p>
             </div>
             
             <div class="steps-grid">
@@ -397,12 +397,12 @@
         .model-chip.gemini{background:rgba(66,133,244,.15);color:#4285f4}
         .model-chip.llama{background:rgba(139,92,246,.15);color:#8b5cf6}
         
-        /* 9-Point Bars */
+        /* 21-Point Bars */
         .result-9pt{margin-bottom:1rem;padding:1rem;background:rgba(0,0,0,.2);border-radius:10px}
         .pt-header{display:flex;justify-content:space-between;margin-bottom:.75rem;font-size:.85rem}
         .pt-header span:first-child{color:var(--muted)}
         .pt-score{font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600}
-        .pt-bars{display:flex;gap:4px}
+        .pt-bars{display:flex;gap:4px;flex-wrap:wrap}
         .pt-bar{flex:1;height:6px;border-radius:3px;background:var(--border);transition:all .3s}
         .pt-bar.passed{background:var(--green)}
         .pt-bar.failed{background:#ef4444}
@@ -446,10 +446,7 @@
         <div class="sec-head">
             <span class="sec-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Try It Now</span>
             <h2>Live Fact-Check Demo</h2>
-            <p>Enter any claim to see Verity in action with our 9-Point verification system.</p>
-        </div>
-        
-        <div class="demo-box">
+            <p>Enter any claim to see Verity in action with our 21-point verification system.</p>
             <div class="demo-head">
                 <div class="demo-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
                 <span class="demo-title">verity-systems • fact-checker v2.0</span>
@@ -472,7 +469,7 @@
                     <div class="loading-text">
                         <span class="load-step active" id="loadStep1">Querying AI models...</span>
                         <span class="load-step" id="loadStep2">Cross-referencing sources...</span>
-                        <span class="load-step" id="loadStep3">Running 9-point verification...</span>
+                        <span class="load-step" id="loadStep3">Running 21-point verification...</span>
                     </div>
                 </div>
                 
@@ -486,7 +483,7 @@
                         <div class="result-timer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="verifyTime">1.2s</span></div>
                     </div>
                     <div class="result-models"><span class="model-label">AI Models:</span><div class="model-chips" id="modelChips"><span class="model-chip gpt">GPT-4o</span><span class="model-chip claude">Claude 4</span><span class="model-chip gemini">Gemini 2.5</span><span class="model-chip llama">Llama 3.3</span></div></div>
-                    <div class="result-9pt"><div class="pt-header"><span>9-Point Verification</span><span class="pt-score" id="ptScore">9/9 passed</span></div><div class="pt-bars" id="ptBars"><div class="pt-bar passed"></div><div class="pt-bar passed"></div><div class="pt-bar passed"></div><div class="pt-bar passed"></div><div class="pt-bar passed"></div><div class="pt-bar passed"></div><div class="pt-bar passed"></div><div class="pt-bar passed"></div><div class="pt-bar passed"></div></div></div>
+                    <div class="result-9pt"><div class="pt-header"><span>21-Point Verification</span><span class="pt-score" id="ptScore">21/21 passed</span></div><div class="pt-bars" id="ptBars"> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> <div class="pt-bar passed"></div> </div></div>
                     <div class="result-sources-detail"><div class="source-row"><span class="src-icon">📚</span><span class="src-name">Academic</span><span class="src-count" id="srcAcademic">234</span></div><div class="source-row"><span class="src-icon">📰</span><span class="src-name">News</span><span class="src-count" id="srcNews">412</span></div><div class="source-row"><span class="src-icon">✅</span><span class="src-name">Fact-Checkers</span><span class="src-count" id="srcFact">89</span></div><div class="source-row"><span class="src-icon">🌐</span><span class="src-name">Wikipedia</span><span class="src-count" id="srcWiki">112</span></div></div>
                     <div class="result-footer"><span class="result-sources">Total: <strong id="totalSources">847</strong> sources</span><a href="verify.html" class="result-link">Full Analysis →</a></div>
                 </div>
@@ -526,7 +523,7 @@
             
             <div class="tech-stats">
                 <div class="tech-stat"><div class="val">40+</div><div class="label">AI Models & Sources</div></div>
-                <div class="tech-stat"><div class="val">9-Point</div><div class="label">Verification System</div></div>
+                <div class="tech-stat"><div class="val">21-Point</div><div class="label">Verification System</div></div>
                 <div class="tech-stat"><div class="val">~10s</div><div class="label">Average Response</div></div>
                 <div class="tech-stat"><div class="val">REST</div><div class="label">API Available</div></div>
             </div>
@@ -637,11 +634,11 @@
         
         // Example claims data
         const claimData = {
-            'The Earth is approximately 4.5 billion years old': { result: 'true', conf: 98.7, sources: 847, academic: 234, news: 412, fact: 89, wiki: 112, points: 9 },
+            'The Earth is approximately 4.5 billion years old': { result: 'true', conf: 98.7, sources: 847, academic: 234, news: 412, fact: 89, wiki: 112, points: 18 },
             'Humans only use 10% of their brain': { result: 'false', conf: 99.2, sources: 634, academic: 312, news: 198, fact: 67, wiki: 57, points: 0 },
-            'Lightning never strikes the same place twice': { result: 'false', conf: 97.8, sources: 412, academic: 156, news: 167, fact: 45, wiki: 44, points: 1 },
-            'Honey never spoils if stored properly': { result: 'true', conf: 96.4, sources: 289, academic: 87, news: 98, fact: 56, wiki: 48, points: 9 },
-            'The Great Wall is visible from space': { result: 'mostly_false', conf: 94.1, sources: 523, academic: 178, news: 234, fact: 67, wiki: 44, points: 3 }
+            'Lightning never strikes the same place twice': { result: 'false', conf: 97.8, sources: 412, academic: 156, news: 167, fact: 45, wiki: 44, points: 2 },
+            'Honey never spoils if stored properly': { result: 'true', conf: 96.4, sources: 289, academic: 87, news: 98, fact: 56, wiki: 48, points: 20 },
+            'The Great Wall is visible from space': { result: 'mostly_false', conf: 94.1, sources: 523, academic: 178, news: 234, fact: 67, wiki: 44, points: 5 }
         };
         
         function updateResult(data) {
@@ -671,13 +668,13 @@
             confidenceScore.textContent = data.conf + '% confidence';
             document.getElementById('verifyTime').textContent = (Math.random() * 1.5 + 0.8).toFixed(1) + 's';
             
-            // Update 9-point bars
-            ptScore.textContent = data.points + '/9 passed';
+            // Update 21-point bars
+            ptScore.textContent = data.points + '/21 passed';
             ptBars.innerHTML = '';
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < 21; i++) {
                 const bar = document.createElement('div');
                 bar.className = 'pt-bar ' + (i < data.points ? 'passed' : 'failed');
-                bar.style.animationDelay = (i * 0.1) + 's';
+                bar.style.animationDelay = (i * 0.05) + 's';
                 ptBars.appendChild(bar);
             }
             

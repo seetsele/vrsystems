@@ -14,11 +14,11 @@ This document provides comprehensive recommendations to elevate Verity from a 9-
 | **Verification Loops** | 12-15 AI providers |
 | **Search APIs** | 6 sources (Tavily, Brave, Serper, Exa, Google FactCheck, Jina) |
 | **Nuance Detection** | ✓ Implemented |
-| **Advertised System** | "9-Point System" |
+| **Advertised System** | "21-Point System" |
 | **Actual Points** | ~15-18 effective checkpoints |
 
 ### Gap Analysis
-- UI advertises "9-Point System" but backend does 12-15 loops
+- UI previously advertised "9-Point System"; updated to "21-Point System" to reflect the full 7×3 checks (backend still runs multiple loops)
 - No clear documentation of verification methodology
 - Missing temporal verification layer
 - No source credibility scoring

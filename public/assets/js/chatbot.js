@@ -10,7 +10,7 @@
     const CHATBOT_CONFIG = {
         apiUrl: 'https://veritysystems-production.up.railway.app',
         botName: 'Verity AI',
-        welcomeMessage: 'Hi! I\'m Verity AI, your fact-checking assistant. I can help you verify claims, answer questions about our platform, or explain how our 9-point verification system works. What would you like to know?',
+        welcomeMessage: 'Hi! I\'m Verity AI, your fact-checking assistant. I can help you verify claims, answer questions about our platform, or explain how our 21-point verification system works. What would you like to know?',
         placeholderText: 'Ask anything or verify a claim...',
         primaryColor: '#f59e0b',
         primaryLight: '#fbbf24',
@@ -609,7 +609,7 @@
         async getResponse(message) {
             const lower = message.toLowerCase();
             if (lower.includes('how') && lower.includes('work')) {
-                return 'Verity uses a 9-point verification system:<br><br>1️⃣ <strong>Data Sources</strong> - Academic databases, news wires<br>2️⃣ <strong>AI Analysis</strong> - 20+ AI models analyze in parallel<br>3️⃣ <strong>Validation</strong> - Cross-model consensus';
+                return 'Verity uses a 21-point verification system (7 pillars × 3 checks):<br><br>1️⃣ <strong>Source Quality</strong> - Primary/authority checks<br>2️⃣ <strong>AI & Consensus</strong> - Multi-model and expert agreement<br>3️⃣ <strong>Validation & Context</strong> - Evidence, timing, method, and bias checks';
             }
             if (lower.includes('ai') && lower.includes('model')) {
                 return '🧠 <strong>OpenAI</strong> - GPT-4<br>🎭 <strong>Anthropic</strong> - Claude 3.5<br>✨ <strong>Google</strong> - Gemini<br>⚡ <strong>Groq</strong> - Fast inference<br>🔍 <strong>Perplexity</strong> - Real-time search';

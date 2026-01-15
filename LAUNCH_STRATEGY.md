@@ -44,7 +44,7 @@
 
 ### Hacker News
 - **Show HN** post for launch - high visibility with tech crowd
-- Focus on technical innovation (multi-model consensus, 9-point system)
+- Focus on technical innovation (multi-model consensus, 21-point system)
 - Prepare for critical feedback
 
 ### Product Hunt

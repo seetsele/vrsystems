@@ -130,7 +130,7 @@ class NetworkService: ObservableObject {
     private let baseURL = "https://veritysystems-production.up.railway.app"
     private let localURL = "http://localhost:8000"
     
-    // 9-Point Triple Verification System enabled
+    // 21-Point Verification System enabled
     private let ninePointVerification = true
     
     func verifyClaim(_ claim: String, deepAnalysis: Bool = true) async throws -> VerificationResult {

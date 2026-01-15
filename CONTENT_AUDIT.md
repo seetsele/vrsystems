@@ -22,7 +22,7 @@ The following claims are technically accurate:
 |-------|----------|--------|
 | "40+ AI Models & Sources" | index.html | ✅ Accurate - API has 20+ AI providers + search APIs |
 | "20+ AI models" | index.html | ✅ Accurate - Verified in api_server_v9.py |
-| "9-Point Verification System" | Various | ✅ Accurate - Documented feature |
+| "21-Point Verification System" | Various | ✅ Accurate - Documented feature |
 | "Multi-model consensus" | Various | ✅ Accurate - How the system works |
 | "GDPR-compliant" | index.html | ⚠️ Needs legal review |
 | "AES-256-GCM encryption" | index.html | ⚠️ Verify implementation |

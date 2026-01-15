@@ -68,7 +68,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 const IS_DEV = __DEV__ || false;
 const API_URL = IS_DEV ? 'http://localhost:8000' : 'https://veritysystems-production.up.railway.app';
 
-// 9-Point Triple Verification System enabled
+// 21-Point Verification System enabled
 const NINE_POINT_VERIFICATION = true;
 
 export function AppProvider({ children }: { children: ReactNode }) {

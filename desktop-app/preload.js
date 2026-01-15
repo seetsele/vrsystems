@@ -57,6 +57,11 @@ contextBridge.exposeInMainWorld('verity', {
     shell: {
         openExternal: (url) => ipcRenderer.send('shell:openExternal', url)
     },
+
+    // Diagnostics helpers
+    diagnostics: {
+        dumpLogs: () => ipcRenderer.invoke('dump-logs')
+    },
     
     // Recent verifications
     recent: {

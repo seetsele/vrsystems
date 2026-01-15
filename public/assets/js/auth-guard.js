@@ -8,7 +8,7 @@ const VerityGuard = {
     publicPages: [
         'index.html', 'auth.html', 'pricing.html', 'terms.html', 
         'privacy.html', 'api-docs.html', 'reset-password.html',
-        'waitlist.html', '9-point-system.html'
+        'waitlist.html', '21-point-system.html'
     ],
     
     // Check if user is authenticated

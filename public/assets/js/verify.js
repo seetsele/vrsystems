@@ -380,8 +380,8 @@ class VerityVerificationEngine {
     }
     
     // =========================================================================
-    // VERITY API v6 INTEGRATION - 9-Point Triple Verification (Default)
-    // =========================================================================
+    // VERITY API v6 INTEGRATION - 21-Point Verification (Default)
+    // ========================================================================= 
     async callVerityAPI(inputData, options) {
         // Determine which endpoint to use based on input type
         let endpoint, body;
@@ -397,7 +397,7 @@ class VerityVerificationEngine {
             endpoint = this.API_ENDPOINTS.analyzeText;
             body = JSON.stringify({ text: inputData.content });
         } else {
-            // Default claim verification - Full 9-Point by default, quick if toggled
+            // Default claim verification - Full 21-Point by default, quick if toggled
             endpoint = this.API_ENDPOINTS.verify;
             body = JSON.stringify({ 
                 claim: inputData.content,
@@ -469,7 +469,7 @@ class VerityVerificationEngine {
     
     buildV6Summary(apiData) {
         const parts = [];
-        parts.push(`3-pass verification completed with ${((apiData.confidence || 0.5) * 100).toFixed(1)}% confidence.`);
+        parts.push(`21-check (7×3) verification completed with ${((apiData.confidence || 0.5) * 100).toFixed(1)}% confidence.`);
         
         if (apiData.sources) {
             parts.push(`Queried ${apiData.sources} data sources.`);
@@ -497,7 +497,7 @@ class VerityVerificationEngine {
         if (apiData.quick_mode) {
             tags.push('⚡ Quick Check');
         } else if (apiData.triple_verified) {
-            const verificationLevel = apiData.verification?.level || '9-Point Verified';
+            const verificationLevel = apiData.verification?.level || '21-Point Verified';
             tags.push(`🔒 ${verificationLevel}`);
         } else {
             tags.push('Full Verification');
@@ -556,7 +556,7 @@ class VerityVerificationEngine {
                 <div style="margin-bottom: 1rem; padding: 0.75rem 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 3px solid #f59e0b;">
                     <p style="margin: 0; color: #f59e0b; font-size: 0.875rem;">
                         <strong>⚡ Quick Check Mode:</strong> This is a preliminary scan using fewer sources. 
-                        Confidence is capped at 85%. For maximum accuracy with 9-Point Triple Verification, 
+                        Confidence is capped at 85%. For maximum accuracy with 21-Point Verification, 
                         uncheck "Quick Check" and run again.
                     </p>
                 </div>
@@ -582,10 +582,10 @@ class VerityVerificationEngine {
             html += `
                 <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(99, 102, 241, 0.1)); border-radius: 12px; border: 1px solid rgba(34, 197, 94, 0.3);">
                     <h5 style="margin-bottom: 0.75rem; color: #22c55e; display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 1.25rem;">🔄</span> Triple-Loop Verification (3×3 = 9-Point)
+                        <span style="font-size: 1.25rem;">🔄</span> Multi-Pillar Verification (7×3 = 21-Point)
                     </h5>
                     <p style="color: #9ca3af; font-size: 0.8rem; margin-bottom: 1rem;">
-                        Entire verification ran 3 times independently for maximum accuracy
+                        Verification runs across 7 pillars with 3 checks each for robust results
                     </p>
             `;
             

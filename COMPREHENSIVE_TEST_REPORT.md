@@ -57,7 +57,7 @@ This document summarizes the comprehensive testing suite and best-in-class recom
 | **Phase 3**: AI Verification | 12-15 AI provider loops | 6-9 |
 | **Total** | | **14-17** |
 
-### UI Advertises "9-Point System"
+### UI Advertises "21-Point System"
 **Mismatch**: The backend does 14-17 checks but UI says 9.
 
 ---

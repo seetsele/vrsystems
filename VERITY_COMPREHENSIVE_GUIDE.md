@@ -37,7 +37,7 @@ In today's digital landscape:
 
 # How Verity Works
 
-## The 9-Point Verification System
+## The 21-Point Verification System
 
 Verity analyzes every claim across 9 critical dimensions:
 

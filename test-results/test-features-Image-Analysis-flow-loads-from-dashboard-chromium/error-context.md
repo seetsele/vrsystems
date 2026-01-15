@@ -1,0 +1,100 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - link "verity." [ref=e4] [cursor=pointer]:
+      - /url: index.html
+      - img [ref=e5]
+      - generic [ref=e8]: verity.
+    - navigation [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]: Main
+        - link "Dashboard" [ref=e12] [cursor=pointer]:
+          - /url: dashboard.html
+          - img [ref=e13]
+          - text: Dashboard
+        - link "Verify +" [ref=e18] [cursor=pointer]:
+          - /url: verify.html
+          - img [ref=e19]
+          - text: Verify
+          - generic [ref=e22]: +
+        - link "History" [ref=e23] [cursor=pointer]:
+          - /url: history.html
+          - img [ref=e24]
+          - text: History
+        - link "Live Stream ●" [ref=e27] [cursor=pointer]:
+          - /url: realtime-stream.html
+          - img [ref=e28]
+          - text: Live Stream
+          - generic [ref=e31]: ●
+      - generic [ref=e32]:
+        - generic [ref=e33]: Settings
+        - link "API Keys" [ref=e34] [cursor=pointer]:
+          - /url: api-keys.html
+          - img [ref=e35]
+          - text: API Keys
+        - link "Provider Setup" [ref=e37] [cursor=pointer]:
+          - /url: provider-setup.html
+          - img [ref=e38]
+          - text: Provider Setup
+        - link "Billing" [ref=e40] [cursor=pointer]:
+          - /url: billing.html
+          - img [ref=e41]
+          - text: Billing
+        - link "Settings" [ref=e43] [cursor=pointer]:
+          - /url: settings.html
+          - img [ref=e44]
+          - text: Settings
+      - link "Back to Home" [ref=e48] [cursor=pointer]:
+        - /url: index.html
+        - img [ref=e49]
+        - text: Back to Home
+    - generic [ref=e53] [cursor=pointer]:
+      - generic [ref=e54]: Current Plan
+      - generic [ref=e55]: Pro Plan
+      - generic [ref=e58]: 1,700 / 2,500 verifications
+      - generic [ref=e59]:
+        - generic [ref=e60]:
+          - generic [ref=e61]: AI Models
+          - generic [ref=e62]: "12"
+        - generic [ref=e63]:
+          - generic [ref=e64]: Deep Analysis
+          - generic [ref=e65]: ✓
+        - generic [ref=e66]:
+          - generic [ref=e67]: Document Scan
+          - generic [ref=e68]: ✓
+      - link "View All Plans" [ref=e69]:
+        - /url: pricing.html
+        - img [ref=e70]
+        - text: View All Plans
+  - main [ref=e72]:
+    - generic [ref=e73]:
+      - generic [ref=e74] [cursor=pointer]:
+        - img [ref=e75]
+        - text: Quick Verify
+        - generic [ref=e77]: Fast
+      - generic [ref=e78] [cursor=pointer]:
+        - img [ref=e79]
+        - text: Full Verification
+        - generic [ref=e81]: 21-Point
+    - generic [ref=e84]:
+      - heading "Quick Claim Verification" [level=2] [ref=e85]
+      - paragraph [ref=e86]: Paste any claim and get an instant truth assessment in under 3 seconds.
+      - textbox "Enter a claim to verify, e.g., 'The Great Wall of China is visible from space'" [ref=e88]
+      - generic [ref=e89]:
+        - generic [ref=e90]: 0 / 500
+        - button "Verify Instantly" [ref=e91] [cursor=pointer]:
+          - img [ref=e92]
+          - text: Verify Instantly
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - img [ref=e96]
+          - text: 12 AI models
+        - generic [ref=e98]:
+          - img [ref=e99]
+          - text: Deep analysis
+        - generic [ref=e101]:
+          - img [ref=e102]
+          - text: ~5 second response
+```

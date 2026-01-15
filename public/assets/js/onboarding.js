@@ -97,7 +97,7 @@
                 this.steps = [
                     {
                         title: 'Full Verification Suite',
-                        content: 'This is where the magic happens. Get our 9-point verification with detailed analysis.',
+                        content: 'This is where the magic happens. Get our 21-point verification with detailed analysis.',
                         target: null,
                         position: 'center'
                     },
