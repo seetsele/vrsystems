@@ -162,23 +162,64 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
     log.info('🚀 Verity Desktop v3 Initializing...');
-    
-    await loadStoredState();
-    buildNavigation();
-    setupTitlebar();
-    setupAuth();
-    setupCommandPalette();
-    setupGlobalSearch();
-    checkAPIStatus();
-    
-    navigate(state.currentPage);
-    
-    // Hide loading screen
-    setTimeout(() => {
-        document.getElementById('loading-screen')?.classList.add('hidden');
-    }, 800);
-    
-    log.info('✅ Verity Desktop Ready');
+    try {
+        await loadStoredState();
+        buildNavigation();
+        setupTitlebar();
+        setupAuth();
+        setupCommandPalette();
+        setupGlobalSearch();
+        checkAPIStatus();
+        navigate(state.currentPage);
+        log.info('✅ Verity Desktop Ready');
+    } catch (err) {
+        log.error('Initialization failed', err);
+        showFatalError('Initialization error. Check logs (DevTools) for details.');
+    } finally {
+        // Always hide the loading screen after a short delay so users can see any error overlay
+        setTimeout(() => {
+            document.getElementById('loading-screen')?.classList.add('hidden');
+        }, 800);
+    }
+}
+
+// Global error handlers to capture unhandled errors and show user-friendly overlay
+window.addEventListener('error', (e) => {
+    log.error('Uncaught error in renderer:', e.error || e.message || e);
+    showFatalError('An unexpected error occurred. Open DevTools for details.');
+});
+window.addEventListener('unhandledrejection', (e) => {
+    log.error('Unhandled promise rejection:', e.reason || e);
+    showFatalError('An unexpected error occurred (promise rejection). Open DevTools for details.');
+});
+
+function showFatalError(message) {
+    // Create or update overlay
+    let overlay = document.getElementById('fatal-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'fatal-overlay';
+        overlay.innerHTML = `
+            <div style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;">
+                <div style="background:#071226;padding:1.25rem;border-radius:12px;max-width:720px;color:#fff;text-align:left;box-shadow:0 10px 40px rgba(0,0,0,0.6);">
+                    <h3 style="margin:0 0 0.5rem 0">Something went wrong</h3>
+                    <div id="fatal-message" style="margin-bottom:1rem;font-size:0.95rem;color:#cbd5e1">${message}</div>
+                    <div style="display:flex;gap:0.5rem;justify-content:flex-end">
+                        <button class="small-btn" id="open-dev">Open DevTools</button>
+                        <button class="small-btn" id="reload-app">Reload</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        document.getElementById('open-dev')?.addEventListener('click', () => {
+            try { require('electron').ipcRenderer.send('open-devtools'); } catch (e) { console.warn('open-devtools not available', e); }
+        });
+        document.getElementById('reload-app')?.addEventListener('click', () => location.reload());
+    } else {
+        document.getElementById('fatal-message').textContent = message;
+        overlay.style.display = 'flex';
+    }
 }
 
 async function loadStoredState() {
