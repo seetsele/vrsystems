@@ -1,33 +1,41 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Verity API Tester</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#7dd3fc;--good:#10b981;--bad:#fb7185}
-    body{font-family:Inter,Segoe UI,Roboto,system-ui,Arial;background:linear-gradient(180deg,#071025 0%,#071b2a 100%);color:#e6eef6;margin:0;padding:24px}
-    .wrap{max-width:1100px;margin:0 auto}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-    header h1{margin:0;font-size:20px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--green:#10b981;--red:#ef4444;--cyan:#22d3ee;--violet:#8b5cf6}
+    body{font-family:'Inter',system-ui,Segoe UI,Roboto,Arial;color:var(--text);background:var(--bg);min-height:100vh;-webkit-font-smoothing:antialiased;padding-top:88px}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,11,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .nav-c{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center;height:72px}
+    .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text);font-weight:600;font-size:1.05rem}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
     .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03);padding:16px;border-radius:10px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid var(--border);padding:16px;border-radius:10px}
     label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
     input[type=text],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    button{background:var(--accent);color:#032;border:none;padding:10px 12px;border-radius:8px;cursor:pointer}
+    button{background:var(--amber);color:#000;border:none;padding:10px 12px;border-radius:8px;cursor:pointer}
     .small{font-size:13px;color:var(--muted)}
-    .result{white-space:pre-wrap;background:#02121b;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);max-height:420px;overflow:auto}
+    .result{white-space:pre-wrap;background:linear-gradient(180deg,#02121b,#031826);padding:12px;border-radius:8px;border:1px solid var(--border);max-height:420px;overflow:auto}
     .row{display:flex;gap:12px;align-items:center}
-    .endpoint{font-family:monospace;background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px}
-    nav a{color:var(--accent);text-decoration:none;margin-right:12px}
-    .warn{color:var(--bad);font-weight:600}
+    .endpoint{font-family:JetBrains Mono,monospace;background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px}
     footer{margin-top:20px;color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
+  <nav>
+    <div class="nav-c">
+      <a class="logo" href="/">verity<span style="color:var(--amber)">.</span></a>
+    </div>
+  </nav>
   <div class="wrap">
-    <header>
-      <h1>Verity — API Tester</h1>
+    <header style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+      <h1 style="font-size:20px;margin:0">Verity — API Tester</h1>
       <div class="small">Run quick API checks and integration calls from your browser.</div>
     </header>
 
