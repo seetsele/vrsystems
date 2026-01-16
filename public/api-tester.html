@@ -1,3 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Verity API Tester</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#7dd3fc;--good:#10b981;--bad:#fb7185}
+    body{font-family:Inter,Segoe UI,Roboto,system-ui,Arial;background:linear-gradient(180deg,#071025 0%,#071b2a 100%);color:#e6eef6;margin:0;padding:24px}
+    .wrap{max-width:1100px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    header h1{margin:0;font-size:20px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03);padding:16px;border-radius:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    button{background:var(--accent);color:#032;border:none;padding:10px 12px;border-radius:8px;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    .result{white-space:pre-wrap;background:#02121b;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);max-height:420px;overflow:auto}
+    .row{display:flex;gap:12px;align-items:center}
+    .endpoint{font-family:monospace;background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px}
+    nav a{color:var(--accent);text-decoration:none;margin-right:12px}
+    .warn{color:var(--bad);font-weight:600}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Verity — API Tester</h1>
+      <div class="small">Run quick API checks and integration calls from your browser.</div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <label>Base API URL</label>
+          <input id="baseUrl" type="text" value="http://127.0.0.1:8001" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="apiKey" type="text" placeholder="X-API-Key (optional)" />
+            <input id="fromEmail" type="text" placeholder="FROM_EMAIL (optional)" />
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Quick Endpoints</h3>
+          <div style="display:grid;gap:10px;margin-top:12px">
+            <div class="row">
+              <div class="endpoint">GET /</div>
+              <button onclick="callSimple('/')">Run</button>
+            </div>
+
+            <div class="row">
+              <div class="endpoint">GET /health</div>
+              <button onclick="callSimple('/health')">Run</button>
+              <button onclick="callSimple('/health/deep')">Deep</button>
+            </div>
+
+            <div class="row">
+              <div class="endpoint">GET /providers</div>
+              <button onclick="callSimple('/providers')">Run</button>
+            </div>
+
+            <div class="row">
+              <div class="endpoint">GET /stats</div>
+              <button onclick="callSimple('/stats')">Run</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Verify (single)</h3>
+          <label>Claim</label>
+          <input id="claimText" type="text" value="The Eiffel Tower is painted every 7 years" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <select id="tier">
+              <option value="free">free</option>
+              <option value="pro">pro</option>
+            </select>
+            <button onclick="callVerify()">Verify</button>
+            <button onclick="callVerifyV3()">V3 Verify</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Batch Verify</h3>
+          <label>Comma-separated claims (max 50)</label>
+          <textarea id="batchClaims" rows="4">Water boils at 100°C,The moon is made of cheese</textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button onclick="callBatchVerify()">Run Batch</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Waitlist</h3>
+          <label>Email</label>
+          <input id="waitEmail" type="text" placeholder="user@example.com" />
+          <label>Name (optional)</label>
+          <input id="waitName" type="text" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button onclick="callWaitlist()">Join Waitlist</button>
+          </div>
+          <div class="small" style="margin-top:8px">This will call `<code>/waitlist/signup</code>` if present on the API.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Stripe</h3>
+          <div class="small">Caution: Checkout creation will call Stripe. Use test keys.</div>
+          <label>Price ID</label>
+          <input id="priceId" type="text" placeholder="price_123" />
+          <label>Email (for checkout)</label>
+          <input id="checkoutEmail" type="text" placeholder="buyer@example.com" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button onclick="callStripeConfig()">Get Config</button>
+            <button onclick="callCreateCheckout()">Create Checkout</button>
+          </div>
+          <div class="small" style="margin-top:8px">For webhook testing, use the `minimal_webhook_app.py` or `stripe listen` and the `STRIPE_WEBHOOK_SECRET`.</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Request Builder</h3>
+          <label>Method & Path</label>
+          <div style="display:flex;gap:8px">
+            <select id="method">
+              <option>GET</option>
+              <option>POST</option>
+              <option>PUT</option>
+              <option>PATCH</option>
+              <option>DELETE</option>
+            </select>
+            <input id="path" type="text" value="/" />
+          </div>
+          <label>JSON Body (optional)</label>
+          <textarea id="body" rows="6">{}</textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button onclick="callCustom()">Send</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Response</h3>
+          <div id="responseArea" class="result">Results will appear here.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Help & Examples</h3>
+          <div class="small">Webhook test example (run from server/terminal):</div>
+          <pre class="small">curl -X POST -H "Content-Type: application/json" --data '{"id":"evt_test","type":"checkout.session.completed","data":{"object":{"customer_email":"test@example.com"}}}' http://your-api/stripe/webhook</pre>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="small">Tip: point Base API URL to a staging instance before invoking any destructive endpoints.</div>
+    </footer>
+  </div>
+
+  <script>
+    function getHeaders() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const fromEmail = document.getElementById('fromEmail').value.trim();
+      const headers = {'Accept':'application/json'};
+      if (apiKey) headers['X-API-Key'] = apiKey;
+      if (fromEmail) headers['From-Email'] = fromEmail;
+      return headers;
+    }
+
+    function showResult(obj) {
+      const el = document.getElementById('responseArea');
+      el.textContent = JSON.stringify(obj, null, 2);
+    }
+
+    async function callSimple(path) {
+      const base = document.getElementById('baseUrl').value.trim();
+      const url = new URL(path, base).toString();
+      showResult({status:'running', url});
+      try {
+        const r = await fetch(url, {headers:getHeaders()});
+        const text = await r.text();
+        try { showResult({status:r.status, body: JSON.parse(text)}) } catch (e) { showResult({status:r.status, body:text}) }
+      } catch (e) { showResult({error:String(e)}) }
+    }
+
+    async function callVerify() {
+      const base = document.getElementById('baseUrl').value.trim();
+      const claim = document.getElementById('claimText').value;
+      const tier = document.getElementById('tier').value;
+      const url = new URL('/verify', base).toString();
+      showResult({status:'running', url});
+      try {
+        const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json', ...getHeaders()}, body: JSON.stringify({claim, tier})});
+        const j = await r.json(); showResult({status:r.status, body:j});
+      } catch (e) { showResult({error:String(e)}) }
+    }
+
+    async function callVerifyV3() {
+      const base = document.getElementById('baseUrl').value.trim();
+      const claim = document.getElementById('claimText').value;
+      const tier = document.getElementById('tier').value;
+      const url = new URL('/v3/verify', base).toString();
+      showResult({status:'running', url});
+      try {
+        const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json', ...getHeaders()}, body: JSON.stringify({claim, tier})});
+        const j = await r.json(); showResult({status:r.status, body:j});
+      } catch (e) { showResult({error:String(e)}) }
+    }
+
+    async function callBatchVerify() {
+      const base = document.getElementById('baseUrl').value.trim();
+      const text = document.getElementById('batchClaims').value;
+      const claims = text.split(',').map(s=>s.trim()).filter(Boolean);
+      const url = new URL('/v3/batch-verify', base).toString();
+      showResult({status:'running', url});
+      try {
+        const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json', ...getHeaders()}, body: JSON.stringify({claims, tier:'free'})});
+        const j = await r.json(); showResult({status:r.status, body:j});
+      } catch (e) { showResult({error:String(e)}) }
+    }
+
+    async function callWaitlist(){
+      const base = document.getElementById('baseUrl').value.trim();
+      const email = document.getElementById('waitEmail').value.trim();
+      const name = document.getElementById('waitName').value.trim();
+      const url = new URL('/waitlist/signup', base).toString();
+      showResult({status:'running', url});
+      try{
+        const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json', ...getHeaders()}, body: JSON.stringify({email, name})});
+        const j = await r.json(); showResult({status:r.status, body:j});
+      }catch(e){ showResult({error:String(e)}) }
+    }
+
+    async function callStripeConfig(){
+      const base = document.getElementById('baseUrl').value.trim();
+      const url = new URL('/stripe/config', base).toString();
+      showResult({status:'running', url});
+      try{ const r = await fetch(url,{headers:getHeaders()}); const j = await r.json(); showResult({status:r.status, body:j}); }catch(e){ showResult({error:String(e)}) }
+    }
+
+    async function callCreateCheckout(){
+      const base = document.getElementById('baseUrl').value.trim();
+      const price = document.getElementById('priceId').value.trim();
+      const email = document.getElementById('checkoutEmail').value.trim();
+      if(!price){ showResult({error:'Price ID required'}); return }
+      const url = new URL('/stripe/create-checkout', base).toString();
+      showResult({status:'running', url});
+      try{
+        const r = await fetch(url,{method:'POST', headers:{'Content-Type':'application/json', ...getHeaders()}, body: JSON.stringify({price_id:price, email})});
+        const j = await r.json(); showResult({status:r.status, body:j});
+      }catch(e){ showResult({error:String(e)}) }
+    }
+
+    async function callCustom(){
+      const base = document.getElementById('baseUrl').value.trim();
+      const method = document.getElementById('method').value;
+      const path = document.getElementById('path').value;
+      let bodyText = document.getElementById('body').value;
+      let body = undefined;
+      try{ body = bodyText ? JSON.parse(bodyText) : undefined } catch(e){ showResult({error:'Invalid JSON body'}); return }
+      const url = new URL(path, base).toString();
+      showResult({status:'running', url});
+      try{
+        const r = await fetch(url,{method, headers: body ? {'Content-Type':'application/json', ...getHeaders()} : getHeaders(), body: body ? JSON.stringify(body) : undefined});
+        const t = await r.text();
+        try{ showResult({status:r.status, body: JSON.parse(t)}) } catch(e) { showResult({status:r.status, body:t}) }
+      }catch(e){ showResult({error:String(e)}) }
+    }
+  </script>
+</body>
+</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>

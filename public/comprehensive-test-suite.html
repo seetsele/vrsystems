@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Verity — Comprehensive Test Suite</title>
+  <style>
+    body{font-family:Inter,Segoe UI,Roboto,Arial;background:#071225;color:#e7f2fb;margin:0;padding:28px}
+    .wrap{max-width:1200px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:20px}
+    .controls{display:flex;gap:10px;align-items:center}
+    input,select,button,textarea{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    .suite{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .step{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.01)}
+    .step .meta{font-size:13px;color:#a9bac8}
+    .ok{color:#10b981;font-weight:600}
+    .fail{color:#fb7185;font-weight:700}
+    pre{background:#02121b;padding:10px;border-radius:8px;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Verity — Comprehensive Browser Test Suite</h1>
+      <div class="controls">
+        <input id="baseUrl" type="text" value="http://127.0.0.1:8001" style="width:360px" />
+        <input id="apiKey" placeholder="X-API-Key (optional)" />
+        <button onclick="runAll()">Run Full Suite</button>
+      </div>
+    </header>
+
+    <div class="suite">
+      <div>
+        <div class="card">
+          <h3>Test Steps</h3>
+          <div id="stepsList"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Detailed Output</h3>
+          <div id="detailArea"><pre>Run the suite to see detailed logs here.</pre></div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Quick Actions</h3>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button onclick="checkRoot()">Check Root</button>
+            <button onclick="checkHealth()">Health</button>
+            <button onclick="checkDeepHealth()">Deep Health</button>
+            <button onclick="checkProviders()">Providers</button>
+            <button onclick="runVerifySample()">Verify Sample</button>
+            <button onclick="runBatchSample()">Batch Sample</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Notes</h3>
+          <div style="font-size:13px;color:#a9bac8">This test suite is intended for staging use. It will not alter production data unless you point it at `production`.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function headers(){ const k=document.getElementById('apiKey').value.trim(); const h={'Accept':'application/json'}; if(k) h['X-API-Key']=k; return h }
+
+    function addStep(name){ const id = 's'+Math.random().toString(36).slice(2,9); const el = document.createElement('div'); el.className='step'; el.id=id; el.innerHTML = `<div><strong>${name}</strong><div class='meta' id='meta-${id}'>pending</div></div><div id='status-${id}' class='meta'>…</div>`; document.getElementById('stepsList').appendChild(el); return id }
+
+    function setStepOk(id,msg){ document.getElementById('status-'+id).innerHTML = '<span class="ok">OK</span>'; document.getElementById('meta-'+id).textContent = msg }
+    function setStepFail(id,msg){ document.getElementById('status-'+id).innerHTML = '<span class="fail">FAIL</span>'; document.getElementById('meta-'+id).textContent = msg }
+    function logDetail(txt){ document.getElementById('detailArea').innerHTML = '<pre>'+txt+'</pre>' }
+
+    async function fetchJson(path, opts={}){
+      const base = document.getElementById('baseUrl').value.trim(); const url = new URL(path, base).toString();
+      const r = await fetch(url, {headers: headers(), ...opts}); const text=await r.text(); try{ return {ok:r.ok,status:r.status,body:JSON.parse(text)} }catch(e){ return {ok:r.ok,status:r.status,body:text} }
+    }
+
+    async function runAll(){ document.getElementById('stepsList').innerHTML=''; logDetail('Running full suite...');
+      const steps=[];
+      // 1 root
+      steps.push({name:'Check Root', fn: async ()=>{ const id=addStep('Root'); const r=await fetchJson('/'); if(r.ok) setStepOk(id,'root ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      // 2 health
+      steps.push({name:'Health', fn: async ()=>{ const id=addStep('Health'); const r=await fetchJson('/health'); if(r.ok) setStepOk(id,'healthy'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      // 3 deep health
+      steps.push({name:'Deep Health', fn: async ()=>{ const id=addStep('Deep Health'); const r=await fetchJson('/health/deep'); if(r.ok) setStepOk(id,'deep ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      // 4 providers
+      steps.push({name:'Providers', fn: async ()=>{ const id=addStep('Providers'); const r=await fetchJson('/providers'); if(r.ok) setStepOk(id,'providers listed'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      // 5 stats
+      steps.push({name:'Stats', fn: async ()=>{ const id=addStep('Stats'); const r=await fetchJson('/stats'); if(r.ok) setStepOk(id,'stats ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      // 6 verify
+      steps.push({name:'Verify (sample)', fn: async ()=>{ const id=addStep('Verify'); const r=await fetchJson('/verify',{method:'POST', body: JSON.stringify({claim:'Polar bears are always white', tier:'free'})}); if(r.ok) setStepOk(id,'verify ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      // 7 batch verify
+      steps.push({name:'Batch Verify (sample)', fn: async ()=>{ const id=addStep('Batch Verify'); const r=await fetchJson('/v3/batch-verify',{method:'POST', body: JSON.stringify({claims:['Water is H2O','The moon is made of cheese'], tier:'free'})}); if(r.ok) setStepOk(id,'batch ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      // 8 waitlist attempt
+      steps.push({name:'Waitlist signup (sample)', fn: async ()=>{ const id=addStep('Waitlist'); const r=await fetchJson('/waitlist/signup',{method:'POST', body: JSON.stringify({email:'ci-test@example.com', name:'CI Test'})}); if(r.status===200||r.status===201) setStepOk(id,'joined'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      // 9 stripe config
+      steps.push({name:'Stripe config', fn: async ()=>{ const id=addStep('Stripe Config'); const r=await fetchJson('/stripe/config'); if(r.ok) setStepOk(id,'stripe configured='+!!r.body.configured); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
+
+      for(const s of steps){ try{ await s.fn() }catch(e){ console.error(e); logDetail(String(e)) }}
+      logDetail('Suite completed. Inspect each step and the detailed output.')
+    }
+
+    // Quick actions
+    async function checkRoot(){ const id=addStep('Root'); const r=await fetchJson('/'); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
+    async function checkHealth(){ const id=addStep('Health'); const r=await fetchJson('/health'); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
+    async function checkDeepHealth(){ const id=addStep('Deep Health'); const r=await fetchJson('/health/deep'); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
+    async function checkProviders(){ const id=addStep('Providers'); const r=await fetchJson('/providers'); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
+    async function runVerifySample(){ const id=addStep('Verify Sample'); const r=await fetchJson('/verify',{method:'POST', body: JSON.stringify({claim:'Birds can fly', tier:'free'})}); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
+    async function runBatchSample(){ const id=addStep('Batch Sample'); const r=await fetchJson('/v3/batch-verify',{method:'POST', body: JSON.stringify({claims:['A','B'], tier:'free'})}); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
+  </script>
+</body>
+</html>
