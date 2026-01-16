@@ -1,23 +1,23 @@
 """
 Verity API Server - Production v11
 ==================================
-21-Point Verification System™ - Best-in-Class Fact Checking
+21-Point Verification System (TM) - Best-in-Class Fact Checking
 
 MAJOR IMPROVEMENTS FROM v10:
 - 21-Point Verification System (7 pillars × 3 checks each)
-- Temporal verification for time-sensitive claims
-- Source authority scoring with credibility tiers
-- Counter-evidence detection
-- Enhanced VeriScore™ confidence calibration
+-- Temporal verification for time-sensitive claims
+-- Source authority scoring with credibility tiers
+-- Counter-evidence detection
+-- Enhanced VeriScore (TM) confidence calibration
 - Structured pillar-based response format
 
 Features:
-- 21-Point Verification™ Framework
-- VeriScore™ calibrated confidence algorithm
-- NuanceNet™ nuance detection
-- TemporalTruth™ time-aware verification
-- SourceGraph™ authority scoring
-- ConsensusCore™ multi-model ensemble
+-- 21-Point Verification (TM) Framework
+-- VeriScore (TM) calibrated confidence algorithm
+-- NuanceNet (TM) nuance detection
+-- TemporalTruth (TM) time-aware verification
+-- SourceGraph (TM) authority scoring
+-- ConsensusCore (TM) multi-model ensemble
 """
 
 import os
@@ -45,6 +45,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 from pathlib import Path
+import stripe
+from email_service import email_service
+import asyncio
 
 # Load .env from the script's directory
 _script_dir = Path(__file__).parent
@@ -119,6 +122,7 @@ class Config:
     # Stripe
     STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
     STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 
 # =============================================================================
@@ -131,6 +135,50 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stdout)]
 )
 logger = logging.getLogger("VerityAPI")
+
+# Load prompt templates (versioned) with optional runtime override
+PROMPT_TEMPLATES = {}
+PROMPT_TEMPLATES_PATH = (Path(__file__).parent.parent / 'config' / 'prompt_templates.json')
+
+def load_prompt_templates():
+    global PROMPT_TEMPLATES
+    try:
+        if PROMPT_TEMPLATES_PATH.exists():
+            with open(PROMPT_TEMPLATES_PATH, 'r', encoding='utf-8') as f:
+                PROMPT_TEMPLATES = json.load(f)
+                logger.info('Loaded prompt templates from %s (version=%s)', PROMPT_TEMPLATES_PATH, PROMPT_TEMPLATES.get('version'))
+                return PROMPT_TEMPLATES
+    except Exception as e:
+        logger.warning('Failed to load prompt templates: %s', e)
+    # Fallback defaults
+    PROMPT_TEMPLATES = {
+        'version': '0.0',
+        'defaults': {
+            'system_message': 'You are Verity, an expert fact-checking assistant. Provide concise evidence-backed verdicts.',
+            'generic_template': 'Verify the claim and provide supporting and contradicting evidence with sources.'
+        },
+        'overrides': {}
+    }
+    return PROMPT_TEMPLATES
+
+
+def save_prompt_templates(overrides: dict):
+    """Save overrides into the config file under the `overrides` key (best-effort)."""
+    try:
+        data = load_prompt_templates()
+        data['overrides'] = overrides
+        PROMPT_TEMPLATES_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(PROMPT_TEMPLATES_PATH, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        logger.info('Saved prompt template overrides to %s', PROMPT_TEMPLATES_PATH)
+        return True
+    except Exception as e:
+        logger.exception('Failed to save prompt templates: %s', e)
+        return False
+
+
+# Load at startup
+load_prompt_templates()
 
 
 # =============================================================================
@@ -267,24 +315,31 @@ class NuanceDetector:
     
     @classmethod
     def analyze_claim(cls, claim: str) -> Dict[str, Any]:
+        """Analyze a claim for nuance indicators.
+
+        Returns a dict with keys:
+            - is_nuanced (bool)
+            - nuance_score (float 0..1)
+            - absolute_language (list)
+            - comparative_language (list)
+            - nuanced_topic (str|None)
+            - all_topics (list)
+            - topic_keywords (list)
+            - has_generalization (bool)
+            - inherent_nuance (bool)
+            - has_academic_hedging (bool)
+            - is_balanced_claim (bool)
+            - recommendation (str)
         """
-        Analyze a claim for nuance indicators.
-        
-        Returns:
-            - is_nuanced: bool - Whether the claim requires nuanced analysis
-            - nuance_score: float - 0-1 score indicating level of nuance
-            - absolute_language: list - Detected absolute language
-            - nuanced_topic: str - Detected nuanced topic area
-            - recommendation: str - Suggested verdict approach
-        """
-        claim_lower = claim.lower()
-        
+        claim_lower = (claim or "").lower()
+
         # Detect absolute language
         absolute_matches = []
         for pattern in cls.ABSOLUTE_PATTERNS:
             matches = re.findall(pattern, claim_lower, re.IGNORECASE)
-            absolute_matches.extend(matches)
-        
+            if matches:
+                absolute_matches.extend(matches)
+
         # Detect comparative language
         comparative_matches = []
         for pattern in cls.COMPARATIVE_PATTERNS:
@@ -453,7 +508,7 @@ class NuanceDetector:
         """
         Determine if a verdict should be forced to MIXED based on nuance analysis.
         
-        This is called after initial verdict to potentially override FALSE → MIXED
+        This is called after initial verdict to potentially override FALSE -> MIXED
         when the claim is nuanced.
         
         IMPORTANT: Does NOT override TRUE verdicts with high confidence (>= 0.85)
@@ -524,12 +579,12 @@ class NuanceDetector:
 
 
 # =============================================================================
-# 21-POINT VERIFICATION SYSTEM™ - TEMPORAL VERIFICATION
+# 21-POINT VERIFICATION SYSTEM (TM) - TEMPORAL VERIFICATION
 # =============================================================================
 
 class TemporalVerifier:
     """
-    TemporalTruth™ - Time-aware verification for claims that age.
+    TemporalTruth (TM) - Time-aware verification for claims that age.
     
     Pillar 2 of the 21-Point System:
     - Point 2.1: Claim Currency Check
@@ -638,12 +693,12 @@ class TemporalVerifier:
 
 
 # =============================================================================
-# 21-POINT VERIFICATION SYSTEM™ - SOURCE AUTHORITY SCORING
+# 21-POINT VERIFICATION SYSTEM (TM) - SOURCE AUTHORITY SCORING
 # =============================================================================
 
 class SourceAuthorityScorer:
     """
-    SourceGraph™ - Source credibility and authority scoring.
+    SourceGraph (TM) - Source credibility and authority scoring.
     
     Pillar 3 of the 21-Point System:
     - Point 3.1: Primary Source Identification
@@ -778,7 +833,7 @@ class SourceAuthorityScorer:
 
 
 # =============================================================================
-# 21-POINT VERIFICATION SYSTEM™ - COUNTER-EVIDENCE DETECTOR
+# 21-POINT VERIFICATION SYSTEM (TM) - COUNTER-EVIDENCE DETECTOR
 # =============================================================================
 
 class CounterEvidenceDetector:
@@ -857,12 +912,12 @@ class CounterEvidenceDetector:
 
 
 # =============================================================================
-# 21-POINT VERIFICATION SYSTEM™ - VERISCORE CALCULATOR
+# 21-POINT VERIFICATION SYSTEM (TM) - VERISCORE CALCULATOR
 # =============================================================================
 
 class VeriScoreCalculator:
     """
-    VeriScore™ - Calibrated confidence algorithm combining all 21 points.
+    VeriScore (TM) - Calibrated confidence algorithm combining all 21 points.
     
     Pillar 7 of the 21-Point System:
     - Point 7.1: Confidence Calibration
@@ -2203,7 +2258,7 @@ KEY EVIDENCE: [main supporting/refuting points]"""
     
     async def verify_claim(self, claim: str, tier: str = "free") -> Dict:
         """
-        21-Point Verification System™ - Enhanced fact-checking.
+        21-Point Verification System (TM) - Enhanced fact-checking.
         
         7 Pillars × 3 Checks = 21 Verification Points:
         
@@ -2223,7 +2278,7 @@ KEY EVIDENCE: [main supporting/refuting points]"""
         
         logger.info(f"[VERIFY] 21-Point System - {tier} tier with {max_loops} loops")
         
-        # Initialize pillar scores for VeriScore™ calculation
+        # Initialize pillar scores for VeriScore (TM) calculation
         pillar_scores = {
             "claim_parsing": {},
             "temporal": {},
@@ -2268,14 +2323,14 @@ KEY EVIDENCE: [main supporting/refuting points]"""
                     extracted_context += f"\n\n[arXiv Paper]:\nTitle: {paper.get('title', '')}\nAbstract: {paper.get('abstract', '')}"
         
         # =====================================================================
-        # Point 1.3: NUANCE ANALYSIS (NuanceNet™)
+        # Point 1.3: NUANCE ANALYSIS (NuanceNet (TM))
         # =====================================================================
         nuance_analysis = NuanceDetector.analyze_claim(claim)
         pillar_scores["claim_parsing"]["nuance"] = min(1.0, 0.7 + nuance_analysis['nuance_score'] * 0.3)
         logger.info(f"[NUANCE] Score: {nuance_analysis['nuance_score']}, Topic: {nuance_analysis.get('nuanced_topic', 'general')}")
         
         # =====================================================================
-        # PILLAR 2: TEMPORAL VERIFICATION (TemporalTruth™) - 3 Points
+        # PILLAR 2: TEMPORAL VERIFICATION (TemporalTruth (TM)) - 3 Points
         # =====================================================================
         temporal_analysis = TemporalVerifier.analyze_temporal_context(claim)
         pillar_scores["temporal"]["currency"] = temporal_analysis["score"]["currency"]
@@ -2495,8 +2550,8 @@ KEY EVIDENCE: [main supporting/refuting points]"""
                                       content_analysis: Dict, pillar_scores: Dict = None,
                                       temporal_analysis: Dict = None) -> Dict:
         """
-        Build consensus verdict with 21-Point Verification System™.
-        Includes VeriScore™ calculation across all 7 pillars.
+        Build consensus verdict with 21-Point Verification System (TM).
+        Includes VeriScore (TM) calculation across all 7 pillars.
         """
         if pillar_scores is None:
             pillar_scores = {
@@ -2509,7 +2564,7 @@ KEY EVIDENCE: [main supporting/refuting points]"""
                 "synthesis": {}
             }
         
-        # Provider reliability weights (ConsensusCore™)
+        # Provider reliability weights (ConsensusCore (TM))
         reliability_weights = {
             "perplexity": 1.4,  # Best for real-time verification
             "google": 1.3,
@@ -2613,7 +2668,7 @@ KEY EVIDENCE: [main supporting/refuting points]"""
             final_confidence = min(final_confidence, 0.85)  # Cap at 85% for mixed
         
         # =====================================================================
-        # PILLAR 3: SOURCE QUALITY (SourceGraph™) - 3 Points
+        # PILLAR 3: SOURCE QUALITY (SourceGraph (TM)) - 3 Points
         # =====================================================================
         source_authority = SourceAuthorityScorer.score_sources(all_sources)
         pillar_scores["source_quality"]["primary"] = source_authority["score"]["primary"]
@@ -2634,7 +2689,7 @@ KEY EVIDENCE: [main supporting/refuting points]"""
         pillar_scores["evidence"]["consensus"] = agreement_pct / 100
         
         # =====================================================================
-        # PILLAR 5: AI CONSENSUS (ConsensusCore™) - 3 Points
+        # PILLAR 5: AI CONSENSUS (ConsensusCore (TM)) - 3 Points
         # =====================================================================
         pillar_scores["ai_consensus"]["large_models"] = min(1.0, len(results) / 8)
         pillar_scores["ai_consensus"]["specialized"] = 0.85  # Placeholder
@@ -2655,7 +2710,7 @@ KEY EVIDENCE: [main supporting/refuting points]"""
         pillar_scores["synthesis"]["summary"] = 0.95
         
         # =====================================================================
-        # CALCULATE VERISCORE™
+        # CALCULATE VERISCORE (TM)
         # =====================================================================
         veriscore_result = VeriScoreCalculator.calculate_veriscore(pillar_scores)
         
@@ -2670,7 +2725,7 @@ KEY EVIDENCE: [main supporting/refuting points]"""
             primary_explanation = primary_explanation[:1500] + "..."
         
         cross_validation_summary = (
-            f"\n\n[21-POINT VERIFICATION: VeriScore™ {veriscore_result['veriscore']}% (Grade: {veriscore_result['quality_grade']})]"
+            f"\n\n[21-POINT VERIFICATION: VeriScore (TM) {veriscore_result['veriscore']}% (Grade: {veriscore_result['quality_grade']})]"
             f"\n[CROSS-VALIDATION: {agreeing_count}/{len(verdict_data)} providers agree "
             f"({agreement_pct:.1f}% consensus). Verification loops: {len(results)}/{max_loops}. "
             f"Providers: {', '.join(providers_used[:5])}{'...' if len(providers_used) > 5 else ''}]"
@@ -2720,7 +2775,7 @@ KEY EVIDENCE: [main supporting/refuting points]"""
                 "research_papers": len(content_analysis.get("dois", [])) + len(content_analysis.get("arxiv_ids", []))
             },
             "sources": all_sources[:15],
-            "verification_system": "21-Point Verification™"
+            "verification_system": "21-Point Verification (TM)"
         }
 
 
@@ -2794,6 +2849,367 @@ app = FastAPI(
     docs_url="/docs",
     lifespan=lifespan
 )
+
+# Configure Stripe if available
+if Config.STRIPE_SECRET_KEY:
+    try:
+        stripe.api_key = Config.STRIPE_SECRET_KEY
+        logger.info('Stripe configured')
+    except Exception as e:
+        logger.warning('Stripe configuration failed: %s', e)
+
+
+# Sentry instrumentation (best-effort)
+SENTRY_DSN = os.getenv('SENTRY_DSN')
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+        sentry_sdk.init(dsn=SENTRY_DSN, traces_sample_rate=float(os.getenv('SENTRY_TRACES_SAMPLE_RATE', '0.1')))
+        # Wrap app with Sentry middleware
+        app.add_middleware(SentryAsgiMiddleware)
+        logger.info('Sentry initialized')
+    except Exception as e:
+        logger.warning('Sentry initialization failed (package may be missing): %s', e)
+
+
+# ----------------------
+# Prompt templates admin endpoints
+# ----------------------
+
+
+@app.get('/admin/prompt_templates')
+async def get_prompt_templates(auth=Depends(verify_api_key)):
+    """Return loaded prompt templates (requires API key when enabled)."""
+    return PROMPT_TEMPLATES
+
+
+@app.post('/admin/prompt_templates')
+async def post_prompt_templates(payload: dict, auth=Depends(verify_api_key)):
+    """Update prompt template overrides (writes to config file, best-effort)."""
+    overrides = payload.get('overrides') or {}
+    ok = save_prompt_templates(overrides)
+    if not ok:
+        raise HTTPException(status_code=500, detail='Failed to persist prompt overrides')
+    # Reload into memory
+    load_prompt_templates()
+    return { 'success': True, 'version': PROMPT_TEMPLATES.get('version'), 'overrides': PROMPT_TEMPLATES.get('overrides') }
+
+
+
+@app.post('/waitlist/signup')
+async def waitlist_signup(payload: dict):
+    """Signup endpoint for waitlist: saves to Supabase and sends welcome email (if configured)."""
+    email = (payload.get('email') or '').strip()
+    name = (payload.get('name') or '').strip() or 'Friend'
+    if not email:
+        raise HTTPException(status_code=400, detail='email is required')
+
+    SUPABASE_URL = os.getenv('SUPABASE_URL')
+    SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
+
+    # Try server-side insert into Supabase table
+    saved = False
+    try:
+        if SUPABASE_URL and SUPABASE_SERVICE_KEY:
+            url = f"{SUPABASE_URL}/rest/v1/newsletter_subscribers"
+            headers = {
+                'apikey': SUPABASE_SERVICE_KEY,
+                'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            }
+            async with httpx.AsyncClient(timeout=10) as client:
+                r = await client.post(url, json={
+                    'email': email,
+                    'name': name,
+                    'subscribed_at': datetime.utcnow().isoformat()
+                }, headers=headers)
+                if r.status_code in (200,201):
+                    saved = True
+                elif r.status_code == 409 or r.status_code == 422:
+                    # conflict/duplicate
+                    saved = True
+                else:
+                    logger.warning('Waitlist insert returned %s %s', r.status_code, r.text[:200])
+        else:
+            logger.warning('SUPABASE not configured, skipping DB insert')
+    except Exception as e:
+        logger.exception('Error saving waitlist email: %s', e)
+
+    # Send welcome email asynchronously (best-effort)
+    try:
+        if email_service and email_service.is_configured:
+            asyncio.create_task(email_service.send_welcome_email(email, name))
+        else:
+            logger.info('Email service not configured; skipping welcome email')
+    except Exception as e:
+        logger.exception('Failed to queue welcome email: %s', e)
+
+    return JSONResponse({ 'success': True, 'saved': saved })
+
+
+@app.get('/stripe/config')
+async def get_stripe_config():
+    return {
+        'publishable_key': Config.STRIPE_PUBLISHABLE_KEY,
+        'configured': bool(Config.STRIPE_SECRET_KEY and Config.STRIPE_PUBLISHABLE_KEY)
+    }
+
+
+class CheckoutRequest(BaseModel):
+    price_id: str
+    email: Optional[str] = None
+
+
+@app.post('/stripe/create-checkout')
+async def create_checkout(req: CheckoutRequest):
+    if not Config.STRIPE_SECRET_KEY:
+        raise HTTPException(status_code=503, detail='Stripe not configured')
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            mode='subscription',
+            line_items=[{'price': req.price_id, 'quantity': 1}],
+            customer_email=req.email if req.email else None,
+            success_url=os.getenv('STRIPE_SUCCESS_URL', 'https://verity-systems.app/checkout-success.html') + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=os.getenv('STRIPE_CANCEL_URL', 'https://verity-systems.app/checkout.html')
+        )
+        return {'url': session.url, 'id': session.id}
+    except Exception as e:
+        logger.exception('Stripe checkout creation failed: %s', e)
+        raise HTTPException(status_code=500, detail='Stripe checkout creation failed')
+
+
+@app.post('/stripe/webhook')
+async def stripe_webhook(request: Request):
+    payload = await request.body()
+    sig_header = request.headers.get('stripe-signature')
+    webhook_secret = Config.STRIPE_WEBHOOK_SECRET
+    event = None
+    remote_ip = request.client.host if request.client else 'unknown'
+
+    # Basic logging for diagnostics (do not log full payload in production)
+    logger.debug('Incoming Stripe webhook from %s, sig_header_present=%s, webhook_secret_configured=%s',
+                 remote_ip, bool(sig_header), bool(webhook_secret))
+
+    try:
+        if webhook_secret:
+            if not sig_header:
+                logger.warning('Stripe webhook secret configured but signature header missing (ip=%s)', remote_ip)
+                raise HTTPException(status_code=400, detail='Missing stripe-signature header')
+            try:
+                # stripe.Webhook.construct_event will raise on invalid signature
+                event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+            except stripe.error.SignatureVerificationError as sve:
+                logger.warning('Stripe signature verification failed (ip=%s): %s', remote_ip, str(sve))
+                raise HTTPException(status_code=400, detail='Invalid webhook signature')
+            except Exception as e:
+                logger.exception('Unexpected error verifying Stripe webhook: %s', e)
+                raise HTTPException(status_code=400, detail='Invalid webhook payload')
+        else:
+            # If no webhook secret is set, only allow raw JSON in non-production environments
+            if Config.ENV == 'production':
+                logger.error('Received Stripe webhook without configured webhook secret in production (ip=%s)', remote_ip)
+                raise HTTPException(status_code=403, detail='Webhook signing not configured')
+            try:
+                event = json.loads(payload)
+            except Exception as e:
+                logger.exception('Failed to parse webhook payload as JSON: %s', e)
+                raise HTTPException(status_code=400, detail='Invalid webhook payload')
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception('Webhook handling pre-check failed: %s', e)
+        raise HTTPException(status_code=400, detail='Invalid webhook')
+    # Idempotency: record event in `stripe_events` and skip if already processed
+    try:
+        SUPABASE_URL = os.getenv('SUPABASE_URL')
+        SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
+        event_id = None
+        if event:
+            event_id = event.get('id') or (event.get('data', {}).get('object', {}) or {}).get('id')
+        if SUPABASE_URL and SUPABASE_SERVICE_KEY and event_id:
+            async with httpx.AsyncClient(timeout=10) as client:
+                headers = {
+                    'apikey': SUPABASE_SERVICE_KEY,
+                    'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
+                    'Content-Type': 'application/json'
+                }
+                # Check if event already processed
+                try:
+                    rcheck = await client.get(f"{SUPABASE_URL}/rest/v1/stripe_events?event_id=eq.{event_id}&select=id", headers=headers)
+                    if rcheck.status_code == 200 and rcheck.json():
+                        logger.info('Duplicate Stripe event received, skipping: %s', event_id)
+                        return JSONResponse({'received': True, 'duplicate': True})
+                except Exception:
+                    logger.debug('Failed to check stripe_events for idempotency')
+
+                # Persist the raw event record (best-effort). Use upsert/merge-duplicates preference.
+                try:
+                    ev_payload = {
+                        'event_id': event_id,
+                        'event_type': event.get('type') if isinstance(event, dict) else None,
+                        # Store a trimmed payload for debugging; avoid very large inserts
+                        'payload': json.dumps(event) if not isinstance(event, str) else event
+                    }
+                    await client.post(f"{SUPABASE_URL}/rest/v1/stripe_events", json=[ev_payload], headers={**headers, 'Prefer': 'resolution=merge-duplicates'})
+                except Exception:
+                    logger.debug('Failed to persist stripe event to Supabase')
+    except Exception:
+        logger.exception('Stripe event idempotency check failed')
+
+    # Handle checkout.session.completed
+    if event and event.get('type') == 'checkout.session.completed':
+        session = event.get('data', {}).get('object', {})
+        customer_email = session.get('customer_email')
+        logger.info('Checkout completed for %s', customer_email)
+        # Link to user in Supabase: upsert customers/subscriptions
+        try:
+            SUPABASE_URL = os.getenv('SUPABASE_URL')
+            SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
+            if SUPABASE_URL and SUPABASE_SERVICE_KEY and customer_email:
+                async with httpx.AsyncClient(timeout=10) as client:
+                    # Prefer `users` table if present; otherwise upsert into newsletter_subscribers
+                    payload = {
+                        'email': customer_email,
+                        'stripe_customer_id': session.get('customer'),
+                        'stripe_subscription_id': session.get('subscription') or session.get('metadata', {}).get('subscription_id'),
+                        'last_paid_at': datetime.utcnow().isoformat()
+                    }
+                    headers = {
+                        'apikey': SUPABASE_SERVICE_KEY,
+                        'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    }
+
+                    # Try upsert into users table
+                    users_url = f"{SUPABASE_URL}/rest/v1/users"
+                    r = await client.post(users_url, json=[payload], headers={**headers, 'Prefer': 'resolution=merge-duplicates'})
+                    if r.status_code not in (200,201):
+                        # Fallback to newsletter_subscribers
+                        ns_url = f"{SUPABASE_URL}/rest/v1/newsletter_subscribers"
+                        r2 = await client.post(ns_url, json=[payload], headers={**headers, 'Prefer': 'resolution=merge-duplicates'})
+                        logger.info('Upsert newsletter_subscribers result: %s', r2.status_code)
+                    else:
+                        logger.info('Upsert users result: %s', r.status_code)
+
+                    # Create dedicated subscription record for audit
+                    try:
+                        subs_payload = {
+                            'email': customer_email,
+                            'stripe_session_id': session.get('id'),
+                            'stripe_customer_id': session.get('customer'),
+                            'stripe_subscription_id': session.get('subscription') or (session.get('metadata') or {}).get('subscription_id'),
+                            'metadata': json.dumps(session.get('metadata') or {}),
+                            'status': 'completed',
+                            'created_at': datetime.utcnow().isoformat()
+                        }
+                        subs_url = f"{SUPABASE_URL}/rest/v1/subscriptions"
+                        rsub = await client.post(subs_url, json=[subs_payload], headers={**headers, 'Prefer': 'return=representation'})
+                        logger.info('Inserted subscription record: %s', rsub.status_code)
+                    except Exception as e:
+                        logger.exception('Failed to insert subscription record: %s', e)
+
+                    # Send admin Slack + email notification (best-effort)
+                    try:
+                        admin_email = os.getenv('ADMIN_EMAIL')
+                        if admin_email and email_service and email_service.is_configured:
+                            subject = f"New Stripe checkout: {customer_email}"
+                            html = f"<p>Checkout completed for <strong>{customer_email}</strong></p><pre>{json.dumps(session, indent=2)[:4000]}</pre>"
+                            asyncio.create_task(email_service.send_email(admin_email, subject, html))
+                    except Exception:
+                        logger.exception('Failed to queue admin notification')
+
+                    # Slack notifier (if configured)
+                    try:
+                        from slack_notifier import send_slack_message
+                        slack_url = os.getenv('ADMIN_SLACK_WEBHOOK')
+                        if slack_url:
+                            asyncio.create_task(send_slack_message(slack_url, f"New checkout: {customer_email} (session: {session.get('id')})"))
+                    except Exception:
+                        logger.debug('Slack notification skipped or failed')
+        except Exception as e:
+            logger.exception('Failed to link checkout session to DB: %s', e)
+
+    # Handle invoice.payment_succeeded -> mark subscription as paid/active
+    if event and event.get('type') == 'invoice.payment_succeeded':
+        try:
+            invoice = event.get('data', {}).get('object', {})
+            subs_id = invoice.get('subscription')
+            customer = invoice.get('customer')
+            amount_paid = invoice.get('amount_paid')
+            SUPABASE_URL = os.getenv('SUPABASE_URL')
+            SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
+            if SUPABASE_URL and SUPABASE_SERVICE_KEY and subs_id:
+                async with httpx.AsyncClient(timeout=10) as client:
+                    headers = {
+                        'apikey': SUPABASE_SERVICE_KEY,
+                        'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    }
+                    # Update subscriptions record status
+                    upd = {
+                        'status': 'paid',
+                        'metadata': json.dumps({'amount_paid': amount_paid}),
+                        'created_at': datetime.utcnow().isoformat()
+                    }
+                    try:
+                        await client.patch(f"{SUPABASE_URL}/rest/v1/subscriptions?stripe_subscription_id=eq.{subs_id}", json=upd, headers=headers)
+                    except Exception:
+                        # try by stripe_subscription_id in metadata or fallback insert
+                        try:
+                            payload = {
+                                'stripe_subscription_id': subs_id,
+                                'stripe_customer_id': customer,
+                                'status': 'paid',
+                                'metadata': json.dumps({'amount_paid': amount_paid}),
+                                'created_at': datetime.utcnow().isoformat()
+                            }
+                            await client.post(f"{SUPABASE_URL}/rest/v1/subscriptions", json=[payload], headers=headers)
+                        except Exception:
+                            logger.debug('Failed to upsert subscription for invoice')
+        except Exception:
+            logger.exception('Failed to handle invoice.payment_succeeded')
+
+    # Handle subscription updates and deletions
+    if event and event.get('type') in ('customer.subscription.updated', 'customer.subscription.deleted'):
+        try:
+            sub = event.get('data', {}).get('object', {})
+            subs_id = sub.get('id')
+            status = sub.get('status')
+            customer = sub.get('customer')
+            SUPABASE_URL = os.getenv('SUPABASE_URL')
+            SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
+            if SUPABASE_URL and SUPABASE_SERVICE_KEY and subs_id:
+                async with httpx.AsyncClient(timeout=10) as client:
+                    headers = {
+                        'apikey': SUPABASE_SERVICE_KEY,
+                        'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    }
+                    upd = {'status': status, 'metadata': json.dumps(sub)}
+                    try:
+                        await client.patch(f"{SUPABASE_URL}/rest/v1/subscriptions?stripe_subscription_id=eq.{subs_id}", json=upd, headers=headers)
+                    except Exception:
+                        try:
+                            payload = {
+                                'stripe_subscription_id': subs_id,
+                                'stripe_customer_id': customer,
+                                'status': status,
+                                'metadata': json.dumps(sub),
+                                'created_at': datetime.utcnow().isoformat()
+                            }
+                            await client.post(f"{SUPABASE_URL}/rest/v1/subscriptions", json=[payload], headers=headers)
+                        except Exception:
+                            logger.debug('Failed to upsert subscription from event')
+        except Exception:
+            logger.exception('Failed to handle subscription event')
+
+    return JSONResponse({'received': True})
 
 app.add_middleware(
     CORSMiddleware,
