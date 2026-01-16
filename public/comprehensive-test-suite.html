@@ -105,6 +105,12 @@
       // 8 waitlist attempt
       steps.push({name:'Waitlist signup (sample)', fn: async ()=>{ const id=addStep('Waitlist'); const r=await fetchJson('/waitlist/signup',{method:'POST', body: JSON.stringify({email:'ci-test@example.com', name:'CI Test'})}); if(r.status===200||r.status===201) setStepOk(id,'joined'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
 
+      // 9 providers detail
+      steps.push({name:'Providers detail', fn: async ()=>{ const id=addStep('Providers detail'); const r=await fetchJson('/providers'); if(r.ok){ setStepOk(id,'providers listed'); logDetail(JSON.stringify(r,null,2)) } else setStepFail(id,'status '+r.status); }});
+
+      // 10 send test email (best-effort)
+      steps.push({name:'Send test email', fn: async ()=>{ const id=addStep('Send test email'); try{ const r=await fetchJson('/email/send-test',{method:'POST', body: JSON.stringify({to:'ci-test@example.com', subject:'Verity CI test', body:'This is a staging email.'})}); if(r.status===200||r.status===201) setStepOk(id,'email accepted'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }catch(e){ setStepFail(id,'exception'); logDetail(String(e)) } }});
+
       // 9 stripe config
       steps.push({name:'Stripe config', fn: async ()=>{ const id=addStep('Stripe Config'); const r=await fetchJson('/stripe/config'); if(r.ok) setStepOk(id,'stripe configured='+!!r.body.configured); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }});
 
@@ -119,6 +125,7 @@
     async function checkProviders(){ const id=addStep('Providers'); const r=await fetchJson('/providers'); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
     async function runVerifySample(){ const id=addStep('Verify Sample'); const r=await fetchJson('/verify',{method:'POST', body: JSON.stringify({claim:'Birds can fly', tier:'free'})}); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
     async function runBatchSample(){ const id=addStep('Batch Sample'); const r=await fetchJson('/v3/batch-verify',{method:'POST', body: JSON.stringify({claims:['A','B'], tier:'free'})}); if(r.ok) setStepOk(id,'ok'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }
+    async function sendTestEmail(){ const id=addStep('Send Test Email'); try{ const r=await fetchJson('/email/send-test',{method:'POST', body: JSON.stringify({to:'ci-test@example.com', subject:'Quick test', body:'Hello from Tester UI'})}); if(r.status===200||r.status===201) setStepOk(id,'email sent'); else setStepFail(id,'status '+r.status); logDetail(JSON.stringify(r,null,2)) }catch(e){ setStepFail(id,'exception'); logDetail(String(e)) } }
   </script>
 </body>
 </html>
