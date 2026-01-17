@@ -10,6 +10,9 @@ pydantic>=2.10.0
 # Pin httpx to a known-compatible version for Supabase client libraries.
 # If you maintain Supabase client, update this pin after validating compatibility.
 httpx==0.25.1
+# Pin httpcore to a version compatible with httpx 0.25.1 to avoid transport
+# signature mismatches (fixes AsyncConnectionPool socket_options error).
+httpcore==0.17.1
 
 # Environment
 python-dotenv>=1.0.1
@@ -27,3 +30,10 @@ stripe>=11.0.0
 
 # Postgres client for migrations
 psycopg2-binary>=2.9.7
+
+# ORM + Migrations (for production migration path)
+SQLAlchemy>=2.1.0
+alembic>=1.12.0
+cryptography>=41.0.0
+celery>=5.3.0
+redis>=4.6.0
