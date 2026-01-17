@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_stripe_webhook_integration.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_stripe_webhook_integration.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_checkout_webhook_creates_subscription</li></ul><h3>Markers / Types</h3><ul><li>type: integration</li></ul></div><h2>Source</h2><pre class="source">import os
+import json
+import pytest
+import httpx
+
+
+pytestmark = pytest.mark.skipif(not os.getenv(&#x27;RUN_INTEGRATION_TESTS&#x27;), reason=&#x27;Integration tests disabled&#x27;)
+
+
+def test_checkout_webhook_creates_subscription():
+    &quot;&quot;&quot;Post a simulated checkout.session.completed webhook to local server and assert 200&quot;&quot;&quot;
+    url = os.getenv(&#x27;LOCAL_API_URL&#x27;, &#x27;http://127.0.0.1:8001/stripe/webhook&#x27;)
+    # Minimal fake checkout.session.completed payload
+    payload = {
+        &#x27;id&#x27;: &#x27;evt_test_checkout_1&#x27;,
+        &#x27;type&#x27;: &#x27;checkout.session.completed&#x27;,
+        &#x27;data&#x27;: {
+            &#x27;object&#x27;: {
+                &#x27;id&#x27;: &#x27;cs_test_1&#x27;,
+                &#x27;customer_email&#x27;: &#x27;integration-test@example.com&#x27;,
+                &#x27;customer&#x27;: &#x27;cus_test_123&#x27;,
+                &#x27;subscription&#x27;: &#x27;sub_test_123&#x27;,
+                &#x27;metadata&#x27;: {}
+            }
+        }
+    }
+
+    # Try remote first (sync)
+    r = None
+    try:
+        r = httpx.post(url, json=payload, timeout=10)
+    except Exception:
+        r = None
+
+    if not r or r.status_code == 404:
+        # Use FastAPI TestClient against the minimal local ASGI app
+        try:
+            import minimal_webhook_app
+        except Exception:
+            minimal_webhook_app = None
+
+        assert minimal_webhook_app is not None, &#x27;No server available and no local ASGI app found&#x27;
+        from fastapi.testclient import TestClient
+        client = TestClient(minimal_webhook_app.app)
+        r2 = client.post(&#x27;/stripe/webhook&#x27;, json=payload)
+        assert r2.status_code == 200
+        j = r2.json()
+        assert j.get(&#x27;received&#x27;) is True
+    else:
+        assert r.status_code == 200
+        j = r.json()
+        assert j.get(&#x27;received&#x27;) is True
+</pre></div></body></html>

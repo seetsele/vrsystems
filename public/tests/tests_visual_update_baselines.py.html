@@ -1,0 +1,43 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\visual\update_baselines.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\visual\update_baselines.py</h1><p><a href="index.html">Back to tests index</a></p><h2>Source</h2><pre class="source">#!/usr/bin/env python3
+&quot;&quot;&quot;
+Copy screenshots from `playwright-report/screenshots/` into the visual baseline folder
+when `UPDATE_BASELINES=1` is set. This script is intended to prepare a zip of updated
+baselines for manual review; it does not commit changes.
+&quot;&quot;&quot;
+import os
+import shutil
+import time
+
+SRC = os.path.join(os.getcwd(), &#x27;playwright-report&#x27;, &#x27;screenshots&#x27;)
+DEST = os.path.join(os.getcwd(), &#x27;tests&#x27;, &#x27;visual&#x27;, &#x27;baseline_updates&#x27;)
+
+if __name__ == &#x27;__main__&#x27;:
+    if os.environ.get(&#x27;UPDATE_BASELINES&#x27;, &#x27;&#x27;).lower() not in (&#x27;1&#x27;, &#x27;true&#x27;, &#x27;yes&#x27;):
+        print(&#x27;UPDATE_BASELINES not set; exiting&#x27;)
+        raise SystemExit(0)
+
+    if not os.path.exists(SRC):
+        print(&#x27;No screenshots found at&#x27;, SRC)
+        raise SystemExit(1)
+
+    os.makedirs(DEST, exist_ok=True)
+    ts = int(time.time())
+    copied = 0
+    for f in os.listdir(SRC):
+        if f.lower().endswith(&#x27;.png&#x27;):
+            src = os.path.join(SRC, f)
+            dest = os.path.join(DEST, f)
+            shutil.copy2(src, dest)
+            copied += 1
+    print(f&#x27;Copied {copied} screenshots to {DEST} (ts={ts})&#x27;)
+    # create a zip for artifact upload
+    import zipfile
+    out = f&#x27;baseline-updates-{ts}.zip&#x27;
+    with zipfile.ZipFile(out, &#x27;w&#x27;, compression=zipfile.ZIP_DEFLATED) as z:
+        for root, dirs, files in os.walk(DEST):
+            for fn in files:
+                full = os.path.join(root, fn)
+                arc = os.path.relpath(full, start=DEST)
+                z.write(full, arc)
+    print(&#x27;Wrote&#x27;, out)
+</pre></div></body></html>

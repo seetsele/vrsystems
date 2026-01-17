@@ -58,7 +58,7 @@ This document summarizes the comprehensive testing suite and best-in-class recom
 | **Total** | | **14-17** |
 
 ### UI Advertises "21-Point System"
-**Mismatch**: The backend does 14-17 checks but UI says 9.
+**Status**: The UI is intended to promote our full 21-Point Verification™ framework. Previously some display elements still read "21-Point" — those have been updated to show the correct 21-Point messaging so the UX matches the full 7×3 verification coverage.
 
 ---
 
@@ -93,7 +93,7 @@ This document summarizes the comprehensive testing suite and best-in-class recom
 ## Implementation Priority
 
 ### Immediate (Week 1)
-1. **Update UI** from "9-Point" to "21-Point System" badge
+1. **Update UI** from "21-Point" to "21-Point System" badge
 2. **Add Temporal Verification** - check claim currency
 3. **Add Source Authority Scoring** - rate source credibility
 

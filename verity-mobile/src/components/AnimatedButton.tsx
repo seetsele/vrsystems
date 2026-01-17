@@ -14,7 +14,7 @@ interface AnimatedButtonProps {
 }
 
 export default function AnimatedButton({ title, subtitle, icon, colors, onPress, style, delay = 0 }: AnimatedButtonProps) {
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const scaleAnim = useRef(new Animated.Value(0.94)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(20)).current;
 
@@ -23,8 +23,8 @@ export default function AnimatedButton({ title, subtitle, icon, colors, onPress,
       Animated.parallel([
         Animated.spring(scaleAnim, {
           toValue: 1,
-          tension: 50,
-          friction: 8,
+          friction: 9,
+          tension: 40,
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {
@@ -46,9 +46,9 @@ export default function AnimatedButton({ title, subtitle, icon, colors, onPress,
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
-      toValue: 0.95,
-      tension: 100,
-      friction: 10,
+      toValue: 0.97,
+      friction: 18,
+      tension: 120,
       useNativeDriver: true,
     }).start();
   };
@@ -56,8 +56,8 @@ export default function AnimatedButton({ title, subtitle, icon, colors, onPress,
   const handlePressOut = () => {
     Animated.spring(scaleAnim, {
       toValue: 1,
-      tension: 50,
-      friction: 8,
+      friction: 9,
+      tension: 40,
       useNativeDriver: true,
     }).start();
   };
@@ -76,8 +76,8 @@ export default function AnimatedButton({ title, subtitle, icon, colors, onPress,
           end={{ x: 1, y: 1 }}
           style={styles.container}
         >
-          <View style={[styles.iconContainer, { backgroundColor: `${colors[0]}20` }]}>
-            <Ionicons name={icon} size={28} color={colors[0]} />
+            <View style={[styles.iconContainer, { backgroundColor: `${colors[0]}20` }]}>
+            <Ionicons name={icon} size={22} color={colors[0]} />
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.title}>{title}</Text>
@@ -94,15 +94,15 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 20,
+    padding: 14,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
   },

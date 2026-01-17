@@ -261,26 +261,47 @@
             const emailInput = document.getElementById('emailInput');
             const email = emailInput.value.trim();
             const submitBtn = document.querySelector('.btn-join');
-            
+
             if (!email) return;
-            
+
             // Disable button during submission
             submitBtn.disabled = true;
             submitBtn.textContent = 'Joining...';
-            
-            let saved = false;
-            
+
             try {
-                // Wait for Supabase to be ready (up to 3 seconds)
+                // Try server-side signup first (server will insert to Supabase and send welcome email)
+                const resp = await fetch('/waitlist/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+
+                if (resp && resp.ok) {
+                    const data = await resp.json();
+                    (window.verityLogger || console).info('Server waitlist response', data);
+                    // Update UI
+                    count++;
+                    document.getElementById('waitlistCount').textContent = count.toLocaleString();
+                    document.getElementById('userPosition').textContent = '#' + count.toLocaleString();
+                    document.getElementById('successModal').classList.add('active');
+                    emailInput.value = '';
+                    return;
+                }
+            } catch (err) {
+                console.warn('Server waitlist signup failed, falling back to client-side Supabase:', err.message || err);
+            }
+
+            // Fallback: use client-side Supabase if server-side endpoint isn't available
+            try {
                 let attempts = 0;
                 while (!window.VeritySupabase?.client && attempts < 30) {
                     await new Promise(r => setTimeout(r, 100));
                     attempts++;
                 }
-                
+
                 const client = window.VeritySupabase?.client;
                 if (client) {
-                    (window.verityLogger || console).info('Saving email to waitlist:', email);
+                    (window.verityLogger || console).info('Saving email to waitlist (client):', email);
                     const { data, error } = await client
                         .from('newsletter_subscribers')
                         .upsert({
@@ -288,31 +309,24 @@
                             subscribed_at: new Date().toISOString()
                         }, { onConflict: 'email' })
                         .select();
-                    
+
                     if (error) {
                         console.warn('Waitlist save warning:', error.message);
-                        // If duplicate, still count as success
-                        if (error.message.includes('duplicate') || error.code === '23505') {
-                            saved = true;
-                        }
-                    } else {
-                        (window.verityLogger || console).info('Waitlist save success:', data);
-                        saved = true;
                     }
                 } else {
-                    console.warn('Supabase not available, showing success anyway');
+                    console.warn('Supabase not available for fallback; showing success UI')
                 }
-                
-                // Show success (better UX even if save failed)
+
+                // Show success UI
                 count++;
                 document.getElementById('waitlistCount').textContent = count.toLocaleString();
                 document.getElementById('userPosition').textContent = '#' + count.toLocaleString();
                 document.getElementById('successModal').classList.add('active');
                 emailInput.value = '';
-                
+
             } catch (err) {
-                console.error('Waitlist error:', err);
-                // Still show success for better UX
+                console.error('Waitlist error (fallback):', err);
+                // Still show success for UX
                 count++;
                 document.getElementById('waitlistCount').textContent = count.toLocaleString();
                 document.getElementById('userPosition').textContent = '#' + count.toLocaleString();

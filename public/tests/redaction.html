@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Redaction Patterns</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:20px}
+    textarea{width:100%;height:240px;font-family:monospace}
+    .row{display:flex;gap:8px;margin-top:8px}
+    button{padding:8px}
+  </style>
+</head>
+<body>
+  <div><a href="/tests/runner.html">← Runner</a> — <a href="/tests/providers.html">Providers</a> — Redaction</div>
+  <h1>Redaction Patterns</h1>
+  <p>Edit the list of regex patterns used for redaction. Patterns are applied case-insensitively.</p>
+  <textarea id="patterns">[]</textarea>
+  <div class="row">
+    <button id="load">Load</button>
+    <button id="save">Save</button>
+    <button id="restore">Restore Defaults</button>
+  </div>
+  <script>
+    async function load(){
+      const res = await fetch('/redaction-patterns');
+      const j = await res.json();
+      document.getElementById('patterns').value = JSON.stringify(j.patterns||[], null, 2);
+    }
+    document.getElementById('load').addEventListener('click', load);
+    document.getElementById('save').addEventListener('click', async ()=>{
+      try{
+        const p = JSON.parse(document.getElementById('patterns').value);
+        const res = await fetch('/redaction-patterns', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({patterns:p})});
+        if (!res.ok) { alert('Save failed'); return }
+        alert('Saved');
+      }catch(e){ alert('Invalid JSON') }
+    });
+    document.getElementById('restore').addEventListener('click', ()=>{
+      document.getElementById('patterns').value = JSON.stringify([
+        "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}",
+        "(?i)bearer\\s+[A-Za-z0-9\\-\\._~\\+\\/]+=*",
+        "(?i)token=\\w+",
+        "[A-Fa-f0-9]{32,}",
+        "[A-Za-z0-9_-]{40,}",
+        "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+      ], null, 2);
+    });
+    load();
+  </script>
+</body>
+</html>

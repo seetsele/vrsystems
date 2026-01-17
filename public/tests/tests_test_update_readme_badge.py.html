@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_update_readme_badge.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_update_readme_badge.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_update_readme_badge</li></ul></div><h2>Source</h2><pre class="source">import os, sys, tempfile
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;))
+sys.path.insert(0, ROOT)
+from scripts import update_readme_badge as updater
+
+
+def test_update_readme_badge(tmp_path, monkeypatch):
+    # Create a temp README
+    readme = tmp_path / &#x27;README.md&#x27;
+    content = &#x27;Hello\n[![CI Status](https://github.com/&lt;owner&gt;/&lt;repo&gt;/actions/workflows/ci.yml/badge.svg)](https://github.com/&lt;owner&gt;/&lt;repo&gt;/actions/workflows/ci.yml)\n&#x27;
+    readme.write_text(content, encoding=&#x27;utf-8&#x27;)
+
+    monkeypatch.setenv(&#x27;GITHUB_REPO&#x27;, &#x27;myorg/myrepo&#x27;)
+    # run script pointing to temp README by changing path in script
+    # We&#x27;ll monkeypatch the README path variable inside the module
+    updater.README = str(readme)
+    updater.PLACEHOLDER = updater.PLACEHOLDER
+    updater.__dict__.update({&#x27;REPO&#x27;: &#x27;myorg/myrepo&#x27;})
+    # Execute replacement logic
+    with open(updater.README, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+        before = fh.read()
+    assert &#x27;&lt;owner&gt;/&lt;repo&gt;&#x27; in before
+    # call main logic from script
+    # This is not strictly a function, so run the same logic
+    updater_text = before.replace(updater.PLACEHOLDER, f&#x27;[![CI Status](https://github.com/myorg/myrepo/actions/workflows/ci.yml/badge.svg)](https://github.com/myorg/myrepo/actions/workflows/ci.yml)&#x27;)
+    with open(updater.README, &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+        fh.write(updater_text)
+    with open(updater.README, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+        after = fh.read()
+    assert &#x27;myorg/myrepo&#x27; in after
+</pre></div></body></html>

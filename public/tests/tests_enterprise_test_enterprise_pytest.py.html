@@ -1,0 +1,61 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\enterprise\test_enterprise_pytest.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\enterprise\test_enterprise_pytest.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_enterprise_live</li></ul><h3>Markers / Types</h3><ul><li>marker: parametrize</li></ul></div><h2>Source</h2><pre class="source">import os
+import time
+from pathlib import Path
+
+import pytest
+import requests
+
+
+ROOT = Path(__file__).resolve().parents[2]
+VAULT = ROOT / &quot;test-vault&quot;
+VAULT.mkdir(exist_ok=True)
+
+TEST_URL = os.getenv(&quot;TEST_URL&quot;, &quot;http://localhost:8000&quot;).rstrip(&quot;/&quot;)
+API_KEY = os.getenv(&quot;TEST_API_KEY&quot;) or os.getenv(&quot;VERITY_TEST_KEY&quot;)
+HEADERS = {&quot;Content-Type&quot;: &quot;application/json&quot;}
+if API_KEY:
+    HEADERS[&quot;Authorization&quot;] = f&quot;Bearer {API_KEY}&quot;
+
+
+TEST_SPECS = [
+    (&quot;GET&quot;, &quot;/health&quot;),
+    (&quot;GET&quot;, &quot;/health/deep&quot;),
+    (&quot;GET&quot;, &quot;/providers&quot;),
+    (&quot;GET&quot;, &quot;/providers/health&quot;),
+    (&quot;POST&quot;, &quot;/verify&quot;, {&quot;claim&quot;: &quot;The sky is blue.&quot;, &quot;source&quot;: &quot;pytest&quot;}),
+    (&quot;POST&quot;, &quot;/v3/batch-verify&quot;, {&quot;claims&quot;: [&quot;Water is wet.&quot;, &quot;The moon is made of cheese.&quot;]}),
+    (&quot;POST&quot;, &quot;/tools/image-forensics&quot;, {&quot;image_url&quot;: &quot;https://example.com/sample.jpg&quot;}),
+    (&quot;POST&quot;, &quot;/tools/realtime-stream&quot;, {&quot;text&quot;: &quot;This is a viral test message&quot;, &quot;metadata&quot;: {&quot;platform&quot;: &quot;pytest&quot;}}),
+    (&quot;POST&quot;, &quot;/tools/research-assistant&quot;, {&quot;query&quot;: &quot;recent research on misinformation detection&quot;}),
+    (&quot;POST&quot;, &quot;/tools/social-media&quot;, {&quot;url&quot;: &quot;https://twitter.com/example/status/1&quot;}),
+    (&quot;POST&quot;, &quot;/tools/source-credibility&quot;, {&quot;url&quot;: &quot;https://example.com/article&quot;}),
+    (&quot;POST&quot;, &quot;/tools/statistics-validator&quot;, {&quot;text&quot;: &quot;10% of people do X&quot;}),
+]
+
+
+def save_result(results: list):
+    fname = VAULT / f&quot;pytest-enterprise-{int(time.time())}.json&quot;
+    import json
+
+    fname.write_text(json.dumps({&quot;time&quot;: int(time.time()), &quot;results&quot;: results}, indent=2))
+
+
+@pytest.mark.parametrize(&quot;method,path,payload&quot;, [(m, p, payload if len(t) == 3 else None) for t in TEST_SPECS for (m, p, *payload) in [t]])
+def test_enterprise_live(method, path, payload):
+    url = TEST_URL + path
+    start = time.time()
+    try:
+        if method == &quot;GET&quot;:
+            r = requests.get(url, headers=HEADERS, timeout=30)
+        else:
+            r = requests.post(url, headers=HEADERS, json=payload, timeout=60)
+    except Exception as e:
+        pytest.fail(f&quot;Request to {url} raised exception: {e}&quot;)
+
+    duration = time.time() - start
+    # Save minimal record for debugging
+    rec = {&quot;path&quot;: path, &quot;method&quot;: method, &quot;status_code&quot;: getattr(r, &quot;status_code&quot;, None), &quot;duration_ms&quot;: int(duration * 1000)}
+    save_result([rec])
+
+    assert r.status_code == 200, f&quot;{method} {path} returned {r.status_code} - body: {r.text}&quot;
+</pre></div></body></html>

@@ -7,8 +7,9 @@
 (function() {
 'use strict';
 
-// Logger (use electron-log for controllable logging levels)
-const log = require('electron-log');
+// Logger: use preload-exposed logger when available, otherwise console
+let log = console;
+try { log = window.verity?.logger || console; } catch (e) { log = console; }
 
 // ===== CONFIGURATION =====
 const CONFIG = {
@@ -40,6 +41,27 @@ const state = {
         autoSave: true
     }
 };
+
+// ===== SAFE BRIDGE (minimal stub when preload isn't available) =====
+try {
+    if (!window.verity) {
+        // Provide a tiny safe stub so renderer code can call `window.verity.*` without throwing
+        window.verity = Object.freeze({
+            window: {
+                minimize: () => {},
+                maximize: () => {},
+                close: () => {},
+                isMaximized: async () => false,
+                onMaximizedChange: () => () => {}
+            },
+            settings: { get: async () => null, set: async () => true, getAll: async () => ({}), save: async () => true },
+            diagnostics: { dumpLogs: async () => '' },
+            api: { getEndpoint: async () => CONFIG.apiEndpoint, setEndpoint: async () => true },
+            logger: console,
+            devtools: { open: () => {} }
+        });
+    }
+} catch (e) { /* ignore */ }
 
 // Pro+ tiers that unlock AI Tools
 const PRO_PLUS_TIERS = ['professional', 'business', 'business_plus', 'enterprise'];
@@ -170,6 +192,8 @@ async function init() {
         setupCommandPalette();
         setupGlobalSearch();
         checkAPIStatus();
+        // Periodic API health checks
+        try { setInterval(checkAPIStatus, 30000); } catch (e) { /* ignore */ }
         navigate(state.currentPage);
         log.info('✅ Verity Desktop Ready');
     } catch (err) {
@@ -224,7 +248,7 @@ function showFatalError(message) {
         `;
         document.body.appendChild(overlay);
         document.getElementById('open-dev')?.addEventListener('click', () => {
-            try { require('electron').ipcRenderer.send('open-devtools'); } catch (e) { console.warn('open-devtools not available', e); }
+            try { (window.verity?.devtools?.open || (() => {}))(); } catch (e) { console.warn('open-devtools not available', e); }
         });
         document.getElementById('dump-logs')?.addEventListener('click', async () => {
             try {
@@ -484,6 +508,12 @@ function attachPageHandlers(page) {
             
             // Extract claims button
             document.getElementById('extract-claims-btn')?.addEventListener('click', handleExtractClaims);
+            // How It Works card click
+            document.querySelector('.card-how-it-works')?.addEventListener('click', (e) => {
+                // If clicked on inner buttons, let them handle; otherwise show modal
+                if (e.target.closest('button')) return;
+                showHowItWorks();
+            });
             break;
         case 'source-checker':
             document.getElementById('check-source-btn')?.addEventListener('click', handleSourceCheck);
@@ -648,10 +678,25 @@ function attachPageHandlers(page) {
             });
             break;
         case 'dashboard':
-            // Quick actions
+            // Quick actions (supports both data-action and data-url for quick source checks)
             document.querySelectorAll('.quick-action').forEach(action => {
                 action.addEventListener('click', () => {
+                    const url = action.dataset.url;
                     const target = action.dataset.action;
+
+                    // If this quick action contains a URL (common for popular sources), open Source Checker and prefill
+                    if (url) {
+                        navigate('source-checker');
+                        setTimeout(() => {
+                            const input = document.getElementById('source-url');
+                            if (input) {
+                                input.value = url.startsWith('http') ? url : `https://${url}`;
+                                document.getElementById('check-source-btn')?.click();
+                            }
+                        }, 150);
+                        return;
+                    }
+
                     const actionMap = {
                         'verify': 'verify',
                         'source': 'source-checker',
@@ -677,7 +722,71 @@ function attachPageHandlers(page) {
                     }, 100);
                 }
             });
+
+            // Dashboard action items (alternate class used in some templates)
+            document.querySelectorAll('.action-item').forEach(action => {
+                action.addEventListener('click', () => {
+                    const url = action.dataset.url;
+                    const target = action.dataset.action;
+                    if (url) {
+                        navigate('source-checker');
+                        setTimeout(() => {
+                            const input = document.getElementById('source-url');
+                            if (input) {
+                                input.value = url.startsWith('http') ? url : `https://${url}`;
+                                document.getElementById('check-source-btn')?.click();
+                            }
+                        }, 150);
+                        return;
+                    }
+                    const actionMap = {
+                        'verify': 'verify',
+                        'source': 'source-checker',
+                        'moderate': 'content-mod',
+                        'research': 'research',
+                        'realtime': 'realtime',
+                        'api': 'api-tester'
+                    };
+                    if (actionMap[target]) navigate(actionMap[target]);
+                });
+            });
+
+            // Promo cards clickable (navigate by data-target or default to 21-point info)
+            document.querySelectorAll('.promo-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const target = card.dataset.target || '21-point-info';
+                    navigate(target);
+                });
+            });
             break;
+
+        case '21-point-info':
+            // Make each point-card expandable to view details in a modal
+            document.querySelectorAll('.point-card').forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', () => {
+                    const titleEl = card.querySelector('.point-title');
+                    const descEl = card.querySelector('.point-desc');
+                    const title = titleEl ? titleEl.textContent : 'Detail';
+                    const desc = descEl ? descEl.textContent : '';
+                    const modal = document.createElement('div');
+                    modal.className = 'modal modal-info';
+                    modal.innerHTML = `
+                        <div class="modal-card">
+                            <button class="btn-close-modal">×</button>
+                            <h3>${escapeHtml(title)}</h3>
+                            <p>${escapeHtml(desc)}</p>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    requestAnimationFrame(() => modal.classList.add('visible'));
+                    modal.querySelector('.btn-close-modal')?.addEventListener('click', () => {
+                        modal.classList.remove('visible');
+                        setTimeout(() => modal.remove(), 260);
+                    });
+                    modal.addEventListener('click', (e) => { if (e.target === modal) { modal.classList.remove('visible'); setTimeout(() => modal.remove(), 260); } });
+                });
+            });
     }
 }
 
@@ -716,6 +825,9 @@ function navigate(page) {
     document.getElementById('cmd')?.classList.remove('active');
 }
 
+// Expose navigate globally for inline handlers and external test hooks
+try { window.navigate = navigate; } catch (e) { /* ignore in restricted contexts */ }
+
 function getPageContent(page) {
     const pages = {
         'dashboard': renderDashboard,
@@ -734,7 +846,8 @@ function getPageContent(page) {
         'webhooks': renderWebhooks,
         'export': renderExport,
         'billing': renderBilling,
-        'settings': renderSettings
+        'settings': renderSettings,
+        '21-point-info': render21PointInfo
     };
     return (pages[page] || renderDashboard)();
 }
@@ -897,6 +1010,48 @@ function renderDashboard() {
                     <p>Cross-reference with our knowledge base</p>
                 </div>
                 <div class="promo-arrow">${ICONS.arrow}</div>
+            </div>
+        </div>
+    `;
+}
+
+// ===== PAGE RENDERERS - 21-POINT INFO =====
+function render21PointInfo() {
+    // Render a richer 21-point grid to match the website visual style
+    return `
+        <div class="page-header">
+            <h1>21-Point Verification</h1>
+            <p>Deep-dive into our multi-step verification methodology used by Verity.</p>
+        </div>
+        <div class="card card-article">
+            <h3>What is the 21-Point System?</h3>
+            <p>Our 21-Point System evaluates claims across multiple categories including source credibility, publication history, author reputation, citation depth, temporal validity, statistical consistency, and more. Each criterion yields a score which contributes to the overall confidence rating.</p>
+        </div>
+
+        <div class="card card-article">
+            <h4>Key Components</h4>
+            <div class="points-grid">
+                <div class="point-card">${ICONS.shield}<div class="point-title">Source Authority</div><div class="point-desc">Ownership, editorial independence and reputation.</div></div>
+                <div class="point-card">${ICONS.user}<div class="point-title">Author Reputation</div><div class="point-desc">Author track record and expertise.</div></div>
+                <div class="point-card">${ICONS.calendar}<div class="point-title">Publication History</div><div class="point-desc">Consistency of publication and archival records.</div></div>
+                <div class="point-card">${ICONS.link}<div class="point-title">Citation Depth</div><div class="point-desc">Quality and number of supporting citations.</div></div>
+                <div class="point-card">${ICONS.clock}<div class="point-title">Temporal Validity</div><div class="point-desc">Date relevance and timeliness of evidence.</div></div>
+                <div class="point-card">${ICONS.graph || ICONS.trending}<div class="point-title">Statistical Consistency</div><div class="point-desc">Check for numeric accuracy and plausibility.</div></div>
+                <div class="point-card">${ICONS.database}<div class="point-title">Methodological Rigor</div><div class="point-desc">Assess study methods and sampling.</div></div>
+                <div class="point-card">${ICONS.globe}<div class="point-title">Cross-Provider Consensus</div><div class="point-desc">Agreement across multiple providers.</div></div>
+                <div class="point-card">${ICONS.layers}<div class="point-title">Evidence Diversity</div><div class="point-desc">Multiple source types and formats.</div></div>
+                <div class="point-card">${ICONS.file}<div class="point-title">Originality</div><div class="point-desc">Is the claim original or recycled?</div></div>
+                <div class="point-card">${ICONS.eye}<div class="point-title">Document Integrity</div><div class="point-desc">Signs of manipulation in media/text.</div></div>
+                <div class="point-card">${ICONS.play}<div class="point-title">Media Analysis</div><div class="point-desc">Analyze images, audio and video for edits.</div></div>
+                <div class="point-card">${ICONS.map}<div class="point-title">Geolocation</div><div class="point-desc">Location evidence and plausibility.</div></div>
+                <div class="point-card">${ICONS.eyeOff}<div class="point-title">Temporal Plausibility</div><div class="point-desc">Verify timelines and sequence of events.</div></div>
+                <div class="point-card">${ICONS.info}<div class="point-title">Context Consistency</div><div class="point-desc">Contextual framing and omissions.</div></div>
+                <div class="point-card">${ICONS.quote || ICONS.external}<div class="point-title">Quotation Accuracy</div><div class="point-desc">Check direct quotes and sources.</div></div>
+                <div class="point-card">${ICONS.user}<div class="point-title">Expert Corroboration</div><div class="point-desc">Independent subject-matter confirmation.</div></div>
+                <div class="point-card">${ICONS.brain}<div class="point-title">Source Transparency</div><div class="point-desc">Funding, affiliations and conflicts.</div></div>
+                <div class="point-card">${ICONS.history || ICONS.calendar}<div class="point-title">Correction History</div><div class="point-desc">Track record of corrections and retractions.</div></div>
+                <div class="point-card">${ICONS.settings}<div class="point-title">Editorial Standards</div><div class="point-desc">Policies, review process and bylines.</div></div>
+                <div class="point-card">${ICONS.check}<div class="point-title">Evidence Aggregation</div><div class="point-desc">How supporting data is combined for scoring.</div></div>
             </div>
         </div>
     `;
@@ -1142,7 +1297,7 @@ Example: 'The Great Wall of China is visible from space with the naked eye.'"></
                 </div>
 
                 <!-- 21-Point System Info -->
-                <div class="card card-9point">
+                <div class="card card-21-Point">
                     <div class="nine-point-badge">
                         <span class="badge-icon">${ICONS.shield}</span>
                         <span>21-Point System</span>
@@ -1314,36 +1469,36 @@ function renderSourceChecker() {
                 <p class="card-subtitle">One-click analysis for commonly referenced sources</p>
             </div>
             <div class="quick-actions-grid">
-                <button class="quick-action-btn" data-url="reuters.com">
-                    <span class="quick-icon">📰</span>
+                <button class="quick-action" data-url="reuters.com">
+                    <span class="quick-icon">${ICONS.globe}</span>
                     <span>Reuters</span>
                 </button>
-                <button class="quick-action-btn" data-url="apnews.com">
-                    <span class="quick-icon">📡</span>
+                <button class="quick-action" data-url="apnews.com">
+                    <span class="quick-icon">${ICONS.globe}</span>
                     <span>AP News</span>
                 </button>
-                <button class="quick-action-btn" data-url="bbc.com">
-                    <span class="quick-icon">🇬🇧</span>
+                <button class="quick-action" data-url="bbc.com">
+                    <span class="quick-icon">${ICONS.globe}</span>
                     <span>BBC</span>
                 </button>
-                <button class="quick-action-btn" data-url="cnn.com">
-                    <span class="quick-icon">📺</span>
+                <button class="quick-action" data-url="cnn.com">
+                    <span class="quick-icon">${ICONS.globe}</span>
                     <span>CNN</span>
                 </button>
-                <button class="quick-action-btn" data-url="foxnews.com">
-                    <span class="quick-icon">🦊</span>
+                <button class="quick-action" data-url="foxnews.com">
+                    <span class="quick-icon">${ICONS.globe}</span>
                     <span>Fox News</span>
                 </button>
-                <button class="quick-action-btn" data-url="nytimes.com">
-                    <span class="quick-icon">📄</span>
+                <button class="quick-action" data-url="nytimes.com">
+                    <span class="quick-icon">${ICONS.globe}</span>
                     <span>NY Times</span>
                 </button>
-                <button class="quick-action-btn" data-url="washingtonpost.com">
-                    <span class="quick-icon">🏛️</span>
+                <button class="quick-action" data-url="washingtonpost.com">
+                    <span class="quick-icon">${ICONS.globe}</span>
                     <span>Washington Post</span>
                 </button>
-                <button class="quick-action-btn" data-url="theguardian.com">
-                    <span class="quick-icon">🔵</span>
+                <button class="quick-action" data-url="theguardian.com">
+                    <span class="quick-icon">${ICONS.globe}</span>
                     <span>The Guardian</span>
                 </button>
             </div>
@@ -3568,6 +3723,25 @@ function toast(message, type = 'info') {
     }, 3000);
 }
 
+// Show How It Works modal (reuses sidebar content)
+function showHowItWorks() {
+    const existing = document.getElementById('howit-modal');
+    if (existing) return;
+    const card = document.querySelector('.card-how-it-works');
+    const modal = document.createElement('div');
+    modal.id = 'howit-modal';
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
+        <div class="modal-container">
+            <button class="modal-close small" id="howit-close">×</button>
+            <div class="modal-body">${card ? card.innerHTML : '<h3>How it works</h3><p>Details unavailable.</p>'}</div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('howit-close')?.addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+}
+
 function createToastContainer() {
     const container = document.createElement('div');
     container.id = 'toast-container';
@@ -3661,11 +3835,22 @@ async function handleVerify() {
         saveState();
         
     } catch (error) {
-        console.error('Verification error:', error);
+        try { log.error && log.error('Verification error:', error); } catch (e) {}
+        // Mark API offline and update UI
+        state.apiOnline = false;
+        const statusEl = document.getElementById('api-status');
+        if (statusEl) {
+            statusEl.innerHTML = `
+                <span class="status-indicator offline"></span>
+                <span class="status-text">Demo Mode (Start API)</span>
+            `;
+        }
+        toast('Verification failed: API unreachable — switching to demo mode', 'warning');
+
         // Demo mode fallback
         const score = Math.floor(Math.random() * 50 + 40);
         const scoreClass = score >= 70 ? 'good' : score >= 40 ? 'medium' : 'bad';
-        
+
         resultDiv.innerHTML = `
             <div class="result-card ${scoreClass}">
                 <div class="result-header">
@@ -3908,15 +4093,43 @@ function applySettings() {
 // ===== SETUP FUNCTIONS =====
 function setupTitlebar() {
     // Window controls
-    document.getElementById('btn-min')?.addEventListener('click', () => {
-        window.verity?.window?.minimize();
+    const btnMin = document.getElementById('btn-min');
+    const btnMax = document.getElementById('btn-max');
+    const btnClose = document.getElementById('btn-close');
+
+    btnMin?.addEventListener('click', () => {
+        try { window.verity?.window?.minimize(); } catch (e) { console.warn('minimize failed', e); }
     });
-    document.getElementById('btn-max')?.addEventListener('click', () => {
-        window.verity?.window?.maximize();
+
+    btnMax?.addEventListener('click', () => {
+        try { window.verity?.window?.maximize(); } catch (e) { console.warn('maximize failed', e); }
     });
-    document.getElementById('btn-close')?.addEventListener('click', () => {
-        window.verity?.window?.close();
+
+    btnClose?.addEventListener('click', () => {
+        try { window.verity?.window?.close(); } catch (e) { console.warn('close failed', e); }
     });
+
+    // Reflect maximize/restored state on the maximize button
+    const updateMaxButton = async () => {
+        try {
+            const isMax = await (window.verity?.window?.isMaximized?.() ?? false);
+            if (btnMax) {
+                btnMax.classList.toggle('is-maximized', !!isMax);
+                btnMax.title = isMax ? 'Restore' : 'Maximize';
+            }
+        } catch (e) { /* ignore */ }
+    };
+    updateMaxButton();
+    if (window.verity?.window?.onMaximizedChange) {
+        try {
+            window.verity.window.onMaximizedChange((isMax) => {
+                if (btnMax) {
+                    btnMax.classList.toggle('is-maximized', !!isMax);
+                    btnMax.title = isMax ? 'Restore' : 'Maximize';
+                }
+            });
+        } catch (e) { /* ignore */ }
+    }
     
     // Sign In button handling
     document.getElementById('signin-btn')?.addEventListener('click', () => {

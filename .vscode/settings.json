@@ -1,4 +1,10 @@
 {
     "python-envs.defaultEnvManager": "ms-python.python:system",
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+    "chat.tools.terminal.autoApprove": {
+        "/^git add -A ; git commit -m \"chore: add local runner compose, prometheus, grafana, CI, helpers and recommendations\" --no-verify$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
 }

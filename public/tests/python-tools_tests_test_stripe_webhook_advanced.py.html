@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_stripe_webhook_advanced.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_stripe_webhook_advanced.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_stripe_various_events_and_idempotency</li></ul><h3>Markers / Types</h3><ul><li>marker: integration</li><li>type: integration</li></ul></div><h2>Source</h2><pre class="source">import pytest
+
+
+class AdvancedWebhookProcessor:
+    def __init__(self):
+        self.seen = {}
+
+    def verify_signature(self, payload: dict, sig_header: str) -&gt; bool:
+        # simple deterministic pseudo-check for tests
+        return sig_header == f&quot;sig-{payload.get(&#x27;id&#x27;,&#x27;&#x27;)[:8]}&quot;
+
+    def handle(self, payload: dict, sig_header: str = &#x27;&#x27;):
+        if not self.verify_signature(payload, sig_header):
+            return {&#x27;status&#x27;: &#x27;invalid_signature&#x27;}
+        eid = payload.get(&#x27;id&#x27;)
+        if eid in self.seen:
+            return {&#x27;status&#x27;: &#x27;ignored&#x27;, &#x27;id&#x27;: eid}
+        # simulate processing different event types
+        et = payload.get(&#x27;type&#x27;)
+        result = {&#x27;status&#x27;: &#x27;processed&#x27;, &#x27;id&#x27;: eid, &#x27;type&#x27;: et}
+        if et == &#x27;payment_intent.succeeded&#x27;:
+            result[&#x27;action&#x27;] = &#x27;grant_access&#x27;
+        elif et == &#x27;charge.refunded&#x27;:
+            result[&#x27;action&#x27;] = &#x27;revoke_access&#x27;
+        self.seen[eid] = result
+        return result
+
+
+@pytest.mark.integration
+def test_stripe_various_events_and_idempotency():
+    p = AdvancedWebhookProcessor()
+    payload1 = {&#x27;id&#x27;: &#x27;evt_abcdef01&#x27;, &#x27;type&#x27;: &#x27;payment_intent.succeeded&#x27;}
+    sig = &#x27;sig-evt_abc&#x27;
+    assert p.handle(payload1, sig)[&#x27;status&#x27;] == &#x27;invalid_signature&#x27;
+    sig = f&quot;sig-{payload1[&#x27;id&#x27;][:8]}&quot;
+    r = p.handle(payload1, sig)
+    assert r[&#x27;status&#x27;] == &#x27;processed&#x27; and r[&#x27;action&#x27;] == &#x27;grant_access&#x27;
+    # repeated same event should be ignored
+    r2 = p.handle(payload1, sig)
+    assert r2[&#x27;status&#x27;] == &#x27;ignored&#x27;
+
+    payload2 = {&#x27;id&#x27;: &#x27;evt_0002&#x27;, &#x27;type&#x27;: &#x27;charge.refunded&#x27;}
+    sig2 = &#x27;sig-evt_0002&#x27;
+    r3 = p.handle(payload2, sig2)
+    assert r3[&#x27;action&#x27;] == &#x27;revoke_access&#x27;
+</pre></div></body></html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test History — Verity</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;background:#051018;color:#e6eef8;padding:18px}
+    .card{background:#07121a;padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.03)}
+    .meta{font-family:JetBrains Mono,monospace;font-size:0.9rem;color:#9fb3c6}
+    .title{font-weight:700}
+    button{padding:6px 8px;border-radius:6px;border:none;background:#0ea5a4;color:#001}
+  </style>
+</head>
+<body>
+  <h1>Test Run History</h1>
+  <p>Recent test runs persisted by the local test runner.</p>
+  <div id="list"></div>
+  <script>
+    async function load(){
+      try{
+        const r = await fetch('http://127.0.0.1:8010/results');
+        if(!r.ok) return document.getElementById('list').textContent = 'Failed to load';
+        const j = await r.json();
+        const div = document.getElementById('list');
+        if(!j.runs || !j.runs.length) return div.textContent = 'No runs yet.';
+        div.innerHTML = '';
+        j.runs.forEach(run=>{
+          const c = document.createElement('div'); c.className='card';
+          c.innerHTML = `<div class="title">Run ${run.id}</div><div class="meta">${run.ts} — exit ${run.exit_code}</div><div style="margin-top:8px"><button data-id="${run.id}">View</button></div>`;
+          c.querySelector('button').addEventListener('click', async ()=>{
+            const res = await fetch('http://127.0.0.1:8010/results?id='+encodeURIComponent(run.id));
+            if(!res.ok) return alert('Failed');
+            const detail = await res.json();
+            const dlg = window.open('about:blank','run-'+run.id,'width=900,height=700');
+            dlg.document.write('<pre>'+escapeHtml(JSON.stringify(detail,null,2))+'</pre>');
+          });
+          div.appendChild(c);
+        });
+      }catch(e){ document.getElementById('list').textContent = 'Error: '+e.message }
+    }
+    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    load();
+  </script>
+</body>
+</html>

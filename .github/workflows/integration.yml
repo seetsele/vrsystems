@@ -1,0 +1,30 @@
+name: Integration Tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r python-tools/requirements.txt || true
+      - name: Run integration tests (conditional)
+        env:
+          RUN_INTEGRATION_TESTS: ${{ secrets.RUN_INTEGRATION_TESTS }}
+          LOCAL_API_URL: ${{ secrets.LOCAL_API_URL }}
+        run: |
+          if [ "$RUN_INTEGRATION_TESTS" = "1" ]; then
+            pytest python-tools/tests/test_stripe_webhook_integration.py -q
+          else
+            echo "Integration tests disabled"
+          fi

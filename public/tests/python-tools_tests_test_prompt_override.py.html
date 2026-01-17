@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_prompt_override.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_prompt_override.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_prompt_templates_file_exists_and_valid</li></ul></div><h2>Source</h2><pre class="source">import json
+from pathlib import Path
+
+
+def test_prompt_templates_file_exists_and_valid():
+    p = Path(__file__).resolve().parents[2] / &#x27;config&#x27; / &#x27;prompt_templates.json&#x27;
+    assert p.exists(), f&quot;prompt templates file missing: {p}&quot;
+    data = json.loads(p.read_text(encoding=&#x27;utf-8&#x27;))
+    assert &#x27;defaults&#x27; in data
+    assert &#x27;system_message&#x27; in data[&#x27;defaults&#x27;]
+</pre></div></body></html>

@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaults": {
+    "system_message": "You are Verity, an expert fact-checking assistant. Analyze claims precisely, cite sources, and provide a concise verdict with confidence.",
+    "health_template": "Assess the following health claim and prioritize high-quality evidence (meta-analyses, RCTs, WHO guidance). Provide sources and a confidence score.",
+    "finance_template": "Analyze the financial claim; reference authoritative economic analyses, official statistics, and major news coverage. Provide rationale and score.",
+    "generic_template": "Verify the claim using available sources; list supporting and contradicting evidence and provide a final verdict and confidence score."
+  },
+  "overrides": {}
+}

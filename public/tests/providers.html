@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Providers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#fff;--muted:#6b7280;--accent:#0f172a;--card:#f8fafc}
+    body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:24px;color:var(--accent);background:var(--bg)}
+    h1{font-size:20px;margin:0 0 12px}
+    .card{background:var(--card);padding:12px;border-radius:8px;margin-bottom:12px}
+    label{display:block;margin-top:8px;color:var(--muted)}
+    input,button{padding:8px;margin-top:6px;border-radius:6px;border:1px solid #e5e7eb}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    td,th{padding:8px;border-bottom:1px solid #eef2f7;text-align:left}
+    a{color:inherit;text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div><a href="/tests/runner.html">← Runner</a> — <a href="/tests/history.html">History</a> — Providers</div>
+  <h1>Providers (secrets)</h1>
+  <div class="card">
+    <div class="k">Add provider</div>
+    <label>Name</label>
+    <input id="name" placeholder="e.g. stripe-test" />
+    <label>Secret / Key</label>
+    <input id="secret" placeholder="sk_... or API key" />
+    <div style="margin-top:8px">
+      <button id="create">Create</button>
+    </div>
+    <div style="margin-top:8px;color:var(--muted)">Secrets are stored encrypted; retrieving the raw secret requires an API key.</div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:600">Existing providers</div><div><input id="apiKey" placeholder="API key (for secret retrieval)" /></div></div>
+    <table id="list"><thead><tr><th>Name</th><th>Created</th><th>Actions</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <script>
+    async function listProviders(){
+      const res = await fetch('/providers');
+      const j = await res.json();
+      const tbody = document.querySelector('#list tbody');
+      tbody.innerHTML = '';
+      (j.providers||[]).forEach(p=>{
+        const tr = document.createElement('tr');
+        const n = document.createElement('td'); n.textContent = p.name;
+        const c = document.createElement('td'); c.textContent = p.created_at;
+        const a = document.createElement('td');
+        const btn = document.createElement('button'); btn.textContent='Get Secret';
+        btn.onclick = async ()=>{
+          const key = document.getElementById('apiKey').value;
+          try{
+            const url = '/provider-secret?id='+encodeURIComponent(p.id);
+            const headers = key? {'X-API-KEY': key}: {};
+            const r = await fetch(url, {headers});
+            if (!r.ok) {
+              alert('Failed to fetch secret: '+r.status);
+              return;
+            }
+            const jj = await r.json();
+            alert('Secret: '+jj.secret);
+          }catch(e){ alert('Error: '+e.message) }
+        }
+        a.appendChild(btn);
+        tr.appendChild(n);tr.appendChild(c);tr.appendChild(a);tbody.appendChild(tr);
+      })
+    }
+    document.getElementById('create').addEventListener('click', async ()=>{
+      const name = document.getElementById('name').value;
+      const secret = document.getElementById('secret').value;
+      if(!name) { alert('name required'); return }
+      const res = await fetch('/providers', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, secret})});
+      if (!res.ok) { alert('failed to create'); return }
+      document.getElementById('name').value=''; document.getElementById('secret').value='';
+      await listProviders();
+    })
+    listProviders();
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Webhooks — Verity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg-dark:#0a0a0b;--card:#111113;--border:rgba(255,255,255,0.06);--muted:#9fb3c6;--text:#fafafa;--accent:#7dd3fc}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg-dark);color:var(--text);padding:24px}
+    h1{font-size:1.4rem;margin-bottom:8px}
+    p{color:var(--muted);margin-bottom:16px}
+    .panel{background:var(--card);border:1px solid var(--border);padding:14px;border-radius:10px}
+    .row{display:flex;gap:8px;align-items:center}
+    input.input{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
+    button.btn{background:linear-gradient(90deg,#10b981,#7dd3fc);color:#001;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .list{margin-top:12px}
+    .item{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);margin-bottom:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .meta{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:0.85rem}
+    a.link{color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+  <h1>Webhooks</h1>
+  <p>Register webhook endpoints to receive structured notifications after test runs. These are local development webhooks; use an HTTP-accessible URL (ngrok/tunnel) for remote delivery.</p>
+  <div class="panel">
+    <div class="row">
+      <input id="url" class="input" placeholder="https://example.com/webhook" />
+      <button id="add" class="btn">Register</button>
+    </div>
+    <div id="msg" style="margin-top:8px;color:var(--muted)"></div>
+    <div class="list" id="list"></div>
+  </div>
+
+<script>
+  async function load(){
+    try{
+      const r = await fetch('http://127.0.0.1:8010/webhooks');
+      if(!r.ok) return document.getElementById('list').textContent = 'Failed to load webhooks';
+      const j = await r.json();
+      const el = document.getElementById('list'); el.innerHTML = '';
+      (j.webhooks||[]).forEach(h=>{
+        const d = document.createElement('div'); d.className='item';
+        d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><div style=\"font-weight:700\">${h.url}</div><div class=\"meta\">${h.created_at}</div></div><div><a class=\"link\" href=\"${h.url}\" target=\"_blank\">Open</a></div></div>`;
+        el.appendChild(d);
+      });
+      if(!(j.webhooks||[]).length) el.textContent='No webhooks registered.';
+    }catch(e){ document.getElementById('list').textContent = 'Error: '+e.message }
+  }
+  document.getElementById('add').addEventListener('click', async ()=>{
+    const u = document.getElementById('url').value.trim(); if(!u) return alert('Enter a URL');
+    try{
+      const r = await fetch('http://127.0.0.1:8010/register-webhook',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u})});
+      if(!r.ok) throw new Error(await r.text());
+      const j = await r.json(); document.getElementById('msg').textContent='Registered: '+j.id; document.getElementById('url').value=''; load();
+    }catch(e){ alert('Failed: '+e.message) }
+  });
+  load();
+</script>
+</body>
+</html>

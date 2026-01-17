@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_auth_fixture.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_auth_fixture.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_confirmed_user_fixture</li></ul></div><h2>Source</h2><pre class="source">import os
+import requests
+
+
+def test_confirmed_user_fixture(confirmed_user):
+    # confirmed_user fixture provides email, password, id
+    email = confirmed_user[&#x27;email&#x27;]
+    user_id = confirmed_user[&#x27;id&#x27;]
+
+    # Verify user exists using Supabase admin GET endpoint
+    svc = os.getenv(&#x27;SUPABASE_SERVICE_KEY&#x27;)
+    base = os.getenv(&#x27;SUPABASE_URL&#x27;, &#x27;https://zxgydzavblgetojqdtir.supabase.co&#x27;)
+    assert svc, &#x27;SUPABASE_SERVICE_KEY not set in env for tests&#x27;
+    headers = {&#x27;Authorization&#x27;: f&#x27;Bearer {svc}&#x27;, &#x27;apikey&#x27;: svc}
+    r = requests.get(f&quot;{base}/auth/v1/admin/users/{user_id}&quot;, headers=headers, timeout=10)
+    assert r.status_code == 200
+    data = r.json()
+    assert data.get(&#x27;email&#x27;) == email
+</pre></div></body></html>

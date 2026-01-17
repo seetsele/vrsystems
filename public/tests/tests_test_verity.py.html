@@ -1,0 +1,432 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_verity.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_verity.py</h1><p><a href="index.html">Back to tests index</a></p><h2>Source</h2><pre class="source">&quot;&quot;&quot;
+Verity Systems - Comprehensive Unit Tests
+Tests for fact-checking API, providers, and verification engine.
+&quot;&quot;&quot;
+
+import pytest
+import asyncio
+import json
+from unittest.mock import Mock, patch, AsyncMock
+from datetime import datetime
+
+# ============================================================
+# DEMO/FRONTEND TESTS
+# ============================================================
+
+class TestDemoFunctionality:
+    &quot;&quot;&quot;Tests for the frontend demo features&quot;&quot;&quot;
+    
+    def test_fact_database_earth_age(self):
+        &quot;&quot;&quot;Test that Earth&#x27;s age fact returns correct data&quot;&quot;&quot;
+        # Simulating the FACT_DATABASE from main-v2.js
+        fact_database = {
+            &quot;earth&quot;: {
+                &quot;age&quot;: {
+                    &quot;verdict&quot;: &quot;VERIFIED_TRUE&quot;,
+                    &quot;confidence&quot;: 98.7,
+                    &quot;summary&quot;: &quot;The Earth is approximately 4.54 billion years old&quot;
+                }
+            }
+        }
+        
+        result = fact_database[&quot;earth&quot;][&quot;age&quot;]
+        assert result[&quot;verdict&quot;] == &quot;VERIFIED_TRUE&quot;
+        assert result[&quot;confidence&quot;] &gt; 95
+        assert &quot;4.54 billion&quot; in result[&quot;summary&quot;]
+    
+    def test_fact_database_brain_myth(self):
+        &quot;&quot;&quot;Test that 10% brain myth returns false&quot;&quot;&quot;
+        fact_database = {
+            &quot;brain&quot;: {
+                &quot;10percent&quot;: {
+                    &quot;verdict&quot;: &quot;VERIFIED_FALSE&quot;,
+                    &quot;confidence&quot;: 15.2,
+                    &quot;summary&quot;: &quot;The claim that humans only use 10% of their brain is a myth&quot;
+                }
+            }
+        }
+        
+        result = fact_database[&quot;brain&quot;][&quot;10percent&quot;]
+        assert result[&quot;verdict&quot;] == &quot;VERIFIED_FALSE&quot;
+        assert result[&quot;confidence&quot;] &lt; 20  # Low confidence means high certainty it&#x27;s false
+    
+    def test_fact_database_lightning_myth(self):
+        &quot;&quot;&quot;Test that lightning myth returns false&quot;&quot;&quot;
+        fact_database = {
+            &quot;lightning&quot;: {
+                &quot;strike&quot;: {
+                    &quot;verdict&quot;: &quot;VERIFIED_FALSE&quot;,
+                    &quot;confidence&quot;: 12.5,
+                    &quot;summary&quot;: &quot;Lightning frequently strikes the same place&quot;
+                }
+            }
+        }
+        
+        result = fact_database[&quot;lightning&quot;][&quot;strike&quot;]
+        assert result[&quot;verdict&quot;] == &quot;VERIFIED_FALSE&quot;
+    
+    def test_demo_attempts_limit(self):
+        &quot;&quot;&quot;Test that demo attempts are limited to 2&quot;&quot;&quot;
+        max_attempts = 2
+        attempts = 0
+        
+        # Simulate using attempts
+        for _ in range(3):
+            if attempts &lt; max_attempts:
+                attempts += 1
+        
+        assert attempts == max_attempts
+
+
+class TestClaimAnalysis:
+    &quot;&quot;&quot;Tests for claim analysis logic&quot;&quot;&quot;
+    
+    def test_claim_contains_earth_age(self):
+        &quot;&quot;&quot;Test detection of Earth age claims&quot;&quot;&quot;
+        claims = [
+            &quot;The Earth is approximately 4.5 billion years old&quot;,
+            &quot;Earth is 4.54 billion years old&quot;,
+            &quot;The earth is billions of years old&quot;,
+        ]
+        
+        for claim in claims:
+            claim_lower = claim.lower()
+            is_earth_age = (
+                (&#x27;earth&#x27; in claim_lower and 
+                 (&#x27;billion&#x27; in claim_lower or &#x27;years old&#x27; in claim_lower or &#x27;age&#x27; in claim_lower)) or
+                &#x27;4.5 billion&#x27; in claim_lower
+            )
+            assert is_earth_age, f&quot;Failed to detect Earth age claim: {claim}&quot;
+    
+    def test_claim_contains_brain_myth(self):
+        &quot;&quot;&quot;Test detection of 10% brain myth claims&quot;&quot;&quot;
+        claims = [
+            &quot;Humans only use 10% of their brain&quot;,
+            &quot;We use 10 percent of our brain&quot;,
+            &quot;10% brain myth&quot;,
+        ]
+        
+        for claim in claims:
+            claim_lower = claim.lower()
+            is_brain_myth = (
+                (&#x27;brain&#x27; in claim_lower and &#x27;10&#x27; in claim_lower) or
+                (&#x27;use&#x27; in claim_lower and &#x27;percent&#x27; in claim_lower and &#x27;brain&#x27; in claim_lower)
+            )
+            assert is_brain_myth, f&quot;Failed to detect brain myth claim: {claim}&quot;
+    
+    def test_claim_contains_opinion(self):
+        &quot;&quot;&quot;Test detection of opinion-based claims&quot;&quot;&quot;
+        claims = [
+            &quot;This is the best restaurant ever&quot;,
+            &quot;Everyone should learn to code&quot;,
+            &quot;Pizza is the worst food&quot;,
+        ]
+        
+        opinion_patterns = [&#x27;best&#x27;, &#x27;worst&#x27;, &#x27;should&#x27;, &#x27;always&#x27;, &#x27;never&#x27;, &#x27;everyone&#x27;, &#x27;nobody&#x27;]
+        
+        for claim in claims:
+            claim_lower = claim.lower()
+            has_opinion = any(pattern in claim_lower for pattern in opinion_patterns)
+            assert has_opinion, f&quot;Failed to detect opinion in claim: {claim}&quot;
+
+
+class TestScoreWheel:
+    &quot;&quot;&quot;Tests for the animated score wheel component&quot;&quot;&quot;
+    
+    def test_score_wheel_color_high(self):
+        &quot;&quot;&quot;Test that high scores get green color&quot;&quot;&quot;
+        score = 95
+        if score &gt;= 80:
+            color = &#x27;#22c55e&#x27;  # Green
+        elif score &gt;= 60:
+            color = &#x27;#fbbf24&#x27;  # Yellow
+        elif score &gt;= 40:
+            color = &#x27;#f97316&#x27;  # Orange
+        else:
+            color = &#x27;#ef4444&#x27;  # Red
+        
+        assert color == &#x27;#22c55e&#x27;
+    
+    def test_score_wheel_color_medium(self):
+        &quot;&quot;&quot;Test that medium scores get yellow color&quot;&quot;&quot;
+        score = 70
+        if score &gt;= 80:
+            color = &#x27;#22c55e&#x27;
+        elif score &gt;= 60:
+            color = &#x27;#fbbf24&#x27;
+        elif score &gt;= 40:
+            color = &#x27;#f97316&#x27;
+        else:
+            color = &#x27;#ef4444&#x27;
+        
+        assert color == &#x27;#fbbf24&#x27;
+    
+    def test_score_wheel_color_low(self):
+        &quot;&quot;&quot;Test that low scores get red color&quot;&quot;&quot;
+        score = 25
+        if score &gt;= 80:
+            color = &#x27;#22c55e&#x27;
+        elif score &gt;= 60:
+            color = &#x27;#fbbf24&#x27;
+        elif score &gt;= 40:
+            color = &#x27;#f97316&#x27;
+        else:
+            color = &#x27;#ef4444&#x27;
+        
+        assert color == &#x27;#ef4444&#x27;
+    
+    def test_score_circumference_calculation(self):
+        &quot;&quot;&quot;Test SVG circumference calculation for score wheel&quot;&quot;&quot;
+        size = 120
+        radius = (size - 10) / 2  # 55
+        circumference = 2 * 3.14159 * radius
+        
+        score = 75
+        stroke_dashoffset = circumference - (score / 100) * circumference
+        
+        assert circumference &gt; 340 and circumference &lt; 350
+        assert stroke_dashoffset &gt; 0
+
+
+# ============================================================
+# API ENDPOINT TESTS
+# ============================================================
+
+class TestAPIEndpoints:
+    &quot;&quot;&quot;Tests for API endpoint responses&quot;&quot;&quot;
+    
+    def test_health_endpoint_structure(self):
+        &quot;&quot;&quot;Test health endpoint returns correct structure&quot;&quot;&quot;
+        # Expected health response structure
+        health_response = {
+            &quot;status&quot;: &quot;healthy&quot;,
+            &quot;version&quot;: &quot;1.0.0&quot;,
+            &quot;providers_available&quot;: 14,
+            &quot;timestamp&quot;: datetime.now().isoformat()
+        }
+        
+        assert &quot;status&quot; in health_response
+        assert &quot;version&quot; in health_response
+        assert health_response[&quot;status&quot;] == &quot;healthy&quot;
+    
+    def test_verify_request_structure(self):
+        &quot;&quot;&quot;Test verify request has correct structure&quot;&quot;&quot;
+        verify_request = {
+            &quot;claim&quot;: &quot;The Earth is 4.5 billion years old&quot;,
+            &quot;providers&quot;: [&quot;anthropic&quot;, &quot;groq&quot;, &quot;wikipedia&quot;],
+            &quot;detail_level&quot;: &quot;comprehensive&quot;
+        }
+        
+        assert &quot;claim&quot; in verify_request
+        assert len(verify_request[&quot;claim&quot;]) &gt;= 10
+        assert isinstance(verify_request[&quot;providers&quot;], list)
+    
+    def test_verify_response_structure(self):
+        &quot;&quot;&quot;Test verify response has all required fields&quot;&quot;&quot;
+        verify_response = {
+            &quot;request_id&quot;: &quot;req_abc123&quot;,
+            &quot;claim&quot;: &quot;The Earth is 4.5 billion years old&quot;,
+            &quot;status&quot;: &quot;verified_true&quot;,
+            &quot;confidence_score&quot;: 98.7,
+            &quot;analysis_summary&quot;: &quot;This claim is supported by scientific evidence&quot;,
+            &quot;ai_analysis&quot;: &quot;Detailed analysis here...&quot;,
+            &quot;sources&quot;: [
+                {&quot;name&quot;: &quot;NASA&quot;, &quot;url&quot;: &quot;https://nasa.gov&quot;, &quot;credibility&quot;: &quot;high&quot;}
+            ],
+            &quot;breakdown&quot;: {
+                &quot;ai_agreement&quot;: 100,
+                &quot;source_credibility&quot;: 98,
+                &quot;evidence_strength&quot;: 99,
+                &quot;consensus_score&quot;: 97
+            }
+        }
+        
+        required_fields = [
+            &quot;request_id&quot;, &quot;claim&quot;, &quot;status&quot;, &quot;confidence_score&quot;,
+            &quot;analysis_summary&quot;, &quot;sources&quot;, &quot;breakdown&quot;
+        ]
+        
+        for field in required_fields:
+            assert field in verify_response, f&quot;Missing field: {field}&quot;
+    
+    def test_verdict_types(self):
+        &quot;&quot;&quot;Test all verdict types are valid&quot;&quot;&quot;
+        valid_verdicts = [
+            &#x27;VERIFIED_TRUE&#x27;, &#x27;VERIFIED_FALSE&#x27;, &#x27;PARTIALLY_TRUE&#x27;,
+            &#x27;PARTIALLY_VERIFIABLE&#x27;, &#x27;UNVERIFIABLE&#x27;, &#x27;NEEDS_VERIFICATION&#x27;,
+            &#x27;DISPUTED&#x27;, &#x27;MISLEADING&#x27;, &#x27;OUTDATED&#x27;, &#x27;SATIRE&#x27;
+        ]
+        
+        assert &#x27;VERIFIED_TRUE&#x27; in valid_verdicts
+        assert &#x27;VERIFIED_FALSE&#x27; in valid_verdicts
+        assert len(valid_verdicts) &gt;= 8
+
+
+class TestProviderIntegration:
+    &quot;&quot;&quot;Tests for AI provider integrations&quot;&quot;&quot;
+    
+    def test_provider_available_check(self):
+        &quot;&quot;&quot;Test provider availability check logic&quot;&quot;&quot;
+        class MockProvider:
+            def __init__(self, api_key):
+                self.api_key = api_key
+            
+            @property
+            def is_available(self):
+                return bool(self.api_key)
+        
+        # Test with API key
+        provider_with_key = MockProvider(&quot;test_api_key&quot;)
+        assert provider_with_key.is_available == True
+        
+        # Test without API key
+        provider_without_key = MockProvider(None)
+        assert provider_without_key.is_available == False
+    
+    def test_wikipedia_url_construction(self):
+        &quot;&quot;&quot;Test Wikipedia search URL is constructed correctly&quot;&quot;&quot;
+        base_url = &quot;https://en.wikipedia.org/w/api.php&quot;
+        search_term = &quot;Earth age&quot;
+        
+        params = {
+            &quot;action&quot;: &quot;query&quot;,
+            &quot;format&quot;: &quot;json&quot;,
+            &quot;list&quot;: &quot;search&quot;,
+            &quot;srsearch&quot;: search_term,
+            &quot;srlimit&quot;: 5
+        }
+        
+        from urllib.parse import urlencode
+        full_url = f&quot;{base_url}?{urlencode(params)}&quot;
+        
+        assert &quot;wikipedia.org&quot; in full_url
+        assert &quot;Earth+age&quot; in full_url or &quot;Earth%20age&quot; in full_url
+
+
+class TestSourceCredibility:
+    &quot;&quot;&quot;Tests for source credibility scoring&quot;&quot;&quot;
+    
+    def test_high_credibility_sources(self):
+        &quot;&quot;&quot;Test that authoritative sources get high credibility&quot;&quot;&quot;
+        high_credibility_domains = [
+            &quot;nasa.gov&quot;, &quot;nih.gov&quot;, &quot;nature.com&quot;, &quot;science.org&quot;,
+            &quot;who.int&quot;, &quot;cdc.gov&quot;, &quot;reuters.com&quot;, &quot;apnews.com&quot;
+        ]
+        
+        def get_credibility(domain):
+            if any(d in domain for d in [&quot;gov&quot;, &quot;edu&quot;, &quot;.int&quot;]):
+                return &quot;high&quot;
+            elif any(d in domain for d in [&quot;nature.com&quot;, &quot;science.org&quot;, &quot;reuters&quot;, &quot;apnews&quot;]):
+                return &quot;high&quot;
+            return &quot;medium&quot;
+        
+        for domain in high_credibility_domains:
+            assert get_credibility(domain) == &quot;high&quot;, f&quot;{domain} should be high credibility&quot;
+    
+    def test_credibility_tiers(self):
+        &quot;&quot;&quot;Test credibility tier system&quot;&quot;&quot;
+        tiers = {
+            &quot;TIER_1_AUTHORITATIVE&quot;: 1.0,
+            &quot;TIER_2_REPUTABLE&quot;: 0.8,
+            &quot;TIER_3_STANDARD&quot;: 0.6,
+            &quot;TIER_4_UNVERIFIED&quot;: 0.4
+        }
+        
+        assert tiers[&quot;TIER_1_AUTHORITATIVE&quot;] &gt; tiers[&quot;TIER_2_REPUTABLE&quot;]
+        assert tiers[&quot;TIER_2_REPUTABLE&quot;] &gt; tiers[&quot;TIER_3_STANDARD&quot;]
+
+
+class TestConsensusAlgorithm:
+    &quot;&quot;&quot;Tests for consensus/voting algorithm&quot;&quot;&quot;
+    
+    def test_simple_majority(self):
+        &quot;&quot;&quot;Test simple majority voting&quot;&quot;&quot;
+        votes = [&quot;TRUE&quot;, &quot;TRUE&quot;, &quot;TRUE&quot;, &quot;FALSE&quot;, &quot;TRUE&quot;]
+        
+        vote_counts = {}
+        for vote in votes:
+            vote_counts[vote] = vote_counts.get(vote, 0) + 1
+        
+        winner = max(vote_counts.items(), key=lambda x: x[1])
+        
+        assert winner[0] == &quot;TRUE&quot;
+        assert winner[1] == 4
+    
+    def test_weighted_voting(self):
+        &quot;&quot;&quot;Test weighted voting system&quot;&quot;&quot;
+        votes = [
+            {&quot;verdict&quot;: &quot;TRUE&quot;, &quot;weight&quot;: 1.0, &quot;provider&quot;: &quot;claude&quot;},
+            {&quot;verdict&quot;: &quot;TRUE&quot;, &quot;weight&quot;: 0.8, &quot;provider&quot;: &quot;wikipedia&quot;},
+            {&quot;verdict&quot;: &quot;FALSE&quot;, &quot;weight&quot;: 0.9, &quot;provider&quot;: &quot;gpt4&quot;},
+        ]
+        
+        weighted_scores = {}
+        for vote in votes:
+            verdict = vote[&quot;verdict&quot;]
+            weighted_scores[verdict] = weighted_scores.get(verdict, 0) + vote[&quot;weight&quot;]
+        
+        winner = max(weighted_scores.items(), key=lambda x: x[1])
+        
+        assert winner[0] == &quot;TRUE&quot;
+        assert weighted_scores[&quot;TRUE&quot;] == 1.8
+        assert weighted_scores[&quot;FALSE&quot;] == 0.9
+    
+    def test_confidence_calibration(self):
+        &quot;&quot;&quot;Test confidence score calibration based on agreement&quot;&quot;&quot;
+        base_confidence = 80
+        agreement_rate = 0.9  # 90% of providers agree
+        
+        calibrated_confidence = base_confidence * (0.5 + 0.5 * agreement_rate)
+        
+        assert calibrated_confidence &gt; base_confidence * 0.9
+
+
+class TestErrorHandling:
+    &quot;&quot;&quot;Tests for error handling&quot;&quot;&quot;
+    
+    def test_claim_too_short(self):
+        &quot;&quot;&quot;Test that short claims are rejected&quot;&quot;&quot;
+        min_length = 10
+        
+        short_claims = [&quot;test&quot;, &quot;hi&quot;, &quot;ok&quot;]
+        valid_claims = [&quot;The Earth is 4.5 billion years old&quot;]
+        
+        for claim in short_claims:
+            assert len(claim) &lt; min_length
+        
+        for claim in valid_claims:
+            assert len(claim) &gt;= min_length
+    
+    def test_api_timeout_handling(self):
+        &quot;&quot;&quot;Test that API timeouts are handled gracefully&quot;&quot;&quot;
+        timeout_seconds = 30
+        
+        class MockTimeout:
+            def __init__(self, timeout):
+                self.timeout = timeout
+        
+        timeout = MockTimeout(timeout_seconds)
+        assert timeout.timeout == 30
+    
+    def test_invalid_verdict_handling(self):
+        &quot;&quot;&quot;Test handling of invalid verdict values&quot;&quot;&quot;
+        valid_verdicts = {&#x27;TRUE&#x27;, &#x27;FALSE&#x27;, &#x27;PARTIALLY_TRUE&#x27;, &#x27;UNVERIFIABLE&#x27;}
+        
+        def normalize_verdict(verdict):
+            normalized = verdict.upper().replace(&#x27;-&#x27;, &#x27;_&#x27;).replace(&#x27; &#x27;, &#x27;_&#x27;)
+            if normalized in valid_verdicts:
+                return normalized
+            return &#x27;UNVERIFIABLE&#x27;
+        
+        assert normalize_verdict(&quot;true&quot;) == &quot;TRUE&quot;
+        assert normalize_verdict(&quot;INVALID&quot;) == &quot;UNVERIFIABLE&quot;
+        assert normalize_verdict(&quot;partially-true&quot;) == &quot;PARTIALLY_TRUE&quot;
+
+
+# ============================================================
+# RUN TESTS
+# ============================================================
+
+if __name__ == &quot;__main__&quot;:
+    pytest.main([__file__, &quot;-v&quot;, &quot;--tb=short&quot;])
+</pre></div></body></html>

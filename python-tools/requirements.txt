@@ -7,7 +7,9 @@ uvicorn[standard]>=0.32.0
 pydantic>=2.10.0
 
 # HTTP Client
-httpx>=0.28.0
+# Pin httpx to a known-compatible version for Supabase client libraries.
+# If you maintain Supabase client, update this pin after validating compatibility.
+httpx==0.25.1
 
 # Environment
 python-dotenv>=1.0.1
@@ -19,3 +21,9 @@ PyJWT>=2.9.0
 
 # Payments
 stripe>=11.0.0
+
+ # Async HTTP
+ aiohttp>=3.8.0
+
+# Postgres client for migrations
+psycopg2-binary>=2.9.7

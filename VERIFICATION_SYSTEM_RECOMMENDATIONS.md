@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides comprehensive recommendations to elevate Verity from a 9-point verification system to an industry-leading **21-point verification framework** that delivers unmatched accuracy, transparency, and proprietary value.
+This document provides comprehensive recommendations to elevate Verity from a 21-Point verification system to an industry-leading **21-point verification framework** that delivers unmatched accuracy, transparency, and proprietary value.
 
 ---
 
@@ -18,7 +18,11 @@ This document provides comprehensive recommendations to elevate Verity from a 9-
 | **Actual Points** | ~15-18 effective checkpoints |
 
 ### Gap Analysis
-- UI previously advertised "9-Point System"; updated to "21-Point System" to reflect the full 7×3 checks (backend still runs multiple loops)
+- Some UI elements previously displayed "21-Point System". These should be updated to the branded "21-Point Verification™" messaging across web, desktop, mobile, and extension builds (text-only changes — keep existing fonts/styles). Ensure any badges, meta titles, and header links match `The 21-Point Verification System™` so users immediately see the correct methodology.
+- No clear documentation of verification methodology
+- Missing temporal verification layer
+- No source credibility scoring
+- No cross-reference consensus algorithm
 - No clear documentation of verification methodology
 - Missing temporal verification layer
 - No source credibility scoring
@@ -337,7 +341,7 @@ A best-in-class fact-checking system should have **21 distinct verification poin
 1. **No temporal awareness** - Claims age; system doesn't account for this
 2. **No source credibility** - All sources treated equally
 3. **No evidence quality scoring** - Just verdict, not evidence strength
-4. **UI doesn't reflect actual complexity** - 9-point vs 15-point mismatch
+4. **UI doesn't reflect actual complexity** - 21-Point vs 15-point mismatch
 
 ### Opportunities
 1. **Enterprise contracts** - News organizations, government agencies
@@ -375,7 +379,7 @@ A best-in-class fact-checking system should have **21 distinct verification poin
 
 ## Conclusion
 
-Upgrading from a 9-point to a **21-point verification system** positions Verity as the industry leader in automated fact-checking. The key differentiators are:
+Upgrading from a 21-Point to a **21-point verification system** positions Verity as the industry leader in automated fact-checking. The key differentiators are:
 
 1. **Comprehensive**: 21 checkpoints across 7 pillars
 2. **Transparent**: Each checkpoint scored and explained

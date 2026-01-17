@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Verity Enterprise Test Suite (Browser)</title>
+  <style>
+    body{font-family:Inter, system-ui, sans-serif;margin:20px;color:#111}
+    .ok{color:green}
+    .fail{color:#b10}
+    pre{background:#f6f8fa;padding:12px;border-radius:6px}
+    button{padding:8px 12px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h1>Verity Enterprise Test Suite (Browser)</h1>
+  <p>Runs live API checks from the browser; use for interactive debugging.</p>
+  <label>Target URL: <input id="target" value="http://localhost:8000" style="width:420px"/></label>
+  <label>API Key: <input id="key" placeholder="optional" style="width:320px"/></label>
+  <button id="run">Run Tests</button>
+  <button id="download">Download Results</button>
+  <div id="out"></div>
+
+  <script src="/enterprise-runner.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_file_upload.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_file_upload.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_file_processing_checks</li></ul><h3>Markers / Types</h3><ul><li>marker: unit</li><li>type: unit</li></ul></div><h2>Source</h2><pre class="source">import pytest
+
+# Simulate file-processing handler that a client would POST to
+def process_file(contents: bytes, filename: str):
+    # simple checks: ensure not empty and filename safe
+    if not contents:
+        raise ValueError(&#x27;empty file&#x27;)
+    if &#x27;..&#x27; in filename:
+        raise ValueError(&#x27;unsafe filename&#x27;)
+    # pretend to compute checksum
+    import hashlib
+    return {&#x27;filename&#x27;: filename, &#x27;sha256&#x27;: hashlib.sha256(contents).hexdigest()}
+
+
+@pytest.mark.unit
+def test_file_processing_checks():
+    res = process_file(b&#x27;hello&#x27;, &#x27;greeting.txt&#x27;)
+    assert &#x27;sha256&#x27; in res and res[&#x27;filename&#x27;] == &#x27;greeting.txt&#x27;
+    with pytest.raises(ValueError):
+        process_file(b&#x27;&#x27;, &#x27;empty.txt&#x27;)
+    with pytest.raises(ValueError):
+        process_file(b&#x27;bad&#x27;, &#x27;../escape&#x27;)
+</pre></div></body></html>

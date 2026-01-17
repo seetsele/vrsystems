@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_oauth_login.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_oauth_login.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_oauth_login_route</li></ul></div><h2>Source</h2><pre class="source">import pytest
+try:
+    import requests
+except Exception:
+    requests = None
+
+
+def test_oauth_login_route():
+    if requests is None:
+        pytest.skip(&#x27;requests not installed&#x27;)
+    try:
+        r = requests.get(&#x27;http://127.0.0.1:8000/auth/login&#x27;, allow_redirects=False)
+        assert r.status_code in (302,200)
+    except requests.exceptions.ConnectionError:
+        pytest.skip(&#x27;Auth server not running&#x27;)
+</pre></div></body></html>

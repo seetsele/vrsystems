@@ -1,8 +1,9 @@
 /* Verity Browser Extension - Content Styles */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap');
 
 /* Base tooltip */
 .verity-tooltip {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   width: 360px;
   background: white;
   border-radius: 12px;
@@ -196,15 +197,20 @@
   background: #4F46E5;
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth), background 160ms;
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.18);
+  display: inline-flex;
+  align-items: center;
 }
 
 .verity-retry-btn:hover {
+  transform: translateY(-2px);
   background: #4338CA;
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.22);
 }
 
 /* Verify button */
@@ -215,20 +221,20 @@
   background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
   color: white;
   border: none;
-  padding: 8px 14px;
-  border-radius: 20px;
+  padding: 8px 12px;
+  border-radius: 18px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-  transition: all 0.2s;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.22);
+  transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth);
+  font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   animation: verity-fade-in 0.2s ease-out;
 }
 
 .verity-verify-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.3);
 }
 
 .verity-verify-btn svg {

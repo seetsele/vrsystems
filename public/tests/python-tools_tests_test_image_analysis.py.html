@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_image_analysis.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_image_analysis.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_image_analysis_endpoint_available</li></ul><h3>Markers / Types</h3><ul><li>marker: integration</li><li>type: integration</li></ul></div><h2>Source</h2><pre class="source">import os
+import pytest
+import json
+try:
+    import requests
+except Exception:
+    requests = None
+
+
+def _url(path, port=8000):
+    return f&quot;http://127.0.0.1:{port}{path}&quot;
+
+
+@pytest.mark.integration
+def test_image_analysis_endpoint_available():
+    &quot;&quot;&quot;Check image analysis endpoint or local sample presence.&quot;&quot;&quot;
+    # If requests not available, skip network checks but ensure sample exists
+    sample = os.path.join(os.path.dirname(__file__), &#x27;..&#x27;, &#x27;public&#x27;, &#x27;assets&#x27;, &#x27;sample_image.jpg&#x27;)
+    if requests is None:
+        assert os.path.exists(sample) or os.path.exists(sample.replace(&#x27;.jpg&#x27;, &#x27;.png&#x27;))
+        return
+
+    try:
+        r = requests.get(_url(&#x27;/api/analyze-image/health&#x27;))
+        assert r.status_code == 200
+        j = r.json()
+        assert &#x27;status&#x27; in j
+    except requests.exceptions.ConnectionError:
+        pytest.skip(&#x27;Image analysis service not running&#x27;)
+</pre></div></body></html>

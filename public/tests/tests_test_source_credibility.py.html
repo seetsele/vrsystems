@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_source_credibility.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_source_credibility.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_score_known_domains</li><li>test_tools_source_credibility_endpoint</li></ul></div><h2>Source</h2><pre class="source">import os, sys
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;))
+sys.path.insert(0, os.path.join(ROOT, &#x27;python-tools&#x27;))
+from fastapi.testclient import TestClient
+import api_server_v9 as server
+
+client = TestClient(server.app)
+
+
+def test_score_known_domains():
+    assert server.score_source_credibility(&#x27;https://www.nature.com/article&#x27;) &gt;= 0.95
+    assert server.score_source_credibility(&#x27;https://cnn.com/article&#x27;) &gt;= 0.7
+    assert server.score_source_credibility(&#x27;https://infowars.com/story&#x27;) &lt;= 0.2
+
+
+def test_tools_source_credibility_endpoint():
+    # The endpoint expects a text content payload (ToolRequest.content)
+    content = &#x27;https://www.nature.com/article https://infowars.com/story&#x27;
+    # Clear any rate-limiter state to avoid test interference
+    server.rate_limiter.requests.clear()
+    resp = client.post(&#x27;/tools/source-credibility&#x27;, json={&#x27;content&#x27;: content})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert &#x27;verdict&#x27; in data
+    assert &#x27;score&#x27; in data
+    assert data[&#x27;sources&#x27;] is not None
+</pre></div></body></html>

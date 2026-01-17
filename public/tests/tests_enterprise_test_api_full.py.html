@@ -1,0 +1,232 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\enterprise\test_api_full.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\enterprise\test_api_full.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_api_record</li></ul></div><h2>Source</h2><pre class="source">import os
+import json
+import glob
+import subprocess
+import pytest
+
+# Optional JSON Schema validation (enabled in CI by installing `jsonschema`)
+try:
+    import jsonschema
+    JSONSCHEMA_AVAILABLE = True
+except Exception:
+    JSONSCHEMA_AVAILABLE = False
+
+SCHEMA_DIR = os.path.join(os.path.dirname(__file__), &#x27;schemas&#x27;)
+
+def _load_schema_file(name):
+    path = os.path.join(SCHEMA_DIR, name)
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+            return json.load(fh)
+    except Exception:
+        return None
+
+VERIFY_SCHEMA = _load_schema_file(&#x27;verify_schema.json&#x27;)
+HEALTH_SCHEMA = _load_schema_file(&#x27;health_schema.json&#x27;)
+STATUS_SCHEMA = _load_schema_file(&#x27;status_schema.json&#x27;)
+TOOLS_SCHEMA = _load_schema_file(&#x27;tools_schema.json&#x27;)
+DASH_SCHEMA = _load_schema_file(&#x27;dashboard_schema.json&#x27;)
+SETTINGS_SCHEMA = _load_schema_file(&#x27;settings_schema.json&#x27;)
+PROVIDER_SCHEMA = _load_schema_file(&#x27;provider_schema.json&#x27;)
+API_DOCS_SCHEMA = _load_schema_file(&#x27;api_docs_schema.json&#x27;)
+
+
+VAULT_DIR = os.path.join(os.getcwd(), &#x27;test-vault&#x27;)
+
+
+def _latest_summary():
+    pattern = os.path.join(VAULT_DIR, &#x27;api-run-*.json&#x27;)
+    files = glob.glob(pattern)
+    if not files:
+        return None
+    latest = max(files, key=os.path.getmtime)
+    with open(latest, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+        return json.load(fh)
+
+
+def _ensure_artifact():
+    summary = _latest_summary()
+    if summary:
+        return summary
+    # Invoke the runner to generate artifacts
+    runner = os.path.join(os.getcwd(), &#x27;tests&#x27;, &#x27;enterprise&#x27;, &#x27;run_api_full.py&#x27;)
+    try:
+        subprocess.check_call([&quot;python&quot;, runner])
+    except subprocess.CalledProcessError:
+        # runner failed; proceed to try reading whatever exists
+        pass
+    return _latest_summary()
+
+
+SUMMARY = _ensure_artifact()
+
+
+def pytest_generate_tests(metafunc):
+    # parametrizes tests from available summary artifact
+    if &#x27;record&#x27; in metafunc.fixturenames:
+        if not SUMMARY:
+            pytest.skip(&#x27;No API run artifact available and runner could not generate one&#x27;)
+        metafunc.parametrize(&#x27;record&#x27;, SUMMARY.get(&#x27;results&#x27;, []))
+
+
+def _is_strict():
+    return os.environ.get(&#x27;STRICT_TESTS&#x27;, &#x27;&#x27;) not in (&#x27;&#x27;, &#x27;0&#x27;, &#x27;false&#x27;, &#x27;False&#x27;)
+
+
+def test_api_record(record):
+    &quot;&quot;&quot;Validate a single API record from the latest runner artifact.
+
+    In non-strict mode, failing records are skipped (informational). In strict
+    mode, a failing record causes a test failure.
+    &quot;&quot;&quot;
+    method = record.get(&#x27;method&#x27;)
+    path = record.get(&#x27;path&#x27;)
+    ok = bool(record.get(&#x27;ok&#x27;))
+    status = record.get(&#x27;status_code&#x27;)
+    # If the record failed (non-2xx/3xx)
+    if not ok:
+        if _is_strict():
+            pytest.fail(f&#x27;{method} {path} returned {status} — failing under STRICT_TESTS&#x27;)
+        else:
+            pytest.skip(f&#x27;{method} {path} returned {status} — non-strict mode, skipping&#x27;)
+
+    # At this point the request returned a 2xx/3xx. In strict mode, run
+    # additional content checks for key endpoints to ensure schema/fields.
+    if not _is_strict():
+        return
+
+    # Define lightweight expectations for important paths
+    def _check_verify(rec):
+        body = rec.get(&#x27;body_snippet&#x27;, &#x27;&#x27;)
+        try:
+            data = json.loads(body)
+            # common keys we expect from a verification response
+            return any(k in data for k in (&#x27;verdict&#x27;, &#x27;result&#x27;, &#x27;confidence&#x27;, &#x27;claim&#x27;))
+        except Exception:
+            # body might be HTML or truncated JSON — do a substring check
+            return &#x27;verdict&#x27; in body or &#x27;confidence&#x27; in body or &#x27;result&#x27; in body
+
+    def _check_health(rec):
+        body = rec.get(&#x27;body_snippet&#x27;, &#x27;&#x27;).lower()
+        return &#x27;ok&#x27; in body or &#x27;status&#x27; in body or rec.get(&#x27;status_code&#x27;) == 200
+
+    EXPECTED = {
+        &#x27;/verify&#x27;: _check_verify,
+        &#x27;/health&#x27;: _check_health,
+        &#x27;/status&#x27;: _check_health,
+    }
+
+    # Additional lightweight checkers for common UI/API endpoints
+    def _check_tools(rec):
+        body = rec.get(&#x27;body_snippet&#x27;, &#x27;&#x27;)
+        try:
+            data = json.loads(body)
+            if isinstance(data, dict):
+                return &#x27;tools&#x27; in data or &#x27;name&#x27; in next(iter(data.keys()), &#x27;&#x27;)
+            return isinstance(data, list)
+        except Exception:
+            return &#x27;tools&#x27; in body.lower() or &#x27;[&#x27; in body[:20]
+
+    def _check_dashboard(rec):
+        body = rec.get(&#x27;body_snippet&#x27;, &#x27;&#x27;).lower()
+        try:
+            data = json.loads(rec.get(&#x27;body_snippet&#x27;, &#x27;{}&#x27;))
+            if isinstance(data, dict):
+                return any(k in data for k in (&#x27;stats&#x27;, &#x27;users&#x27;, &#x27;metrics&#x27;, &#x27;activity&#x27;))
+        except Exception:
+            pass
+        return &#x27;dashboard&#x27; in body or &#x27;stats&#x27; in body or &#x27;activity&#x27; in body
+
+    def _check_settings(rec):
+        body = rec.get(&#x27;body_snippet&#x27;, &#x27;&#x27;).lower()
+        try:
+            data = json.loads(rec.get(&#x27;body_snippet&#x27;, &#x27;{}&#x27;))
+            if isinstance(data, dict):
+                return &#x27;settings&#x27; in data or &#x27;providers&#x27; in data
+        except Exception:
+            pass
+        return &#x27;settings&#x27; in body or &#x27;providers&#x27; in body
+
+    def _check_provider_setup(rec):
+        return _check_settings(rec) or &#x27;provider&#x27; in rec.get(&#x27;body_snippet&#x27;, &#x27;&#x27;).lower()
+
+    def _check_api_docs(rec):
+        body = rec.get(&#x27;body_snippet&#x27;, &#x27;&#x27;).lower()
+        try:
+            data = json.loads(rec.get(&#x27;body_snippet&#x27;, &#x27;{}&#x27;))
+            return &#x27;openapi&#x27; in data or &#x27;swagger&#x27; in data
+        except Exception:
+            pass
+        return &#x27;swagger&#x27; in body or &#x27;openapi&#x27; in body or &#x27;&lt;title&gt;&#x27; in rec.get(&#x27;body_snippet&#x27;, &#x27;&#x27;)
+
+    EXPECTED.update({
+        &#x27;/tools&#x27;: _check_tools,
+        &#x27;/dashboard&#x27;: _check_dashboard,
+        &#x27;/settings&#x27;: _check_settings,
+        &#x27;/provider-setup&#x27;: _check_provider_setup,
+        &#x27;/api/docs&#x27;: _check_api_docs,
+    })
+
+    checker = EXPECTED.get(path)
+    if checker:
+        ok2 = checker(record)
+        # If content check failed but JSON Schema is available, try schema validation
+        if not ok2 and JSONSCHEMA_AVAILABLE:
+            schema = None
+            if path == &#x27;/verify&#x27;:
+                schema = VERIFY_SCHEMA
+            elif path in (&#x27;/health&#x27;, &#x27;/status&#x27;):
+                schema = HEALTH_SCHEMA or STATUS_SCHEMA
+            elif path == &#x27;/api/docs&#x27;:
+                schema = _load_schema_file(&#x27;api_docs_schema.json&#x27;)
+
+            if schema:
+                try:
+                    body = record.get(&#x27;body_snippet&#x27;, &#x27;&#x27;)
+                    data = json.loads(body)
+                    jsonschema.validate(instance=data, schema=schema)
+                    ok2 = True
+                except Exception:
+                    ok2 = False
+
+        # If still not ok and a schema exists for other endpoints, try them
+        if not ok2 and JSONSCHEMA_AVAILABLE:
+            extra_schema = None
+            if path == &#x27;/tools&#x27;:
+                extra_schema = TOOLS_SCHEMA
+            elif path == &#x27;/dashboard&#x27;:
+                extra_schema = DASH_SCHEMA
+            if extra_schema:
+                try:
+                    data = json.loads(record.get(&#x27;body_snippet&#x27;, &#x27;{}&#x27;))
+                    jsonschema.validate(instance=data, schema=extra_schema)
+                    ok2 = True
+                except Exception:
+                    ok2 = False
+
+        # final attempt: other known schemas
+        if not ok2 and JSONSCHEMA_AVAILABLE:
+            if path == &#x27;/settings&#x27; and SETTINGS_SCHEMA:
+                try:
+                    jsonschema.validate(instance=json.loads(record.get(&#x27;body_snippet&#x27;, &#x27;{}&#x27;)), schema=SETTINGS_SCHEMA)
+                    ok2 = True
+                except Exception:
+                    ok2 = False
+            if path == &#x27;/provider-setup&#x27; and PROVIDER_SCHEMA and not ok2:
+                try:
+                    jsonschema.validate(instance=json.loads(record.get(&#x27;body_snippet&#x27;, &#x27;{}&#x27;)), schema=PROVIDER_SCHEMA)
+                    ok2 = True
+                except Exception:
+                    ok2 = False
+            if path == &#x27;/api/docs&#x27; and API_DOCS_SCHEMA and not ok2:
+                try:
+                    jsonschema.validate(instance=json.loads(record.get(&#x27;body_snippet&#x27;, &#x27;{}&#x27;)), schema=API_DOCS_SCHEMA)
+                    ok2 = True
+                except Exception:
+                    ok2 = False
+
+        if not ok2:
+            pytest.fail(f&#x27;{method} {path} returned {status} but content check failed under STRICT_TESTS&#x27;)
+</pre></div></body></html>

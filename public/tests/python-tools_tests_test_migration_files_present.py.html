@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_migration_files_present.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_migration_files_present.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_migration_sql_exists</li></ul><h3>Markers / Types</h3><ul><li>marker: unit</li><li>type: unit</li></ul></div><h2>Source</h2><pre class="source">import pytest
+from pathlib import Path
+
+
+@pytest.mark.unit
+def test_migration_sql_exists():
+    root = Path(__file__).resolve().parents[2]
+    migrations = root / &#x27;database&#x27; / &#x27;migrations&#x27;
+    assert migrations.exists(), &#x27;migrations directory missing&#x27;
+    sqls = list(migrations.rglob(&#x27;*.sql&#x27;))
+    assert len(sqls) &gt; 0, &#x27;no migration SQL files found&#x27;
+</pre></div></body></html>

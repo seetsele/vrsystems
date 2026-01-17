@@ -32,7 +32,8 @@ contextBridge.exposeInMainWorld('verity', {
         get: (key) => ipcRenderer.invoke('settings:get', key),
         set: (key, value) => ipcRenderer.invoke('settings:set', key, value),
         getAll: () => ipcRenderer.invoke('settings:getAll'),
-        reset: () => ipcRenderer.invoke('settings:reset')
+        reset: () => ipcRenderer.invoke('settings:reset'),
+        save: (obj) => ipcRenderer.invoke('settings:save', obj)
     },
     
     // Clipboard operations
@@ -62,13 +63,27 @@ contextBridge.exposeInMainWorld('verity', {
     diagnostics: {
         dumpLogs: () => ipcRenderer.invoke('dump-logs')
     },
+
+    // Logger proxy: forward logs to main process and console
+    logger: {
+        info: (...args) => { try { ipcRenderer.send('renderer:log', 'info', ...args); } catch (e) {} ; console.info(...args); },
+        warn: (...args) => { try { ipcRenderer.send('renderer:log', 'warn', ...args); } catch (e) {} ; console.warn(...args); },
+        error: (...args) => { try { ipcRenderer.send('renderer:log', 'error', ...args); } catch (e) {} ; console.error(...args); },
+        debug: (...args) => { try { ipcRenderer.send('renderer:log', 'debug', ...args); } catch (e) {} ; console.debug(...args); }
+    },
+
+    // Devtools helper
+    devtools: {
+        open: () => ipcRenderer.send('open-devtools')
+    },
     
     // Recent verifications
     recent: {
         get: () => ipcRenderer.invoke('recent:get'),
         add: (verification) => ipcRenderer.invoke('recent:add', verification),
         clear: () => ipcRenderer.invoke('recent:clear'),
-        delete: (id) => ipcRenderer.invoke('recent:delete', id)
+        delete: (id) => ipcRenderer.invoke('recent:delete', id),
+        save: (items) => ipcRenderer.invoke('recent:save', items)
     },
     
     // API configuration

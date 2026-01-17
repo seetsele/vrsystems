@@ -3,6 +3,11 @@
    Complete Overhaul - Rich, Engaging UI
    ================================================ */
 
+/* Load JetBrains Mono (matches website code typography), then website typography and icons */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+@import url('../../public/assets/css/premium-typography.css');
+@import url('../../public/assets/css/icons.css');
+
 /* === CSS Variables === */
 :root {
     --bg-primary: #0a0a0b;
@@ -40,6 +45,12 @@
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --font-jetbrains: 'JetBrains Mono', monospace;
+
+    /* Icon sizing for consistent scaling across the UI */
+    --icon-size-sm: 16px;
+    --icon-size-md: 20px;
+    --icon-size-lg: 28px;
     
     --sidebar-width: 260px;
     --titlebar-height: 48px;
@@ -318,8 +329,8 @@ body {
 }
 
 .app-logo svg {
-    width: 28px;
-    height: 28px;
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
 }
 
 .app-name {
@@ -351,7 +362,7 @@ body {
     border-radius: var(--radius-md);
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 180ms var(--ease-smooth), background 180ms var(--ease-smooth), box-shadow 180ms var(--ease-smooth);
 }
 
 .tb-btn:hover {
@@ -360,30 +371,28 @@ body {
 }
 
 .signin-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 8px 18px;
+    padding: 8px 14px;
     background: var(--gradient-primary);
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: 12px;
     color: white;
     font-family: var(--font-sans);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth);
     white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(245,158,11,0.12);
 }
 
-.signin-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
-}
+.signin-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(245,158,11,0.16); }
 
 .tb-btn svg {
-    width: 18px;
-    height: 18px;
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
 }
 
 .notif-badge {
@@ -577,16 +586,16 @@ body {
 }
 
 .nav-icon {
-    width: 20px;
-    height: 20px;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .nav-icon svg {
-    width: 18px;
-    height: 18px;
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
 }
 
 .nav-badge {
@@ -1079,13 +1088,14 @@ body {
 }
 
 .promo-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth);
 }
 
 .gradient-cyan .promo-icon {
@@ -1099,8 +1109,8 @@ body {
 }
 
 .promo-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
 }
 
 .promo-content {
@@ -2822,6 +2832,44 @@ body {
     color: var(--text-secondary);
 }
 
+/* === 21-Point Grid === */
+.points-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.point-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+}
+
+.point-card svg {
+    width: 28px;
+    height: 28px;
+    color: var(--accent-amber);
+    flex-shrink: 0;
+}
+
+.point-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.point-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
 /* === Progress Bar === */
 .progress-bar {
     height: 8px;
@@ -4501,13 +4549,14 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
 }
 
 .upload-icon-large {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.9rem;
     color: var(--accent-amber);
+    transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth);
 }
 
 .upload-icon-large svg { width: 100%; height: 100%; }
@@ -4754,7 +4803,7 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
 }
 
 /* 21-Point Card */
-.card-9point {
+.card-21-Point {
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(251, 191, 36, 0.04));
     border-color: rgba(245, 158, 11, 0.2) !important;
 }
@@ -4787,18 +4836,19 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
 }
 
 .preview-empty-icon {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--bg-tertiary);
-    border-radius: 12px;
-    margin-bottom: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.9rem;
     color: var(--text-muted);
+    transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth);
 }
 
-.preview-empty-icon svg { width: 24px; height: 24px; }
+.preview-empty-icon svg { width: 18px; height: 18px; }
 
 .preview-empty p {
     font-size: 0.8rem;
@@ -7574,7 +7624,7 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
 }
 
 /* 21-Point Card */
-.card-9point {
+.card-21-Point {
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(217, 119, 6, 0.04));
     border: 1px solid rgba(245, 158, 11, 0.2);
     border-radius: 16px;
@@ -7925,3 +7975,27 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* === Button primitives === */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth), background 160ms;
+    font-family: var(--font-sans);
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 6px 18px rgba(245,158,11,0.12);
+}
+
+.btn-full { width: 100%; padding: 12px 16px; border-radius: 14px; }

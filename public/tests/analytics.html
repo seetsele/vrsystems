@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Test Runner Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#fff;--muted:#6b7280;--accent:#0f172a;--card:#f8fafc}
+    body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:24px;color:var(--accent);background:var(--bg)}
+    h1{font-size:20px;margin:0 0 12px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .card{background:var(--card);padding:16px;border-radius:8px;min-width:160px;flex:1}
+    .k{font-size:12px;color:var(--muted)}
+    .v{font-size:20px;font-weight:600}
+    #chart{width:100%;height:120px;margin-top:12px}
+    .nav{margin-bottom:16px}
+    a{color:inherit;text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div class="nav"><a href="/tests/runner.html">← Runner</a> — <a href="/tests/history.html">History</a> — Analytics</div>
+  <h1>Test Runner Analytics</h1>
+  <div id="summary" class="row">
+    <div class="card"><div class="k">Total runs</div><div id="total_runs" class="v">—</div></div>
+    <div class="card"><div class="k">Total passed</div><div id="total_passed" class="v">—</div></div>
+    <div class="card"><div class="k">Total failed</div><div id="total_failed" class="v">—</div></div>
+    <div class="card"><div class="k">Avg duration (s)</div><div id="avg_time_seconds" class="v">—</div></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="k">Runs by day (recent)</div>
+    <div id="chart"></div>
+  </div>
+
+  <script>
+    async function load() {
+      try {
+        const res = await fetch('/analytics');
+        if (!res.ok) throw new Error('fetch failed');
+        const j = await res.json();
+        document.getElementById('total_runs').textContent = j.total_runs || 0;
+        document.getElementById('total_passed').textContent = j.total_passed || 0;
+        document.getElementById('total_failed').textContent = j.total_failed || 0;
+        document.getElementById('avg_time_seconds').textContent = (j.avg_time_seconds||0).toFixed(2);
+
+        const chart = document.getElementById('chart');
+        chart.innerHTML = '';
+        const data = j.runs_by_day || {};
+        const keys = Object.keys(data).sort();
+        if (!keys.length) { chart.textContent = 'No data'; return }
+        const max = Math.max(...keys.map(k=>data[k]));
+        keys.forEach(k=>{
+          const v = data[k];
+          const bar = document.createElement('div');
+          bar.style.display='flex';bar.style.alignItems='center';bar.style.gap='8px';bar.style.marginTop='6px'
+          const label = document.createElement('div');label.textContent=k;label.style.width='120px';label.style.color='#6b7280';label.className='k'
+          const b = document.createElement('div');b.style.height='18px';b.style.background='#0f172a';b.style.width = Math.max(4, (v/max*100)) + '%';b.style.borderRadius='6px'
+          const cnt = document.createElement('div');cnt.textContent = v;cnt.style.width='40px';cnt.style.textAlign='right'
+          bar.appendChild(label);bar.appendChild(b);bar.appendChild(cnt);chart.appendChild(bar)
+        })
+      } catch (e) {
+        document.getElementById('summary').textContent = 'Failed to load analytics: '+e.message
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

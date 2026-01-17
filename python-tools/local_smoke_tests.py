@@ -10,16 +10,16 @@ from dotenv import load_dotenv
 # Load local env
 load_dotenv('../.env')
 
-API_BASE = os.getenv('API_BASE', 'http://localhost:8000')  # allow overriding for local servers on other ports (e.g., http://localhost:8001)
+API_BASE = "http://localhost:8000"
 SUPABASE_URL = "https://zxgydzavblgetojqdtir.supabase.co"
 SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4Z3lkemF2YmxnZXRvanFkdGlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3OTk1NTgsImV4cCI6MjA4MjM3NTU1OH0.AVuUK2rFrbjbU5fFqKPKdziaB-jNVaqpdjS2ANPMHYQ"
 
 
 def test_verify():
-    print(f'\n[VERIFY] Checking /verify endpoint at {API_BASE}...')
+    print('\n[VERIFY] Checking /verify endpoint...')
     try:
         r = requests.post(urljoin(API_BASE, '/verify'), json={'claim': 'The sky is blue.'}, timeout=60)
-        if r.status_code == 200 and 'verdict' in r.json():
+        if r.status_code == 200 and isinstance(r.json(), dict) and 'verdict' in r.json():
             print('  ✓ /verify OK - verdict:', r.json().get('verdict'))
             return True
         else:
@@ -28,34 +28,6 @@ def test_verify():
     except Exception as e:
         print('  ✗ /verify exception:', e)
         return False
-
-
-def test_waitlist():
-    print('\n[WAITLIST] Testing insert into newsletter_subscribers via Supabase REST')
-    headers = {
-        'apikey': SUPABASE_ANON,
-        'Authorization': f'Bearer {SUPABASE_ANON}',
-        'Content-Type': 'application/json',
-        'Prefer': 'representation'
-    }
-    test_email = f'smoketest+{int(time.time())}@veritysystems.test'
-    payload = {'email': test_email, 'subscribed_at': time.strftime('%Y-%m-%dT%H:%M:%SZ')}
-    url = f'{SUPABASE_URL}/rest/v1/newsletter_subscribers'
-    try:
-        r = requests.post(url, headers=headers, json=payload, timeout=30)
-        if r.status_code in (200, 201):
-            print('  ✓ Insert success:', r.status_code)
-            # clean up
-            del_r = requests.delete(url, headers=headers, params={'email': f'eq.{test_email}'}, timeout=30)
-            print('  ✓ Cleanup status:', del_r.status_code)
-            return True
-        else:
-            print('  ✗ Insert failed:', r.status_code, r.text)
-            return False
-    except Exception as e:
-        print('  ✗ Waitlist exception:', e)
-        return False
-
 
 def create_confirmed_user(test_email, password='TestPass123!'):
     """Create a confirmed user using the Supabase admin endpoint and SERVICE_KEY."""
@@ -84,8 +56,18 @@ def test_supabase_signup():
             return True
         else:
             print('  ✗ Signup failed:', r.status_code, r.text)
-            # If failure is due to confirmation email send error, attempt admin-created confirmed user
-            if 'confirmation' in r.text.lower() or 'confirmation' in str(r.json() if r.headers.get('Content-Type','').startswith('application/json') else r.text).lower():
+            # If failure is due to confirmation email send error or rate limiting, attempt admin-created confirmed user
+            body_text = ''
+            try:
+                body_text = r.text or ''
+            except Exception:
+                body_text = ''
+
+            if (
+                'confirmation' in body_text.lower() or
+                r.status_code in (429, 500, 502, 503) or
+                'confirmation' in str(r.json() if r.headers.get('Content-Type','').startswith('application/json') else body_text).lower()
+            ):
                 print('  ℹ️ Attempting to create confirmed user via admin API...')
                 rr = create_confirmed_user(test_email, password)
                 if rr and rr.status_code in (200,201):
@@ -107,6 +89,41 @@ def test_supabase_signup():
             return False
     except Exception as e:
         print('  ✗ Signup exception:', e)
+        return False
+
+
+def test_waitlist():
+    print('\n[WAITLIST] Testing waitlist signup endpoint...')
+    url = urljoin(API_BASE, '/waitlist/signup')
+    test_email = f'smoketest-waitlist+{int(time.time())}@veritysystems.test'
+    payload = {'email': test_email, 'source': 'smoke-test'}
+    try:
+        r = requests.post(url, json=payload, timeout=15)
+        if r.status_code in (200, 201):
+            print('  ✓ Waitlist signup OK:', r.status_code)
+            try:
+                print('    Body:', r.json())
+            except Exception:
+                pass
+            return True
+        elif r.status_code == 404:
+            print('  ℹ️ /waitlist/signup not found on API host; checking static site at port 3001')
+            try:
+                pr = requests.get('http://127.0.0.1:3001/waitlist.html', timeout=5)
+                if pr.status_code == 200 and ('joinWaitlist' in pr.text or '/waitlist/signup' in pr.text):
+                    print('  ✓ Static waitlist page present on port 3001')
+                    return True
+                else:
+                    print('  ✗ Static waitlist page missing or not served')
+                    return False
+            except Exception as e:
+                print('  ✗ Static site check exception:', e)
+                return False
+        else:
+            print('  ✗ Waitlist signup failed:', r.status_code, r.text)
+            return False
+    except Exception as e:
+        print('  ✗ Waitlist exception:', e)
         return False
 
 

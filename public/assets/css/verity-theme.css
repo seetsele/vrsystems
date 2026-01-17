@@ -11,6 +11,12 @@
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
+/* Load Inter + JetBrains Mono to ensure parity with desktop renderer */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+}
+
 body{background:var(--bg);color:#e6eef8;font-family:var(--font-sans);}
 .container{max-width:1200px;margin:2rem auto;padding:1rem}
 .card{background:linear-gradient(180deg,var(--panel),#0b1220);border-radius:var(--card-radius);padding:1rem;border:1px solid rgba(255,255,255,0.04);box-shadow:0 6px 18px rgba(2,6,23,0.6);}

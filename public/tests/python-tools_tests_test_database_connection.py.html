@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_database_connection.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_database_connection.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_database_connect_env</li></ul></div><h2>Source</h2><pre class="source">import os
+import pytest
+try:
+    import psycopg
+except Exception:
+    psycopg = None
+
+
+def test_database_connect_env():
+    &quot;&quot;&quot;Attempt to connect using DATABASE_URL env var if present; otherwise skip.&quot;&quot;&quot;
+    url = os.environ.get(&#x27;DATABASE_URL&#x27;) or os.environ.get(&#x27;DATABASE_URI&#x27;)
+    if not url:
+        pytest.skip(&#x27;No DATABASE_URL configured&#x27;)
+    if psycopg is None:
+        pytest.skip(&#x27;psycopg not installed&#x27;)
+    try:
+        with psycopg.connect(url, timeout=2) as conn:
+            with conn.cursor() as cur:
+                cur.execute(&#x27;SELECT 1&#x27;)
+                assert cur.fetchone()[0] == 1
+    except Exception:
+        pytest.skip(&#x27;Could not connect to database&#x27;)
+</pre></div></body></html>

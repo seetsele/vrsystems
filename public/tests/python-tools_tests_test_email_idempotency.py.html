@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_email_idempotency.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_email_idempotency.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_email_idempotency_key</li></ul><h3>Markers / Types</h3><ul><li>marker: unit</li><li>type: unit</li></ul></div><h2>Source</h2><pre class="source">import pytest
+
+# Simulate email service that enforces idempotency via keys
+class DummyEmailService:
+    def __init__(self):
+        self.sent_keys = set()
+
+    def send(self, to, subj, body, idempotency_key=None):
+        if idempotency_key:
+            if idempotency_key in self.sent_keys:
+                return {&#x27;status&#x27;: &#x27;duplicate&#x27;}
+            self.sent_keys.add(idempotency_key)
+        # pretend to send
+        return {&#x27;status&#x27;: &#x27;sent&#x27;}
+
+
+@pytest.mark.unit
+def test_email_idempotency_key():
+    svc = DummyEmailService()
+    r1 = svc.send(&#x27;a@example.com&#x27;, &#x27;Hello&#x27;, &#x27;Body&#x27;, idempotency_key=&#x27;k1&#x27;)
+    assert r1[&#x27;status&#x27;] == &#x27;sent&#x27;
+    r2 = svc.send(&#x27;a@example.com&#x27;, &#x27;Hello&#x27;, &#x27;Body&#x27;, idempotency_key=&#x27;k1&#x27;)
+    assert r2[&#x27;status&#x27;] == &#x27;duplicate&#x27;
+</pre></div></body></html>

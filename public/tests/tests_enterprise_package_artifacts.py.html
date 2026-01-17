@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\enterprise\package_artifacts.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\enterprise\package_artifacts.py</h1><p><a href="index.html">Back to tests index</a></p><h2>Source</h2><pre class="source">import os
+import time
+import zipfile
+
+
+def zip_paths(out_path, paths):
+    with zipfile.ZipFile(out_path, &#x27;w&#x27;, compression=zipfile.ZIP_DEFLATED) as z:
+        for p in paths:
+            if not os.path.exists(p):
+                continue
+            if os.path.isdir(p):
+                for root, dirs, files in os.walk(p):
+                    for f in files:
+                        full = os.path.join(root, f)
+                        arc = os.path.relpath(full, start=os.path.dirname(p))
+                        z.write(full, arc)
+            else:
+                z.write(p, os.path.basename(p))
+
+
+if __name__ == &#x27;__main__&#x27;:
+    ts = int(time.time())
+    out = f&#x27;artifacts-{ts}.zip&#x27;
+    cwd = os.getcwd()
+    candidates = [
+        os.path.join(cwd, &#x27;test-vault&#x27;),
+        os.path.join(cwd, &#x27;playwright-report&#x27;),
+        os.path.join(cwd, &#x27;playwright-results&#x27;),
+    ]
+    zip_paths(out, candidates)
+    print(out)
+</pre></div></body></html>

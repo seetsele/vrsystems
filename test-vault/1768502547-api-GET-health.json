@@ -1,0 +1,14 @@
+{
+  "method": "GET",
+  "path": "/health",
+  "url": "http://localhost:8000/health",
+  "status_code": 200,
+  "ok": true,
+  "body_snippet": "{\"status\":\"healthy\",\"timestamp\":\"2026-01-15T18:42:47.235440\",\"version\":\"10.0.0\",\"environment\":\"production\",\"providers_available\":10,\"search_apis_available\":6,\"providers\":[\"groq\",\"perplexity\",\"google\",\"openai\",\"mistral\",\"cerebras\",\"sambanova\",\"fireworks\",\"openrouter\",\"jina\"],\"search_apis\":[\"tavily\",\"brave\",\"serper\",\"exa\",\"google_factcheck\",\"jina\"],\"features\":{\"nuance_detection\":true,\"multi_loop_verification\":true,\"content_extraction\":true,\"circuit_breakers\":true}}",
+  "headers": {
+    "date": "Thu, 15 Jan 2026 18:42:46 GMT",
+    "server": "uvicorn",
+    "content-length": "467",
+    "content-type": "application/json"
+  }
+}

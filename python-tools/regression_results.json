@@ -1,0 +1,2200 @@
+{
+  "runs": [
+    {
+      "id": "NH-003",
+      "category": "Nuanced Health",
+      "expected": "mixed",
+      "claim_preview": "Red meat consumption is definitively linked to increased all-cause mortality and...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504007_7598",
+        "claim": "Red meat consumption is definitively linked to increased all-cause mortality and...",
+        "verdict": "mixed",
+        "confidence": 0.756,
+        "explanation": "VERDICT: mostly_true\nCONFIDENCE: 0.8\nEXPLANATION: The claim that red meat consumption is linked to increased all-cause mortality is supported by multiple studies, which found associations between red meat intake and higher risk of death from all causes, cardiovascular disease, and cancer. However, the language \"definitively linked\" may be too absolute, as correlation does not necessarily imply causation, and other factors may influence the relationship between red meat consumption and mortality.\nKEY EVIDENCE: The brave evidence and serper evidence studies found significant associations between increased red meat consumption and higher risk of mortality, with a 13% higher risk of mortality from all causes associated with increased processed meat intake. However, the claim could be nuanced by considering individual variability, lifestyle factors, and potential biases in the studies.\n\n[21-POINT VERIFICATION: VeriScore™ 82.4% (Grade: B)]\n[CROSS-VALIDATION: 4/7 providers agree (57.1% consensus). Verification loops: 7/12. Providers: groq, cerebras, fireworks, groq_pass2, mistral_pass2...]",
+        "sources": [
+          {
+            "url": "https://www.nature.com/articles/s41591-022-01968-z?error=cookies_not_supported&code=f475024a-3d96-4eeb-b3ea-b83c83f9b8d9",
+            "title": "Health effects associated with consumption of unprocessed red meat: a Burden of Proof study",
+            "credibility": 0.99
+          },
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3712342/",
+            "title": "Red Meat Consumption and Mortality: Results from Two Prospective Cohort Studies - PMC",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3712342/",
+            "title": "Red Meat Consumption and Mortality: Results from Two ...",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat",
+            "title": "Cancer: Carcinogenicity of the consumption of red meat ...",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://pubmed.ncbi.nlm.nih.gov/36545687/",
+            "title": "Red/processed meat consumption and non-cancer-related outcomes in humans: umbrella review - PubMed",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.pbs.org/newshour/science/should-you-eat-more-red-meat",
+            "title": "Should you eat more red meat?",
+            "credibility": 0.93
+          },
+          {
+            "url": "https://www.bmj.com/content/365/bmj.l2110",
+            "title": "Association of changes in red meat consumption with total and cause specific mortality among US women and men: two prospective cohort studies | The BMJ",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://hsph.harvard.edu/news/increasing-red-meat-consumption-linked-with-higher-risk-of-premature-death/",
+            "title": "Increasing red meat consumption linked with higher risk of premature death | Harvard T.H. Chan School of Public Health",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.acpjournals.org/doi/10.7326/M19-0655",
+            "title": "Red and Processed Meat Consumption and Risk for All-Cause Mortality and Cardiometabolic Outcomes: A Systematic Review and Meta-analysis of Cohort Studies: Annals of Internal Medicine: Vol 171, No 10",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1134845",
+            "title": "Red Meat Consumption and Mortality: Results From 2 Prospective Cohort Studies | Lifestyle Behaviors | JAMA Internal Medicine | JAMA Network",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://hsph.harvard.edu/news/increasing-red-meat-consumption-linked-with-higher-risk-of-premature-death/",
+            "title": "Increasing red meat consumption linked with higher risk ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.ox.ac.uk/news/2021-03-02-regular-meat-consumption-linked-wide-range-common-diseases",
+            "title": "Regular meat consumption linked with a wide range of ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.bmj.com/content/365/bmj.l2110/peer-review",
+            "title": "Association of changes in red meat consumption with total and cause specific mortality among US women and men: two prospective cohort studies",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://hsph.harvard.edu/news/increasing-red-meat-consumption-linked-with-higher-risk-of-premature-death/",
+            "title": "Increasing red meat consumption linked with higher risk ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://nutritionfacts.org/video/harvards-meat-and-mortality-studies/",
+            "title": "Harvard's Meat & Mortality Studies",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "groq",
+          "cerebras",
+          "fireworks",
+          "groq_pass2",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "llama-3.3-70b",
+          "mistral-large-latest",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct",
+          "llama-3.3-70b-versatile"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 57.1,
+          "agreeing_providers": 4,
+          "total_providers": 7,
+          "verification_loops": 7,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "groq",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 1.0
+            },
+            {
+              "provider": "groq",
+              "verdict": "mixed",
+              "confidence": 0.8,
+              "weight": 1.1
+            },
+            {
+              "provider": "mistral",
+              "verdict": "mixed",
+              "confidence": 0.95,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mixed",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mixed",
+              "confidence": 0.8,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": true,
+          "nuance_score": 1.0,
+          "nuanced_topic": "health",
+          "absolute_language": [
+            "all"
+          ],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:07:13.915281",
+        "processing_time_ms": 26840.95
+      }
+    },
+    {
+      "id": "NE-001",
+      "category": "Nuanced Economics",
+      "expected": "mixed",
+      "claim_preview": "The implementation of Universal Basic Income (UBI) programs, as tested in Finlan...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504036_6892",
+        "claim": "The implementation of Universal Basic Income (UBI) programs, as tested in Finlan...",
+        "verdict": "mixed",
+        "confidence": 0.63,
+        "explanation": "VERDICT: mixed\nCONFIDENCE: 0.9\nEXPLANATION:\nThe claim about Finland’s Universal Basic Income (UBI) experiment is **partially true but oversimplified**, warranting a \"mixed\" verdict. Here’s why:\n\n1. **True elements**:\n   - Finland did run a UBI pilot (2017–2018) with 2,000 unemployed participants receiving €560/month unconditionally.\n   - The program was designed to test effects on employment and well-being without job-seeking requirements.\n\n2. **Nuances/counter-evidence**:\n   - **Scale**: The claim implies broader implementation, but the pilot was limited to 2,000 people (a small, randomized sample).\n   - **Employment impact**: Evidence shows UBI *did not* increase employment (a key goal), though it improved well-being (e.g., reduced stress).\n   - **Policy context**: New unemployment policies were introduced during the trial, complicating causal inferences.\n   - **Absolute language**: The claim’s phrasing (\"implementation of UBI programs\") suggests a full-scale rollout, which did not occur.\n\nKEY EVIDENCE:\n- **Scope**: Only 2,000 participants (not universal or national).\n- **Employment**: No significant effect on employment rates (per Finnish government reports).\n- **Design**: Unconditional payments were tested, but the experiment was not a permanent policy.\n- **Oversimplification**: The claim omits limitations (e.g., sample size, concurrent policy changes).\n\nThe verdict reflects the **partial accuracy** of the claim while accounting for its **overstatement of scale and outcom...\n\n[21-POINT VERIFICATION: VeriScore™ 75.2% (Grade: C)]\n[CROSS-VALIDATION: 2/6 providers agree (33.3% consensus). Verification loops: 6/12. Providers: mistral, cerebras, fireworks, mistral_pass2, cerebras_pass2...]\n[NUANCE DETECTION: Claim on economics topic - nuance likely needed]",
+        "sources": [
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9914593/",
+            "title": "Basic Income and the Status of Women in an Established Gender-Equal Welfare State: Results from the Finnish Basic Income Experiment - PMC",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Universal_basic_income_pilots",
+            "title": "Universal basic income pilots - Wikipedia",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://weall.org/resource/finland-universal-basic-income-pilot",
+            "title": "Finland – Universal Basic Income Pilot : Wellbeing Economy Alliance",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.mckinsey.com/industries/social-sector/our-insights/an-experiment-to-inform-universal-basic-income",
+            "title": "An experiment to inform universal basic income | McKinsey",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://journals.sagepub.com/doi/10.1177/13882627221104501",
+            "title": "A Truly Missed Opportunity: The Political Context and Impact of the Basic Income Experiment in Finland - Heikki Hiilamo, 2022",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.helsinki.fi/en/news/fair-society/basic-income-experiment-finland-yields-surprising-results",
+            "title": "The basic income experiment in Finland yields surprising results",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://weall.org/resource/finland-universal-basic-income-pilot",
+            "title": "Finland – Universal Basic Income Pilot - Wellbeing Economy Alliance",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.mckinsey.com/industries/social-sector/our-insights/an-experiment-to-inform-universal-basic-income",
+            "title": "An experiment to inform universal basic income - McKinsey",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://99percentinvisible.org/episode/the-finnish-experiment/",
+            "title": "The Finnish Experiment - 99% Invisible",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.intereconomics.eu/contents/year/2017/number/2/article/basic-income-in-the-finnish-context.html",
+            "title": "Basic Income in the Finnish Context - Intereconomics",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://helsinki.fi/en/news/fair-society/universal-basic-income-experiment-finland-new-research-reveals-significant-diversity-participants-experience",
+            "title": "Universal basic income experiment in Finland: new research reveals significant diversity in participants’ experience",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.econstor.eu/bitstream/10419/265910/1/cesifo1_wp9875.pdf",
+            "title": "Design and Evaluation of the Finnish Basic Income Experiment",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.aeaweb.org/articles?id=10.1257%2Fpol.20200143",
+            "title": "Removing Welfare Traps: Employment Responses in the Finnish Basic Income Experiment",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.econpol.eu/sites/default/files/2021-03/EconPol_Working_Paper_61_Basic_Income_Experiment.pdf",
+            "title": "Removing Welfare Traps: Employment Responses in the Finnisch Basic Income Experiment",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.helsinki.fi/en/news/fair-society/basic-income-experiment-finland-yields-surprising-results",
+            "title": "The basic income experiment in Finland yields surprising results",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "mistral",
+          "cerebras",
+          "fireworks",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "mistral-large-latest",
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 33.3,
+          "agreeing_providers": 2,
+          "total_providers": 6,
+          "verification_loops": 6,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "mistral",
+              "verdict": "mixed",
+              "confidence": 0.9,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 0.9,
+              "weight": 1.0
+            },
+            {
+              "provider": "mistral",
+              "verdict": "mixed",
+              "confidence": 0.9,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": false,
+          "nuance_score": 0.25,
+          "nuanced_topic": "economics",
+          "absolute_language": [],
+          "override_applied": true,
+          "override_reason": "Claim on economics topic - nuance likely needed"
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:07:35.388927",
+        "processing_time_ms": 19386.65
+      }
+    },
+    {
+      "id": "ENV-001",
+      "category": "Nuanced Environment",
+      "expected": "mixed",
+      "claim_preview": "Electric vehicles produce zero emissions during operation but their total lifecy...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504057_1827",
+        "claim": "Electric vehicles produce zero emissions during operation but their total lifecy...",
+        "verdict": "mixed",
+        "confidence": 0.72,
+        "explanation": "VERDICT: mixed\nCONFIDENCE: 0.9\nEXPLANATION:\nThe claim contains **both true and false elements** with oversimplifications. Here’s the breakdown:\n\n1. **\"Electric vehicles produce zero emissions during operation\"** – **True** for tailpipe emissions (direct emissions from driving), but **false** if interpreted as *total operational emissions*, since electricity generation for charging may produce emissions depending on the energy mix (coal vs. renewables).\n2. **\"Their total lifetime emissions are lower than gasoline cars\"** – **Mostly true** (supported by multiple sources), but the claim’s implied absoluteness (\"zero emissions during operation\") ignores regional variations in electricity sources.\n3. **\"It takes SEVEN years for an EV to reach net-zero CO2\"** – **False/misleading**. The \"7-year\" figure is context-dependent (e.g., battery size, grid cleanliness, driving habits) and not a universal rule. Some studies show EVs break even in **1–3 years** in regions with clean energy, while others may take longer. The claim’s absolute language (\"only in the last three years...\") is incorrect.\n\nKEY EVIDENCE:\n- **Supporting**: EVs *typically* have lower lifetime emissions than gasoline cars (Brave/Serper evidence), and tailpipe emissions are zero (Serper).\n- **Refuting**: Operational emissions depend on electricity sources (Serper), and the \"7-year\" claim is oversimplified (Brave). No universal timeline exists.\n- **Nuance**: Life-cycle emissions vary by region, battery production, and en...\n\n[21-POINT VERIFICATION: VeriScore™ 80.9% (Grade: B)]\n[CROSS-VALIDATION: 4/6 providers agree (66.7% consensus). Verification loops: 6/12. Providers: mistral, cerebras, fireworks, mistral_pass2, cerebras_pass2...]",
+        "sources": [
+          {
+            "url": "https://www.factcheck.org/2024/02/electric-vehicles-contribute-fewer-emissions-than-gasoline-powered-cars-over-their-lifetimes/",
+            "title": "Electric Vehicles Contribute Fewer Emissions Than Gasoline-Powered Cars Over Their Lifetimes - FactCheck.org",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.factcheck.org/2024/02/electric-vehicles-contribute-fewer-emissions-than-gasoline-powered-cars-over-their-lifetimes/",
+            "title": "Electric Vehicles Contribute Fewer Emissions Than ...",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.factcheck.org/2024/02/electric-vehicles-contribute-fewer-emissions-than-gasoline-powered-cars-over-their-lifetimes/",
+            "title": "Electric Vehicles Contribute Fewer Emissions Than ...",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.usatoday.com/story/news/factcheck/2022/06/09/fact-check-electric-vehicles-emit-less-carbon-over-life-than-gas-cars/9900644002/",
+            "title": "Fact check: Lifetime carbon emissions lower for electric vehicles than gas-powered cars",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://www.epa.gov/greenvehicles/electric-vehicle-myths",
+            "title": "Electric Vehicle Myths | US EPA",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://afdc.energy.gov/vehicles/electric-emissions",
+            "title": "Alternative Fuels Data Center: Emissions from Electric Vehicles",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://climate.mit.edu/ask-mit/are-electric-vehicles-definitely-better-climate-gas-powered-cars",
+            "title": "Are electric vehicles definitely better for the climate than gas-powered cars? | MIT Climate Portal",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.epa.gov/greenvehicles/electric-vehicle-myths",
+            "title": "Electric Vehicle Myths | US EPA",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://afdc.energy.gov/vehicles/electric-emissions",
+            "title": "Emissions from Electric Vehicles - Alternative Fuels Data Center",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.ucs.org/resources/cleaner-cars-cradle-grave",
+            "title": "Cleaner Cars from Cradle to Grave",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.carbonbrief.org/factcheck-21-misleading-myths-about-electric-vehicles/",
+            "title": "Factcheck: 21 misleading myths about electric vehicles",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://il-act.org/16-electric-vehicle-myths-versus-facts/",
+            "title": "16 Electric Vehicle Myths versus Facts",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.carbonbrief.org/factcheck-21-misleading-myths-about-electric-vehicles/",
+            "title": "Factcheck: 21 misleading myths about electric vehicles",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.ucs.org/resources/cleaner-cars-cradle-grave",
+            "title": "Cleaner Cars from Cradle to Grave",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://ev.aaa.com/articles/just-how-dirty-is-your-ev/",
+            "title": "Carbon Footprint Face-Off: A Look at EV vs. Gas Car ...",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "mistral",
+          "cerebras",
+          "fireworks",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "mistral-large-latest",
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 66.7,
+          "agreeing_providers": 4,
+          "total_providers": 6,
+          "verification_loops": 6,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "mistral",
+              "verdict": "mixed",
+              "confidence": 0.9,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 1.0
+            },
+            {
+              "provider": "mistral",
+              "verdict": "mixed",
+              "confidence": 0.95,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mixed",
+              "confidence": 0.9,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mixed",
+              "confidence": 0.9,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": true,
+          "nuance_score": 1.0,
+          "nuanced_topic": "environment",
+          "absolute_language": [
+            "zero"
+          ],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:07:58.579869",
+        "processing_time_ms": 21130.12
+      }
+    },
+    {
+      "id": "TH-003",
+      "category": "True Historical",
+      "expected": "true",
+      "claim_preview": "The 2024 Nobel Prize in Physics was awarded to John J. Hopfield and Geoffrey \n  ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504080_6579",
+        "claim": "The 2024 Nobel Prize in Physics was awarded to John J. Hopfield and Geoffrey ...",
+        "verdict": "true",
+        "confidence": 0.81,
+        "explanation": "VERDICT: **true**\nCONFIDENCE: **1.0**\nEXPLANATION: The claim accurately states that the 2024 Nobel Prize in Physics was awarded to John J. Hopfield and Geoffrey Hinton. The evidence from multiple reliable sources confirms this, including the official Nobel Prize announcement and reputable institutions like Princeton University. The award was given jointly to both individuals for their contributions to machine learning with artificial neural networks.\nKEY EVIDENCE:\n- Official Nobel Prize announcement (brave evidence) names Hopfield and Hinton as 2024 laureates.\n- Princeton University and other sources (serper evidence) corroborate the award and its justification.\n- No discrepancies or inaccuracies in the claim are found in the provided evidence.\n\n[21-POINT VERIFICATION: VeriScore™ 88.7% (Grade: B)]\n[CROSS-VALIDATION: 6/6 providers agree (100.0% consensus). Verification loops: 6/12. Providers: mistral, cerebras, fireworks, mistral_pass2, cerebras_pass2...]",
+        "sources": [
+          {
+            "url": "https://www.nature.com/articles/s41746-024-01345-9",
+            "title": "Artificial Intelligence awarded two Nobel Prizes for ...",
+            "credibility": 0.99
+          },
+          {
+            "url": "https://www.nature.com/articles/s41746-024-01345-9",
+            "title": "Artificial Intelligence awarded two Nobel Prizes for ...",
+            "credibility": 0.99
+          },
+          {
+            "url": "https://www.reuters.com/science/hopfield-hinton-win-2024-nobel-prize-physics-2024-10-08/",
+            "title": "Nobel physics prize 2024 won by AI pioneers John ...",
+            "credibility": 0.98
+          },
+          {
+            "url": "https://www.reuters.com/science/hopfield-hinton-win-2024-nobel-prize-physics-2024-10-08/",
+            "title": "Nobel physics prize 2024 won by AI pioneers John ...",
+            "credibility": 0.98
+          },
+          {
+            "url": "https://www.washingtonpost.com/science/2024/10/08/nobel-prize-physics/",
+            "title": "Nobel Prize in physics awarded to John Hopfield, Geoffrey Hinton for machine learning - The Washington Post",
+            "credibility": 0.89
+          },
+          {
+            "url": "https://www.nobelprize.org/prizes/physics/2024/hopfield/facts/",
+            "title": "Nobel Prize in Physics 2024",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.nobelprize.org/prizes/physics/2024/press-release/",
+            "title": "Press release: The Nobel Prize in Physics 2024 - NobelPrize.org",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.nobelprize.org/prizes/physics/2024/summary/",
+            "title": "The Nobel Prize in Physics 2024 - NobelPrize.org",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.nobelprize.org/prizes/physics/2024/popular-information/",
+            "title": "The Nobel Prize in Physics 2024 - Popular science background - NobelPrize.org",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.nobelprize.org/prizes/physics/2024/press-release/",
+            "title": "Press release: The Nobel Prize in Physics 2024",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.princeton.edu/news/2024/10/08/princetons-john-hopfield-receives-nobel-prize-physics",
+            "title": "Princeton's John Hopfield receives Nobel Prize in physics",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.reddit.com/r/math/comments/1fyzz6t/the_nobel_prize_in_physics_2024_was_awarded_to/",
+            "title": "The Nobel Prize in Physics 2024 was awarded to John J. ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.reddit.com/r/math/comments/1fyzz6t/the_nobel_prize_in_physics_2024_was_awarded_to/",
+            "title": "The Nobel Prize in Physics 2024 was awarded to John J. ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.europhysicsnews.org/articles/epn/full_html/2025/01/epn2025561p3/epn2025561p3.html",
+            "title": "The 2024 Nobel Prize in Physics",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.nsf.gov/news/nsf-congratulates-laureates-2024-nobel-prize-physics",
+            "title": "NSF congratulates laureates of the 2024 Nobel Prize in ...",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "mistral",
+          "cerebras",
+          "fireworks",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "mistral-large-latest",
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 100.0,
+          "agreeing_providers": 6,
+          "total_providers": 6,
+          "verification_loops": 6,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "mistral",
+              "verdict": "true",
+              "confidence": 0.8,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 1.0
+            },
+            {
+              "provider": "mistral",
+              "verdict": "true",
+              "confidence": 0.8,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": false,
+          "nuance_score": 0.0,
+          "nuanced_topic": null,
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:08:20.491922",
+        "processing_time_ms": 19866.4
+      }
+    },
+    {
+      "id": "FM-003",
+      "category": "False Myths",
+      "expected": "false",
+      "claim_preview": "The flat Earth theory is supported by measurable evidence including the \n       ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504102_797",
+        "claim": "The flat Earth theory is supported by measurable evidence including the ...",
+        "verdict": "false",
+        "confidence": 0.79,
+        "explanation": "VERDICT: **false**\nCONFIDENCE: **1.0**\nEXPLANATION: The claim that the flat Earth theory is \"supported by measurable evidence\" is factually incorrect. There is no credible, reproducible scientific evidence supporting a flat Earth model. The overwhelming consensus in the scientific community, backed by centuries of empirical observations, confirms that Earth is an oblate spheroid (a slightly flattened sphere). Modern flat Earth proponents rely on misinterpretations, distortions, or outright fabrications of evidence, often ignoring or dismissing well-established scientific principles (e.g., gravity, planetary motion, and direct observations like satellite imagery or circumnavigation).\n\nKEY EVIDENCE:\n1. **Scientific consensus**: Over 2,000 years of astronomical observations, physics, and direct measurements (e.g., Eratosthenes' experiment, satellite imagery, space missions) confirm Earth's spherical shape.\n2. **Empirical refutations of flat Earth claims**:\n   - Horizon curvature is observable at high altitudes or over large bodies of water.\n   - Time zones and the sun’s position in the sky align with a spherical Earth.\n   - Gravity and planetary motion (e.g., orbits) are incompatible with a flat, stationary Earth.\n   - Circumnavigation (e.g., ships, airplanes) would be impossible on a flat plane.\n3. **Modern flat Earth claims**: These are consistently debunked by experts and lack peer-reviewed support. Examples include misrepresentations of perspective, refraction, or camera dis...\n\n[21-POINT VERIFICATION: VeriScore™ 87.5% (Grade: B)]\n[CROSS-VALIDATION: 6/6 providers agree (100.0% consensus). Verification loops: 6/12. Providers: mistral, cerebras, fireworks, mistral_pass2, cerebras_pass2...]",
+        "sources": [
+          {
+            "url": "https://nasa.gov/earth/how-do-we-know-the-earth-isnt-flat-we-asked-a-nasa-expert-episode-53",
+            "title": "How Do We Know the Earth Isn't Flat? We Asked a NASA Expert: Episode 53 - NASA",
+            "credibility": 0.98
+          },
+          {
+            "url": "https://fullfact.org/online/earth-is-spherical-not-flat",
+            "title": "The Earth is not flat – Full Fact",
+            "credibility": 0.94
+          },
+          {
+            "url": "https://www.britannica.com/topic/flat-Earth",
+            "title": "Flat Earth | Theory, Model, Meaning, & Facts | Britannica",
+            "credibility": 0.91
+          },
+          {
+            "url": "https://www.britannica.com/topic/flat-Earth",
+            "title": "Flat Earth | Theory, Model, Meaning, & Facts",
+            "credibility": 0.91
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Modern_flat_Earth_beliefs",
+            "title": "Modern flat Earth beliefs - Wikipedia",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Flat_Earth",
+            "title": "Flat Earth - Wikipedia",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://www.usatoday.com/story/news/factcheck/2022/12/07/fact-check-roundup-what-scientists-say-flat-earth-evidence/10802218002/",
+            "title": "Fact check roundup: Debunking the flawed science behind flat Earth claims",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://www.usatoday.com/story/news/factcheck/2022/11/17/fact-check-ample-evidence-earth-round-and-rotating/8267678001/",
+            "title": "Fact check: Ample evidence the Earth is round and rotating, contrary to persistent social media claims",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://www.usatoday.com/story/news/factcheck/2022/11/28/fact-check-earth-curve-motion-detectable-air-pressure-gravity/8296016001/",
+            "title": "Fact check: Flat Earth claim misunderstands Earth's motion, shape, gravity",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://www.cnn.com/2019/11/16/us/flat-earth-conference-conspiracy-theories-scli-intl",
+            "title": "The flat-Earth conspiracy is spreading around the globe. ...",
+            "credibility": 0.76
+          },
+          {
+            "url": "https://www.astronomy.com/astronomy-for-beginners/why-earth-is-not-flat-the-conspiracy-debunked/",
+            "title": "Why Earth is not flat: The conspiracy debunked",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.space.com/how-to-debate-flat-earther.html",
+            "title": "How to debate a flat-Earther - Proven scientific arguments and strategies | Space",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://pursuit.unimelb.edu.au/articles/why-do-some-people-believe-the-earth-is-flat",
+            "title": "Why do some people believe the Earth is flat? - Pursuit",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.ebsco.com/research-starters/science/flat-earth",
+            "title": "Flat earth | Research Starters",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=wdiPU5Q7tM0",
+            "title": "What happens if you take FLAT EARTH seriously!?",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "mistral",
+          "cerebras",
+          "fireworks",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "mistral-large-latest",
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 100.0,
+          "agreeing_providers": 6,
+          "total_providers": 6,
+          "verification_loops": 6,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "mistral",
+              "verdict": "false",
+              "confidence": 0.8,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 1.0
+            },
+            {
+              "provider": "mistral",
+              "verdict": "false",
+              "confidence": 0.8,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": false,
+          "nuance_score": 0.25,
+          "nuanced_topic": "environment",
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:08:43.352823",
+        "processing_time_ms": 20818.72
+      }
+    },
+    {
+      "id": "RE-002",
+      "category": "Recent Events 2024-2025",
+      "expected": "false",
+      "claim_preview": "In November 2024, Donald Trump won the United States presidential election, \n   ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504125_5298",
+        "claim": "In November 2024, Donald Trump won the United States presidential election, ...",
+        "verdict": "false",
+        "confidence": 0.81,
+        "explanation": "VERDICT: **false**\nCONFIDENCE: **1.0**\nEXPLANATION: The claim states that Donald Trump won the U.S. presidential election in November 2024, but as of the current date (June 2024), the 2024 U.S. presidential election has not yet occurred. The evidence provided in the query (e.g., references to \"2024 President Results\" or \"President-elect Donald Trump\") appears to be fabricated or premature, as no official results exist. The fact-check from FactCheck.org (cited in the *google_factcheck evidence*) explicitly labels such claims as false.\nKEY EVIDENCE:\n- The 2024 U.S. presidential election is scheduled for November 5, 2024, with results not yet determined.\n- No credible source or official body (e.g., the U.S. Electoral College, state election authorities) has declared a winner.\n- The *google_factcheck evidence* confirms that existing fact-checks classify this claim as false.\n\n[21-POINT VERIFICATION: VeriScore™ 88.5% (Grade: B)]\n[CROSS-VALIDATION: 6/6 providers agree (100.0% consensus). Verification loops: 6/12. Providers: mistral, cerebras, fireworks, mistral_pass2, cerebras_pass2...]",
+        "sources": [
+          {
+            "url": "https://www.factcheck.org/2024/11/trump-won-the-popular-vote-contrary-to-claims-online/",
+            "title": "Trump Won the Popular Vote, Contrary to Claims Online - FactCheck.org",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.factcheck.org/2024/11/trump-won-the-popular-vote-contrary-to-claims-online/",
+            "title": "Trump Won the Popular Vote, Contrary to Claims Online",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.factcheck.org/tag/presidential-election-2024/",
+            "title": "Tag: Presidential Election 2024",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.factcheck.org/2024/11/trump-won-the-popular-vote-contrary-to-claims-online/",
+            "title": "Trump Won the Popular Vote, Contrary to Claims Online",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.bbc.com/news/articles/cn5w9w160xdo",
+            "title": "Just how big was Donald Trump's election victory?",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://www.factcheck.org/2024/11/trump-won-the-popular-vote-contrary-to-claims-online/",
+            "title": "FactCheck.org Fact Check",
+            "credibility": 0.95
+          },
+          {
+            "url": "https://www.politifact.com/article/2024/nov/06/donald-trump-declares-2024-election-president/",
+            "title": "Donald Trump wins 2024 US election for president",
+            "credibility": 0.94
+          },
+          {
+            "url": "https://www.politifact.com/article/2024/nov/06/donald-trump-declares-2024-election-president/",
+            "title": "Donald Trump wins 2024 US election for president",
+            "credibility": 0.94
+          },
+          {
+            "url": "https://www.pbs.org/newshour/politics/the-size-of-donald-trumps-2024-election-victory-explained-in-5-charts",
+            "title": "The size of Donald Trump's 2024 election victory, explained in 5 charts | PBS News",
+            "credibility": 0.93
+          },
+          {
+            "url": "https://www.pbs.org/newshour/politics/fact-check-trumps-2024-win-doesnt-prove-claims-that-the-2020-election-was-stolen",
+            "title": "Fact check: Trump's 2024 win doesn't prove claims that the 2020 election was stolen | PBS News",
+            "credibility": 0.93
+          },
+          {
+            "url": "https://www.pbs.org/newshour/politics/fact-check-trumps-2024-win-doesnt-prove-claims-that-the-2020-election-was-stolen",
+            "title": "Fact check: Trump's 2024 win doesn't prove claims ...",
+            "credibility": 0.93
+          },
+          {
+            "url": "https://www.pbs.org/newshour/politics/the-size-of-donald-trumps-2024-election-victory-explained-in-5-charts",
+            "title": "The size of Donald Trump's 2024 election victory ...",
+            "credibility": 0.93
+          },
+          {
+            "url": "https://www.nytimes.com/2024/11/06/us/politics/trump-wins-presidency.html",
+            "title": "Trump Wins 2024 Presidential Election, Defeating Harris",
+            "credibility": 0.91
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/2024_United_States_presidential_election",
+            "title": "2024 United States presidential election - Wikipedia",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/2024_United_States_presidential_election",
+            "title": "2024 United States presidential election",
+            "credibility": 0.78
+          }
+        ],
+        "providers_used": [
+          "mistral",
+          "cerebras",
+          "fireworks",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "mistral-large-latest",
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 100.0,
+          "agreeing_providers": 6,
+          "total_providers": 6,
+          "verification_loops": 6,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "mistral",
+              "verdict": "false",
+              "confidence": 0.8,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 1.0
+            },
+            {
+              "provider": "mistral",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 16
+        },
+        "nuance_analysis": {
+          "is_nuanced": false,
+          "nuance_score": 0.0,
+          "nuanced_topic": null,
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:09:03.076605",
+        "processing_time_ms": 17660.26
+      }
+    },
+    {
+      "id": "ADV-001",
+      "category": "Adversarial",
+      "expected": "mixed",
+      "claim_preview": "Many scientists agree that evolution is just a theory. As such, it should \n     ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504145_9789",
+        "claim": "Many scientists agree that evolution is just a theory. As such, it should ...",
+        "verdict": "mixed",
+        "confidence": 0.66,
+        "explanation": "VERDICT: mostly_false\nCONFIDENCE: 0.8\nEXPLANATION: The claim that \"many scientists agree that evolution is just a theory\" is misleading. While it is true that evolution is a theory, the term \"theory\" in science refers to a well-substantiated explanation for a set of phenomena, not a speculative or unproven idea. The claim implies that evolution is not supported by evidence or is uncertain, which is not the case. The majority of scientists agree that evolution is a fundamental concept in biology, supported by overwhelming evidence from multiple fields of study.\nKEY EVIDENCE: \n- The statement \"evolution is just a theory\" is often used to downplay the significance of evolution, but in science, a theory is a well-established explanation.\n- Kenneth R. Miller and Ernst Mayr, prominent scientists, affirm that evolution is a well-established fact, with Mayr stating that \"The basic theory of evolution has been confirmed\".\n- The brave evidence provided contains inaccuracies, such as claiming evolutionary theory is invalid due to being incomplete, which is a common misconception about scientific theories.\n\n[21-POINT VERIFICATION: VeriScore™ 79.1% (Grade: C)]\n[CROSS-VALIDATION: 3/5 providers agree (60.0% consensus). Verification loops: 5/12. Providers: cerebras, fireworks, mistral_pass2, cerebras_pass2, fireworks_pass2]",
+        "sources": [
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6428117/",
+            "title": "Science and evolution - PMC",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Evolution_as_fact_and_theory",
+            "title": "Evolution as fact and theory - Wikipedia",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Evolution_as_fact_and_theory",
+            "title": "Evolution as fact and theory",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Evolution_as_fact_and_theory",
+            "title": "Evolution as fact and theory",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://evolution.berkeley.edu/teach-evolution/misconceptions-about-evolution/",
+            "title": "Misconceptions about evolution",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://ncse.ngo/theory-and-fact-evolution",
+            "title": "Theory and the Fact of Evolution | National Center for Science Education",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://ncse.ngo/evolution-fact-and-theory",
+            "title": "Evolution: Fact and Theory | National Center for Science Education",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://evolution.berkeley.edu/teach-evolution/misconceptions-about-evolution/",
+            "title": "Misconceptions about evolution",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://biologos.org/common-questions/is-evolution-a-theory-in-crisis",
+            "title": "Is Evolution a \"Theory in Crisis\"? - Common Question",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://ncse.ngo/evolution-fact-and-theory",
+            "title": "Evolution: Fact and Theory",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.reddit.com/r/evolution/comments/1anad1m/what_is_stoping_the_theory_of_evolution_from/",
+            "title": "What is stoping the theory of evolution from being a fact?",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://ncse.ngo/evolution-fact-and-theory",
+            "title": "Evolution: Fact and Theory",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://ncse.ngo/theory-and-fact-evolution",
+            "title": "Theory and the Fact of Evolution | National Center for Science Education",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.talkorigins.org/faqs/evolution-fact.html",
+            "title": "Evolution is a Fact and a Theory",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://iere.org/is-evolution-a-fact-or-a-theory/",
+            "title": "Is evolution a fact or a theory?",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "cerebras",
+          "fireworks",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct",
+          "mistral-large-latest"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 60.0,
+          "agreeing_providers": 3,
+          "total_providers": 5,
+          "verification_loops": 5,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "cerebras",
+              "verdict": "mostly_false",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mostly_false",
+              "confidence": 0.8,
+              "weight": 1.0
+            },
+            {
+              "provider": "mistral",
+              "verdict": "mixed",
+              "confidence": 0.75,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mixed",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mixed",
+              "confidence": 0.8,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": true,
+          "nuance_score": 0.85,
+          "nuanced_topic": "environment",
+          "absolute_language": [
+            "just"
+          ],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:09:30.964190",
+        "processing_time_ms": 25829.91
+      }
+    },
+    {
+      "id": "ADV-002",
+      "category": "Adversarial",
+      "expected": "mixed",
+      "claim_preview": "Studies show that drinking red wine daily is as beneficial as one hour of \n     ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504173_3693",
+        "claim": "Studies show that drinking red wine daily is as beneficial as one hour of ...",
+        "verdict": "mixed",
+        "confidence": 0.77,
+        "explanation": "VERDICT: mixed\nCONFIDENCE: 0.7\nEXPLANATION: The claim that drinking red wine daily is as beneficial as one hour of (presumably exercise) is partially supported by some studies, which suggest that moderate red wine consumption may have cardiovascular benefits. However, the evidence is not conclusive, and other sources suggest that the benefits of red wine are overstated or that the relationship between red wine and heart health is more complex. Additionally, the comparison to one hour of exercise is not clearly supported by scientific evidence.\nKEY EVIDENCE: \n- Brave evidence suggests that moderate alcohol consumption, particularly wine, may reduce the risk of cardiovascular disease.\n- Serper evidence notes that while resveratrol (found in red wine) may have some benefits, the evidence for red wine's heart health benefits is \"pretty weak\".\n- The lack of a clear comparison to one hour of exercise in the provided evidence raises questions about the validity of the claim.\n\n[21-POINT VERIFICATION: VeriScore™ 88.0% (Grade: B)]\n[CROSS-VALIDATION: 4/4 providers agree (100.0% consensus). Verification loops: 4/12. Providers: cerebras, fireworks, cerebras_pass2, fireworks_pass2]",
+        "sources": [
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9824172/",
+            "title": "Moderate Wine Consumption and Health: A Narrative Review - PMC",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10146095/",
+            "title": "Health Effects of Red Wine Consumption: A Narrative Review of an Issue That Still Deserves Debate - PMC",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6099584/",
+            "title": "Contribution of Red Wine Consumption to Human Health Protection - PMC",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://www.theguardian.com/lifeandstyle/2025/dec/01/is-it-true-that-a-glass-of-wine-a-day-is-good-for-your-heart",
+            "title": "Is it true that … a glass of wine a day is good for your heart?",
+            "credibility": 0.88
+          },
+          {
+            "url": "https://www.realsimple.com/health/nutrition-diet/red-wine-health-benefits",
+            "title": "Top Science-Backed Health Benefits of Drinking Red Wine",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.webmd.com/diet/health-benefits-red-wine",
+            "title": "Are There Health Benefits to Drinking Red Wine? Pros and Cons, Nutrition Information, and More",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://womensbrainhealth.org/think-tank/wishful-thinking/could-a-glass-of-red-wine-be-equivalent-to-an-hour-at-the-gym",
+            "title": "Could A Glass Of Red Wine Be Equivalent To An Hour At The Gym?",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.health.harvard.edu/blog/is-red-wine-good-actually-for-your-heart-2018021913285",
+            "title": "Is red wine actually good for your heart? - Harvard Health",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=px5stLhtU2c",
+            "title": "Is A Glass Of Red Wine Equivalent To An Hour At The Gym?",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.news-medical.net/news/20240725/New-study-debunks-the-health-benefits-of-moderate-alcohol-consumption.aspx",
+            "title": "New study debunks the health benefits of moderate alcohol ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.psychologytoday.com/us/blog/health-and-human-nature/202601/the-truth-behind-red-wines-effect-on-health",
+            "title": "The Truth Behind Red Wine's Effect on Health | Psychology Today",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://womensbrainhealth.org/think-tank/wishful-thinking/could-a-glass-of-red-wine-be-equivalent-to-an-hour-at-the-gym",
+            "title": "Could A Glass Of Red Wine Be Equivalent To An Hour At ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.facebook.com/MDAnderson/posts/you-might-have-heard-that-red-wine-has-health-benefits-but-is-that-trueour-dieti/1286301580210753/",
+            "title": "You might have heard that red wine has health benefits ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=px5stLhtU2c",
+            "title": "Is A Glass Of Red Wine Equivalent To An Hour At The Gym?",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.psychologytoday.com/us/blog/health-and-human-nature/202601/the-truth-behind-red-wines-effect-on-health",
+            "title": "The Truth Behind Red Wine's Effect on Health",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "cerebras",
+          "fireworks",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 100.0,
+          "agreeing_providers": 4,
+          "total_providers": 4,
+          "verification_loops": 4,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "cerebras",
+              "verdict": "mixed",
+              "confidence": 0.7,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mixed",
+              "confidence": 0.7,
+              "weight": 1.0
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mixed",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mixed",
+              "confidence": 0.7,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": true,
+          "nuance_score": 0.4,
+          "nuanced_topic": "technology",
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:10:00.666309",
+        "processing_time_ms": 27640.15
+      }
+    },
+    {
+      "id": "ADV-004",
+      "category": "Adversarial",
+      "expected": "true",
+      "claim_preview": "Stanford research proves organic food has no nutritional benefits. Therefore \n  ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504202_8512",
+        "claim": "Stanford research proves organic food has no nutritional benefits. Therefore ...",
+        "verdict": "true",
+        "confidence": 0.655,
+        "explanation": "VERDICT: mostly_false\nCONFIDENCE: 0.8\nEXPLANATION: The claim that \"Stanford research proves organic food has no nutritional benefits\" is an oversimplification of the actual findings. While the Stanford study did not find strong evidence that organic foods are more nutritious or carry fewer health risks than conventional alternatives, it did suggest some potential benefits to consuming organic food, such as reducing environmental costs and exposure to pesticides. The study's conclusions are more nuanced than the claim suggests.\nKEY EVIDENCE: The Stanford study found no strong evidence of nutritional superiority, but did find some potential health benefits to organic food consumption, and the study's authors noted that the perception of organic food being nutritionally superior is not supported by the evidence.\n\n[21-POINT VERIFICATION: VeriScore™ 76.9% (Grade: C)]\n[CROSS-VALIDATION: 2/4 providers agree (50.0% consensus). Verification loops: 4/12. Providers: cerebras, fireworks, cerebras_pass2, fireworks_pass2]",
+        "sources": [
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3546364/",
+            "title": "Organic Food Conclusions Don’t Tell the Whole Story - PMC",
+            "credibility": 0.97
+          },
+          {
+            "url": "https://www.bbc.com/news/health-19465692",
+            "title": "Organic food 'not any healthier'",
+            "credibility": 0.96
+          },
+          {
+            "url": "https://healthpolicy.fsi.stanford.edu/news/stanford_study_shows_little_evidence_of_health_benefits_from_organic_foods_20120904",
+            "title": "Stanford study shows little evidence of health benefits from organic foods | FSI",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://med.stanford.edu/news/all-news/2012/09/little-evidence-of-health-benefits-from-organic-foods-study-finds.html",
+            "title": "Little evidence of health benefits from organic foods, study finds",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.health.harvard.edu/blog/organic-food-no-more-nutritious-than-conventionally-grown-food-201209055264",
+            "title": "Organic food no more nutritious than conventionally grown food - Harvard Health",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://marquettewire.org/3818612/republican-national-convention/organic-study-says-organic-food-not-extra-healthy-mg1-ab2-ap3/",
+            "title": "Study says organic food not healthier than conventional – Marquette Wire",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://med.stanford.edu/news/all-news/2012/09/little-evidence-of-health-benefits-from-organic-foods-study-finds.html",
+            "title": "Little evidence of health benefits from organic foods, study finds",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://healthpolicy.fsi.stanford.edu/news/stanford_study_shows_little_evidence_of_health_benefits_from_organic_foods_20120904",
+            "title": "Stanford study shows little evidence of health benefits from organic ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://gardenrant.com/2012/09/stanford-organic-study-ignores-variety-differences.html",
+            "title": "Dr. Reganold Responds to Stanford Study Comparing Organic and ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.cornucopia.org/2012/09/stanfords-spin-on-organics-allegedly-tainted-by-biotechnology-funding/",
+            "title": "Stanford's \"Spin\" on Organics Allegedly Tainted by Biotechnology ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://ota.com/about-ota/press-releases/conclusive-study-finds-big-nutritional-benefits-organic",
+            "title": "Conclusive study finds big nutritional benefits for organic | OTA",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://med.stanford.edu/news/all-news/2012/09/little-evidence-of-health-benefits-from-organic-foods-study-finds.html",
+            "title": "Little evidence of health benefits from organic foods, study finds",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://healthpolicy.fsi.stanford.edu/news/stanford_study_shows_little_evidence_of_health_benefits_from_organic_foods_20120904",
+            "title": "Stanford study shows little evidence of health benefits from ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.cbc.ca/news/health/organic-food-s-health-benefits-questioned-in-u-s-study-1.1141568",
+            "title": "Organic food's health benefits questioned in U.S. study",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.theglobeandmail.com/life/health-and-fitness/health/new-study-finds-scant-evidence-of-health-benefits-from-eating-organic-foods/article4517773/",
+            "title": "New study finds scant evidence of health benefits from ...",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "cerebras",
+          "fireworks",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 50.0,
+          "agreeing_providers": 2,
+          "total_providers": 4,
+          "verification_loops": 4,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "cerebras",
+              "verdict": "mostly_false",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mostly_false",
+              "confidence": 0.8,
+              "weight": 1.0
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "true",
+              "confidence": 0.9,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "true",
+              "confidence": 0.9,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": false,
+          "nuance_score": 0.25,
+          "nuanced_topic": "nutrition",
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:10:10.819515",
+        "processing_time_ms": 8082.82
+      }
+    },
+    {
+      "id": "TECH-001",
+      "category": "Technology Claims",
+      "expected": "mixed",
+      "claim_preview": "Quantum computers using IBM's 1000+ qubit processor can break RSA-2048 \n        ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504212_3307",
+        "claim": "Quantum computers using IBM's 1000+ qubit processor can break RSA-2048 ...",
+        "verdict": "mixed",
+        "confidence": 0.615,
+        "explanation": "VERDICT: mostly_false\nCONFIDENCE: 0.8\nEXPLANATION: The claim that quantum computers using IBM's 1000+ qubit processor can break RSA-2048 is largely inaccurate. While research suggests that a quantum computer with a sufficient number of qubits ( potentially fewer than 1 million) could break RSA-2048, the current state of quantum computing technology, including IBM's, does not yet possess the necessary number of perfect qubits to achieve this. The claim overstates the current capability of IBM's 1000+ qubit processor.\nKEY EVIDENCE: \n- Research indicates that breaking RSA-2048 may require fewer than 1 million qubits, but these need to be perfect or highly reliable qubits.\n- Current quantum computers, including IBM's, have imperfect qubits, which significantly impacts their ability to perform complex computations like breaking RSA-2048.\n- Estimates suggest that a quantum computer capable of breaking RSA-2048 will likely exist by around 2030, implying that current technology is not yet sufficient.\n\n[21-POINT VERIFICATION: VeriScore™ 76.1% (Grade: C)]\n[CROSS-VALIDATION: 2/4 providers agree (50.0% consensus). Verification loops: 4/12. Providers: cerebras, fireworks, cerebras_pass2, fireworks_pass2]",
+        "sources": [
+          {
+            "url": "https://postquantum.com/post-quantum/breaking-rsa-quantum-hype/",
+            "title": "Breaking RSA Encryption: Quantum Hype Meets Reality (2022-2025)",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://postquantum.com/post-quantum/energy-cost-rsa-2048-quantum/",
+            "title": "The Enormous Energy Cost of Breaking RSA‑2048 with Quantum Computers",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.forbes.com/sites/moorinsights/2023/05/10/ibm-quantum-safe-technology-protects-data-from-encryption-busting-attacks-by-next-generation-quantum-computers/",
+            "title": "IBM Quantum Safe Technology: Protects Data From Encryption-Busting Attacks By Next-Generation Quantum Computers",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://postquantum.com/post-quantum/4099-qubits-rsa/",
+            "title": "4,099 Qubits: The Myth and Reality of Breaking RSA-2048 with Quantum Computers",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.bankinfosecurity.com/blogs/researcher-claims-to-crack-rsa-2048-quantum-computer-p-3536",
+            "title": "Researcher Claims to Crack RSA-2048 With Quantum Computer",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.linkedin.com/pulse/q-day-revisited-rsa-2048-broken-2030-detailed-analysis-marin-ivezic-datkc",
+            "title": "Q-Day Revisited - RSA-2048 Broken by 2030",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://medium.com/@nour.oulad.moussa/can-quantum-computers-break-rsa-encryption-cf281204c21d",
+            "title": "Can Quantum computers break RSA encryption?",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://thequantuminsider.com/2025/05/24/google-researcher-lowers-quantum-bar-to-crack-rsa-encryption/",
+            "title": "Google Researcher Lowers Quantum Bar to Crack RSA ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.reddit.com/r/explainlikeimfive/comments/1oug7fm/eli5_how_will_quantum_computers_break_all_current/",
+            "title": "How will quantum computers break all current encryption ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.esecurityplanet.com/trends/quantum-threat-debunked-rsa-safe/",
+            "title": "Researchers' Quantum Threat Debunked, RSA Safe for Now",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://thequantuminsider.com/2025/05/24/google-researcher-lowers-quantum-bar-to-crack-rsa-encryption/",
+            "title": "Google Researcher Lowers Quantum Bar to Crack RSA ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://medium.com/@nour.oulad.moussa/can-quantum-computers-break-rsa-encryption-cf281204c21d",
+            "title": "Can Quantum computers break RSA encryption?",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://postquantum.com/industry-news/quantum-breakthrough-rsa-2048/",
+            "title": "Quantum Breakthrough Slashes Qubit Needs for RSA-2048 Factoring",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.facebook.com/groups/pitsf/posts/29272652962319937/",
+            "title": "Quantum Computers and Military-Grade Encryption",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.linkedin.com/pulse/q-day-revisited-rsa-2048-broken-2030-detailed-analysis-marin-ivezic-datkc",
+            "title": "Q-Day Revisited - RSA-2048 Broken by 2030",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "cerebras",
+          "fireworks",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 50.0,
+          "agreeing_providers": 2,
+          "total_providers": 4,
+          "verification_loops": 4,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "cerebras",
+              "verdict": "mostly_false",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 1.0
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mixed",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mixed",
+              "confidence": 0.8,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": true,
+          "nuance_score": 0.4,
+          "nuanced_topic": "economics",
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:10:21.998792",
+        "processing_time_ms": 9112.44
+      }
+    },
+    {
+      "id": "TECH-002",
+      "category": "Technology Claims",
+      "expected": "false",
+      "claim_preview": "Tesla's Full Self-Driving achieved Level 5 autonomous driving certification \n   ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504224_4023",
+        "claim": "Tesla's Full Self-Driving achieved Level 5 autonomous driving certification ...",
+        "verdict": "false",
+        "confidence": 0.71,
+        "explanation": "VERDICT: false\nCONFIDENCE: 1.0\nEXPLANATION: The claim that Tesla's Full Self-Driving achieved Level 5 autonomous driving certification is false. According to the provided evidence, Tesla vehicles currently operate at Level 2 automation, and despite the branding of Full Self-Driving, they are not capable of true self-driving safely over large distances. Elon Musk's repeated predictions of achieving fully autonomous driving (SAE Level 5) within one to three years have not been met since 2013.\nKEY EVIDENCE: Tesla vehicles operate at Level 2 automation, not Level 5, and the company's current fleet is not capable of true self-driving safely over large distances. The branding of Full Self-Driving has drawn criticism for potentially misleading consumers.\n\n[21-POINT VERIFICATION: VeriScore™ 84.8% (Grade: B)]\n[CROSS-VALIDATION: 4/4 providers agree (100.0% consensus). Verification loops: 4/12. Providers: cerebras, fireworks, cerebras_pass2, fireworks_pass2]",
+        "sources": [
+          {
+            "url": "https://apnews.com/article/tesla-investigation-full-self-driving-questions-6ca8e2880af87361f3148b7e78718d52",
+            "title": "US agency says Tesla's public statements imply that its vehicles can drive themselves. They can't",
+            "credibility": 0.98
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Tesla_Autopilot",
+            "title": "Tesla Autopilot - Wikipedia",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://www.usatoday.com/story/cars/shopping/evs/2026/01/14/tesla-full-self-drive-subscription/88176519007/",
+            "title": "Tesla's move to Full Self-Drive subscription model and what it means",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Tesla_Autopilot",
+            "title": "Tesla Autopilot",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://patentpc.com/blog/level-5-autonomy-how-close-are-we-to-fully-self-driving-cars-latest-industry-stats",
+            "title": "Level 5 Autonomy: How Close Are We to Fully Self-Driving Cars? (Latest Industry Stats) | PatentPC",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.autoevolution.com/news/the-six-levels-of-vehicle-autonomy-and-what-each-of-them-means-253964.html",
+            "title": "The 6 Levels of Vehicle Autonomy (Self-Driving), What They Mean, and Their Implications - autoevolution",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://cleantechnica.com/2022/05/02/tesla-full-self-driving-beta-how-close-to-level-5-autonomy/",
+            "title": "Tesla Full Self Driving Beta: How Close to Level 5 Autonomy? - CleanTechnica",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.reddit.com/r/SelfDrivingCars/comments/1bygiz3/what_is_stopping_tesla_from_achieving_level_5/",
+            "title": "What is stopping Tesla from achieving level 5?",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=3qkaLAc2N3I",
+            "title": "The Hard Truth About FSD and Level 5 Autonomy",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.msn.com/en-us/money/companies/why-elon-musk-and-tesla-are-going-the-subscription-route-with-fsd/ar-AA1UccHO?ocid=finance-verthp-feeds",
+            "title": "Why Elon Musk and Tesla are going the subscription route ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.facebook.com/teslainsiderfb/posts/elon-musk-has-claimed-that-teslas-full-self-driving-fsd-technology-will-eventual/122151261158664960/",
+            "title": "Elon Musk has claimed that Tesla's Full Self-Driving (FSD) ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://mashable.com/article/tesla-debunked-dutch-regulator-full-self-driving-approval-eu-claim",
+            "title": "Tesla debunked by regulator over Full-Self Driving approval claim",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://futurism.com/tesla-self-driving-fine-print#:~:text=FSD%20%E2%80%94%20Full%20Self%2DDriving%20%E2%80%94,over%20at%20a%20moment\\'s%20notice.",
+            "title": "Tesla Admits That Its Cars May Never Fully Drive Themselves",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.ainvest.com/news/tesla-definition-full-driving-reflect-lack-autonomy-2509/",
+            "title": "Tesla Changes Definition of 'Full Self-Driving' to Reflect Lack of Autonomy",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.theverge.com/news/858782/elon-musk-tesla-fsd-unsupervised-missed-goals",
+            "title": "Is it even worth mentioning that Elon Musk blew past his own Full Self-Driving goals again?",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "cerebras",
+          "fireworks",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 100.0,
+          "agreeing_providers": 4,
+          "total_providers": 4,
+          "verification_loops": 4,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "cerebras",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 1.0
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 1.0,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": false,
+          "nuance_score": 0.25,
+          "nuanced_topic": "environment",
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:10:30.778872",
+        "processing_time_ms": 6716.28
+      }
+    },
+    {
+      "id": "TECH-004",
+      "category": "Technology Claims",
+      "expected": "mixed",
+      "claim_preview": "Blockchain technology cannot scale beyond 7 transactions per second, making \n   ...",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504232_363",
+        "claim": "Blockchain technology cannot scale beyond 7 transactions per second, making ...",
+        "verdict": "mixed",
+        "confidence": 0.61,
+        "explanation": "VERDICT: **mixed**\nCONFIDENCE: **0.95**\n\nEXPLANATION:\nThe claim that *\"Blockchain technology cannot scale beyond 7 transactions per second\"* is **partially true for Bitcoin** but **false as a generalization for all blockchain technology**. The evidence confirms that Bitcoin’s base layer (Layer 1) has a limited throughput of ~7 TPS due to block size and interval constraints. However, the claim’s absolute language (\"blockchain technology cannot scale\") ignores:\n1. **Other blockchains**: Ethereum (Layer 1) processes ~15–30 TPS, Solana ~2,000–3,000 TPS, and newer chains (e.g., Sui, Aptos) claim higher throughput.\n2. **Layer 2 solutions**: Bitcoin’s Lightning Network and Ethereum’s rollups (e.g., Arbitrum, Optimism) enable thousands of TPS off-chain.\n3. **Trade-offs**: Scalability is often balanced with decentralization/security (e.g., Bitcoin prioritizes the latter).\n\nKEY EVIDENCE:\n- **Supports claim**: Bitcoin’s base layer is limited to ~7 TPS (Brave/Serper/Exa evidence).\n- **Refutes claim**:\n  - Ethereum’s Layer 1: ~15–30 TPS ([Ethereum.org](https://ethereum.org/en/developers/docs/blocks/)).\n  - Solana: ~2,000–3,000 TPS ([Solana Docs](https://solana.com/docs/core/transactions)).\n  - Layer 2s: Lightning Network (Bitcoin) and rollups (Ethereum) enable far higher throughput ([Lightning Network](https://lightning.network/), [Arbitrum](https://arbitrum.io/)).\n- **Nuance**: Scalability is context-dependent (e.g., Visa handles ~24,000 TPS but is centralized).\n\n[21-POINT VERIFICATION: VeriScore™ 73.5% (Grade: C)]\n[CROSS-VALIDATION: 2/6 providers agree (33.3% consensus). Verification loops: 6/12. Providers: mistral, cerebras, fireworks, mistral_pass2, cerebras_pass2...]",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Bitcoin_scalability_problem",
+            "title": "Bitcoin scalability problem - Wikipedia",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Bitcoin_scalability_problem",
+            "title": "Bitcoin scalability problem",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Bitcoin_scalability_problem",
+            "title": "Bitcoin scalability problem",
+            "credibility": 0.78
+          },
+          {
+            "url": "https://www.finextra.com/blogposting/24941/blockchain-and-the-scalability-challenge-solving-the-blockchain-trilemma",
+            "title": "Blockchain and the scalability challenge: solving the blockchain trilemma: By Carlo R.W. De Meijer",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://river.com/learn/how-bitcoin-can-scale/",
+            "title": "How Bitcoin Can Scale | River Learn - Bitcoin Basics",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://101blockchains.com/blockchain-scalability-challenges/",
+            "title": "Blockchain Scalability Problem - Why is it Difficult to Scale Blockchain",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.debutinfotech.com/blog/what-is-blockchain-scalability",
+            "title": "Exploring Blockchain Scalability and Its Impact on Adoption",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.reddit.com/r/Buttcoin/comments/14gslik/serious_do_people_into_btc_not_see_a_maximum_of_7/",
+            "title": "Do people into BTC not see a maximum of 7 transactions ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://river.com/learn/how-bitcoin-can-scale/",
+            "title": "How Bitcoin Can Scale | River",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.rapidinnovation.io/post/scaling-the-future-empowering-blockchain-scalability",
+            "title": "Scaling the Future: Blockchain Scalability",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://medium.com/@thecryptoconomy/7-misunderstandings-of-bitcoins-scaling-problem-c5142e938a68",
+            "title": "7 Misunderstandings of Bitcoin's Scaling Problem",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://river.com/learn/how-bitcoin-can-scale/",
+            "title": "How Bitcoin Can Scale | River",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://crypto.com/us/crypto/learn/blockchain-scalability",
+            "title": "A Deep Dive Into Blockchain Scalability",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://geoprise.com/blog/blockchains-capacity-limited-7-transactions-second",
+            "title": "Is Blockchain's Capacity Limited To 7 Transactions per ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://atomicwallet.io/academy/articles/bitcoin-scaling-problem-explained",
+            "title": "What is Bitcoin Scaling Problem",
+            "credibility": 0.5
+          }
+        ],
+        "providers_used": [
+          "mistral",
+          "cerebras",
+          "fireworks",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "mistral-large-latest",
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 33.3,
+          "agreeing_providers": 2,
+          "total_providers": 6,
+          "verification_loops": 6,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "mistral",
+              "verdict": "mixed",
+              "confidence": 0.75,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "mostly_true",
+              "confidence": 0.8,
+              "weight": 1.0
+            },
+            {
+              "provider": "mistral",
+              "verdict": "mixed",
+              "confidence": 0.95,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "false",
+              "confidence": 0.9,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "false",
+              "confidence": 0.9,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": false,
+          "nuance_score": 0.25,
+          "nuanced_topic": "technology",
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "tier": "free",
+        "cached": false,
+        "timestamp": "2026-01-15T19:10:49.007435",
+        "processing_time_ms": 16162.43
+      }
+    },
+    {
+      "id": "EDGE-003",
+      "category": "Edge Cases",
+      "expected": "true",
+      "claim_preview": "Some people like pizza while others prefer pasta, and opinions vary widely.",
+      "status_code": 200,
+      "response": {
+        "id": "ver_1768504251_4101",
+        "claim": "Some people like pizza while others prefer pasta, and opinions vary widely.",
+        "verdict": "true",
+        "confidence": 0.71,
+        "veriscore": 86.3,
+        "confidence_interval": [
+          78.3,
+          94.3
+        ],
+        "explanation": "VERDICT: true\nCONFIDENCE: 1.0\nEXPLANATION: The claim states that \"some people like pizza while others prefer pasta, and opinions vary widely,\" which is a broad and self-evident observation about personal food preferences. The provided evidence supports this by showing:\n1. Regional variations in pizza preferences (e.g., New York-style vs. Chicago-style).\n2. Demographic differences (e.g., men vs. women, younger adults vs. seniors).\n3. Cultural differences (e.g., Italians eating pasta daily but pizza weekly).\n4. The acknowledgment that personal tastes are subjective and varied.\n\nThere is no contradiction or falsehood in the claim, and the evidence aligns perfectly with its assertion.\nKEY EVIDENCE:\n- Regional and demographic differences in pizza preferences (Brave evidence).\n- Cultural habits (e.g., Italians preferring pasta daily) (Serper evidence).\n- Age-based variations in pizza vs. pasta preference (Serper evidence).\n- The inherent subjectivity of food preferences (Serper evidence).\n\n[21-POINT VERIFICATION: VeriScore™ 86.3% (Grade: B)]\n[CROSS-VALIDATION: 6/6 providers agree (100.0% consensus). Verification loops: 6/12. Providers: mistral, cerebras, fireworks, mistral_pass2, cerebras_pass2...]",
+        "verification_pillars": {
+          "claim_parsing": {
+            "score": 89.5,
+            "checks": {
+              "extraction": 95.0,
+              "classification": 90.0,
+              "nuance": 83.5
+            },
+            "weight": 0.1
+          },
+          "temporal": {
+            "score": 90.0,
+            "checks": {
+              "currency": 80.0,
+              "freshness": 95.0,
+              "context": 95.0
+            },
+            "weight": 0.1
+          },
+          "source_quality": {
+            "score": 71.3,
+            "checks": {
+              "primary": 60.0,
+              "authority": 59.0,
+              "bias": 95.0
+            },
+            "weight": 0.2
+          },
+          "evidence": {
+            "score": 95.0,
+            "checks": {
+              "corroboration": 90.0,
+              "counter": 95.0,
+              "consensus": 100.0
+            },
+            "weight": 0.2
+          },
+          "ai_consensus": {
+            "score": 86.7,
+            "checks": {
+              "large_models": 75.0,
+              "specialized": 85.0,
+              "ensemble": 100.0
+            },
+            "weight": 0.2
+          },
+          "logical": {
+            "score": 88.3,
+            "checks": {
+              "consistency": 90.0,
+              "statistical": 90.0,
+              "causal": 85.0
+            },
+            "weight": 0.1
+          },
+          "synthesis": {
+            "score": 88.7,
+            "checks": {
+              "calibration": 71.0,
+              "quality": 100.0,
+              "summary": 95.0
+            },
+            "weight": 0.1
+          }
+        },
+        "providers_used": [
+          "mistral",
+          "cerebras",
+          "fireworks",
+          "mistral_pass2",
+          "cerebras_pass2",
+          "fireworks_pass2"
+        ],
+        "models_used": [
+          "mistral-large-latest",
+          "llama-3.3-70b",
+          "accounts/fireworks/models/llama-v3p3-70b-instruct"
+        ],
+        "cross_validation": {
+          "agreement_percentage": 100.0,
+          "agreeing_providers": 6,
+          "total_providers": 6,
+          "verification_loops": 6,
+          "max_loops": 12,
+          "verdict_breakdown": [
+            {
+              "provider": "mistral",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 1.0
+            },
+            {
+              "provider": "mistral",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 1.1
+            },
+            {
+              "provider": "cerebras",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 0.95
+            },
+            {
+              "provider": "fireworks",
+              "verdict": "true",
+              "confidence": 1.0,
+              "weight": 1.0
+            }
+          ],
+          "search_sources_found": 15
+        },
+        "nuance_analysis": {
+          "is_nuanced": true,
+          "nuance_score": 0.45,
+          "nuanced_topic": null,
+          "absolute_language": [],
+          "override_applied": false,
+          "override_reason": null
+        },
+        "source_authority": {
+          "primary_sources": 0,
+          "high_authority": 0,
+          "avg_authority": 0.59,
+          "bias_detected": false
+        },
+        "content_analysis": {
+          "content_type": "text",
+          "urls_extracted": 0,
+          "research_papers": 0
+        },
+        "sources": [
+          {
+            "url": "https://csnews.com/new-study-reveals-americans-pizza-preferences",
+            "title": "New Study Reveals Americans’ Pizza Preferences | Convenience Store News",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://us.gozney.com/blogs/news/how-americans-eat-pizza",
+            "title": "We Love Our 'Za: A Look at How Americans Eat Pizza | Gozney US",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://gambinospizzafranchise.com/pizza-statistics-and-trends/",
+            "title": "Pizza Statistics and Trends - Gambino's Pizza Franchise",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://pizzaneed.com/pizza-statistics/",
+            "title": "40 Pizza Statistics (Crust Us, You'll Find These Fascinating) [2024]",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.pmq.com/american-pizza-consumption-2024/",
+            "title": "New Poll Measures Just How Pizza-Crazy Americans Really Are - PMQ Pizza",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.quora.com/Which-one-do-Italians-love-the-most-pizza-or-pasta",
+            "title": "Which one do Italians love the most, pizza or pasta? - Quora",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.msn.com/en-us/foodanddrink/foodnews/pizza-vs-pasta-the-italian-food-showdown-that-divides-america/ar-AA1JXhy9?apiversion=v2&noservercache=1&domshim=1&renderwebcomponents=1&wcseo=1&batchservertelemetry=1&noservertelemetry=1",
+            "title": "Pizza vs. Pasta: The Italian Food Showdown That Divides America",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.facebook.com/groups/2344235839009461/posts/3016380505128321/",
+            "title": "Why do we compare pizzas when personal taste matters? - Facebook",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.reddit.com/r/Cooking/comments/m3jxel/does_anyone_else_not_like_many_toppings_on_their/",
+            "title": "Does anyone else not like many toppings on their pizza and prefer it ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.psucollegian.com/opinion/columnists/politics-on-pizza-know-the-difference-between-preference-and-fact-column/article_2eede776-2c83-11e8-8231-476cb00c4755.html",
+            "title": "Politics on pizza: Know the difference between preference and fact ...",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://today.yougov.com/society/articles/53202-accounting-for-taste-12-food-fights-that-split-americans",
+            "title": "Accounting for taste: 12 food fights that split Americans",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://www.msn.com/en-us/foodanddrink/foodnews/pizza-vs-pasta-the-italian-food-showdown-that-divides-america/ar-AA1JXhy9?apiversion=v2&noservercache=1&domshim=1&renderwebcomponents=1&wcseo=1&batchservertelemetry=1&noservertelemetry=1",
+            "title": "Pizza vs. Pasta: The Italian Food Showdown That Divides America",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://today.yougov.com/topics/consumer/survey-results/daily/2021/02/04/72784/2",
+            "title": "Which of the following pizza toppings do you like? Please select all that apply. | Daily Question",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://today.yougov.com/topics/consumer/survey-results/daily/2021/02/04/72784/1",
+            "title": "If you had to choose one, which of the following is your favorite style of pizza? | Daily Question",
+            "credibility": 0.5
+          },
+          {
+            "url": "https://yougov.co.uk/politics/articles/17714-does-pineapple-belong-pizza",
+            "title": "Does pineapple belong on a pizza?",
+            "credibility": 0.5
+          }
+        ],
+        "verification_system": "21-Point Verification™",
+        "processing_time_seconds": 21.66,
+        "tier": "free",
+        "cached": true,
+        "timestamp": "2026-01-15T19:10:51.052806",
+        "processing_time_ms": 2.03
+      }
+    }
+  ]
+}

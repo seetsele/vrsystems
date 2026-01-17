@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_run_internal_tests.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_run_internal_tests.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_run_internal_tests_requires_sim_key</li></ul><h3>Markers / Types</h3><ul><li>type: smoke</li></ul></div><h2>Source</h2><pre class="source">import os, sys
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;))
+sys.path.insert(0, os.path.join(ROOT, &#x27;python-tools&#x27;))
+from fastapi.testclient import TestClient
+import api_server_v9 as server
+
+client = TestClient(server.app)
+
+
+def test_run_internal_tests_requires_sim_key():
+    # Ensure SIMULATE_KEY is set
+    server.Config.SIMULATE_KEY = &#x27;secret-sim&#x27;
+    headers = {}  # no key
+    resp = client.post(&#x27;/tools/run-internal-tests&#x27;, json={&#x27;suite&#x27;: &#x27;smoke&#x27;}, headers=headers)
+    assert resp.status_code == 403
+
+    # With correct key
+    headers = {&#x27;X-SIM-KEY&#x27;: &#x27;secret-sim&#x27;}
+    resp2 = client.post(&#x27;/tools/run-internal-tests&#x27;, json={&#x27;suite&#x27;: &#x27;smoke&#x27;}, headers=headers)
+    assert resp2.status_code == 200
+    data = resp2.json()
+    assert &#x27;exit_code&#x27; in data
+    assert &#x27;output&#x27; in data
+</pre></div></body></html>

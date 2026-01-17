@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_simulate_security.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_simulate_security.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_simulate_allowlist_blocks</li><li>test_simulate_key_rate_limit</li></ul></div><h2>Source</h2><pre class="source">import os, sys
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;))
+sys.path.insert(0, os.path.join(ROOT, &#x27;python-tools&#x27;))
+from fastapi.testclient import TestClient
+import api_server_v9 as server
+
+client = TestClient(server.app)
+
+
+def test_simulate_allowlist_blocks():
+    server.Config.DEBUG = True
+    server.Config.SIMULATE_ALLOWED_IPS = [&#x27;127.0.0.2&#x27;]  # not matching localhost
+    resp = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;set_rate_limit&#x27;, &#x27;limit&#x27;: 2}})
+    assert resp.status_code == 403
+    server.Config.SIMULATE_ALLOWED_IPS = []
+
+
+def test_simulate_key_rate_limit():
+    server.Config.DEBUG = True
+    server.Config.SIMULATE_KEY = &#x27;rk123&#x27;
+    headers = {&#x27;X-SIM-KEY&#x27;: &#x27;rk123&#x27;}
+    # quickly consume allowed requests
+    server.simulate_key_limiter.max_requests = 2
+    # make 2 allowed requests
+    for i in range(2):
+        r = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;set_rate_limit&#x27;, &#x27;limit&#x27;: 2}}, headers=headers)
+        assert r.status_code == 200
+    # third should be 429
+    r2 = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;set_rate_limit&#x27;, &#x27;limit&#x27;: 2}}, headers=headers)
+    assert r2.status_code == 429
+    # cleanup
+    server.Config.SIMULATE_KEY = None
+    server.simulate_key_limiter.requests.clear()
+    server.simulate_key_limiter.max_requests = 60
+</pre></div></body></html>

@@ -101,6 +101,56 @@ helm install verity verity/verity-systems -f values.yaml
 kubectl apply -f deploy/kubernetes/
 ```
 
+### Developer quick start — browser test runner
+
+Run the static UI and the fallback Python test-runner and open the browser runner UI:
+
+```powershell
+# Start everything (sets TEST_RUNNER_API_KEY for the runner)
+.\scripts\launch_local.ps1 -TestRunnerApiKey "your-key-here"
+
+# Start without Electron or Expo (useful for CI or lightweight dev)
+.\scripts\launch_local.ps1 -TestRunnerApiKey "dev-local-key" -SkipElectron -SkipExpo
+```
+
+Manually run tests (example):
+
+```bash
+curl -X POST "http://127.0.0.1:8010/run-tests" \
+  -H "Content-Type: application/json" \
+  -H "X-API-KEY: dev-local-key" \
+  -d '{"target":"python-tools/tests","redact":true}'
+
+# fetch logs
+curl -H "X-API-KEY: dev-local-key" "http://127.0.0.1:8010/logs"
+```
+
+
+The runner UI is at `http://127.0.0.1:3001/tests/runner.html` and accepts an API key via the UI input or `?key=` query param.
+
+### Local development helper
+
+- Use `scripts/launch_local.ps1` to start the PWA (`public/`), the Electron desktop app, and the Expo mobile dev server together on Windows.
+- The script prefers `pwsh` if available and falls back to `powershell`.
+- The desktop app now uses a context-isolated preload bridge (`desktop-app/preload.js`) and does not enable `nodeIntegration` in the renderer. This improves security and limits the renderer to the `window.verity` API surface.
+
+If you want to run components individually, you can start them manually:
+
+```powershell
+cd public
+python -m http.server 3001 --bind 127.0.0.1
+
+cd desktop-app
+npx electron .
+
+cd verity-mobile
+npx expo start --tunnel
+```
+
+Notes:
+- A small refactor removed Node `require()` calls from renderer code; test files under `desktop-app/renderer/__tests__/` still use Node-style imports for Jest and are excluded from the renderer runtime.
+- If you run into locked files when installing Electron (`EBUSY` on `icudtl.dat`), ensure no other process is using the file and retry `npm install`.
+
 ## ?? Provider Categories
 
 ### ?? AI/LLM Providers (Free Tier)

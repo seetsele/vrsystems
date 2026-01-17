@@ -1,0 +1,42 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Total Runs",
+      "targets": [
+        { "expr": "verity_total_runs", "legendFormat": "total_runs" }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+    },
+    {
+      "type": "graph",
+      "title": "Failed Runs",
+      "targets": [
+        { "expr": "verity_failed_runs", "legendFormat": "failed_runs" }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+    },
+    {
+      "type": "stat",
+      "title": "Webhook Queue",
+      "targets": [
+        { "expr": "verity_webhook_queue" }
+      ],
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 8}
+    },
+    {
+      "type": "stat",
+      "title": "Providers",
+      "targets": [
+        { "expr": "verity_providers_total" }
+      ],
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 8}
+    }
+  ],
+  "schemaVersion": 16,
+  "title": "Test Runner Overview",
+  "version": 1
+}

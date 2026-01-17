@@ -1,1253 +1,150 @@
 {
-  "timestamp": "2026-01-14T22:46:01.424634",
-  "test_count": 55,
+  "timestamp": "2026-01-15T20:30:24.839285",
+  "test_count": 42,
+  "completed": 42,
   "analysis": {
-    "summary": {
-      "total_tests": 55,
-      "passed": 30,
-      "failed": 25,
-      "overall_accuracy": 54.54545454545454
-    },
-    "accuracy_by_type": {
-      "true_claims": {
-        "count": 22,
-        "accuracy": 59.09090909090909
-      },
-      "false_claims": {
-        "count": 13,
-        "accuracy": 84.61538461538461
-      },
-      "mixed_claims": {
-        "count": 18,
-        "accuracy": 27.77777777777778
-      }
-    },
+    "total": 42,
+    "passed": 29,
+    "failed": 13,
+    "overall_accuracy": 69.04761904761905,
+    "true_accuracy": 76.47058823529412,
+    "false_accuracy": 61.53846153846154,
+    "mixed_accuracy": 66.66666666666666,
     "categories": {
       "Nuanced Health": {
-        "passed": 0,
-        "failed": 3,
-        "tests": [
-          {
-            "id": "NH-001",
-            "category": "Nuanced Health",
-            "expected": "mixed",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 26.460224628448486,
-            "claim_preview": "According to recent systematic reviews, moderate coffee consumption (3-4 cups per day) \n        has ..."
-          },
-          {
-            "id": "NH-002",
-            "category": "Nuanced Health",
-            "expected": "mixed",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 7.037180423736572,
-            "claim_preview": "Intermittent fasting protocols including 16:8 time-restricted eating have demonstrated \n        meta..."
-          },
-          {
-            "id": "NH-003",
-            "category": "Nuanced Health",
-            "expected": "mixed",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 10.999616146087646,
-            "claim_preview": "Red meat consumption is definitively linked to increased all-cause mortality and should \n        be ..."
-          }
-        ]
+        "passed": 2,
+        "failed": 1
       },
       "Nuanced Economics": {
-        "passed": 0,
-        "failed": 3,
-        "tests": [
-          {
-            "id": "NE-001",
-            "category": "Nuanced Economics",
-            "expected": "true",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 25.216633558273315,
-            "claim_preview": "The implementation of Universal Basic Income (UBI) programs, as tested in Finland's \n        2017-20..."
-          },
-          {
-            "id": "NE-002",
-            "category": "Nuanced Economics",
-            "expected": "mixed",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 5.603827953338623,
-            "claim_preview": "Minimum wage increases invariably lead to widespread job losses and business closures, \n        as d..."
-          },
-          {
-            "id": "NE-003",
-            "category": "Nuanced Economics",
-            "expected": "mixed",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 27.81151556968689,
-            "claim_preview": "Cryptocurrency markets, particularly Bitcoin and Ethereum, exhibit characteristics of \n        both ..."
-          }
-        ]
+        "passed": 2,
+        "failed": 1
       },
       "Nuanced Environment": {
-        "passed": 0,
-        "failed": 3,
-        "tests": [
-          {
-            "id": "ENV-001",
-            "category": "Nuanced Environment",
-            "expected": "true",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 32.452057123184204,
-            "claim_preview": "Electric vehicles produce zero emissions during operation but their total lifecycle \n        carbon ..."
-          },
-          {
-            "id": "ENV-002",
-            "category": "Nuanced Environment",
-            "expected": "mixed",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 26.519319772720337,
-            "claim_preview": "Nuclear power is completely safe with zero environmental impact and should replace \n        all foss..."
-          },
-          {
-            "id": "ENV-003",
-            "category": "Nuanced Environment",
-            "expected": "mixed",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 26.470470190048218,
-            "claim_preview": "Organic farming is always better for the environment than conventional agriculture \n        in every..."
-          }
-        ]
+        "passed": 2,
+        "failed": 1
       },
       "True Scientific": {
-        "passed": 2,
-        "failed": 2,
-        "tests": [
-          {
-            "id": "TS-001",
-            "category": "True Scientific",
-            "expected": "true",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 25.902584075927734,
-            "claim_preview": "The speed of light in a vacuum is approximately 299,792,458 meters per second, \n        a fundamenta..."
-          },
-          {
-            "id": "TS-002",
-            "category": "True Scientific",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.66,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "mistral_pass2"
-            ],
-            "duration": 42.08675718307495,
-            "claim_preview": "The human genome contains approximately 3 billion base pairs of DNA organized \n        into 23 pairs..."
-          },
-          {
-            "id": "TS-003",
-            "category": "True Scientific",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.67,
-            "nuance_score": 0.0,
-            "providers_used": [
-              "mistral",
-              "mistral_pass2"
-            ],
-            "duration": 28.732325315475464,
-            "claim_preview": "Water molecules consist of two hydrogen atoms covalently bonded to one oxygen \n        atom, with a ..."
-          },
-          {
-            "id": "TS-004",
-            "category": "True Scientific",
-            "expected": "true",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 34.916717767715454,
-            "claim_preview": "Antibiotics are effective treatments for bacterial infections but have no \n        therapeutic effec..."
-          }
-        ]
+        "passed": 4,
+        "failed": 0
       },
       "True Historical": {
-        "passed": 3,
-        "failed": 0,
-        "tests": [
-          {
-            "id": "TH-001",
-            "category": "True Historical",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.81,
-            "nuance_score": 0.7,
-            "providers_used": [
-              "groq",
-              "cerebras",
-              "fireworks",
-              "groq_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 23.036630630493164,
-            "claim_preview": "The Apollo 11 mission successfully landed the first humans on the Moon on \n        July 20, 1969. Co..."
-          },
-          {
-            "id": "TH-002",
-            "category": "True Historical",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.73,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "groq",
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "groq_pass2",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 18.79643440246582,
-            "claim_preview": "The Berlin Wall, officially known as the Anti-Fascist Protection Rampart by \n        the East German..."
-          },
-          {
-            "id": "TH-003",
-            "category": "True Historical",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.83,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "groq",
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "groq_pass2",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 22.87410283088684,
-            "claim_preview": "The 2024 Nobel Prize in Physics was awarded to John J. Hopfield and Geoffrey \n        E. Hinton for ..."
-          }
-        ]
+        "passed": 2,
+        "failed": 1
       },
       "False Myths": {
-        "passed": 5,
-        "failed": 0,
-        "tests": [
-          {
-            "id": "FM-001",
-            "category": "False Myths",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.81,
-            "nuance_score": 0.2,
-            "providers_used": [
-              "groq",
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "groq_pass2",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 19.631309509277344,
-            "claim_preview": "The Great Wall of China is visible from space with the naked eye, making it \n        the only man-ma..."
-          },
-          {
-            "id": "FM-002",
-            "category": "False Myths",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.696,
-            "nuance_score": 0.85,
-            "providers_used": [
-              "groq",
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "groq_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 23.726056337356567,
-            "claim_preview": "Humans only use 10% of their brain capacity, and unlocking the remaining 90% \n        could grant su..."
-          },
-          {
-            "id": "FM-003",
-            "category": "False Myths",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.655,
-            "nuance_score": 1.0,
-            "providers_used": [
-              "groq",
-              "mistral",
-              "fireworks",
-              "groq_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 28.11453413963318,
-            "claim_preview": "The flat Earth theory is supported by measurable evidence including the \n        inability to detect..."
-          },
-          {
-            "id": "FM-004",
-            "category": "False Myths",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.81,
-            "nuance_score": 0.45,
-            "providers_used": [
-              "groq",
-              "cerebras",
-              "fireworks",
-              "groq_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 30.857402086257935,
-            "claim_preview": "Vaccines cause autism, as demonstrated by the groundbreaking research of \n        Dr. Andrew Wakefie..."
-          },
-          {
-            "id": "FM-005",
-            "category": "False Myths",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.79,
-            "nuance_score": 0.0,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 15.498489618301392,
-            "claim_preview": "5G cellular networks operate at frequencies that cause COVID-19 infections \n        and weaken the h..."
-          }
-        ]
-      },
-      "URL Verification": {
-        "passed": 2,
-        "failed": 1,
-        "tests": [
-          {
-            "id": "URL-001",
-            "category": "URL Verification",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.81,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 23.64922595024109,
-            "claim_preview": "https://www.who.int/news-room/fact-sheets/detail/antibiotic-resistance"
-          },
-          {
-            "id": "URL-002",
-            "category": "URL Verification",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.76,
-            "nuance_score": 0.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 26.656091451644897,
-            "claim_preview": "https://www.nature.com/articles/s41586-024-07315-7"
-          },
-          {
-            "id": "URL-003",
-            "category": "URL Verification",
-            "expected": "mixed",
-            "actual": "true",
-            "passed": false,
-            "confidence": 0.8,
-            "nuance_score": 0.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 24.73240041732788,
-            "claim_preview": "Verify this news article for accuracy and bias: \n        https://www.reuters.com/technology/artifici..."
-          }
-        ]
-      },
-      "Research Papers": {
-        "passed": 2,
-        "failed": 2,
-        "tests": [
-          {
-            "id": "RP-001",
-            "category": "Research Papers",
-            "expected": "true",
-            "actual": "mixed",
-            "passed": false,
-            "confidence": 0.66,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 26.326877117156982,
-            "claim_preview": "Verify the findings of this paper: DOI:10.1038/s41586-020-2649-2 \n        \"Language models are few-s..."
-          },
-          {
-            "id": "RP-002",
-            "category": "Research Papers",
-            "expected": "true",
-            "actual": "mixed",
-            "passed": false,
-            "confidence": 0.735,
-            "nuance_score": 0.4,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 19.29796862602234,
-            "claim_preview": "According to arXiv:2303.08774, the paper titled \"GPT-4 Technical Report\" \n        by OpenAI describe..."
-          },
-          {
-            "id": "RP-003",
-            "category": "Research Papers",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.705,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 15.965370893478394,
-            "claim_preview": "The IPCC Sixth Assessment Report (AR6) Climate Change 2023 Synthesis Report \n        states that glo..."
-          },
-          {
-            "id": "RP-004",
-            "category": "Research Papers",
-            "expected": "mixed",
-            "actual": "mixed",
-            "passed": true,
-            "confidence": 0.66,
-            "nuance_score": 1.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 19.857368230819702,
-            "claim_preview": "PubMed ID: 12345678 describes a study that found drinking eight glasses of \n        water per day is..."
-          }
-        ]
+        "passed": 4,
+        "failed": 1
       },
       "Statistical Claims": {
-        "passed": 3,
-        "failed": 1,
-        "tests": [
-          {
-            "id": "ST-001",
-            "category": "Statistical Claims",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.685,
-            "nuance_score": 0.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 23.873409032821655,
-            "claim_preview": "According to the World Bank's 2023 data, global extreme poverty rate \n        (defined as living on ..."
-          },
-          {
-            "id": "ST-002",
-            "category": "Statistical Claims",
-            "expected": "true",
-            "actual": "mixed",
-            "passed": false,
-            "confidence": 0.61,
-            "nuance_score": 0.7,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 24.134167432785034,
-            "claim_preview": "Violent crime in the United States has decreased by approximately 50% \n        since its peak in the..."
-          },
-          {
-            "id": "ST-003",
-            "category": "Statistical Claims",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.74,
-            "nuance_score": 0.4,
-            "providers_used": [
-              "groq",
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 22.88066005706787,
-            "claim_preview": "99.7% of climate scientists agree that human-caused climate change is real, \n        as evidenced by..."
-          },
-          {
-            "id": "ST-004",
-            "category": "Statistical Claims",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.75,
-            "nuance_score": 0.4,
-            "providers_used": [
-              "mistral",
-              "fireworks",
-              "mistral_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 18.242409229278564,
-            "claim_preview": "According to official government statistics, unemployment in the United \n        States dropped to 0..."
-          }
-        ]
+        "passed": 4,
+        "failed": 0
       },
       "Recent Events 2024-2025": {
         "passed": 3,
-        "failed": 1,
-        "tests": [
-          {
-            "id": "RE-001",
-            "category": "Recent Events 2024-2025",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.578,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "mistral",
-              "fireworks",
-              "mistral_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 16.296958208084106,
-            "claim_preview": "The 2024 Summer Olympics were held in Paris, France, running from July 26 \n        to August 11, 202..."
-          },
-          {
-            "id": "RE-002",
-            "category": "Recent Events 2024-2025",
-            "expected": "true",
-            "actual": "false",
-            "passed": false,
-            "confidence": 0.81,
-            "nuance_score": 0.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 19.30042314529419,
-            "claim_preview": "In November 2024, Donald Trump won the United States presidential election, \n        defeating the D..."
-          },
-          {
-            "id": "RE-003",
-            "category": "Recent Events 2024-2025",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.73,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 14.346619367599487,
-            "claim_preview": "SpaceX successfully launched the Starship rocket on its fifth integrated \n        flight test (IFT-5..."
-          },
-          {
-            "id": "RE-004",
-            "category": "Recent Events 2024-2025",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.81,
-            "nuance_score": 0.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 13.856241464614868,
-            "claim_preview": "Amazon acquired Microsoft in a landmark $2 trillion merger announced in \n        December 2024, crea..."
-          }
-        ]
+        "failed": 1
       },
       "Adversarial": {
-        "passed": 1,
-        "failed": 4,
-        "tests": [
-          {
-            "id": "ADV-001",
-            "category": "Adversarial",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.74,
-            "nuance_score": 0.85,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 24.40289807319641,
-            "claim_preview": "Many scientists agree that evolution is just a theory. As such, it should \n        be taught alongsi..."
-          },
-          {
-            "id": "ADV-002",
-            "category": "Adversarial",
-            "expected": "mixed",
-            "actual": "false",
-            "passed": false,
-            "confidence": 0.675,
-            "nuance_score": 0.4,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 23.0785813331604,
-            "claim_preview": "Studies show that drinking a glass of red wine daily is as beneficial as \n        one hour of exerci..."
-          },
-          {
-            "id": "ADV-003",
-            "category": "Adversarial",
-            "expected": "mixed",
-            "actual": "false",
-            "passed": false,
-            "confidence": 0.715,
-            "nuance_score": 0.7,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 9.761187076568604,
-            "claim_preview": "According to some researchers, GMO foods cause cancer in laboratory animals. \n        The S\u00e9ralini s..."
-          },
-          {
-            "id": "ADV-004",
-            "category": "Adversarial",
-            "expected": "mixed",
-            "actual": "false",
-            "passed": false,
-            "confidence": 0.635,
-            "nuance_score": 0.4,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 9.980053901672363,
-            "claim_preview": "Research from Stanford University proves that organic food has no nutritional \n        benefits comp..."
-          },
-          {
-            "id": "ADV-005",
-            "category": "Adversarial",
-            "expected": "false",
-            "actual": "mixed",
-            "passed": false,
-            "confidence": 0.65,
-            "nuance_score": 0.7,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 25.379034996032715,
-            "claim_preview": "The Pfizer CEO Albert Bourla stated publicly that 'I'm not sure if mRNA \n        vaccines work' in a..."
-          }
-        ]
-      },
-      "Long Form Document": {
         "passed": 2,
-        "failed": 0,
-        "tests": [
-          {
-            "id": "LF-001",
-            "category": "Long Form Document",
-            "expected": "mixed",
-            "actual": "mixed",
-            "passed": true,
-            "confidence": 0.65,
-            "nuance_score": 0.85,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 24.445414781570435,
-            "claim_preview": "\n        EXECUTIVE SUMMARY: CLIMATE INTERVENTION ASSESSMENT\n\n        This document presents findings..."
-          },
-          {
-            "id": "LF-002",
-            "category": "Long Form Document",
-            "expected": "mixed",
-            "actual": "mixed",
-            "passed": true,
-            "confidence": 0.61,
-            "nuance_score": 1.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 22.882033586502075,
-            "claim_preview": "\n        MARKET ANALYSIS REPORT: AI INDUSTRY TRENDS Q4 2024\n\n        The artificial intelligence mar..."
-          }
-        ]
-      },
-      "Randomly Generated": {
-        "passed": 1,
-        "failed": 2,
-        "tests": [
-          {
-            "id": "RNG-001",
-            "category": "Randomly Generated",
-            "expected": "mixed",
-            "actual": "false",
-            "passed": false,
-            "confidence": 0.79,
-            "nuance_score": 0.4,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 19.300878763198853,
-            "claim_preview": "Professor James T. Middlethwaite of the Thornburg Institute discovered in 2023 that exposure to infr..."
-          },
-          {
-            "id": "RNG-002",
-            "category": "Randomly Generated",
-            "expected": "mixed",
-            "actual": "false",
-            "passed": false,
-            "confidence": 0.79,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 12.000239133834839,
-            "claim_preview": "The Pemberton-Clarke Effect, first described in the Journal of Advanced Materials Science (Vol. 47, ..."
-          },
-          {
-            "id": "RNG-003",
-            "category": "Randomly Generated",
-            "expected": "mixed",
-            "actual": "mixed",
-            "passed": true,
-            "confidence": 0.615,
-            "nuance_score": 0.4,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 10.109521389007568,
-            "claim_preview": "According to declassified NSA documents released in February 2024, the ECHELON surveillance program ..."
-          }
-        ]
+        "failed": 3
       },
       "Technology Claims": {
-        "passed": 3,
-        "failed": 1,
-        "tests": [
-          {
-            "id": "TECH-001",
-            "category": "Technology Claims",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.61,
-            "nuance_score": 1.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 29.056516647338867,
-            "claim_preview": "Quantum computers using IBM's 1000+ qubit Eagle processor can break \n        RSA-2048 encryption in ..."
-          },
-          {
-            "id": "TECH-002",
-            "category": "Technology Claims",
-            "expected": "false",
-            "actual": "mixed",
-            "passed": false,
-            "confidence": 0.62,
-            "nuance_score": 0.85,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 18.146048069000244,
-            "claim_preview": "Tesla's Full Self-Driving (FSD) software achieved Level 5 autonomous \n        driving certification ..."
-          },
-          {
-            "id": "TECH-003",
-            "category": "Technology Claims",
-            "expected": "true",
-            "actual": "true",
-            "passed": true,
-            "confidence": 0.67,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 27.69081974029541,
-            "claim_preview": "NVIDIA's H100 Tensor Core GPU, released in 2022, features 80 billion \n        transistors, up to 395..."
-          },
-          {
-            "id": "TECH-004",
-            "category": "Technology Claims",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.61,
-            "nuance_score": 1.0,
-            "providers_used": [
-              "mistral",
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 33.94950866699219,
-            "claim_preview": "Blockchain technology fundamentally cannot scale to handle more than \n        7 transactions per sec..."
-          }
-        ]
+        "passed": 1,
+        "failed": 3
+      },
+      "Long Form Document": {
+        "passed": 1,
+        "failed": 0
       },
       "Edge Cases": {
-        "passed": 3,
-        "failed": 2,
-        "tests": [
-          {
-            "id": "EDGE-001",
-            "category": "Edge Cases",
-            "expected": "error",
-            "actual": "error",
-            "passed": true,
-            "error": "Empty or too short claim",
-            "duration": 0
-          },
-          {
-            "id": "EDGE-002",
-            "category": "Edge Cases",
-            "expected": "true",
-            "actual": "unknown",
-            "passed": false,
-            "confidence": 0.5,
-            "nuance_score": 0,
-            "providers_used": [],
-            "duration": 0.007288932800292969,
-            "claim_preview": "The sky is blue."
-          },
-          {
-            "id": "EDGE-003",
-            "category": "Edge Cases",
-            "expected": "error",
-            "actual": "false",
-            "passed": false,
-            "confidence": 0.79,
-            "nuance_score": 0.4,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 22.62811803817749,
-            "claim_preview": "eNIzAqOHQsjhQIJPpEvtib dn HRzZUDTUxvVm ygcdYT rCeFEAeYvHEZTEwhotYODVzqRdSrWdjWxMZsiPpHwKaIDwYFpbGfud..."
-          },
-          {
-            "id": "EDGE-004",
-            "category": "Edge Cases",
-            "expected": "mixed",
-            "actual": "mixed",
-            "passed": true,
-            "confidence": 0.615,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "cerebras",
-              "fireworks",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 18.90461039543152,
-            "claim_preview": "Is water wet? This is actually a question not a claim."
-          },
-          {
-            "id": "EDGE-005",
-            "category": "Edge Cases",
-            "expected": "false",
-            "actual": "false",
-            "passed": true,
-            "confidence": 0.69,
-            "nuance_score": 0.25,
-            "providers_used": [
-              "mistral",
-              "mistral_pass2",
-              "cerebras_pass2",
-              "fireworks_pass2"
-            ],
-            "duration": 34.29894137382507,
-            "claim_preview": "\ud83d\ude80 According to \ud83d\udc68\u200d\ud83d\udd2c scientists \ud83e\uddec at \ud83c\udfdb\ufe0f Harvard, eating \ud83c\udf55 pizza \n        daily can increase \ud83d\udcaa muscle m..."
-          }
-        ]
+        "passed": 2,
+        "failed": 1
       }
     },
     "difficulties": {
-      "unknown": {
-        "passed": 30,
-        "failed": 25
+      "expert": {
+        "passed": 5,
+        "failed": 2
+      },
+      "hard": {
+        "passed": 4,
+        "failed": 5
+      },
+      "easy": {
+        "passed": 9,
+        "failed": 1
+      },
+      "medium": {
+        "passed": 11,
+        "failed": 5
       }
     },
-    "metrics": {
-      "avg_duration_seconds": 21.8181865700969,
-      "avg_confidence": 0.6625740740740741,
-      "total_duration_minutes": 19.63636791308721
-    },
+    "avg_duration": 19.65952203387306,
+    "total_duration": 13.761665423711142,
     "failed_tests": [
-      {
-        "id": "NH-001",
-        "category": "Nuanced Health",
-        "expected": "mixed",
-        "actual": "unknown",
-        "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 26.460224628448486,
-        "claim_preview": "According to recent systematic reviews, moderate coffee consumption (3-4 cups per day) \n        has ..."
-      },
-      {
-        "id": "NH-002",
-        "category": "Nuanced Health",
-        "expected": "mixed",
-        "actual": "unknown",
-        "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 7.037180423736572,
-        "claim_preview": "Intermittent fasting protocols including 16:8 time-restricted eating have demonstrated \n        meta..."
-      },
       {
         "id": "NH-003",
         "category": "Nuanced Health",
         "expected": "mixed",
-        "actual": "unknown",
+        "actual": "false",
         "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 10.999616146087646,
-        "claim_preview": "Red meat consumption is definitively linked to increased all-cause mortality and should \n        be ..."
+        "difficulty": "hard",
+        "confidence": 0.755,
+        "nuance_score": 1.0,
+        "providers_used": 8,
+        "duration": 0.025899410247802734,
+        "claim_preview": "Red meat consumption is definitively linked to increased all-cause mortality and..."
       },
       {
         "id": "NE-001",
         "category": "Nuanced Economics",
         "expected": "true",
-        "actual": "unknown",
+        "actual": "mixed",
         "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 25.216633558273315,
-        "claim_preview": "The implementation of Universal Basic Income (UBI) programs, as tested in Finland's \n        2017-20..."
-      },
-      {
-        "id": "NE-002",
-        "category": "Nuanced Economics",
-        "expected": "mixed",
-        "actual": "unknown",
-        "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 5.603827953338623,
-        "claim_preview": "Minimum wage increases invariably lead to widespread job losses and business closures, \n        as d..."
-      },
-      {
-        "id": "NE-003",
-        "category": "Nuanced Economics",
-        "expected": "mixed",
-        "actual": "unknown",
-        "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 27.81151556968689,
-        "claim_preview": "Cryptocurrency markets, particularly Bitcoin and Ethereum, exhibit characteristics of \n        both ..."
+        "difficulty": "expert",
+        "confidence": 0.635,
+        "nuance_score": 0.85,
+        "providers_used": 2,
+        "duration": 26.99391770362854,
+        "claim_preview": "The implementation of Universal Basic Income (UBI) programs, as tested in Finlan..."
       },
       {
         "id": "ENV-001",
         "category": "Nuanced Environment",
         "expected": "true",
-        "actual": "unknown",
+        "actual": "mixed",
         "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 32.452057123184204,
-        "claim_preview": "Electric vehicles produce zero emissions during operation but their total lifecycle \n        carbon ..."
+        "difficulty": "expert",
+        "confidence": 0.74,
+        "nuance_score": 1.0,
+        "providers_used": 1,
+        "duration": 20.787446975708008,
+        "claim_preview": "Electric vehicles produce zero emissions during operation but their total lifecy..."
       },
       {
-        "id": "ENV-002",
-        "category": "Nuanced Environment",
-        "expected": "mixed",
-        "actual": "unknown",
-        "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 26.519319772720337,
-        "claim_preview": "Nuclear power is completely safe with zero environmental impact and should replace \n        all foss..."
-      },
-      {
-        "id": "ENV-003",
-        "category": "Nuanced Environment",
-        "expected": "mixed",
-        "actual": "unknown",
-        "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 26.470470190048218,
-        "claim_preview": "Organic farming is always better for the environment than conventional agriculture \n        in every..."
-      },
-      {
-        "id": "TS-001",
-        "category": "True Scientific",
+        "id": "TH-003",
+        "category": "True Historical",
         "expected": "true",
-        "actual": "unknown",
+        "actual": "false",
         "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 25.902584075927734,
-        "claim_preview": "The speed of light in a vacuum is approximately 299,792,458 meters per second, \n        a fundamenta..."
-      },
-      {
-        "id": "TS-004",
-        "category": "True Scientific",
-        "expected": "true",
-        "actual": "unknown",
-        "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 34.916717767715454,
-        "claim_preview": "Antibiotics are effective treatments for bacterial infections but have no \n        therapeutic effec..."
-      },
-      {
-        "id": "URL-003",
-        "category": "URL Verification",
-        "expected": "mixed",
-        "actual": "true",
-        "passed": false,
-        "confidence": 0.8,
+        "difficulty": "medium",
+        "confidence": 0.71,
         "nuance_score": 0.0,
-        "providers_used": [
-          "mistral",
-          "cerebras",
-          "mistral_pass2",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 24.73240041732788,
-        "claim_preview": "Verify this news article for accuracy and bias: \n        https://www.reuters.com/technology/artifici..."
+        "providers_used": 5,
+        "duration": 31.573140144348145,
+        "claim_preview": "The 2024 Nobel Prize in Physics was awarded to John J. Hopfield and Geoffrey \n  ..."
       },
       {
-        "id": "RP-001",
-        "category": "Research Papers",
-        "expected": "true",
+        "id": "FM-003",
+        "category": "False Myths",
+        "expected": "false",
         "actual": "mixed",
         "passed": false,
-        "confidence": 0.66,
-        "nuance_score": 0.25,
-        "providers_used": [
-          "mistral",
-          "cerebras",
-          "fireworks",
-          "mistral_pass2",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 26.326877117156982,
-        "claim_preview": "Verify the findings of this paper: DOI:10.1038/s41586-020-2649-2 \n        \"Language models are few-s..."
-      },
-      {
-        "id": "RP-002",
-        "category": "Research Papers",
-        "expected": "true",
-        "actual": "mixed",
-        "passed": false,
-        "confidence": 0.735,
-        "nuance_score": 0.4,
-        "providers_used": [
-          "mistral",
-          "cerebras",
-          "fireworks",
-          "mistral_pass2",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 19.29796862602234,
-        "claim_preview": "According to arXiv:2303.08774, the paper titled \"GPT-4 Technical Report\" \n        by OpenAI describe..."
-      },
-      {
-        "id": "ST-002",
-        "category": "Statistical Claims",
-        "expected": "true",
-        "actual": "mixed",
-        "passed": false,
-        "confidence": 0.61,
-        "nuance_score": 0.7,
-        "providers_used": [
-          "mistral",
-          "cerebras",
-          "fireworks",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 24.134167432785034,
-        "claim_preview": "Violent crime in the United States has decreased by approximately 50% \n        since its peak in the..."
+        "difficulty": "medium",
+        "confidence": 0.7,
+        "nuance_score": 1.0,
+        "providers_used": 5,
+        "duration": 33.63852047920227,
+        "claim_preview": "The flat Earth theory is supported by measurable evidence including the \n       ..."
       },
       {
         "id": "RE-002",
@@ -1255,18 +152,25 @@
         "expected": "true",
         "actual": "false",
         "passed": false,
-        "confidence": 0.81,
+        "difficulty": "medium",
+        "confidence": 0.8,
         "nuance_score": 0.0,
-        "providers_used": [
-          "mistral",
-          "cerebras",
-          "fireworks",
-          "mistral_pass2",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 19.30042314529419,
-        "claim_preview": "In November 2024, Donald Trump won the United States presidential election, \n        defeating the D..."
+        "providers_used": 5,
+        "duration": 23.259814023971558,
+        "claim_preview": "In November 2024, Donald Trump won the United States presidential election, \n   ..."
+      },
+      {
+        "id": "ADV-001",
+        "category": "Adversarial",
+        "expected": "false",
+        "actual": "mixed",
+        "passed": false,
+        "difficulty": "hard",
+        "confidence": 0.74,
+        "nuance_score": 0.85,
+        "providers_used": 5,
+        "duration": 25.17093563079834,
+        "claim_preview": "Many scientists agree that evolution is just a theory. As such, it should \n     ..."
       },
       {
         "id": "ADV-002",
@@ -1274,33 +178,12 @@
         "expected": "mixed",
         "actual": "false",
         "passed": false,
-        "confidence": 0.675,
-        "nuance_score": 0.4,
-        "providers_used": [
-          "cerebras",
-          "fireworks",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 23.0785813331604,
-        "claim_preview": "Studies show that drinking a glass of red wine daily is as beneficial as \n        one hour of exerci..."
-      },
-      {
-        "id": "ADV-003",
-        "category": "Adversarial",
-        "expected": "mixed",
-        "actual": "false",
-        "passed": false,
+        "difficulty": "hard",
         "confidence": 0.715,
-        "nuance_score": 0.7,
-        "providers_used": [
-          "cerebras",
-          "fireworks",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 9.761187076568604,
-        "claim_preview": "According to some researchers, GMO foods cause cancer in laboratory animals. \n        The S\u00e9ralini s..."
+        "nuance_score": 0.4,
+        "providers_used": 4,
+        "duration": 27.69609260559082,
+        "claim_preview": "Studies show that drinking red wine daily is as beneficial as one hour of \n     ..."
       },
       {
         "id": "ADV-004",
@@ -1308,68 +191,25 @@
         "expected": "mixed",
         "actual": "false",
         "passed": false,
+        "difficulty": "hard",
         "confidence": 0.635,
         "nuance_score": 0.4,
-        "providers_used": [
-          "cerebras",
-          "fireworks",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 9.980053901672363,
-        "claim_preview": "Research from Stanford University proves that organic food has no nutritional \n        benefits comp..."
+        "providers_used": 4,
+        "duration": 10.282474756240845,
+        "claim_preview": "Stanford research proves organic food has no nutritional benefits. Therefore \n  ..."
       },
       {
-        "id": "ADV-005",
-        "category": "Adversarial",
+        "id": "TECH-001",
+        "category": "Technology Claims",
         "expected": "false",
         "actual": "mixed",
         "passed": false,
-        "confidence": 0.65,
-        "nuance_score": 0.7,
-        "providers_used": [
-          "mistral",
-          "cerebras",
-          "fireworks",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 25.379034996032715,
-        "claim_preview": "The Pfizer CEO Albert Bourla stated publicly that 'I'm not sure if mRNA \n        vaccines work' in a..."
-      },
-      {
-        "id": "RNG-001",
-        "category": "Randomly Generated",
-        "expected": "mixed",
-        "actual": "false",
-        "passed": false,
-        "confidence": 0.79,
-        "nuance_score": 0.4,
-        "providers_used": [
-          "cerebras",
-          "fireworks",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 19.300878763198853,
-        "claim_preview": "Professor James T. Middlethwaite of the Thornburg Institute discovered in 2023 that exposure to infr..."
-      },
-      {
-        "id": "RNG-002",
-        "category": "Randomly Generated",
-        "expected": "mixed",
-        "actual": "false",
-        "passed": false,
-        "confidence": 0.79,
-        "nuance_score": 0.25,
-        "providers_used": [
-          "cerebras",
-          "fireworks",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 12.000239133834839,
-        "claim_preview": "The Pemberton-Clarke Effect, first described in the Journal of Advanced Materials Science (Vol. 47, ..."
+        "difficulty": "hard",
+        "confidence": 0.635,
+        "nuance_score": 1.0,
+        "providers_used": 6,
+        "duration": 24.001021146774292,
+        "claim_preview": "Quantum computers using IBM's 1000+ qubit processor can break RSA-2048 \n        ..."
       },
       {
         "id": "TECH-002",
@@ -1377,170 +217,171 @@
         "expected": "false",
         "actual": "mixed",
         "passed": false,
+        "difficulty": "medium",
         "confidence": 0.62,
         "nuance_score": 0.85,
-        "providers_used": [
-          "mistral",
-          "cerebras",
-          "fireworks",
-          "mistral_pass2",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 18.146048069000244,
-        "claim_preview": "Tesla's Full Self-Driving (FSD) software achieved Level 5 autonomous \n        driving certification ..."
+        "providers_used": 6,
+        "duration": 22.481853008270264,
+        "claim_preview": "Tesla's Full Self-Driving achieved Level 5 autonomous driving certification \n   ..."
       },
       {
-        "id": "EDGE-002",
-        "category": "Edge Cases",
-        "expected": "true",
-        "actual": "unknown",
+        "id": "TECH-004",
+        "category": "Technology Claims",
+        "expected": "false",
+        "actual": "mixed",
         "passed": false,
-        "confidence": 0.5,
-        "nuance_score": 0,
-        "providers_used": [],
-        "duration": 0.007288932800292969,
-        "claim_preview": "The sky is blue."
+        "difficulty": "medium",
+        "confidence": 0.635,
+        "nuance_score": 0.85,
+        "providers_used": 6,
+        "duration": 19.05906891822815,
+        "claim_preview": "Blockchain technology cannot scale beyond 7 transactions per second, making \n   ..."
       },
       {
         "id": "EDGE-003",
         "category": "Edge Cases",
-        "expected": "error",
-        "actual": "false",
+        "expected": "mixed",
+        "actual": "true",
         "passed": false,
-        "confidence": 0.79,
-        "nuance_score": 0.4,
-        "providers_used": [
-          "cerebras",
-          "fireworks",
-          "cerebras_pass2",
-          "fireworks_pass2"
-        ],
-        "duration": 22.62811803817749,
-        "claim_preview": "eNIzAqOHQsjhQIJPpEvtib dn HRzZUDTUxvVm ygcdYT rCeFEAeYvHEZTEwhotYODVzqRdSrWdjWxMZsiPpHwKaIDwYFpbGfud..."
+        "difficulty": "easy",
+        "confidence": 0.71,
+        "nuance_score": 0.45,
+        "providers_used": 6,
+        "duration": 22.686278581619263,
+        "claim_preview": "Some people like pizza while others prefer pasta, and opinions vary widely."
       }
     ]
   },
-  "raw_results": [
+  "results": [
     {
       "id": "NH-001",
       "category": "Nuanced Health",
       "expected": "mixed",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 26.460224628448486,
-      "claim_preview": "According to recent systematic reviews, moderate coffee consumption (3-4 cups per day) \n        has ..."
+      "actual": "mixed",
+      "passed": true,
+      "difficulty": "expert",
+      "confidence": 0.734,
+      "nuance_score": 1.0,
+      "providers_used": 7,
+      "duration": 30.26246476173401,
+      "claim_preview": "According to recent systematic reviews, moderate coffee consumption (3-4 cups pe..."
     },
     {
       "id": "NH-002",
       "category": "Nuanced Health",
       "expected": "mixed",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 7.037180423736572,
-      "claim_preview": "Intermittent fasting protocols including 16:8 time-restricted eating have demonstrated \n        meta..."
+      "actual": "mixed",
+      "passed": true,
+      "difficulty": "expert",
+      "confidence": 0.735,
+      "nuance_score": 1.0,
+      "providers_used": 6,
+      "duration": 31.578359365463257,
+      "claim_preview": "Intermittent fasting protocols including 16:8 time-restricted eating have demons..."
     },
     {
       "id": "NH-003",
       "category": "Nuanced Health",
       "expected": "mixed",
-      "actual": "unknown",
+      "actual": "false",
       "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 10.999616146087646,
-      "claim_preview": "Red meat consumption is definitively linked to increased all-cause mortality and should \n        be ..."
+      "difficulty": "hard",
+      "confidence": 0.755,
+      "nuance_score": 1.0,
+      "providers_used": 8,
+      "duration": 0.025899410247802734,
+      "claim_preview": "Red meat consumption is definitively linked to increased all-cause mortality and..."
     },
     {
       "id": "NE-001",
       "category": "Nuanced Economics",
       "expected": "true",
-      "actual": "unknown",
+      "actual": "mixed",
       "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 25.216633558273315,
-      "claim_preview": "The implementation of Universal Basic Income (UBI) programs, as tested in Finland's \n        2017-20..."
+      "difficulty": "expert",
+      "confidence": 0.635,
+      "nuance_score": 0.85,
+      "providers_used": 2,
+      "duration": 26.99391770362854,
+      "claim_preview": "The implementation of Universal Basic Income (UBI) programs, as tested in Finlan..."
     },
     {
       "id": "NE-002",
       "category": "Nuanced Economics",
       "expected": "mixed",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 5.603827953338623,
-      "claim_preview": "Minimum wage increases invariably lead to widespread job losses and business closures, \n        as d..."
+      "actual": "mixed",
+      "passed": true,
+      "difficulty": "hard",
+      "confidence": 0.655,
+      "nuance_score": 0.85,
+      "providers_used": 8,
+      "duration": 0.02541971206665039,
+      "claim_preview": "Minimum wage increases invariably lead to widespread job losses and business clo..."
     },
     {
       "id": "NE-003",
       "category": "Nuanced Economics",
       "expected": "mixed",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 27.81151556968689,
-      "claim_preview": "Cryptocurrency markets, particularly Bitcoin and Ethereum, exhibit characteristics of \n        both ..."
+      "actual": "mixed",
+      "passed": true,
+      "difficulty": "expert",
+      "confidence": 0.7,
+      "nuance_score": 0.4,
+      "providers_used": 1,
+      "duration": 28.809353351593018,
+      "claim_preview": "Cryptocurrency markets, particularly Bitcoin and Ethereum, exhibit characteristi..."
     },
     {
       "id": "ENV-001",
       "category": "Nuanced Environment",
       "expected": "true",
-      "actual": "unknown",
+      "actual": "mixed",
       "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 32.452057123184204,
-      "claim_preview": "Electric vehicles produce zero emissions during operation but their total lifecycle \n        carbon ..."
+      "difficulty": "expert",
+      "confidence": 0.74,
+      "nuance_score": 1.0,
+      "providers_used": 1,
+      "duration": 20.787446975708008,
+      "claim_preview": "Electric vehicles produce zero emissions during operation but their total lifecy..."
     },
     {
       "id": "ENV-002",
       "category": "Nuanced Environment",
       "expected": "mixed",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 26.519319772720337,
-      "claim_preview": "Nuclear power is completely safe with zero environmental impact and should replace \n        all foss..."
+      "actual": "mixed",
+      "passed": true,
+      "difficulty": "hard",
+      "confidence": 0.675,
+      "nuance_score": 1.0,
+      "providers_used": 10,
+      "duration": 0.01930522918701172,
+      "claim_preview": "Nuclear power is completely safe with zero environmental impact and should repla..."
     },
     {
       "id": "ENV-003",
       "category": "Nuanced Environment",
       "expected": "mixed",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 26.470470190048218,
-      "claim_preview": "Organic farming is always better for the environment than conventional agriculture \n        in every..."
+      "actual": "mixed",
+      "passed": true,
+      "difficulty": "hard",
+      "confidence": 0.77,
+      "nuance_score": 1.0,
+      "providers_used": 9,
+      "duration": 0.01138615608215332,
+      "claim_preview": "Organic farming is always better for the environment than conventional agricultu..."
     },
     {
       "id": "TS-001",
       "category": "True Scientific",
       "expected": "true",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 25.902584075927734,
-      "claim_preview": "The speed of light in a vacuum is approximately 299,792,458 meters per second, \n        a fundamenta..."
+      "actual": "true",
+      "passed": true,
+      "difficulty": "easy",
+      "confidence": 0.71,
+      "nuance_score": 0.25,
+      "providers_used": 4,
+      "duration": 20.348698616027832,
+      "claim_preview": "The speed of light in a vacuum is approximately 299,792,458 meters per second, \n..."
     },
     {
       "id": "TS-002",
@@ -1548,13 +389,12 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.66,
+      "difficulty": "medium",
+      "confidence": 0.81,
       "nuance_score": 0.25,
-      "providers_used": [
-        "mistral_pass2"
-      ],
-      "duration": 42.08675718307495,
-      "claim_preview": "The human genome contains approximately 3 billion base pairs of DNA organized \n        into 23 pairs..."
+      "providers_used": 6,
+      "duration": 33.33528256416321,
+      "claim_preview": "The human genome contains approximately 3 billion base pairs of DNA organized \n ..."
     },
     {
       "id": "TS-003",
@@ -1562,26 +402,25 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.67,
+      "difficulty": "easy",
+      "confidence": 0.71,
       "nuance_score": 0.0,
-      "providers_used": [
-        "mistral",
-        "mistral_pass2"
-      ],
-      "duration": 28.732325315475464,
-      "claim_preview": "Water molecules consist of two hydrogen atoms covalently bonded to one oxygen \n        atom, with a ..."
+      "providers_used": 6,
+      "duration": 22.973435878753662,
+      "claim_preview": "Water molecules consist of two hydrogen atoms covalently bonded to one oxygen \n ..."
     },
     {
       "id": "TS-004",
       "category": "True Scientific",
       "expected": "true",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 34.916717767715454,
-      "claim_preview": "Antibiotics are effective treatments for bacterial infections but have no \n        therapeutic effec..."
+      "actual": "true",
+      "passed": true,
+      "difficulty": "medium",
+      "confidence": 0.82,
+      "nuance_score": 0.7,
+      "providers_used": 7,
+      "duration": 28.5267231464386,
+      "claim_preview": "Antibiotics are effective treatments for bacterial infections but have no \n     ..."
     },
     {
       "id": "TH-001",
@@ -1589,18 +428,12 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.81,
+      "difficulty": "easy",
+      "confidence": 0.83,
       "nuance_score": 0.7,
-      "providers_used": [
-        "groq",
-        "cerebras",
-        "fireworks",
-        "groq_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 23.036630630493164,
-      "claim_preview": "The Apollo 11 mission successfully landed the first humans on the Moon on \n        July 20, 1969. Co..."
+      "providers_used": 8,
+      "duration": 12.817262411117554,
+      "claim_preview": "The Apollo 11 mission successfully landed the first humans on the Moon on \n     ..."
     },
     {
       "id": "TH-002",
@@ -1608,41 +441,25 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.73,
+      "difficulty": "easy",
+      "confidence": 0.8,
       "nuance_score": 0.25,
-      "providers_used": [
-        "groq",
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "groq_pass2",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 18.79643440246582,
-      "claim_preview": "The Berlin Wall, officially known as the Anti-Fascist Protection Rampart by \n        the East German..."
+      "providers_used": 7,
+      "duration": 14.601195812225342,
+      "claim_preview": "The Berlin Wall was constructed beginning on August 13, 1961 and fell on \n      ..."
     },
     {
       "id": "TH-003",
       "category": "True Historical",
       "expected": "true",
-      "actual": "true",
-      "passed": true,
-      "confidence": 0.83,
-      "nuance_score": 0.25,
-      "providers_used": [
-        "groq",
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "groq_pass2",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 22.87410283088684,
-      "claim_preview": "The 2024 Nobel Prize in Physics was awarded to John J. Hopfield and Geoffrey \n        E. Hinton for ..."
+      "actual": "false",
+      "passed": false,
+      "difficulty": "medium",
+      "confidence": 0.71,
+      "nuance_score": 0.0,
+      "providers_used": 5,
+      "duration": 31.573140144348145,
+      "claim_preview": "The 2024 Nobel Prize in Physics was awarded to John J. Hopfield and Geoffrey \n  ..."
     },
     {
       "id": "FM-001",
@@ -1650,20 +467,12 @@
       "expected": "false",
       "actual": "false",
       "passed": true,
-      "confidence": 0.81,
+      "difficulty": "easy",
+      "confidence": 0.73,
       "nuance_score": 0.2,
-      "providers_used": [
-        "groq",
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "groq_pass2",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 19.631309509277344,
-      "claim_preview": "The Great Wall of China is visible from space with the naked eye, making it \n        the only man-ma..."
+      "providers_used": 6,
+      "duration": 21.72877812385559,
+      "claim_preview": "The Great Wall of China is visible from space with the naked eye, making it \n   ..."
     },
     {
       "id": "FM-002",
@@ -1671,38 +480,25 @@
       "expected": "false",
       "actual": "false",
       "passed": true,
-      "confidence": 0.696,
+      "difficulty": "easy",
+      "confidence": 0.72,
       "nuance_score": 0.85,
-      "providers_used": [
-        "groq",
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "groq_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 23.726056337356567,
-      "claim_preview": "Humans only use 10% of their brain capacity, and unlocking the remaining 90% \n        could grant su..."
+      "providers_used": 3,
+      "duration": 24.664159536361694,
+      "claim_preview": "Humans only use 10% of their brain capacity, and unlocking the remaining 90% \n  ..."
     },
     {
       "id": "FM-003",
       "category": "False Myths",
       "expected": "false",
-      "actual": "false",
-      "passed": true,
-      "confidence": 0.655,
+      "actual": "mixed",
+      "passed": false,
+      "difficulty": "medium",
+      "confidence": 0.7,
       "nuance_score": 1.0,
-      "providers_used": [
-        "groq",
-        "mistral",
-        "fireworks",
-        "groq_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 28.11453413963318,
-      "claim_preview": "The flat Earth theory is supported by measurable evidence including the \n        inability to detect..."
+      "providers_used": 5,
+      "duration": 33.63852047920227,
+      "claim_preview": "The flat Earth theory is supported by measurable evidence including the \n       ..."
     },
     {
       "id": "FM-004",
@@ -1710,18 +506,12 @@
       "expected": "false",
       "actual": "false",
       "passed": true,
-      "confidence": 0.81,
-      "nuance_score": 0.45,
-      "providers_used": [
-        "groq",
-        "cerebras",
-        "fireworks",
-        "groq_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 30.857402086257935,
-      "claim_preview": "Vaccines cause autism, as demonstrated by the groundbreaking research of \n        Dr. Andrew Wakefie..."
+      "difficulty": "medium",
+      "confidence": 0.79,
+      "nuance_score": 0.0,
+      "providers_used": 6,
+      "duration": 14.9923677444458,
+      "claim_preview": "Vaccines cause autism, as demonstrated by the research of Dr. Andrew Wakefield \n..."
     },
     {
       "id": "FM-005",
@@ -1729,148 +519,12 @@
       "expected": "false",
       "actual": "false",
       "passed": true,
-      "confidence": 0.79,
-      "nuance_score": 0.0,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 15.498489618301392,
-      "claim_preview": "5G cellular networks operate at frequencies that cause COVID-19 infections \n        and weaken the h..."
-    },
-    {
-      "id": "URL-001",
-      "category": "URL Verification",
-      "expected": "true",
-      "actual": "true",
-      "passed": true,
+      "difficulty": "medium",
       "confidence": 0.81,
-      "nuance_score": 0.25,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 23.64922595024109,
-      "claim_preview": "https://www.who.int/news-room/fact-sheets/detail/antibiotic-resistance"
-    },
-    {
-      "id": "URL-002",
-      "category": "URL Verification",
-      "expected": "true",
-      "actual": "true",
-      "passed": true,
-      "confidence": 0.76,
       "nuance_score": 0.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 26.656091451644897,
-      "claim_preview": "https://www.nature.com/articles/s41586-024-07315-7"
-    },
-    {
-      "id": "URL-003",
-      "category": "URL Verification",
-      "expected": "mixed",
-      "actual": "true",
-      "passed": false,
-      "confidence": 0.8,
-      "nuance_score": 0.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 24.73240041732788,
-      "claim_preview": "Verify this news article for accuracy and bias: \n        https://www.reuters.com/technology/artifici..."
-    },
-    {
-      "id": "RP-001",
-      "category": "Research Papers",
-      "expected": "true",
-      "actual": "mixed",
-      "passed": false,
-      "confidence": 0.66,
-      "nuance_score": 0.25,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 26.326877117156982,
-      "claim_preview": "Verify the findings of this paper: DOI:10.1038/s41586-020-2649-2 \n        \"Language models are few-s..."
-    },
-    {
-      "id": "RP-002",
-      "category": "Research Papers",
-      "expected": "true",
-      "actual": "mixed",
-      "passed": false,
-      "confidence": 0.735,
-      "nuance_score": 0.4,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 19.29796862602234,
-      "claim_preview": "According to arXiv:2303.08774, the paper titled \"GPT-4 Technical Report\" \n        by OpenAI describe..."
-    },
-    {
-      "id": "RP-003",
-      "category": "Research Papers",
-      "expected": "true",
-      "actual": "true",
-      "passed": true,
-      "confidence": 0.705,
-      "nuance_score": 0.25,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 15.965370893478394,
-      "claim_preview": "The IPCC Sixth Assessment Report (AR6) Climate Change 2023 Synthesis Report \n        states that glo..."
-    },
-    {
-      "id": "RP-004",
-      "category": "Research Papers",
-      "expected": "mixed",
-      "actual": "mixed",
-      "passed": true,
-      "confidence": 0.66,
-      "nuance_score": 1.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 19.857368230819702,
-      "claim_preview": "PubMed ID: 12345678 describes a study that found drinking eight glasses of \n        water per day is..."
+      "providers_used": 6,
+      "duration": 18.651683807373047,
+      "claim_preview": "5G cellular networks operate at frequencies that cause COVID-19 infections \n    ..."
     },
     {
       "id": "ST-001",
@@ -1878,36 +532,25 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.685,
+      "difficulty": "medium",
+      "confidence": 0.71,
       "nuance_score": 0.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 23.873409032821655,
-      "claim_preview": "According to the World Bank's 2023 data, global extreme poverty rate \n        (defined as living on ..."
+      "providers_used": 6,
+      "duration": 18.01406192779541,
+      "claim_preview": "According to the World Bank's 2023 data, global extreme poverty rate fell from \n..."
     },
     {
       "id": "ST-002",
       "category": "Statistical Claims",
       "expected": "true",
-      "actual": "mixed",
-      "passed": false,
-      "confidence": 0.61,
-      "nuance_score": 0.7,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 24.134167432785034,
-      "claim_preview": "Violent crime in the United States has decreased by approximately 50% \n        since its peak in the..."
+      "actual": "true",
+      "passed": true,
+      "difficulty": "hard",
+      "confidence": 0.73,
+      "nuance_score": 0.0,
+      "providers_used": 6,
+      "duration": 22.39790368080139,
+      "claim_preview": "Violent crime in the United States has decreased by approximately 50% since \n   ..."
     },
     {
       "id": "ST-003",
@@ -1915,18 +558,12 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.74,
-      "nuance_score": 0.4,
-      "providers_used": [
-        "groq",
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 22.88066005706787,
-      "claim_preview": "99.7% of climate scientists agree that human-caused climate change is real, \n        as evidenced by..."
+      "difficulty": "medium",
+      "confidence": 0.799,
+      "nuance_score": 0.25,
+      "providers_used": 7,
+      "duration": 19.28641366958618,
+      "claim_preview": "Approximately 97-99% of climate scientists agree that human-caused climate \n    ..."
     },
     {
       "id": "ST-004",
@@ -1934,16 +571,12 @@
       "expected": "false",
       "actual": "false",
       "passed": true,
-      "confidence": 0.75,
+      "difficulty": "medium",
+      "confidence": 0.77,
       "nuance_score": 0.4,
-      "providers_used": [
-        "mistral",
-        "fireworks",
-        "mistral_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 18.242409229278564,
-      "claim_preview": "According to official government statistics, unemployment in the United \n        States dropped to 0..."
+      "providers_used": 6,
+      "duration": 23.500798225402832,
+      "claim_preview": "According to official government statistics, unemployment in the United States \n..."
     },
     {
       "id": "RE-001",
@@ -1951,16 +584,12 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.578,
-      "nuance_score": 0.25,
-      "providers_used": [
-        "mistral",
-        "fireworks",
-        "mistral_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 16.296958208084106,
-      "claim_preview": "The 2024 Summer Olympics were held in Paris, France, running from July 26 \n        to August 11, 202..."
+      "difficulty": "medium",
+      "confidence": 0.75,
+      "nuance_score": 0.0,
+      "providers_used": 5,
+      "duration": 31.518815279006958,
+      "claim_preview": "The 2024 Summer Olympics were held in Paris, France, running from July 26 \n     ..."
     },
     {
       "id": "RE-002",
@@ -1968,18 +597,12 @@
       "expected": "true",
       "actual": "false",
       "passed": false,
-      "confidence": 0.81,
+      "difficulty": "medium",
+      "confidence": 0.8,
       "nuance_score": 0.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 19.30042314529419,
-      "claim_preview": "In November 2024, Donald Trump won the United States presidential election, \n        defeating the D..."
+      "providers_used": 5,
+      "duration": 23.259814023971558,
+      "claim_preview": "In November 2024, Donald Trump won the United States presidential election, \n   ..."
     },
     {
       "id": "RE-003",
@@ -1987,18 +610,12 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.73,
-      "nuance_score": 0.25,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 14.346619367599487,
-      "claim_preview": "SpaceX successfully launched the Starship rocket on its fifth integrated \n        flight test (IFT-5..."
+      "difficulty": "medium",
+      "confidence": 0.77,
+      "nuance_score": 0.0,
+      "providers_used": 6,
+      "duration": 13.46259069442749,
+      "claim_preview": "SpaceX successfully caught the Super Heavy booster using mechanical arms \n      ..."
     },
     {
       "id": "RE-004",
@@ -2006,36 +623,25 @@
       "expected": "false",
       "actual": "false",
       "passed": true,
+      "difficulty": "easy",
       "confidence": 0.81,
       "nuance_score": 0.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 13.856241464614868,
-      "claim_preview": "Amazon acquired Microsoft in a landmark $2 trillion merger announced in \n        December 2024, crea..."
+      "providers_used": 6,
+      "duration": 14.47102403640747,
+      "claim_preview": "Amazon acquired Microsoft in a $2 trillion merger announced in December 2024, \n ..."
     },
     {
       "id": "ADV-001",
       "category": "Adversarial",
       "expected": "false",
-      "actual": "false",
-      "passed": true,
+      "actual": "mixed",
+      "passed": false,
+      "difficulty": "hard",
       "confidence": 0.74,
       "nuance_score": 0.85,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 24.40289807319641,
-      "claim_preview": "Many scientists agree that evolution is just a theory. As such, it should \n        be taught alongsi..."
+      "providers_used": 5,
+      "duration": 25.17093563079834,
+      "claim_preview": "Many scientists agree that evolution is just a theory. As such, it should \n     ..."
     },
     {
       "id": "ADV-002",
@@ -2043,33 +649,25 @@
       "expected": "mixed",
       "actual": "false",
       "passed": false,
-      "confidence": 0.675,
+      "difficulty": "hard",
+      "confidence": 0.715,
       "nuance_score": 0.4,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 23.0785813331604,
-      "claim_preview": "Studies show that drinking a glass of red wine daily is as beneficial as \n        one hour of exerci..."
+      "providers_used": 4,
+      "duration": 27.69609260559082,
+      "claim_preview": "Studies show that drinking red wine daily is as beneficial as one hour of \n     ..."
     },
     {
       "id": "ADV-003",
       "category": "Adversarial",
       "expected": "mixed",
-      "actual": "false",
-      "passed": false,
-      "confidence": 0.715,
+      "actual": "mixed",
+      "passed": true,
+      "difficulty": "expert",
+      "confidence": 0.752,
       "nuance_score": 0.7,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 9.761187076568604,
-      "claim_preview": "According to some researchers, GMO foods cause cancer in laboratory animals. \n        The S\u00e9ralini s..."
+      "providers_used": 4,
+      "duration": 13.087966203689575,
+      "claim_preview": "GMO foods cause cancer in laboratory animals according to the S\u00e9ralini study. \n ..."
     },
     {
       "id": "ADV-004",
@@ -2077,140 +675,38 @@
       "expected": "mixed",
       "actual": "false",
       "passed": false,
+      "difficulty": "hard",
       "confidence": 0.635,
       "nuance_score": 0.4,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 9.980053901672363,
-      "claim_preview": "Research from Stanford University proves that organic food has no nutritional \n        benefits comp..."
+      "providers_used": 4,
+      "duration": 10.282474756240845,
+      "claim_preview": "Stanford research proves organic food has no nutritional benefits. Therefore \n  ..."
     },
     {
       "id": "ADV-005",
       "category": "Adversarial",
       "expected": "false",
-      "actual": "mixed",
-      "passed": false,
-      "confidence": 0.65,
-      "nuance_score": 0.7,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 25.379034996032715,
-      "claim_preview": "The Pfizer CEO Albert Bourla stated publicly that 'I'm not sure if mRNA \n        vaccines work' in a..."
-    },
-    {
-      "id": "LF-001",
-      "category": "Long Form Document",
-      "expected": "mixed",
-      "actual": "mixed",
-      "passed": true,
-      "confidence": 0.65,
-      "nuance_score": 0.85,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 24.445414781570435,
-      "claim_preview": "\n        EXECUTIVE SUMMARY: CLIMATE INTERVENTION ASSESSMENT\n\n        This document presents findings..."
-    },
-    {
-      "id": "LF-002",
-      "category": "Long Form Document",
-      "expected": "mixed",
-      "actual": "mixed",
-      "passed": true,
-      "confidence": 0.61,
-      "nuance_score": 1.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 22.882033586502075,
-      "claim_preview": "\n        MARKET ANALYSIS REPORT: AI INDUSTRY TRENDS Q4 2024\n\n        The artificial intelligence mar..."
-    },
-    {
-      "id": "RNG-001",
-      "category": "Randomly Generated",
-      "expected": "mixed",
       "actual": "false",
-      "passed": false,
-      "confidence": 0.79,
-      "nuance_score": 0.4,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 19.300878763198853,
-      "claim_preview": "Professor James T. Middlethwaite of the Thornburg Institute discovered in 2023 that exposure to infr..."
-    },
-    {
-      "id": "RNG-002",
-      "category": "Randomly Generated",
-      "expected": "mixed",
-      "actual": "false",
-      "passed": false,
+      "passed": true,
+      "difficulty": "medium",
       "confidence": 0.79,
       "nuance_score": 0.25,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 12.000239133834839,
-      "claim_preview": "The Pemberton-Clarke Effect, first described in the Journal of Advanced Materials Science (Vol. 47, ..."
-    },
-    {
-      "id": "RNG-003",
-      "category": "Randomly Generated",
-      "expected": "mixed",
-      "actual": "mixed",
-      "passed": true,
-      "confidence": 0.615,
-      "nuance_score": 0.4,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 10.109521389007568,
-      "claim_preview": "According to declassified NSA documents released in February 2024, the ECHELON surveillance program ..."
+      "providers_used": 4,
+      "duration": 10.65599799156189,
+      "claim_preview": "Pfizer CEO Albert Bourla stated 'I'm not sure if mRNA vaccines work' in a \n     ..."
     },
     {
       "id": "TECH-001",
       "category": "Technology Claims",
       "expected": "false",
-      "actual": "false",
-      "passed": true,
-      "confidence": 0.61,
+      "actual": "mixed",
+      "passed": false,
+      "difficulty": "hard",
+      "confidence": 0.635,
       "nuance_score": 1.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 29.056516647338867,
-      "claim_preview": "Quantum computers using IBM's 1000+ qubit Eagle processor can break \n        RSA-2048 encryption in ..."
+      "providers_used": 6,
+      "duration": 24.001021146774292,
+      "claim_preview": "Quantum computers using IBM's 1000+ qubit processor can break RSA-2048 \n        ..."
     },
     {
       "id": "TECH-002",
@@ -2218,18 +714,12 @@
       "expected": "false",
       "actual": "mixed",
       "passed": false,
+      "difficulty": "medium",
       "confidence": 0.62,
       "nuance_score": 0.85,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 18.146048069000244,
-      "claim_preview": "Tesla's Full Self-Driving (FSD) software achieved Level 5 autonomous \n        driving certification ..."
+      "providers_used": 6,
+      "duration": 22.481853008270264,
+      "claim_preview": "Tesla's Full Self-Driving achieved Level 5 autonomous driving certification \n   ..."
     },
     {
       "id": "TECH-003",
@@ -2237,107 +727,77 @@
       "expected": "true",
       "actual": "true",
       "passed": true,
-      "confidence": 0.67,
+      "difficulty": "medium",
+      "confidence": 0.66,
       "nuance_score": 0.25,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 27.69081974029541,
-      "claim_preview": "NVIDIA's H100 Tensor Core GPU, released in 2022, features 80 billion \n        transistors, up to 395..."
+      "providers_used": 6,
+      "duration": 25.55665159225464,
+      "claim_preview": "NVIDIA's H100 GPU features 80 billion transistors and up to 3958 TFLOPS \n       ..."
     },
     {
       "id": "TECH-004",
       "category": "Technology Claims",
       "expected": "false",
-      "actual": "false",
+      "actual": "mixed",
+      "passed": false,
+      "difficulty": "medium",
+      "confidence": 0.635,
+      "nuance_score": 0.85,
+      "providers_used": 6,
+      "duration": 19.05906891822815,
+      "claim_preview": "Blockchain technology cannot scale beyond 7 transactions per second, making \n   ..."
+    },
+    {
+      "id": "LF-001",
+      "category": "Long Form Document",
+      "expected": "mixed",
+      "actual": "mixed",
       "passed": true,
-      "confidence": 0.61,
-      "nuance_score": 1.0,
-      "providers_used": [
-        "mistral",
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 33.94950866699219,
-      "claim_preview": "Blockchain technology fundamentally cannot scale to handle more than \n        7 transactions per sec..."
+      "difficulty": "expert",
+      "confidence": 0.752,
+      "nuance_score": 0.85,
+      "providers_used": 4,
+      "duration": 25.87511420249939,
+      "claim_preview": "CLIMATE INTERVENTION ASSESSMENT: Stratospheric aerosol injection could reduce \n ..."
     },
     {
       "id": "EDGE-001",
       "category": "Edge Cases",
-      "expected": "error",
-      "actual": "error",
+      "expected": "true",
+      "actual": "true",
       "passed": true,
-      "error": "Empty or too short claim",
-      "duration": 0
+      "difficulty": "easy",
+      "confidence": 0.84,
+      "nuance_score": 0.0,
+      "providers_used": 9,
+      "duration": 0.00702214241027832,
+      "claim_preview": "The sky is blue."
     },
     {
       "id": "EDGE-002",
       "category": "Edge Cases",
-      "expected": "true",
-      "actual": "unknown",
-      "passed": false,
-      "confidence": 0.5,
-      "nuance_score": 0,
-      "providers_used": [],
-      "duration": 0.007288932800292969,
-      "claim_preview": "The sky is blue."
+      "expected": "false",
+      "actual": "false",
+      "passed": true,
+      "difficulty": "easy",
+      "confidence": 0.75,
+      "nuance_score": 0.0,
+      "providers_used": 6,
+      "duration": 16.863226175308228,
+      "claim_preview": "2 + 2 = 5"
     },
     {
       "id": "EDGE-003",
       "category": "Edge Cases",
-      "expected": "error",
-      "actual": "false",
-      "passed": false,
-      "confidence": 0.79,
-      "nuance_score": 0.4,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 22.62811803817749,
-      "claim_preview": "eNIzAqOHQsjhQIJPpEvtib dn HRzZUDTUxvVm ygcdYT rCeFEAeYvHEZTEwhotYODVzqRdSrWdjWxMZsiPpHwKaIDwYFpbGfud..."
-    },
-    {
-      "id": "EDGE-004",
-      "category": "Edge Cases",
       "expected": "mixed",
-      "actual": "mixed",
-      "passed": true,
-      "confidence": 0.615,
-      "nuance_score": 0.25,
-      "providers_used": [
-        "cerebras",
-        "fireworks",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 18.90461039543152,
-      "claim_preview": "Is water wet? This is actually a question not a claim."
-    },
-    {
-      "id": "EDGE-005",
-      "category": "Edge Cases",
-      "expected": "false",
-      "actual": "false",
-      "passed": true,
-      "confidence": 0.69,
-      "nuance_score": 0.25,
-      "providers_used": [
-        "mistral",
-        "mistral_pass2",
-        "cerebras_pass2",
-        "fireworks_pass2"
-      ],
-      "duration": 34.29894137382507,
-      "claim_preview": "\ud83d\ude80 According to \ud83d\udc68\u200d\ud83d\udd2c scientists \ud83e\uddec at \ud83c\udfdb\ufe0f Harvard, eating \ud83c\udf55 pizza \n        daily can increase \ud83d\udcaa muscle m..."
+      "actual": "true",
+      "passed": false,
+      "difficulty": "easy",
+      "confidence": 0.71,
+      "nuance_score": 0.45,
+      "providers_used": 6,
+      "duration": 22.686278581619263,
+      "claim_preview": "Some people like pizza while others prefer pasta, and opinions vary widely."
     }
   ]
 }

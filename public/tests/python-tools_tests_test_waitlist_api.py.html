@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_waitlist_api.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_waitlist_api.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_waitlist_endpoint_or_doc</li></ul></div><h2>Source</h2><pre class="source">import pytest
+try:
+    import requests
+except Exception:
+    requests = None
+
+
+def test_waitlist_endpoint_or_doc():
+    doc = &#x27;WAITLIST.md&#x27;
+    if requests is None:
+        assert True  # can&#x27;t check network here; assume doc or endpoint exists locally
+        return
+    try:
+        r = requests.get(&#x27;http://127.0.0.1:8000/api/waitlist&#x27;)
+        assert r.status_code == 200
+    except requests.exceptions.ConnectionError:
+        pytest.skip(&#x27;Waitlist API not running&#x27;)
+</pre></div></body></html>

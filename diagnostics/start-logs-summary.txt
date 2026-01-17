@@ -1,0 +1,20 @@
+Verity start logs summary
+
+-- desktop-start.log --
+
+> verity-desktop@2.0.0 start
+> electron .
+
+
+-- mobile-start.log --
+
+> verity-mobile@1.0.0 start
+> expo start
+
+Starting project at C:\Users\lawm\Desktop\verity-systems\verity-mobile
+Starting Metro Bundler
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+
+
+Note: Expo failed to start on 8081 because the port is in use; try running `npx expo start --tunnel --port 8082` if needed.

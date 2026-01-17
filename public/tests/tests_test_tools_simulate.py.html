@@ -1,0 +1,65 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_tools_simulate.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_tools_simulate.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_simulate_provider_fail_recover</li><li>test_simulate_requires_sim_key_when_set</li><li>test_simulate_rate_limit</li></ul></div><h2>Source</h2><pre class="source">import os, sys
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;))
+sys.path.insert(0, os.path.join(ROOT, &#x27;python-tools&#x27;))
+from fastapi.testclient import TestClient
+import api_server_v9 as server
+
+client = TestClient(server.app)
+
+
+def test_simulate_provider_fail_recover():
+    # Ensure simulation key is not required for this test
+    server.Config.SIMULATE_KEY = None
+    server.Config.DEBUG = True
+    # Clear rate limit state to ensure tests aren&#x27;t impacted by prior requests
+    server.rate_limiter.requests.clear()
+    server.simulate_key_limiter.requests.clear()
+
+    resp = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;provider_fail&#x27;, &#x27;provider&#x27;: &#x27;groq&#x27;, &#x27;count&#x27;: 3}})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert &#x27;Simulated&#x27; in data[&#x27;message&#x27;]
+
+    # Check providers health shows groq in cooldown
+    ph = client.get(&#x27;/providers/health&#x27;).json()
+    assert &#x27;groq&#x27; in ph[&#x27;health&#x27;][&#x27;in_cooldown&#x27;] or server.provider_health.failures.get(&#x27;groq&#x27;,0) &gt;= 3
+
+    # Recover
+    resp2 = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;provider_recover&#x27;, &#x27;provider&#x27;: &#x27;groq&#x27;}})
+    assert resp2.status_code == 200
+    # slight delay to ensure state propagation
+    import time
+    time.sleep(0.05)
+    ph2_resp = client.get(&#x27;/providers/health&#x27;)
+    assert ph2_resp.status_code == 200
+    ph2 = ph2_resp.json()
+    assert &#x27;health&#x27; in ph2 and &#x27;in_cooldown&#x27; in ph2[&#x27;health&#x27;]
+    assert &#x27;groq&#x27; not in ph2[&#x27;health&#x27;][&#x27;in_cooldown&#x27;]
+
+
+def test_simulate_requires_sim_key_when_set():
+    # When the SIMULATE_KEY is configured, requests without the header are forbidden
+    server.Config.SIMULATE_KEY = &#x27;the-secret&#x27;
+    resp = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;set_rate_limit&#x27;, &#x27;limit&#x27;: 2}})
+    assert resp.status_code == 403
+
+    # With header should succeed
+    resp2 = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;set_rate_limit&#x27;, &#x27;limit&#x27;: 2}}, headers={&#x27;X-SIM-KEY&#x27;: &#x27;the-secret&#x27;})
+    assert resp2.status_code == 200
+    assert resp2.json()[&#x27;limit&#x27;] == 2
+
+    # cleanup
+    server.Config.SIMULATE_KEY = None
+
+
+def test_simulate_rate_limit():
+    server.Config.DEBUG = True
+    resp = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;set_rate_limit&#x27;, &#x27;limit&#x27;: 2}})
+    assert resp.status_code == 200
+    assert resp.json()[&#x27;limit&#x27;] == 2
+
+    # trigger rate limit
+    tr = client.post(&#x27;/tools/simulate&#x27;, json={&#x27;content&#x27;: {&#x27;action&#x27;: &#x27;trigger_rate_limit&#x27;, &#x27;identifier&#x27;: &#x27;test-rl&#x27;, &#x27;count&#x27;: 5}})
+    assert tr.status_code == 200
+    assert tr.json()[&#x27;allowed&#x27;] is False
+</pre></div></body></html>

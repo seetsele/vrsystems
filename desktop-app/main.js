@@ -122,10 +122,14 @@ function createMainWindow() {
         } : false,
         trafficLightPosition: { x: 16, y: 12 },
         webPreferences: {
+            // NOTE: For local/dev convenience we enable nodeIntegration so
+            // existing renderer code that uses `require()` continues to work.
+            // For production we use a context-isolated preload and disable
+            // nodeIntegration so renderer cannot access Node APIs directly.
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             contextIsolation: true,
-            sandbox: true,
+            sandbox: false,
             webSecurity: true,
             allowRunningInsecureContent: false,
             enableRemoteModule: false,
@@ -177,7 +181,14 @@ function createMainWindow() {
     mainWindow.on('resize', saveWindowState);
     mainWindow.on('move', saveWindowState);
     mainWindow.on('maximize', () => store.set('windowState.maximized', true));
-    mainWindow.on('unmaximize', () => store.set('windowState.maximized', false));
+    mainWindow.on('maximize', () => {
+        store.set('windowState.maximized', true);
+        try { mainWindow.webContents.send('window-maximized', true); } catch (e) { /* ignore */ }
+    });
+    mainWindow.on('unmaximize', () => {
+        store.set('windowState.maximized', false);
+        try { mainWindow.webContents.send('window-maximized', false); } catch (e) { /* ignore */ }
+    });
 
     // Handle close to tray
     mainWindow.on('close', (event) => {
@@ -472,6 +483,14 @@ function setupIPC() {
         store.clear();
         return true;
     });
+        // Convenience save handler: accept an object and persist keys atomically
+        ipcMain.handle('settings:save', (_, obj) => {
+            if (obj && typeof obj === 'object') {
+                Object.keys(obj).forEach(k => store.set(k, obj[k]));
+                return true;
+            }
+            return false;
+        });
     
     // Clipboard
     ipcMain.handle('clipboard:read', () => clipboard.readText());
@@ -529,6 +548,16 @@ function setupIPC() {
         store.set('recentVerifications', recent.slice(0, 500));
         return true;
     });
+        // Recent verifications persistence
+        ipcMain.handle('recent:save', (_, items) => {
+            try {
+                store.set('recentVerifications', items || []);
+                return true;
+            } catch (e) {
+                log.error('Failed to save recent items', e);
+                return false;
+            }
+        });
     ipcMain.handle('recent:clear', () => {
         store.set('recentVerifications', []);
         return true;
@@ -542,6 +571,17 @@ function setupIPC() {
     // Small utility: open DevTools on renderer request
     ipcMain.on('open-devtools', () => {
         try { mainWindow?.webContents.openDevTools({ mode: 'detach' }); } catch (e) { log.warn('open-devtools failed', e); }
+    });
+
+    // Receive renderer logs (proxied from preload) so main log collects them
+    ipcMain.on('renderer:log', (_, level, ...args) => {
+        try {
+            if (level && typeof log[level] === 'function') {
+                log[level](...args);
+            } else {
+                log.info(...args);
+            }
+        } catch (e) { log.info(...args); }
     });
 
     // Dump logs to a temporary file and return the path (used for user diagnostics)

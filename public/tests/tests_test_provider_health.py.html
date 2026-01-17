@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_provider_health.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_provider_health.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_provider_cooldown_trigger</li></ul></div><h2>Source</h2><pre class="source">import time
+import os, sys
+# Ensure python-tools is importable during tests
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;))
+sys.path.insert(0, os.path.join(ROOT, &#x27;python-tools&#x27;))
+import api_server_v9 as server
+provider_health = server.provider_health
+
+
+def test_provider_cooldown_trigger():
+    name = &quot;unit_test_provider&quot;
+    # Ensure clean state
+    if name in provider_health.cooldown_until:
+        del provider_health.cooldown_until[name]
+    provider_health.failures[name] = 0
+
+    # Trigger failures
+    provider_health.record_failure(name, status_code=500)
+    provider_health.record_failure(name, status_code=500)
+    provider_health.record_failure(name, status_code=500)
+
+    status = provider_health.get_status()
+    assert name in status[&quot;in_cooldown&quot;] or name in provider_health.cooldown_until
+
+    # cleanup
+    if name in provider_health.cooldown_until:
+        del provider_health.cooldown_until[name]
+    provider_health.failures[name] = 0
+</pre></div></body></html>

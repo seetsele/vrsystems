@@ -1,0 +1,92 @@
+{
+  "timestamp": 1768505610,
+  "results": [
+    {
+      "attempt": 1,
+      "status_code": 200,
+      "latency_s": 5.087,
+      "headers": {
+        "content-length": "411",
+        "content-type": "application/json",
+        "date": "Thu, 15 Jan 2026 19:34:50 GMT",
+        "fireworks-prompt-tokens": "43",
+        "fireworks-sampling-options": "{\"max_tokens\": 16, \"temperature\": 0.6, \"top_k\": 50, \"top_p\": 0.9, \"min_p\": 0.0, \"typical_p\": 1.0, \"frequency_penalty\": 0.0, \"presence_penalty\": 0.0, \"repetition_penalty\": 1.0, \"mirostat_target\": null, \"mirostat_lr\": 0.1, \"cycle_multiplier\": 0.0, \"cycle_base\": 0.0, \"cycle_allowed_length\": 0, \"cycle_sequence_breakers\": []}",
+        "fireworks-server-processing-time": "0.998",
+        "fireworks-server-time-to-first-token": "0.528",
+        "fireworks-speculation-prompt-matched-tokens": "0",
+        "server": "istio-envoy",
+        "vary": "Origin",
+        "x-envoy-upstream-service-time": "1003",
+        "x-ratelimit-limit-requests": "60",
+        "x-ratelimit-limit-tokens-generated": "12000",
+        "x-ratelimit-limit-tokens-prompt": "60000",
+        "x-ratelimit-over-limit": "no",
+        "x-ratelimit-remaining-requests": "59",
+        "x-ratelimit-remaining-tokens-generated": "12000",
+        "x-ratelimit-remaining-tokens-prompt": "59957",
+        "x-request-id": "7bde9e8a-68b2-421e-9099-631535f5f29c",
+        "x-session-id": "MTAuMjQ0LjMuNjg6ODA=",
+        "via": "1.1 google"
+      },
+      "body_snippet": "{\"id\":\"7bde9e8a-68b2-421e-9099-631535f5f29c\",\"object\":\"chat.completion\",\"created\":1768505691,\"model\":\"accounts/fireworks/models/llama-v3p3-70b-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Pong #1: Yes, I'm active and ready to respond. How\"},\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":43,\"total_tokens\":59,\"completion_tokens\":16,\"prompt_tokens_details\":{\"cached_tokens\":42}}}"
+    },
+    {
+      "attempt": 2,
+      "status_code": 200,
+      "latency_s": 6.409,
+      "headers": {
+        "content-length": "426",
+        "content-type": "application/json",
+        "date": "Thu, 15 Jan 2026 19:34:57 GMT",
+        "fireworks-prompt-tokens": "43",
+        "fireworks-sampling-options": "{\"max_tokens\": 16, \"temperature\": 0.6, \"top_k\": 50, \"top_p\": 0.9, \"min_p\": 0.0, \"typical_p\": 1.0, \"frequency_penalty\": 0.0, \"presence_penalty\": 0.0, \"repetition_penalty\": 1.0, \"mirostat_target\": null, \"mirostat_lr\": 0.1, \"cycle_multiplier\": 0.0, \"cycle_base\": 0.0, \"cycle_allowed_length\": 0, \"cycle_sequence_breakers\": []}",
+        "fireworks-server-processing-time": "0.310",
+        "fireworks-server-time-to-first-token": "0.212",
+        "fireworks-speculation-prompt-matched-tokens": "0",
+        "server": "istio-envoy",
+        "vary": "Origin",
+        "x-envoy-upstream-service-time": "313",
+        "x-ratelimit-limit-requests": "60",
+        "x-ratelimit-limit-tokens-generated": "12000",
+        "x-ratelimit-limit-tokens-prompt": "60000",
+        "x-ratelimit-over-limit": "no",
+        "x-ratelimit-remaining-requests": "59",
+        "x-ratelimit-remaining-tokens-generated": "12000",
+        "x-ratelimit-remaining-tokens-prompt": "59957",
+        "x-request-id": "62e408a8-5771-4117-9c3a-da7212afe73e",
+        "x-session-id": "MTAuMjQ0LjE0LjIwMjo4MA==",
+        "via": "1.1 google"
+      },
+      "body_snippet": "{\"id\":\"62e408a8-5771-4117-9c3a-da7212afe73e\",\"object\":\"chat.completion\",\"created\":1768505698,\"model\":\"accounts/fireworks/models/llama-v3p3-70b-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Ping received! I'm active and ready to help. How can I assist you\"},\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":43,\"total_tokens\":59,\"completion_tokens\":16,\"prompt_tokens_details\":{\"cached_tokens\":42}}}"
+    },
+    {
+      "attempt": 3,
+      "status_code": 200,
+      "latency_s": 2.543,
+      "headers": {
+        "content-length": "426",
+        "content-type": "application/json",
+        "date": "Thu, 15 Jan 2026 19:34:59 GMT",
+        "fireworks-prompt-tokens": "43",
+        "fireworks-sampling-options": "{\"max_tokens\": 16, \"temperature\": 0.6, \"top_k\": 50, \"top_p\": 0.9, \"min_p\": 0.0, \"typical_p\": 1.0, \"frequency_penalty\": 0.0, \"presence_penalty\": 0.0, \"repetition_penalty\": 1.0, \"mirostat_target\": null, \"mirostat_lr\": 0.1, \"cycle_multiplier\": 0.0, \"cycle_base\": 0.0, \"cycle_allowed_length\": 0, \"cycle_sequence_breakers\": []}",
+        "fireworks-server-processing-time": "0.513",
+        "fireworks-server-time-to-first-token": "0.344",
+        "fireworks-speculation-prompt-matched-tokens": "0",
+        "server": "istio-envoy",
+        "vary": "Origin",
+        "x-envoy-upstream-service-time": "657",
+        "x-ratelimit-limit-requests": "60",
+        "x-ratelimit-limit-tokens-generated": "12000",
+        "x-ratelimit-limit-tokens-prompt": "60000",
+        "x-ratelimit-over-limit": "no",
+        "x-ratelimit-remaining-requests": "59",
+        "x-ratelimit-remaining-tokens-generated": "12000",
+        "x-ratelimit-remaining-tokens-prompt": "59957",
+        "x-request-id": "40627fff-0e35-4c0f-b26d-69102fec5229",
+        "x-session-id": "MTAuMjQ0LjE0LjIwMjo4MA==",
+        "via": "1.1 google"
+      },
+      "body_snippet": "{\"id\":\"40627fff-0e35-4c0f-b26d-69102fec5229\",\"object\":\"chat.completion\",\"created\":1768505700,\"model\":\"accounts/fireworks/models/llama-v3p3-70b-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Ping received. I'm active and ready to assist you. What's on your\"},\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":43,\"total_tokens\":59,\"completion_tokens\":16,\"prompt_tokens_details\":{\"cached_tokens\":32}}}"
+    }
+  ]
+}

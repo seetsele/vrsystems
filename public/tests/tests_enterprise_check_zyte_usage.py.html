@@ -1,0 +1,66 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\enterprise\check_zyte_usage.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\enterprise\check_zyte_usage.py</h1><p><a href="index.html">Back to tests index</a></p><h2>Source</h2><pre class="source">#!/usr/bin/env python3
+&quot;&quot;&quot;Scan repository for Zyte (formerly Scrapinghub) usage and references.
+
+Looks for `ZYTE_API_KEY` in env files and for imports/usages of `zyte`,
+`scrapinghub`, or `scrapy` in python files. Prints a concise report.
+
+Run: `python tests/enterprise/check_zyte_usage.py`
+&quot;&quot;&quot;
+import glob
+import os
+import re
+from pathlib import Path
+
+
+def find_env_keys(root):
+    keys = []
+    for f in glob.glob(os.path.join(root, &#x27;**&#x27;, &#x27;*.env*&#x27;), recursive=True):
+        try:
+            txt = open(f, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;).read()
+        except Exception:
+            continue
+        if &#x27;ZYTE_API_KEY&#x27; in txt or &#x27;ZYTE&#x27; in txt.upper():
+            keys.append(f)
+    return keys
+
+
+def find_imports(root):
+    matches = []
+    pattern = re.compile(r&#x27;\b(zyte|scrapinghub|scrapy)\b&#x27;, re.I)
+    for f in glob.glob(os.path.join(root, &#x27;**&#x27;, &#x27;*.py&#x27;), recursive=True):
+        try:
+            txt = open(f, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;).read()
+        except Exception:
+            continue
+        if pattern.search(txt):
+            matches.append(f)
+    return matches
+
+
+def main():
+    repo = Path(os.getcwd())
+    roots = [str(repo)]
+    env_files = find_env_keys(&#x27;.&#x27;)
+    import_files = find_imports(&#x27;.&#x27;)
+
+    print(&#x27;Zyte env key files:&#x27;)
+    if env_files:
+        for e in env_files:
+            print(&#x27; -&#x27;, e)
+    else:
+        print(&#x27; - none found&#x27;)
+
+    print(&#x27;\nFiles importing or referencing zyte/scrapy/scrapinghub:&#x27;)
+    if import_files:
+        for f in import_files:
+            print(&#x27; -&#x27;, f)
+    else:
+        print(&#x27; - none found&#x27;)
+
+    if env_files and not import_files:
+        print(&#x27;\nNote: Zyte API key(s) present but no code import references found.&#x27;)
+
+
+if __name__ == &#x27;__main__&#x27;:
+    main()
+</pre></div></body></html>

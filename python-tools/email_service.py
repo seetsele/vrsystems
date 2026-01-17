@@ -9,6 +9,8 @@ import logging
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
 import aiohttp
+import httpx
+from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('EmailService')
@@ -21,6 +23,11 @@ class EmailConfig:
     from_email: str = os.getenv('FROM_EMAIL', 'noreply@verity-systems.com')
     from_name: str = os.getenv('FROM_NAME', 'Verity Systems')
     api_url: str = 'https://api.sendgrid.com/v3/mail/send'
+    # Local SMTP fallback (e.g., MailHog or local relay)
+    smtp_host: str = os.getenv('LOCAL_SMTP_HOST', '')
+    smtp_port: int = int(os.getenv('LOCAL_SMTP_PORT', '1025'))
+    smtp_user: str = os.getenv('LOCAL_SMTP_USER', '')
+    smtp_pass: str = os.getenv('LOCAL_SMTP_PASS', '')
 
 
 class EmailService:
@@ -32,7 +39,8 @@ class EmailService:
     
     @property
     def is_configured(self) -> bool:
-        return bool(self.config.api_key)
+        # Consider local SMTP as a valid configured transport
+        return bool(self.config.api_key) or bool(self.config.smtp_host)
     
     async def get_session(self) -> aiohttp.ClientSession:
         if self._session is None or self._session.closed:
@@ -86,26 +94,148 @@ class EmailService:
         if categories:
             payload['categories'] = categories
         
-        try:
-            session = await self.get_session()
-            async with session.post(
-                self.config.api_url,
-                json=payload,
-                headers={
-                    'Authorization': f'Bearer {self.config.api_key}',
+        # Implement retries and idempotency via Supabase `email_logs` (preferred) or local file fallback
+        idempotency_key = payload.get('headers', {}).get('Idempotency-Key') or f"email:{to_email}:{subject}:{hash(html_content) % 1000000}"
+
+        # First, try Supabase to see if this idempotency_key already exists
+        SUPABASE_URL = os.getenv('SUPABASE_URL')
+        SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
+        if SUPABASE_URL and SUPABASE_SERVICE_KEY:
+            try:
+                headers = {
+                    'apikey': SUPABASE_SERVICE_KEY,
+                    'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
                     'Content-Type': 'application/json'
                 }
-            ) as response:
-                if response.status in (200, 201, 202):
-                    logger.info(f"Email sent to {to_email}: {subject}")
-                    return {'success': True, 'status': response.status}
+                async with httpx.AsyncClient(timeout=5) as _c:
+                    r = await _c.get(f"{SUPABASE_URL}/rest/v1/email_logs?idempotency_key=eq.{idempotency_key}&select=id", headers=headers)
+                    if r.status_code == 200 and r.json():
+                        logger.info('Email already logged in Supabase (idempotent): %s', idempotency_key)
+                        return {'success': True, 'status': 'cached'}
+            except Exception:
+                logger.debug('Supabase idempotency check failed, falling back to local cache')
+
+        # Local persistent cache file (best-effort fallback)
+        cache_file = os.path.join(os.path.dirname(__file__), '.email_sent_cache.json')
+        sent_cache = {}
+        try:
+            if os.path.exists(cache_file):
+                with open(cache_file, 'r', encoding='utf-8') as cf:
+                    import json as _json
+                    sent_cache = _json.load(cf)
+        except Exception:
+            sent_cache = {}
+
+        if idempotency_key in sent_cache:
+            logger.info('Email already sent (local cache): %s', idempotency_key)
+            return {'success': True, 'status': 'cached'}
+
+        max_attempts = 3
+        backoff = 0.8
+        attempt = 0
+        last_err = None
+        while attempt < max_attempts:
+            attempt += 1
+            try:
+                # If local SMTP is configured, use it as a fallback transport
+                if self.config.smtp_host:
+                    # Build plain text + html message
+                    from email.message import EmailMessage
+                    msg = EmailMessage()
+                    msg['Subject'] = subject
+                    msg['From'] = f"{self.config.from_name} <{self.config.from_email}>"
+                    msg['To'] = to_email
+                    if plain_content:
+                        msg.set_content(plain_content)
+                    # Add HTML alternative
+                    msg.add_alternative(html_content, subtype='html')
+
+                    import smtplib
+
+                    # Perform synchronous SMTP send inside a thread (simpler and reliable)
+                    def _send_blocking():
+                        try:
+                            with smtplib.SMTP(self.config.smtp_host, int(self.config.smtp_port or 1025), timeout=10) as s:
+                                s.ehlo()
+                                try:
+                                    s.starttls()
+                                except Exception:
+                                    pass
+                                if self.config.smtp_user and self.config.smtp_pass:
+                                    s.login(self.config.smtp_user, self.config.smtp_pass)
+                                s.send_message(msg)
+                            return True, None
+                        except Exception as e:
+                            return False, str(e)
+
+                    success, err = await asyncio.to_thread(_send_blocking)
+                    if success:
+                        logger.info(f"Email sent to {to_email} via local SMTP {self.config.smtp_host}:{self.config.smtp_port}")
+                        sent_cache[idempotency_key] = { 'to': to_email, 'subject': subject, 'ts': datetime.utcnow().isoformat() }
+                        import json as _json
+                        try:
+                            with open(cache_file, 'w', encoding='utf-8') as cf:
+                                _json.dump(sent_cache, cf)
+                        except Exception:
+                            logger.debug('Failed to persist email cache')
+                        return {'success': True, 'status': 'smtp_sent'}
+                    else:
+                        last_err = err
+                        logger.exception('Local SMTP send failed: %s', err)
+
                 else:
-                    error_text = await response.text()
-                    logger.error(f"Failed to send email: {response.status} - {error_text}")
-                    return {'success': False, 'status': response.status, 'error': error_text}
-        except Exception as e:
-            logger.error(f"Email error: {e}")
-            return {'success': False, 'error': str(e)}
+                    session = await self.get_session()
+                    hdrs = {
+                        'Authorization': f'Bearer {self.config.api_key}',
+                        'Content-Type': 'application/json'
+                    }
+                    # SendGrid accepts categories and reply_to as part of payload (already set)
+                    async with session.post(self.config.api_url, json=payload, headers=hdrs) as response:
+                        if response.status in (200, 201, 202):
+                            logger.info(f"Email sent to {to_email}: {subject} (attempt {attempt})")
+                            # mark sent
+                            try:
+                                sent_cache[idempotency_key] = { 'to': to_email, 'subject': subject, 'ts': datetime.utcnow().isoformat() }
+                                import json as _json
+                                with open(cache_file, 'w', encoding='utf-8') as cf:
+                                    _json.dump(sent_cache, cf)
+                            except Exception:
+                                logger.debug('Failed to persist email cache')
+
+                            # Try to persist email log to Supabase (best-effort)
+                            try:
+                                if SUPABASE_URL and SUPABASE_SERVICE_KEY:
+                                    headers = {
+                                        'apikey': SUPABASE_SERVICE_KEY,
+                                        'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                    log_payload = {
+                                        'idempotency_key': idempotency_key,
+                                        'to_email': to_email,
+                                        'subject': subject,
+                                        'sent_at': datetime.utcnow().isoformat(),
+                                        'status_code': response.status,
+                                        'response_text': ''
+                                    }
+                                    async with httpx.AsyncClient(timeout=5) as _c:
+                                        await _c.post(f"{SUPABASE_URL}/rest/v1/email_logs", json=[log_payload], headers=headers)
+                            except Exception:
+                                logger.debug('Failed to send email log to Supabase')
+                            return {'success': True, 'status': response.status}
+                        else:
+                            error_text = await response.text()
+                            logger.warning('Email send returned %s (attempt %s): %s', response.status, attempt, error_text[:200])
+                            last_err = f"{response.status}: {error_text}"
+            except Exception as e:
+                logger.exception('Email error (attempt %s): %s', attempt, e)
+                last_err = str(e)
+
+            # Exponential backoff
+            await asyncio.sleep(backoff * attempt)
+
+        logger.error('Email failed after %s attempts: %s', max_attempts, last_err)
+        return {'success': False, 'error': last_err}
     
     async def send_welcome_email(self, to_email: str, user_name: str) -> Dict[str, Any]:
         """Send welcome email to new user"""

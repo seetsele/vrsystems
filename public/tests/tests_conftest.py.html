@@ -1,0 +1,43 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\conftest.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\conftest.py</h1><p><a href="index.html">Back to tests index</a></p><h2>Source</h2><pre class="source">import os
+import sys
+import time
+import pytest
+from dotenv import load_dotenv
+
+# Ensure python-tools directory is importable
+TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;, &#x27;python-tools&#x27;))
+if TOOLS_DIR not in sys.path:
+    sys.path.insert(0, TOOLS_DIR)
+
+from test_helpers import create_confirmed_user, delete_user
+
+env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;, &#x27;.env&#x27;))
+print(&#x27;Loading env from:&#x27;, env_path)
+load_dotenv(env_path, override=True)
+
+@pytest.fixture(scope=&#x27;function&#x27;)
+def confirmed_user():
+    email = f&quot;pytest_user_{os.getpid()}_{int(time.time())}@veritysystems.test&quot;
+    password = &#x27;TestPass123!&#x27;
+    # Debug: ensure SUPABASE_SERVICE_KEY is loaded
+    svc = os.getenv(&#x27;SUPABASE_SERVICE_KEY&#x27;)
+    print(&#x27;DEBUG SUPABASE_SERVICE_KEY present?&#x27;, bool(svc))
+    resp = create_confirmed_user(email, password)
+    if resp is None:
+        pytest.skip(&#x27;Could not create confirmed user; request failed (no response)&#x27;)
+    if resp.status_code not in (200, 201):
+        # print debug info
+        try:
+            print(&#x27;create_confirmed_user failed:&#x27;, resp.status_code, resp.text)
+        except Exception:
+            print(&#x27;create_confirmed_user failed: no response text&#x27;)
+        pytest.skip(&#x27;Could not create confirmed user; check SUPABASE_SERVICE_KEY and service availability&#x27;)
+    try:
+        data = resp.json()
+        user_id = data.get(&#x27;id&#x27;) or data.get(&#x27;user&#x27;, {}).get(&#x27;id&#x27;)
+    except Exception:
+        user_id = None
+    yield {&#x27;email&#x27;: email, &#x27;password&#x27;: password, &#x27;id&#x27;: user_id}
+    if user_id:
+        delete_user(user_id)
+</pre></div></body></html>

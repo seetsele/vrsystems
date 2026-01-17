@@ -1,0 +1,11 @@
+{
+  "patterns": [
+    "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}",
+    "(Bearer|Token|Authorization)\\s*[:=]?\\s*[A-Za-z0-9\\-\\._=]+",
+    "([?&](?:api_key|apiKey|token|access_token|secret|key)=)[^&\\s]+",
+    "https?:\\/\\/[^"]*:[^@\\s]+@",
+    "(DATABASE_URL|DATABASE_URI|DB_PASSWORD|PASSWORD)=[^\\s]+",
+    "[A-Za-z0-9\\-_]{40,}",
+    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+  ]
+}

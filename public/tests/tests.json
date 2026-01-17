@@ -1,0 +1,554 @@
+[
+  {
+    "path": "tests/conftest.py",
+    "html": "tests_conftest.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/enterprise/check_fireworks.py",
+    "html": "tests_enterprise_check_fireworks.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/enterprise/check_zyte_usage.py",
+    "html": "tests_enterprise_check_zyte_usage.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/enterprise/package_artifacts.py",
+    "html": "tests_enterprise_package_artifacts.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/enterprise/quota_monitor.py",
+    "html": "tests_enterprise_quota_monitor.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/enterprise/run_api_full.py",
+    "html": "tests_enterprise_run_api_full.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/enterprise/run_enterprise.py",
+    "html": "tests_enterprise_run_enterprise.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "tests/enterprise/test_api_full.py",
+    "html": "tests_enterprise_test_api_full.py.html",
+    "functions": [
+      "test_api_record"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/enterprise/test_enterprise_pytest.py",
+    "html": "tests_enterprise_test_enterprise_pytest.py.html",
+    "functions": [
+      "test_enterprise_live"
+    ],
+    "classes": [],
+    "markers": [
+      "parametrize"
+    ],
+    "types": []
+  },
+  {
+    "path": "tests/enterprise/test_realtime_stream.py",
+    "html": "tests_enterprise_test_realtime_stream.py.html",
+    "functions": [
+      "test_realtime_stream_live"
+    ],
+    "classes": [],
+    "markers": [
+      "parametrize"
+    ],
+    "types": []
+  },
+  {
+    "path": "tests/test_auth_fixture.py",
+    "html": "tests_test_auth_fixture.py.html",
+    "functions": [
+      "test_confirmed_user_fixture"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_github_artifacts_proxy.py",
+    "html": "tests_test_github_artifacts_proxy.py.html",
+    "functions": [
+      "test_github_artifacts_proxy_requires_auth"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_image_and_stream.py",
+    "html": "tests_test_image_and_stream.py.html",
+    "functions": [
+      "test_image_forensics_with_image_url",
+      "test_image_forensics_deepfake_mention",
+      "test_realtime_stream_high_viral",
+      "test_realtime_stream_medium"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_mobile_theme.py",
+    "html": "tests_test_mobile_theme.py.html",
+    "functions": [
+      "test_mobile_accent_matches_public_theme"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_provider_health.py",
+    "html": "tests_test_provider_health.py.html",
+    "functions": [
+      "test_provider_cooldown_trigger"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_provider_logs_and_runs.py",
+    "html": "tests_test_provider_logs_and_runs.py.html",
+    "functions": [
+      "test_provider_health_logs_endpoint_empty_or_present",
+      "test_test_runs_endpoint_requires_run_and_returns"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": [
+      "smoke"
+    ]
+  },
+  {
+    "path": "tests/test_rate_limiter.py",
+    "html": "tests_test_rate_limiter.py.html",
+    "functions": [
+      "test_rate_limiter_threshold"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_run_internal_tests.py",
+    "html": "tests_test_run_internal_tests.py.html",
+    "functions": [
+      "test_run_internal_tests_requires_sim_key"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": [
+      "smoke"
+    ]
+  },
+  {
+    "path": "tests/test_simulate_security.py",
+    "html": "tests_test_simulate_security.py.html",
+    "functions": [
+      "test_simulate_allowlist_blocks",
+      "test_simulate_key_rate_limit"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_source_credibility.py",
+    "html": "tests_test_source_credibility.py.html",
+    "functions": [
+      "test_score_known_domains",
+      "test_tools_source_credibility_endpoint"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_tools_simulate.py",
+    "html": "tests_test_tools_simulate.py.html",
+    "functions": [
+      "test_simulate_provider_fail_recover",
+      "test_simulate_requires_sim_key_when_set",
+      "test_simulate_rate_limit"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_update_readme_badge.py",
+    "html": "tests_test_update_readme_badge.py.html",
+    "functions": [
+      "test_update_readme_badge"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "tests/test_verity.py",
+    "html": "tests_test_verity.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "tests/visual/update_baselines.py",
+    "html": "tests_visual_update_baselines.py.html",
+    "functions": [],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "python-tools/tests/test_21_point_system.py",
+    "html": "python-tools_tests_test_21_point_system.py.html",
+    "functions": [
+      "test_21_point_system_documented"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "python-tools/tests/test_api_contract.py",
+    "html": "python-tools_tests_test_api_contract.py.html",
+    "functions": [
+      "test_root_returns_ok",
+      "test_verify_endpoint_accepts_json"
+    ],
+    "classes": [],
+    "markers": [
+      "integration",
+      "smoke"
+    ],
+    "types": [
+      "integration",
+      "smoke"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_content_moderation.py",
+    "html": "python-tools_tests_test_content_moderation.py.html",
+    "functions": [
+      "test_content_moderation_api_or_doc"
+    ],
+    "classes": [],
+    "markers": [
+      "integration"
+    ],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_database_connection.py",
+    "html": "python-tools_tests_test_database_connection.py.html",
+    "functions": [
+      "test_database_connect_env"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "python-tools/tests/test_email_idempotency.py",
+    "html": "python-tools_tests_test_email_idempotency.py.html",
+    "functions": [
+      "test_email_idempotency_key"
+    ],
+    "classes": [],
+    "markers": [
+      "unit"
+    ],
+    "types": [
+      "unit"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_file_upload.py",
+    "html": "python-tools_tests_test_file_upload.py.html",
+    "functions": [
+      "test_file_processing_checks"
+    ],
+    "classes": [],
+    "markers": [
+      "unit"
+    ],
+    "types": [
+      "unit"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_image_analysis.py",
+    "html": "python-tools_tests_test_image_analysis.py.html",
+    "functions": [
+      "test_image_analysis_endpoint_available"
+    ],
+    "classes": [],
+    "markers": [
+      "integration"
+    ],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_live_stream.py",
+    "html": "python-tools_tests_test_live_stream.py.html",
+    "functions": [
+      "test_live_stream_ws_ping"
+    ],
+    "classes": [],
+    "markers": [
+      "integration"
+    ],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_migration_files_present.py",
+    "html": "python-tools_tests_test_migration_files_present.py.html",
+    "functions": [
+      "test_migration_sql_exists"
+    ],
+    "classes": [],
+    "markers": [
+      "unit"
+    ],
+    "types": [
+      "unit"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_misinformation_mapping.py",
+    "html": "python-tools_tests_test_misinformation_mapping.py.html",
+    "functions": [
+      "test_misinformation_map_available"
+    ],
+    "classes": [],
+    "markers": [
+      "integration"
+    ],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_nuance_unit.py",
+    "html": "python-tools_tests_test_nuance_unit.py.html",
+    "functions": [
+      "test_nuance_analyze_returns_dict"
+    ],
+    "classes": [],
+    "markers": [
+      "unit"
+    ],
+    "types": [
+      "unit"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_oauth_login.py",
+    "html": "python-tools_tests_test_oauth_login.py.html",
+    "functions": [
+      "test_oauth_login_route"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "python-tools/tests/test_prompt_override.py",
+    "html": "python-tools_tests_test_prompt_override.py.html",
+    "functions": [
+      "test_prompt_templates_file_exists_and_valid"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "python-tools/tests/test_rate_limit_simulation.py",
+    "html": "python-tools_tests_test_rate_limit_simulation.py.html",
+    "functions": [
+      "test_rate_limiter_blocks_after_limit"
+    ],
+    "classes": [],
+    "markers": [
+      "unit"
+    ],
+    "types": [
+      "unit"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_regression_results.py",
+    "html": "python-tools_tests_test_regression_results.py.html",
+    "functions": [
+      "test_regression_matches_expected"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "python-tools/tests/test_sdk_usage.py",
+    "html": "python-tools_tests_test_sdk_usage.py.html",
+    "functions": [
+      "test_sdk_like_root_ping"
+    ],
+    "classes": [],
+    "markers": [
+      "integration"
+    ],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_sendgrid_retry.py",
+    "html": "python-tools_tests_test_sendgrid_retry.py.html",
+    "functions": [
+      "test_sendgrid_retry_succeeds_after_transient"
+    ],
+    "classes": [],
+    "markers": [
+      "unit"
+    ],
+    "types": [
+      "unit"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_services_health.py",
+    "html": "python-tools_tests_test_services_health.py.html",
+    "functions": [
+      "test_core_ports"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  },
+  {
+    "path": "python-tools/tests/test_statistics_validation.py",
+    "html": "python-tools_tests_test_statistics_validation.py.html",
+    "functions": [
+      "test_statistics_report_present_or_api"
+    ],
+    "classes": [],
+    "markers": [
+      "smoke"
+    ],
+    "types": [
+      "smoke"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_stripe_webhook.py",
+    "html": "python-tools_tests_test_stripe_webhook.py.html",
+    "functions": [
+      "test_webhook_idempotency"
+    ],
+    "classes": [],
+    "markers": [
+      "integration"
+    ],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_stripe_webhook_advanced.py",
+    "html": "python-tools_tests_test_stripe_webhook_advanced.py.html",
+    "functions": [
+      "test_stripe_various_events_and_idempotency"
+    ],
+    "classes": [],
+    "markers": [
+      "integration"
+    ],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_stripe_webhook_integration.py",
+    "html": "python-tools_tests_test_stripe_webhook_integration.py.html",
+    "functions": [
+      "test_checkout_webhook_creates_subscription"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": [
+      "integration"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_verification_flow.py",
+    "html": "python-tools_tests_test_verification_flow.py.html",
+    "functions": [
+      "test_verification_endpoint"
+    ],
+    "classes": [],
+    "markers": [
+      "integration"
+    ],
+    "types": [
+      "integration",
+      "smoke"
+    ]
+  },
+  {
+    "path": "python-tools/tests/test_waitlist_api.py",
+    "html": "python-tools_tests_test_waitlist_api.py.html",
+    "functions": [
+      "test_waitlist_endpoint_or_doc"
+    ],
+    "classes": [],
+    "markers": [],
+    "types": []
+  }
+]

@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_rate_limiter.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_rate_limiter.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_rate_limiter_threshold</li></ul></div><h2>Source</h2><pre class="source">import os, sys
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;))
+sys.path.insert(0, os.path.join(ROOT, &#x27;python-tools&#x27;))
+import api_server_v9 as server
+rate_limiter = server.rate_limiter
+
+
+def test_rate_limiter_threshold():
+    identifier = &#x27;unit-test-rl&#x27;
+    # Temporarily lower limit
+    old_max = rate_limiter.max_requests
+    rate_limiter.max_requests = 3
+    # Clear state
+    rate_limiter.requests[identifier] = []
+
+    # 3 allowed
+    for i in range(3):
+        allowed, info = rate_limiter.is_allowed(identifier)
+        assert allowed
+
+    # 4th should be blocked
+    allowed, info = rate_limiter.is_allowed(identifier)
+    assert not allowed
+    assert info[&#x27;limit&#x27;] == 3
+
+    # Restore
+    rate_limiter.max_requests = old_max
+    rate_limiter.requests.pop(identifier, None)
+</pre></div></body></html>

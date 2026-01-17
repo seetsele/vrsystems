@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_api_contract.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_api_contract.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_root_returns_ok</li><li>test_verify_endpoint_accepts_json</li></ul><h3>Markers / Types</h3><ul><li>marker: integration</li><li>marker: smoke</li><li>type: integration</li><li>type: smoke</li></ul></div><h2>Source</h2><pre class="source">import sys
+from pathlib import Path
+import pytest
+
+# ensure python-tools is importable when pytest runs from repo root
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from api_server_v10 import app
+from fastapi.testclient import TestClient
+
+client = TestClient(app)
+
+
+@pytest.mark.integration
+def test_root_returns_ok():
+    r = client.get(&#x27;/&#x27;)
+    assert r.status_code &lt; 500
+
+
+@pytest.mark.smoke
+def test_verify_endpoint_accepts_json():
+    # quick smoke: verify that OpenAPI is exposed and the route metadata exists
+    r = client.get(&#x27;/openapi.json&#x27;)
+    assert r.status_code == 200
+    data = r.json()
+    assert &#x27;paths&#x27; in data and isinstance(data[&#x27;paths&#x27;], dict)
+</pre></div></body></html>

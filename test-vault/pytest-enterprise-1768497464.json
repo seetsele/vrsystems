@@ -1,0 +1,11 @@
+{
+  "time": 1768497464,
+  "results": [
+    {
+      "path": "/tools/statistics-validator",
+      "method": "POST",
+      "status_code": 501,
+      "duration_ms": 25
+    }
+  ]
+}

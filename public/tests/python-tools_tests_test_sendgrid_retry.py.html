@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_sendgrid_retry.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_sendgrid_retry.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_sendgrid_retry_succeeds_after_transient</li></ul><h3>Markers / Types</h3><ul><li>marker: unit</li><li>type: unit</li></ul></div><h2>Source</h2><pre class="source">import pytest
+
+
+def transient_send(email):
+    # simulate transient failure then success based on counter
+    counter = getattr(transient_send, &#x27;count&#x27;, 0)
+    transient_send.count = counter + 1
+    if counter &lt; 1:
+        raise ConnectionError(&#x27;transient&#x27;)
+    return {&#x27;status&#x27;: &#x27;ok&#x27;, &#x27;id&#x27;: &#x27;sg_123&#x27;}
+
+
+def send_with_retry(email, attempts=3):
+    for i in range(attempts):
+        try:
+            return transient_send(email)
+        except ConnectionError:
+            if i == attempts - 1:
+                raise
+    return None
+
+
+@pytest.mark.unit
+def test_sendgrid_retry_succeeds_after_transient():
+    # first call should raise inside transient_send, overall should succeed
+    res = send_with_retry({&#x27;to&#x27;: &#x27;a@example.com&#x27;})
+    assert res[&#x27;status&#x27;] == &#x27;ok&#x27;
+</pre></div></body></html>

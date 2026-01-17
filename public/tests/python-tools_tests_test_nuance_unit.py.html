@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_nuance_unit.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_nuance_unit.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_nuance_analyze_returns_dict</li></ul><h3>Markers / Types</h3><ul><li>marker: unit</li><li>type: unit</li></ul></div><h2>Source</h2><pre class="source">import sys
+from pathlib import Path
+import pytest
+
+# make python-tools importable
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from api_server_v10 import NuanceDetector
+
+
+@pytest.mark.unit
+def test_nuance_analyze_returns_dict():
+    r = NuanceDetector.analyze_claim(&#x27;This will always cure everything&#x27;)
+    assert isinstance(r, dict)
+    assert &#x27;nuance_score&#x27; in r or &#x27;is_nuanced&#x27; in r
+</pre></div></body></html>

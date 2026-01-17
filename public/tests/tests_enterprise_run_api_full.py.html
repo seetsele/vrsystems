@@ -1,0 +1,135 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\enterprise\run_api_full.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\enterprise\run_api_full.py</h1><p><a href="index.html">Back to tests index</a></p><h2>Source</h2><pre class="source">#!/usr/bin/env python3
+import os
+import json
+import time
+import requests
+import sys
+
+BASE = os.environ.get(&#x27;TEST_URL&#x27;, &#x27;http://localhost:8000&#x27;)
+
+ENDPOINTS = [
+    (&quot;GET&quot;, &quot;/&quot;),
+    (&quot;POST&quot;, &quot;/verify&quot;, {&quot;claim&quot;: &quot;test claim&quot;}),
+    (&quot;GET&quot;, &quot;/api/docs&quot;),
+    (&quot;GET&quot;, &quot;/health&quot;),
+    (&quot;GET&quot;, &quot;/status&quot;),
+    (&quot;GET&quot;, &quot;/tools&quot;),
+    (&quot;GET&quot;, &quot;/settings&quot;),
+    (&quot;GET&quot;, &quot;/provider-setup&quot;),
+    (&quot;GET&quot;, &quot;/dashboard&quot;),
+]
+
+
+def sanitize_path(p: str) -&gt; str:
+    return p.strip(&#x27;/&#x27;).replace(&#x27;/&#x27;, &#x27;_&#x27;) or &#x27;root&#x27;
+
+
+def run():
+    ts = int(time.time())
+    vault_dir = os.path.join(os.getcwd(), &#x27;test-vault&#x27;)
+    os.makedirs(vault_dir, exist_ok=True)
+    summary = {
+        &#x27;base&#x27;: BASE,
+        &#x27;timestamp&#x27;: ts,
+        &#x27;results&#x27;: []
+    }
+
+    for method, path, *rest in ENDPOINTS:
+        payload = rest[0] if rest else None
+        url = BASE.rstrip(&#x27;/&#x27;) + path
+        record = {&#x27;method&#x27;: method, &#x27;path&#x27;: path, &#x27;url&#x27;: url}
+        try:
+            if method == &#x27;GET&#x27;:
+                resp = requests.get(url, timeout=12)
+            else:
+                resp = requests.post(url, json=payload or {}, timeout=12)
+            record[&#x27;status_code&#x27;] = resp.status_code
+            record[&#x27;ok&#x27;] = 200 &lt;= resp.status_code &lt; 400
+            record[&#x27;body_snippet&#x27;] = resp.text[:1000]
+            record[&#x27;headers&#x27;] = dict(resp.headers)
+        except requests.RequestException as e:
+            record[&#x27;status_code&#x27;] = None
+            record[&#x27;ok&#x27;] = False
+            record[&#x27;error&#x27;] = str(e)
+
+        summary[&#x27;results&#x27;].append(record)
+
+        fname = f&quot;api-{method}-{sanitize_path(path)}.json&quot;
+        with open(os.path.join(vault_dir, f&quot;{ts}-{fname}&quot;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+            json.dump(record, fh, indent=2)
+
+    # aggregate
+    passed = sum(1 for r in summary[&#x27;results&#x27;] if r.get(&#x27;ok&#x27;))
+    failed = len(summary[&#x27;results&#x27;]) - passed
+    summary[&#x27;passed&#x27;] = passed
+    summary[&#x27;failed&#x27;] = failed
+
+    out_file = os.path.join(vault_dir, f&#x27;api-run-{ts}.json&#x27;)
+    with open(out_file, &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+        json.dump(summary, fh, indent=2)
+
+    print(f&quot;API run complete — passed: {passed}, failed: {failed}. Artifacts: {vault_dir}&quot;)
+    # Fireworks probe: if FIREWORKS_API_KEY is present, do an additional probe
+    fw_key = os.environ.get(&#x27;FIREWORKS_API_KEY&#x27;)
+    if not fw_key:
+        # attempt to read from python-tools/.env
+        env_path = os.path.join(os.getcwd(), &#x27;python-tools&#x27;, &#x27;.env&#x27;)
+        if os.path.exists(env_path):
+            with open(env_path, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+                for line in fh:
+                    if line.strip().startswith(&#x27;FIREWORKS_API_KEY&#x27;):
+                        _, val = line.split(&#x27;=&#x27;, 1)
+                        fw_key = val.strip()
+                        break
+
+    if fw_key:
+        try:
+            fw_url = &#x27;https://api.fireworks.ai/inference/v1/chat/completions&#x27;
+            payload = {
+                &#x27;model&#x27;: &#x27;accounts/fireworks/models/llama-v3p3-70b-instruct&#x27;,
+                &#x27;messages&#x27;: [{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: &#x27;Probe: are you active?&#x27;}],
+                &#x27;max_tokens&#x27;: 16
+            }
+            resp = requests.post(fw_url, headers={&#x27;Authorization&#x27;: f&#x27;Bearer {fw_key}&#x27;}, json=payload, timeout=15)
+            fw_record = {
+                &#x27;status_code&#x27;: resp.status_code,
+                &#x27;headers&#x27;: dict(resp.headers),
+                &#x27;body_snippet&#x27;: resp.text[:1000]
+            }
+        except Exception as e:
+            fw_record = {&#x27;error&#x27;: str(e)}
+        summary[&#x27;fireworks&#x27;] = fw_record
+        # write per-fireworks artifact
+        with open(os.path.join(vault_dir, f&#x27;{ts}-fireworks-probe.json&#x27;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+            json.dump(fw_record, fh, indent=2)
+        # update an enterprise summary file that aggregates runs
+        summary_file = os.path.join(vault_dir, &#x27;enterprise-summary.json&#x27;)
+        agg = {}
+        if os.path.exists(summary_file):
+            try:
+                with open(summary_file, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as sf:
+                    agg = json.load(sf)
+            except Exception:
+                agg = {}
+        run_entry = {
+            &#x27;timestamp&#x27;: ts,
+            &#x27;base&#x27;: BASE,
+            &#x27;passed&#x27;: passed,
+            &#x27;failed&#x27;: failed,
+            &#x27;fireworks_probe&#x27;: fw_record
+        }
+        agg.setdefault(&#x27;runs&#x27;, []).append(run_entry)
+        agg[&#x27;last_run&#x27;] = run_entry
+        with open(summary_file, &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as sf:
+            json.dump(agg, sf, indent=2)
+    strict = os.environ.get(&#x27;STRICT_TESTS&#x27;)
+    if strict and failed &gt; 0:
+        print(&#x27;STRICT_TESTS set and failures present — exiting non-zero&#x27;)
+        return 1
+    return 0
+
+
+if __name__ == &#x27;__main__&#x27;:
+    code = run()
+    sys.exit(code)
+</pre></div></body></html>

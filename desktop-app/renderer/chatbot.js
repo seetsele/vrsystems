@@ -16,6 +16,10 @@
         secondaryColor: '#fbbf24'
     };
 
+    // Logger: use preload logger when available
+    let log = console;
+    try { log = window.verity?.logger || console; } catch (e) { log = console; }
+
     // Inject styles
     const styles = `
         .verity-chatbot-toggle {
@@ -700,8 +704,7 @@
             }
         });
 
-        const log = require('electron-log');
-        log.info('✓ Verity Desktop Chatbot loaded');
+        try { log.info && log.info('✓ Verity Desktop Chatbot loaded'); } catch (e) { console.info('Chatbot loaded'); }
     }
 
     // Initialize when DOM is ready

@@ -1,0 +1,119 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\enterprise\check_fireworks.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\enterprise\check_fireworks.py</h1><p><a href="index.html">Back to tests index</a></p><h2>Source</h2><pre class="source">import os
+import sys
+import json
+import time
+from pathlib import Path
+
+try:
+    import requests
+except Exception:
+    print(&#x27;requests library not installed&#x27;)
+    sys.exit(2)
+
+
+def _load_api_key():
+    api_key = os.environ.get(&#x27;FIREWORKS_API_KEY&#x27;)
+    if api_key:
+        return api_key
+    env_path = Path(__file__).resolve().parents[2] / &#x27;python-tools&#x27; / &#x27;.env&#x27;
+    if env_path.exists():
+        for line in env_path.read_text().splitlines():
+            if line.strip().startswith(&#x27;FIREWORKS_API_KEY&#x27;):
+                _, val = line.split(&#x27;=&#x27;, 1)
+                return val.strip()
+    return None
+
+
+def run_probe(attempts=3, model=&#x27;accounts/fireworks/models/llama-v3p3-70b-instruct&#x27;):
+    api_key = _load_api_key()
+    if not api_key:
+        print(&#x27;No FIREWORKS_API_KEY found in environment or python-tools/.env&#x27;)
+        return 3
+
+    url = &#x27;https://api.fireworks.ai/inference/v1/chat/completions&#x27;
+    headers = {&#x27;Authorization&#x27;: f&#x27;Bearer {api_key}&#x27;, &#x27;Content-Type&#x27;: &#x27;application/json&#x27;}
+    results = []
+    for i in range(attempts):
+        payload = {
+            &#x27;model&#x27;: model,
+            &#x27;messages&#x27;: [{&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: f&#x27;Ping #{i+1}: are you active?&#x27;}],
+            &#x27;max_tokens&#x27;: 16
+        }
+        start = time.time()
+        try:
+            resp = requests.post(url, headers=headers, json=payload, timeout=20)
+            latency = time.time() - start
+            entry = {
+                &#x27;attempt&#x27;: i + 1,
+                &#x27;status_code&#x27;: resp.status_code,
+                &#x27;latency_s&#x27;: round(latency, 3),
+                &#x27;headers&#x27;: dict(resp.headers),
+                &#x27;body_snippet&#x27;: resp.text[:1000]
+            }
+        except Exception as e:
+            entry = {&#x27;attempt&#x27;: i + 1, &#x27;error&#x27;: str(e)}
+        results.append(entry)
+
+    # write artifact
+    ts = int(time.time())
+    vault_dir = os.path.join(os.getcwd(), &#x27;test-vault&#x27;)
+    os.makedirs(vault_dir, exist_ok=True)
+    out = os.path.join(vault_dir, f&#x27;fireworks-run-{ts}.json&#x27;)
+    with open(out, &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+        json.dump({&#x27;timestamp&#x27;: ts, &#x27;results&#x27;: results}, fh, indent=2)
+
+    # summary
+    oks = [r for r in results if r.get(&#x27;status_code&#x27;) == 200]
+
+    # parse any quota/credit related headers from the first OK response
+    quota_info = None
+    for r in results:
+        if r.get(&#x27;status_code&#x27;) == 200:
+            hdrs = r.get(&#x27;headers&#x27;, {}) or {}
+            # common header keys
+            keys = {k.lower(): v for k, v in hdrs.items()}
+            qi = {}
+            # rate limit style headers
+            for k in (&#x27;x-ratelimit-limit&#x27;, &#x27;x-ratelimit-remaining&#x27;, &#x27;x-ratelimit-reset&#x27;):
+                if k in keys:
+                    qi[k] = keys[k]
+            # credits or quota
+            for k in (&#x27;x-credits-remaining&#x27;, &#x27;x-credits&#x27;, &#x27;x-quota-remaining&#x27;, &#x27;x-quota&#x27;):
+                if k in keys:
+                    qi[k] = keys[k]
+            # provider-specific
+            for k in (&#x27;x-fireworks-credits&#x27;, &#x27;x-fw-credits&#x27;):
+                if k in keys:
+                    qi[k] = keys[k]
+            # if body contains simple quota info, attempt to parse
+            body = r.get(&#x27;body_snippet&#x27;, &#x27;&#x27;)
+            try:
+                jb = json.loads(body)
+                # common fields
+                for fld in (&#x27;credits&#x27;, &#x27;quota&#x27;, &#x27;remaining_credits&#x27;, &#x27;remaining&#x27;):
+                    if fld in jb:
+                        qi[fld] = jb.get(fld)
+            except Exception:
+                pass
+            if qi:
+                quota_info = qi
+                break
+
+    summary_record = {&#x27;artifact&#x27;: out, &#x27;ok_count&#x27;: len(oks), &#x27;total&#x27;: len(results), &#x27;quota&#x27;: quota_info}
+    with open(os.path.join(vault_dir, f&#x27;fireworks-summary-{ts}.json&#x27;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+        json.dump(summary_record, fh, indent=2)
+
+    if oks:
+        print(f&#x27;Fireworks probe: {len(oks)}/{len(results)} OK; artifact: {out}&#x27;)
+        if quota_info:
+            print(&#x27;Quota info found:&#x27;, quota_info)
+        return 0
+    else:
+        print(f&#x27;Fireworks probe: 0/{len(results)} OK; artifact: {out}&#x27;)
+        return 6
+
+
+if __name__ == &#x27;__main__&#x27;:
+    code = run_probe(attempts=int(os.environ.get(&#x27;FIREWORKS_PROBES&#x27;, &#x27;3&#x27;)))
+    sys.exit(code)
+</pre></div></body></html>

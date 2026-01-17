@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_stripe_webhook.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_stripe_webhook.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_webhook_idempotency</li></ul><h3>Markers / Types</h3><ul><li>marker: integration</li><li>type: integration</li></ul></div><h2>Source</h2><pre class="source">import pytest
+
+# Simulate a minimal webhook handler with idempotency
+class DummyWebhookProcessor:
+    def __init__(self):
+        self.seen = set()
+
+    def handle(self, payload: dict):
+        # payload contains &#x27;id&#x27; and &#x27;type&#x27;
+        eid = payload.get(&#x27;id&#x27;)
+        if not eid:
+            raise ValueError(&#x27;missing id&#x27;)
+        if eid in self.seen:
+            return {&#x27;status&#x27;: &#x27;ignored&#x27;, &#x27;id&#x27;: eid}
+        # process and mark seen
+        self.seen.add(eid)
+        return {&#x27;status&#x27;: &#x27;processed&#x27;, &#x27;id&#x27;: eid}
+
+
+@pytest.mark.integration
+def test_webhook_idempotency():
+    p = DummyWebhookProcessor()
+    payload = {&#x27;id&#x27;: &#x27;evt_123&#x27;, &#x27;type&#x27;: &#x27;payment.succeeded&#x27;, &#x27;data&#x27;: {&#x27;object&#x27;: {}}}
+    r1 = p.handle(payload)
+    assert r1[&#x27;status&#x27;] == &#x27;processed&#x27;
+    r2 = p.handle(payload)
+    assert r2[&#x27;status&#x27;] == &#x27;ignored&#x27;
+</pre></div></body></html>

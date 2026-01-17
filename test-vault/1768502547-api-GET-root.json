@@ -1,0 +1,14 @@
+{
+  "method": "GET",
+  "path": "/",
+  "url": "http://localhost:8000/",
+  "status_code": 200,
+  "ok": true,
+  "body_snippet": "{\"name\":\"Verity Verification API\",\"version\":\"10.0.0\",\"description\":\"Enhanced fact-checking with 90%+ accuracy\",\"features\":[\"12-15 verification loops per claim\",\"Nuance detection for MIXED verdicts\",\"PDF/URL/Image/Research paper support\",\"Aggressive circuit breakers for fast failover\",\"Source credibility weighting\",\"Multi-pass consensus building\"],\"endpoints\":{\"/verify\":\"POST - Verify a claim\",\"/v3/verify\":\"POST - V3 API\",\"/v3/batch-verify\":\"POST - Batch verification\",\"/health\":\"GET - Health check\",\"/providers\":\"GET - List providers\",\"/stats\":\"GET - API statistics\"}}",
+  "headers": {
+    "date": "Thu, 15 Jan 2026 18:42:28 GMT",
+    "server": "uvicorn",
+    "content-length": "572",
+    "content-type": "application/json"
+  }
+}

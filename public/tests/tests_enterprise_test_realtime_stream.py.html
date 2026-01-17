@@ -1,0 +1,43 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\enterprise\test_realtime_stream.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\enterprise\test_realtime_stream.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_realtime_stream_live</li></ul><h3>Markers / Types</h3><ul><li>marker: parametrize</li></ul></div><h2>Source</h2><pre class="source">import os
+import time
+from pathlib import Path
+
+import pytest
+import requests
+
+
+ROOT = Path(__file__).resolve().parents[2]
+VAULT = ROOT / &quot;test-vault&quot;
+VAULT.mkdir(exist_ok=True)
+
+TEST_URL = os.getenv(&quot;TEST_URL&quot;, &quot;http://localhost:8000&quot;).rstrip(&quot;/&quot;)
+API_KEY = os.getenv(&quot;TEST_API_KEY&quot;) or os.getenv(&quot;VERITY_TEST_KEY&quot;)
+HEADERS = {&quot;Content-Type&quot;: &quot;application/json&quot;}
+if API_KEY:
+    HEADERS[&quot;Authorization&quot;] = f&quot;Bearer {API_KEY}&quot;
+
+
+def save(results):
+    import json
+
+    fname = VAULT / f&quot;realtime-{int(time.time())}.json&quot;
+    fname.write_text(json.dumps({&quot;time&quot;: int(time.time()), &quot;results&quot;: results}, indent=2))
+
+
+@pytest.mark.parametrize(&quot;payload&quot;, [
+    {&quot;text&quot;: &quot;Small test message&quot;, &quot;metadata&quot;: {&quot;platform&quot;: &quot;pytest&quot;, &quot;shares&quot;: 1}},
+    {&quot;text&quot;: &quot;This should simulate a high-viral message for stream processing&quot;, &quot;metadata&quot;: {&quot;platform&quot;: &quot;twitter&quot;, &quot;shares&quot;: 100000}},
+    {&quot;text&quot;: &quot;Edge-case: empty metadata&quot;, &quot;metadata&quot;: {}},
+])
+def test_realtime_stream_live(payload):
+    url = TEST_URL + &quot;/tools/realtime-stream&quot;
+    try:
+        r = requests.post(url, json=payload, headers=HEADERS, timeout=60)
+    except Exception as e:
+        pytest.fail(f&quot;Request failed: {e}&quot;)
+
+    rec = {&quot;status_code&quot;: r.status_code, &quot;ok&quot;: r.ok, &quot;body&quot;: r.text[:200]}
+    save([rec])
+
+    assert r.status_code in (200, 202), f&quot;unexpected status {r.status_code}: {r.text}&quot;
+</pre></div></body></html>

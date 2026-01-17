@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: python-tools\tests\test_sdk_usage.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: python-tools\tests\test_sdk_usage.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_sdk_like_root_ping</li></ul><h3>Markers / Types</h3><ul><li>marker: integration</li><li>type: integration</li></ul></div><h2>Source</h2><pre class="source">import pytest
+from fastapi.testclient import TestClient
+import sys
+from pathlib import Path
+
+# Ensure api_server_v10 can be imported when running from repo root
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from api_server_v10 import app
+
+
+@pytest.mark.integration
+def test_sdk_like_root_ping():
+    client = TestClient(app)
+    r = client.get(&#x27;/&#x27;)
+    assert r.status_code &lt; 500
+</pre></div></body></html>

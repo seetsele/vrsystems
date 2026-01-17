@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\test_github_artifacts_proxy.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\test_github_artifacts_proxy.py</h1><p><a href="index.html">Back to tests index</a></p><div class="items"><h2>Test functions</h2><ul><li>test_github_artifacts_proxy_requires_auth</li></ul></div><h2>Source</h2><pre class="source">import os, sys, json
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), &#x27;..&#x27;))
+sys.path.insert(0, os.path.join(ROOT, &#x27;python-tools&#x27;))
+from fastapi.testclient import TestClient
+import api_server_v9 as server
+
+client = TestClient(server.app)
+
+
+def test_github_artifacts_proxy_requires_auth(monkeypatch):
+    server.Config.DEBUG = True
+    # mock requests.get
+    class FakeResp:
+        def __init__(self):
+            self.status_code = 200
+        def json(self):
+            return {&#x27;artifacts&#x27;: []}
+    monkeypatch.setattr(&#x27;requests.get&#x27;, lambda *a, **k: FakeResp())
+
+    # No auth header required in DEBUG
+    resp = client.post(&#x27;/tools/github-artifacts&#x27;, json={&#x27;owner&#x27;: &#x27;octocat&#x27;, &#x27;repo&#x27;: &#x27;Hello-World&#x27;})
+    assert resp.status_code == 200
+    assert &#x27;artifacts&#x27; in resp.json()
+
+    # When SIMULATE_KEY is configured, require X-SIM-KEY
+    server.Config.SIMULATE_KEY = &#x27;sek&#x27;
+    resp2 = client.post(&#x27;/tools/github-artifacts&#x27;, json={&#x27;owner&#x27;: &#x27;octocat&#x27;, &#x27;repo&#x27;: &#x27;Hello-World&#x27;})
+    assert resp2.status_code == 403
+    # With header works
+    resp3 = client.post(&#x27;/tools/github-artifacts&#x27;, headers={&#x27;X-SIM-KEY&#x27;: &#x27;sek&#x27;}, json={&#x27;owner&#x27;: &#x27;octocat&#x27;, &#x27;repo&#x27;: &#x27;Hello-World&#x27;})
+    assert resp3.status_code == 200
+    server.Config.SIMULATE_KEY = None
+</pre></div></body></html>

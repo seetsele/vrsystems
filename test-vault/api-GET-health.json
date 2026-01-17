@@ -1,0 +1,11 @@
+{
+  "url": "http://localhost:8000/health",
+  "status_code": 200,
+  "headers": {
+    "date": "Thu, 15 Jan 2026 18:36:41 GMT",
+    "server": "uvicorn",
+    "content-length": "467",
+    "content-type": "application/json"
+  },
+  "body_snippet": "{\"status\":\"healthy\",\"timestamp\":\"2026-01-15T18:36:41.447504\",\"version\":\"10.0.0\",\"environment\":\"production\",\"providers_available\":10,\"search_apis_available\":6,\"providers\":[\"groq\",\"perplexity\",\"google\","
+}

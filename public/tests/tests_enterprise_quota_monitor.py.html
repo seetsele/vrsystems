@@ -1,0 +1,76 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tests: tests\enterprise\quota_monitor.py</title><link rel="stylesheet" href="tests.css"></head><body><div class="wrap"><h1>Tests: tests\enterprise\quota_monitor.py</h1><p><a href="index.html">Back to tests index</a></p><h2>Source</h2><pre class="source">#!/usr/bin/env python3
+&quot;&quot;&quot;Read the most recent Fireworks probe artifact and alert if credits/rate-limit below threshold.&quot;&quot;&quot;
+import os
+import glob
+import json
+import time
+import sys
+
+VAULT = os.path.join(os.getcwd(), &#x27;test-vault&#x27;)
+
+
+def latest_fireworks_summary():
+    pattern = os.path.join(VAULT, &#x27;fireworks-summary-*.json&#x27;)
+    files = glob.glob(pattern)
+    if not files:
+        return None
+    latest = max(files, key=os.path.getmtime)
+    with open(latest, &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+        return json.load(fh), latest
+
+
+def parse_numeric(v):
+    try:
+        return int(v)
+    except Exception:
+        try:
+            return float(v)
+        except Exception:
+            return None
+
+
+def run(threshold=100):
+    data, path = latest_fireworks_summary() or (None, None)
+    if not data:
+        print(&#x27;No fireworks summary artifact found&#x27;)
+        return 2
+
+    quota = data.get(&#x27;quota&#x27;) or {}
+    # try common header keys
+    candidates = [&#x27;x-credits-remaining&#x27;, &#x27;x-credits&#x27;, &#x27;x-quota-remaining&#x27;, &#x27;x-quota&#x27;, &#x27;x-ratelimit-remaining&#x27;, &#x27;remaining_credits&#x27;, &#x27;credits&#x27;, &#x27;remaining&#x27;]
+    found = None
+    for k in candidates:
+        if k in quota:
+            found = quota[k]
+            break
+
+    if found is None:
+        print(&#x27;No explicit credits/quota header found in summary; printing summary for inspection&#x27;)
+        print(json.dumps(data, indent=2))
+        return 3
+
+    num = parse_numeric(found)
+    if num is None:
+        print(&#x27;Could not parse quota value:&#x27;, found)
+        return 3
+
+    print(f&#x27;Latest fireworks summary: {path}&#x27;)
+    print(&#x27;Quota numeric value:&#x27;, num)
+    if num &lt; threshold:
+        out = {&#x27;alert&#x27;: True, &#x27;value&#x27;: num, &#x27;threshold&#x27;: threshold, &#x27;summary&#x27;: path}
+        ts = int(time.time())
+        out_path = os.path.join(VAULT, f&#x27;fireworks-quota-alert-{ts}.json&#x27;)
+        with open(out_path, &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as fh:
+            json.dump(out, fh, indent=2)
+        print(&#x27;Quota below threshold — alert written to&#x27;, out_path)
+        return 1
+    else:
+        print(&#x27;Quota OK:&#x27;, num)
+        return 0
+
+
+if __name__ == &#x27;__main__&#x27;:
+    thr = int(os.environ.get(&#x27;FW_QUOTA_THRESHOLD&#x27;, &#x27;100&#x27;))
+    code = run(threshold=thr)
+    sys.exit(code)
+</pre></div></body></html>
