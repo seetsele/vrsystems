@@ -17,7 +17,7 @@
     --bg-elevated: #1a1a1d;
     --bg-hover: #222226;
     --bg-glass: rgba(255, 255, 255, 0.02);
-    --bg-glass-strong: rgba(255, 255, 255, 0.04);
+        --bg-glass: rgba(255, 255, 255, 0.01);
     
     --border-subtle: rgba(255, 255, 255, 0.04);
     --border-default: rgba(255, 255, 255, 0.06);
@@ -37,7 +37,7 @@
     --accent-amber: #f59e0b;
     --accent-red: #ef4444;
     
-    --gradient-primary: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+        --gradient-primary: linear-gradient(90deg, #60a5fa 0%, #7c3aed 100%);
     --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
     --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
@@ -1275,7 +1275,10 @@ body {
 .btn-primary {
     background: var(--gradient-primary);
     color: #0a0a0b;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 10px 30px rgba(99,102,241,0.12), var(--shadow-sm);
+    border-radius: 12px;
+    font-weight: 700;
+    padding: 10px 14px;
 }
 
 .btn-primary:hover {

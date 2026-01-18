@@ -69,6 +69,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       applyDarkMode();
       sendResponse({ darkMode });
       break;
+    case 'toggleOverlay':
+      togglePageOverlay();
+      break;
   }
 });
 
@@ -92,6 +95,44 @@ function showModeNotification(enabled) {
   `;
   document.body.appendChild(notification);
   setTimeout(() => notification.remove(), 2000);
+}
+
+// Overlay injection
+let pageOverlay = null;
+function togglePageOverlay() {
+  if (pageOverlay) {
+    pageOverlay.remove(); pageOverlay = null; return;
+  }
+
+  pageOverlay = document.createElement('div');
+  pageOverlay.id = 'verity-page-overlay';
+  pageOverlay.innerHTML = `
+    <div class="verity-overlay">
+      <textarea id="verity-overlay-input" placeholder="Paste or type text to verify..." spellcheck="false"></textarea>
+      <div class="verity-overlay-actions">
+        <button id="verity-overlay-verify">Verify</button>
+        <button id="verity-overlay-close">Close</button>
+      </div>
+    </div>
+  `;
+  pageOverlay.style.cssText = `position:fixed;inset:20px;z-index:2147483646;display:flex;align-items:flex-start;justify-content:center;pointer-events:auto;`;
+  document.body.appendChild(pageOverlay);
+
+  const ta = document.getElementById('verity-overlay-input');
+  const vbtn = document.getElementById('verity-overlay-verify');
+  const cbtn = document.getElementById('verity-overlay-close');
+  if (ta) ta.focus();
+
+  vbtn.addEventListener('click', async () => {
+    const text = ta.value && ta.value.trim();
+    if (!text) return;
+    try {
+      const result = await chrome.runtime.sendMessage({ action: 'verify', text });
+      // Show result via existing UI
+    } catch (e) { console.error(e); }
+  });
+
+  cbtn.addEventListener('click', () => { pageOverlay.remove(); pageOverlay = null; });
 }
 
 // Handle text selection

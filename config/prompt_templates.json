@@ -6,5 +6,18 @@
     "finance_template": "Analyze the financial claim; reference authoritative economic analyses, official statistics, and major news coverage. Provide rationale and score.",
     "generic_template": "Verify the claim using available sources; list supporting and contradicting evidence and provide a final verdict and confidence score."
   },
-  "overrides": {}
+  "overrides": {
+    "NE-001": {
+      "system_message": "When evaluating nuanced economics claims, pay special attention to sample size, policy scope, and whether findings are generalized beyond the original study. Favor official government reports and peer-reviewed articles; prefer 'mixed' over absolute labels when evidence shows partial support.",
+      "notes": "Override to increase nuance for NE-001-like claims"
+    },
+    "ENV-001": {
+      "system_message": "For environmental lifecycle claims, check both tailpipe and lifecycle emissions and explicitly call out regional grid differences. If evidence shows conditional truth, return 'mixed'.",
+      "notes": "Override to increase nuance for ENV-001"
+    },
+    "RE-002": {
+      "system_message": "For reproduction/replication claims, prefer primary peer-reviewed reproducibility studies and avoid absolute true/false when evidence is contradictory.",
+      "notes": "Override placeholder for RE-002"
+    }
+  }
 }

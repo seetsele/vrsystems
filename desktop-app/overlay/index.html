@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Verity Overlay</title>
+  <link rel="stylesheet" href="../public/assets/css/premium-typography.css">
+  <link rel="stylesheet" href="../public/assets/css/icons.css">
+  <link rel="stylesheet" href="./overlay.css">
+</head>
+<body>
+  <div id="overlay" class="overlay">
+    <div class="card">
+      <div class="card-head">
+        <div class="logo" id="logo" aria-hidden="true">
+          <img src="../public/assets/svg/verity-logo.svg" alt="Verity" class="verity-logo-img" />
+        </div>
+        <div class="title">Verify quickly</div>
+        <div class="head-actions">
+          <button id="clip-btn" class="icon-box icon-box-sm icon-box-glass" title="From clipboard">
+            <span class="icon icon-sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="2" width="8" height="4" rx="1"/><rect x="5" y="6" width="14" height="16" rx="2"/></svg>
+            </span>
+          </button>
+          <button id="full-btn" class="icon-box icon-box-sm icon-box-glass" title="Open full report">
+            <span class="icon icon-sm" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="6"/></svg>
+            </span>
+          </button>
+          <button id="close-btn" class="icon-btn" aria-label="Close">×</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <input id="overlay-input" placeholder="Paste or type text to verify..." spellcheck="false" />
+        <div class="actions">
+          <button id="verify-btn" class="primary">Verify</button>
+          <button id="attach-btn" class="secondary" title="Attach file">📎</button>
+        </div>
+        <div class="hint">Tip: press <kbd>Enter</kbd> to verify, <kbd>Esc</kbd> to close.</div>
+      </div>
+    </div>
+  </div>
+  <script src="./overlay.js"></script>
+</body>
+</html>

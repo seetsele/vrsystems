@@ -4,7 +4,7 @@ import pytest
 import httpx
 
 
-pytestmark = pytest.mark.skipif(not os.getenv('RUN_INTEGRATION_TESTS'), reason='Integration tests disabled')
+# Integration enabled for local CI: run minimal webhook fallback if remote not available
 
 
 def test_checkout_webhook_creates_subscription():

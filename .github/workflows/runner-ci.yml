@@ -1,0 +1,42 @@
+name: Runner CI
+
+on:
+  push:
+    branches: [ main, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          pip install -r python-tools/requirements.txt
+      - name: Run tests
+        working-directory: python-tools
+        run: pytest -q
+
+  migrations:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: pip install -r python-tools/requirements.txt
+      - name: Run Alembic upgrade (sqlite fallback)
+        working-directory: python-tools
+        run: |
+          if [ -z "${{ env.DATABASE_URL }}" ]; then
+            export DATABASE_URL="sqlite:///$(pwd)/test_results.db"
+          fi
+          alembic -c alembic.ini upgrade head

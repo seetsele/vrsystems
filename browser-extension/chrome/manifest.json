@@ -41,6 +41,14 @@
       },
       "description": "Toggle inline verification mode"
     }
+    ,
+    "open_overlay": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+O",
+        "mac": "Command+Shift+O"
+      },
+      "description": "Open Verity overlay on the current page"
+    }
   },
   "permissions": [
     "activeTab",

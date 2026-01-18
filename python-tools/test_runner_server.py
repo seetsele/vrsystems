@@ -111,6 +111,19 @@ def parse_junit(xml_path: Path):
     return {'summary': summary, 'tests': tests}
 
 
+@app.on_event('startup')
+def startup_event():
+    # Initialize Sentry if DSN present (best-effort)
+    try:
+        SENTRY_DSN = os.getenv('SENTRY_DSN')
+        if SENTRY_DSN:
+            import sentry_sdk
+            sentry_sdk.init(dsn=SENTRY_DSN, traces_sample_rate=float(os.getenv('SENTRY_TRACES_SAMPLE_RATE', '0.1')))
+            print('Sentry initialized for FastAPI runner')
+    except Exception:
+        pass
+
+
 @app.get('/health')
 def health():
     return {'status': 'ok'}
@@ -179,6 +192,16 @@ def analytics():
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
     raise HTTPException(status_code=404, detail='analytics backend not available')
+
+
+@app.get('/audit', dependencies=[Depends(verify_api_key)])
+def audit_list():
+    if st:
+        try:
+            return {'audit': st.list_audit()}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    raise HTTPException(status_code=404, detail='audit backend not available')
 
 
 @app.get('/providers')

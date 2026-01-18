@@ -1,0 +1,1 @@
+Error: Node is either not clickable or not an Element

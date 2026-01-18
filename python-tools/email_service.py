@@ -24,7 +24,7 @@ class EmailConfig:
     from_name: str = os.getenv('FROM_NAME', 'Verity Systems')
     api_url: str = 'https://api.sendgrid.com/v3/mail/send'
     # Local SMTP fallback (e.g., MailHog or local relay)
-    smtp_host: str = os.getenv('LOCAL_SMTP_HOST', '')
+    smtp_host: str = os.getenv('LOCAL_SMTP_HOST', 'localhost')
     smtp_port: int = int(os.getenv('LOCAL_SMTP_PORT', '1025'))
     smtp_user: str = os.getenv('LOCAL_SMTP_USER', '')
     smtp_pass: str = os.getenv('LOCAL_SMTP_PASS', '')

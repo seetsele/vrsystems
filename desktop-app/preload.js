@@ -97,6 +97,12 @@ contextBridge.exposeInMainWorld('verity', {
         get: () => ipcRenderer.invoke('theme:get'),
         set: (theme) => ipcRenderer.invoke('theme:set', theme)
     },
+
+    // Overlay helper (for always-on-top quick verify overlay)
+    overlay: {
+        verify: (text) => ipcRenderer.send('overlay:verify', text),
+        toggle: () => ipcRenderer.send('overlay:toggle')
+    },
     
     // Event listeners
     on: {

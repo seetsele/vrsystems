@@ -36,6 +36,8 @@ import AuthScreen from './src/screens/AuthScreen';
 
 // Chatbot component
 import Chatbot, { ChatbotFAB } from './src/components/Chatbot';
+import VerifyOverlay from './src/components/VerifyOverlay';
+import VerifyFAB from './src/components/VerifyFAB';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -206,21 +208,33 @@ function AppNavigator() {
 function AppWithNavigation() {
   const [chatbotVisible, setChatbotVisible] = useState(false);
   const [showFAB, setShowFAB] = useState(true);
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const app = useApp();
+  const verifyClaim = app?.verifyClaim;
 
   return (
     <NavigationContainer theme={DarkTheme}>
       <StatusBar style="light" />
       <AppNavigator />
       {showFAB && (
-        <ChatbotFAB 
-          onPress={() => setChatbotVisible(true)} 
-          hasNotification={!chatbotVisible}
-        />
+        <>
+          <VerifyFAB onPress={() => setOverlayVisible(true)} />
+          <ChatbotFAB 
+            onPress={() => setChatbotVisible(true)} 
+            hasNotification={!chatbotVisible}
+          />
+        </>
       )}
       <Chatbot 
         visible={chatbotVisible} 
         onClose={() => setChatbotVisible(false)} 
       />
+      <VerifyOverlay visible={overlayVisible} onClose={() => setOverlayVisible(false)} onVerify={async (text) => {
+        setOverlayVisible(false);
+        try {
+          if (verifyClaim) await verifyClaim(text);
+        } catch (e) { console.error('Verify overlay failed', e); }
+      }} />
     </NavigationContainer>
   );
 }

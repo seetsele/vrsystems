@@ -60,7 +60,8 @@ const store = new Store({
         shortcuts: {
             quickVerify: 'CommandOrControl+Shift+V',
             toggleWindow: 'CommandOrControl+Shift+Space',
-            newVerification: 'CommandOrControl+N'
+            newVerification: 'CommandOrControl+N',
+            toggleOverlay: 'CommandOrControl+Shift+O'
         },
         recentVerifications: [],
         favoriteTools: ['verify', 'source-checker', 'research'],
@@ -82,6 +83,7 @@ const store = new Store({
 // Global State
 // ============================================
 let mainWindow = null;
+let overlayWindow = null;
 let tray = null;
 let isQuitting = false;
 let sessionTimer = null;
@@ -625,6 +627,20 @@ function setupIPC() {
         store.set('apiEndpoint', endpoint);
         return true;
     });
+
+    // Overlay verify handler (from overlay window)
+    ipcMain.on('overlay:verify', (_, text) => {
+        try {
+            if (text && text.trim()) {
+                showWindow();
+                mainWindow?.webContents.send('quick-verify', text.trim());
+            }
+        } catch (e) { log.error('overlay:verify handler failed', e); }
+    });
+
+    ipcMain.on('overlay:toggle', () => {
+        toggleOverlayWindow();
+    });
     
     // Theme
     ipcMain.handle('theme:get', () => store.get('theme'));
@@ -654,6 +670,55 @@ function registerShortcuts() {
             }
         });
     }
+
+    // Overlay toggle shortcut
+    if (shortcuts.toggleOverlay) {
+        try {
+            globalShortcut.register(shortcuts.toggleOverlay, () => {
+                toggleOverlayWindow();
+            });
+        } catch (e) {
+            log.warn('Failed to register overlay shortcut', e);
+        }
+    }
+}
+
+function createOverlayWindow() {
+    if (overlayWindow) return overlayWindow;
+    const overlayPath = path.join(__dirname, 'overlay', 'index.html');
+    overlayWindow = new BrowserWindow({
+        width: 640,
+        height: 120,
+        x: undefined,
+        y: 80,
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
+        skipTaskbar: true,
+        resizable: false,
+        focusable: true,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
+            nodeIntegration: false,
+            contextIsolation: true
+        }
+    });
+
+    overlayWindow.loadFile(overlayPath).catch(e => log.error('Overlay load error', e));
+    overlayWindow.on('closed', () => { overlayWindow = null; });
+    return overlayWindow;
+}
+
+function toggleOverlayWindow() {
+    try {
+        if (!overlayWindow) createOverlayWindow();
+        if (overlayWindow.isVisible()) {
+            overlayWindow.hide();
+        } else {
+            overlayWindow.show();
+            overlayWindow.focus();
+        }
+    } catch (e) { log.error('toggleOverlayWindow failed', e); }
 }
 
 async function quickVerifyClipboard() {

@@ -34,3 +34,12 @@ wait_url "http://127.0.0.1:9090" || true
 wait_url "http://127.0.0.1:3000" || true
 
 echo "Compose started — Grafana: http://localhost:3000 (admin/admin)"
+
+# Optionally import Grafana dashboard if Grafana reachable and dashboard file exists
+GRAFANA_DASH="${ROOT_DIR}/python-tools/grafana/test_runner_dashboard.json"
+if [ -f "$GRAFANA_DASH" ]; then
+  if curl -sSf --max-time 5 "http://127.0.0.1:3000" >/dev/null 2>&1; then
+    echo "Importing Grafana dashboard..."
+    python3 "$ROOT_DIR/python-tools/grafana/import_dashboard.py" "$GRAFANA_DASH" || echo "Grafana import failed (run manually)"
+  fi
+fi

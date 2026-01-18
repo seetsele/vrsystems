@@ -5,7 +5,7 @@ import pytest
 def test_21_point_system_documented():
     &quot;&quot;&quot;Check for a 21-point system doc or legacy 9-point doc present.&quot;&quot;&quot;
     base = os.path.join(os.path.dirname(__file__), &#x27;..&#x27;, &#x27;..&#x27;, &#x27;public&#x27;)
-    candidates = [&#x27;21-point-system.html&#x27;, &#x27;9-point-system.html&#x27;, &#x27;accuracy-score-guide.html&#x27;]
+    candidates = [&#x27;21-point-system.html&#x27;, &#x27;accuracy-score-guide.html&#x27;]
     found = any(os.path.exists(os.path.join(base, c)) for c in candidates)
     assert found, &#x27;No scoring system documentation found (21/9/accuracy)&#x27;
 </pre></div></body></html>

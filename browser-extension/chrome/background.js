@@ -83,6 +83,13 @@ chrome.commands.onCommand.addListener(async (command) => {
   } else if (command === 'toggle_inline') {
     // Toggle inline verification mode
     chrome.tabs.sendMessage(tab.id, { action: 'toggleInlineMode' });
+  } else if (command === 'open_overlay') {
+    // Toggle overlay in active tab
+    try {
+      chrome.tabs.sendMessage(tab.id, { action: 'toggleOverlay' });
+    } catch (e) {
+      console.error('Failed to send toggleOverlay', e);
+    }
   }
 });
 

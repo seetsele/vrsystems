@@ -1,0 +1,7 @@
+{
+  "title": "dashboard loads and key widgets present",
+  "status": "failed",
+  "error": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8000/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8000/\", waiting until \"domcontentloaded\"\u001b[22m\n",
+  "url": "chrome-error://chromewebdata/",
+  "timestamp": 1768671052809
+}

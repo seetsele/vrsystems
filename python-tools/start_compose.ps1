@@ -38,7 +38,21 @@ $ok = Wait-Url 'http://127.0.0.1:3001/tests/runner.html' -and $ok
 $ok = Wait-Url 'http://127.0.0.1:9090/-/ready' -or Wait-Url 'http://127.0.0.1:9090' -and $ok
 $ok = Wait-Url 'http://127.0.0.1:3000' -and $ok
 
-if ($ok){ Write-Output 'Compose stack appears up. Grafana: http://localhost:3000 (admin/admin)'; Pop-Location; exit 0 }
+if ($ok){
+    Write-Output 'Compose stack appears up. Grafana: http://localhost:3000 (admin/admin)'
+    # Attempt to import Grafana dashboard automatically if present
+    $grafanaDash = Join-Path $root 'python-tools\grafana\test_runner_dashboard.json'
+    if (Test-Path $grafanaDash) {
+        try{
+            Write-Output 'Importing Grafana dashboard...'
+            python "$root\python-tools\grafana\import_dashboard.py" $grafanaDash
+            Write-Output 'Grafana dashboard import attempted.'
+        } catch {
+            Write-Warning "Grafana import failed: $_"
+        }
+    }
+    Pop-Location; exit 0
+}
 Write-Warning 'One or more services failed to respond; check `docker compose ps` and logs.'
 Pop-Location
 exit 2

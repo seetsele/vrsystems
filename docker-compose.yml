@@ -34,6 +34,27 @@ services:
     networks:
       - verity-net
 
+  redis:
+    image: redis:7-alpine
+    container_name: verity-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - verity-net
+
+  worker:
+    image: python:3.11-slim
+    container_name: verity-worker
+    working_dir: /workdir/python-tools
+    volumes:
+      - ./:/workdir:cached
+    command: ["sh","-c","cd /workdir/python-tools && celery -A celery_app worker --loglevel=info"]
+    depends_on:
+      - redis
+      - runner
+    networks:
+      - verity-net
+
   grafana:
     image: grafana/grafana:latest
     container_name: verity-grafana

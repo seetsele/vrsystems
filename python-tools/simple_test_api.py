@@ -66,6 +66,13 @@ def init_db():
         secret TEXT,
         created_at TEXT
     )''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS audit_log (
+        id TEXT PRIMARY KEY,
+        ts TEXT,
+        actor TEXT,
+        action TEXT,
+        details TEXT
+    )''')
     conn.commit()
     conn.close()
 
@@ -110,14 +117,33 @@ def get_run(rid):
     return {'id': row[0], 'ts': row[1], 'cmd': json.loads(row[2]) if row[2] else None, 'exit_code': row[3], 'parsed': json.loads(row[4]) if row[4] else {}, 'stdout': row[5], 'stderr': row[6]}
 
 
-def register_webhook(url):
-    conn = sqlite3.connect(str(DB_PATH))
-    cur = conn.cursor()
-    wid = str(uuid.uuid4())
-    cur.execute('INSERT INTO webhooks (id, url, created_at) VALUES (?,?,?)', (wid, url, datetime.utcnow().isoformat()))
-    conn.commit()
-    conn.close()
-    return wid
+def register_webhook(url, secret=None):
+    # optional secret support: add column if not present
+    try:
+        conn = sqlite3.connect(str(DB_PATH))
+        cur = conn.cursor()
+        try:
+            cur.execute('ALTER TABLE webhooks ADD COLUMN secret TEXT')
+        except Exception:
+            pass
+        wid = str(uuid.uuid4())
+        try:
+            if secret is not None:
+                cur.execute('INSERT INTO webhooks (id, url, secret, created_at) VALUES (?,?,?,?)', (wid, url, secret, datetime.utcnow().isoformat()))
+            else:
+                cur.execute('INSERT INTO webhooks (id, url, created_at) VALUES (?,?,?)', (wid, url, datetime.utcnow().isoformat()))
+        except Exception:
+            # fallback to insert without secret
+            cur.execute('INSERT INTO webhooks (id, url, created_at) VALUES (?,?,?)', (wid, url, datetime.utcnow().isoformat()))
+        conn.commit()
+        conn.close()
+        try:
+            audit_event('system', 'register_webhook', json.dumps({'id': wid, 'url': url}))
+        except Exception:
+            pass
+        return wid
+    except Exception:
+        return None
 
 
 ### Provider secure storage helpers
@@ -200,6 +226,10 @@ def create_provider(name, secret):
     cur.execute('INSERT INTO providers (id, name, secret, created_at) VALUES (?,?,?,?)', (pid, name, enc, datetime.utcnow().isoformat()))
     conn.commit()
     conn.close()
+    try:
+        audit_event('system', 'create_provider', json.dumps({'id': pid, 'name': name}))
+    except Exception:
+        pass
     return pid
 
 
@@ -220,16 +250,24 @@ def get_provider_secret(pid):
     conn.close()
     if not row:
         return None
-    return decrypt_secret(row[0])
+    try:
+        secret = decrypt_secret(row[0])
+        audit_event('system', 'get_provider_secret', json.dumps({'id': pid}))
+        return secret
+    except Exception:
+        return decrypt_secret(row[0])
 
 
 def list_webhooks():
     conn = sqlite3.connect(str(DB_PATH))
     cur = conn.cursor()
-    cur.execute('SELECT id, url, created_at FROM webhooks ORDER BY created_at DESC')
+    cur.execute('SELECT id, url, secret, created_at FROM webhooks ORDER BY created_at DESC')
     rows = cur.fetchall()
     conn.close()
-    return [{'id': r[0], 'url': r[1], 'created_at': r[2]} for r in rows]
+    out = []
+    for r in rows:
+        out.append({'id': r[0], 'url': r[1], 'has_secret': bool(r[2]), 'created_at': r[3]})
+    return out
 
 
 def get_analytics(limit_days=30):
@@ -291,6 +329,30 @@ def get_analytics(limit_days=30):
     }
 
 
+def audit_event(actor, action, details=''):
+    try:
+        conn = sqlite3.connect(str(DB_PATH))
+        cur = conn.cursor()
+        aid = str(uuid.uuid4())
+        cur.execute('INSERT INTO audit_log (id, ts, actor, action, details) VALUES (?,?,?,?,?)', (aid, datetime.utcnow().isoformat(), actor, action, details))
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+
+def list_audit(limit=200):
+    try:
+        conn = sqlite3.connect(str(DB_PATH))
+        cur = conn.cursor()
+        cur.execute('SELECT id, ts, actor, action, details FROM audit_log ORDER BY ts DESC LIMIT ?', (limit,))
+        rows = cur.fetchall()
+        conn.close()
+        return [{'id': r[0], 'ts': r[1], 'actor': r[2], 'action': r[3], 'details': r[4]} for r in rows]
+    except Exception:
+        return []
+
+
 def dispatch_webhooks(payload):
     # enqueue payloads for reliable delivery
     try:
@@ -315,6 +377,12 @@ def enqueue_webhook(webhook_id, payload):
         ))
         conn.commit()
         conn.close()
+        # enqueue background Celery delivery task (best-effort; local worker required)
+        try:
+            from tasks import deliver_webhook
+            deliver_webhook.delay(webhook_id, payload)
+        except Exception:
+            pass
         return qid
     except Exception:
         return None
@@ -343,7 +411,35 @@ def _deliver_webhook_record(rec):
 
     try:
         import requests
-        r = requests.post(url, json=payload, timeout=5)
+        # attempt to fetch secret column if present
+        secret = None
+        try:
+            conn = sqlite3.connect(str(DB_PATH))
+            cur = conn.cursor()
+            cur.execute('PRAGMA table_info(webhooks)')
+            cols = [r[1] for r in cur.fetchall()]
+            conn.close()
+            if 'secret' in cols:
+                conn = sqlite3.connect(str(DB_PATH))
+                cur = conn.cursor()
+                cur.execute('SELECT secret FROM webhooks WHERE id=?', (wid,))
+                row = cur.fetchone()
+                conn.close()
+                if row:
+                    secret = row[0]
+        except Exception:
+            secret = None
+
+        headers = {'Content-Type': 'application/json'}
+        body = json.dumps(payload).encode('utf-8')
+        if secret:
+            try:
+                from webhook_signing import sign_payload
+                headers['X-Webhook-Signature'] = sign_payload(secret, body)
+            except Exception:
+                pass
+
+        r = requests.post(url, data=body, headers=headers, timeout=5)
         if 200 <= r.status_code < 300:
             return True, ''
         return False, f'status:{r.status_code}'
@@ -649,11 +745,12 @@ class Handler(BaseHTTPRequestHandler):
         # register webhook
         if self.path.startswith('/register-webhook'):
             url = req.get('url') if isinstance(req, dict) else None
+            secret = req.get('secret') if isinstance(req, dict) else None
             if not url:
                 self._set_json(400)
                 self.wfile.write(json.dumps({'error': 'missing url'}).encode())
                 return
-            wid = register_webhook(url)
+            wid = register_webhook(url, secret)
             self._set_json(200)
             self.wfile.write(json.dumps({'id': wid}).encode())
             return
@@ -848,6 +945,77 @@ class Handler(BaseHTTPRequestHandler):
             self._set_json(200)
             self.wfile.write(json.dumps({'secret': sec}).encode())
             return
+        # audit log listing (requires API key)
+        if self.path.startswith('/audit'):
+            if not self._check_api_key():
+                self._set_json(401)
+                self.wfile.write(json.dumps({'error': 'unauthorized'}).encode())
+                return
+            lst = list_audit()
+            self._set_json(200)
+            self.wfile.write(json.dumps({'audit': lst}).encode())
+            return
+        # rotate provider secret (requires API key)
+        if self.path.startswith('/providers/rotate'):
+            if not self._check_api_key():
+                self._set_json(401)
+                self.wfile.write(json.dumps({'error': 'unauthorized'}).encode())
+                return
+            secret_id = req.get('id') if isinstance(req, dict) else None
+            new_secret = req.get('secret') if isinstance(req, dict) else None
+            if not secret_id or new_secret is None:
+                self._set_json(400)
+                self.wfile.write(json.dumps({'error': 'missing id or secret'}).encode())
+                return
+            try:
+                # update DB encrypted secret
+                enc = encrypt_secret(new_secret)
+                conn = sqlite3.connect(str(DB_PATH))
+                cur = conn.cursor()
+                cur.execute('UPDATE providers SET secret=? WHERE id=?', (enc, secret_id))
+                conn.commit()
+                conn.close()
+                audit_event('system', 'rotate_provider_secret', json.dumps({'id': secret_id}))
+                self._set_json(200)
+                self.wfile.write(json.dumps({'status': 'rotated'}).encode())
+            except Exception as e:
+                self._set_json(500)
+                self.wfile.write(json.dumps({'error': str(e)}).encode())
+            return
+        # verify webhook signature (debug/test endpoint)
+        if self.path.startswith('/verify-signature'):
+            # body should contain { url, payload, signature }
+            url = req.get('url') if isinstance(req, dict) else None
+            payload = req.get('payload') if isinstance(req, dict) else None
+            signature = req.get('signature') if isinstance(req, dict) else None
+            if not url or payload is None or not signature:
+                self._set_json(400)
+                self.wfile.write(json.dumps({'error': 'missing url/payload/signature'}).encode())
+                return
+            # find webhook by url
+            try:
+                conn = sqlite3.connect(str(DB_PATH))
+                cur = conn.cursor()
+                cur.execute('SELECT id, secret FROM webhooks WHERE url=?', (url,))
+                row = cur.fetchone()
+                conn.close()
+                if not row:
+                    self._set_json(404)
+                    self.wfile.write(json.dumps({'error': 'webhook not found'}).encode())
+                    return
+                secret = row[1]
+                from webhook_signing import verify_signature
+                ok = False
+                try:
+                    ok = verify_signature(secret or '', json.dumps(payload).encode('utf-8'), signature)
+                except Exception:
+                    ok = False
+                self._set_json(200)
+                self.wfile.write(json.dumps({'ok': bool(ok)}).encode())
+            except Exception as e:
+                self._set_json(500)
+                self.wfile.write(json.dumps({'error': str(e)}).encode())
+            return
         # results listing
         if self.path.startswith('/results'):
             # optionally allow /results?id=<id>
@@ -983,6 +1151,15 @@ def run():
     try:
         t = threading.Thread(target=_webhook_worker_loop, daemon=True)
         t.start()
+    except Exception:
+        pass
+    # Sentry init (best-effort)
+    try:
+        SENTRY_DSN = os.environ.get('SENTRY_DSN')
+        if SENTRY_DSN:
+            import sentry_sdk
+            sentry_sdk.init(dsn=SENTRY_DSN, traces_sample_rate=float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0.1')))
+            print('Sentry initialized')
     except Exception:
         pass
     httpd = ThreadingHTTPServer(addr, Handler)
