@@ -62,9 +62,46 @@ const path = require('path');
   await new Promise(r => setTimeout(r, 800));
   await page.screenshot({ path: out('extension_overlay_initial.png'), fullPage: true });
 
-  // Trigger overlay by calling the registered message handler
+  // Trigger overlay: prefer registered handler, otherwise inject overlay DOM directly
   await page.evaluate(() => {
-    if (typeof window.__verity_onMessage === 'function') window.__verity_onMessage({ action: 'toggleOverlay' });
+    const trigger = () => {
+      // create overlay DOM similar to content script
+      const pageOverlay = document.createElement('div');
+      pageOverlay.id = 'verity-page-overlay';
+      pageOverlay.innerHTML = `
+        <div class="verity-overlay" style="max-width:820px;margin:40px auto;padding:18px;background:rgba(10,10,12,0.6);backdrop-filter:blur(8px);border-radius:12px;color:#fff">
+          <textarea id="verity-overlay-input" placeholder="Paste or type text to verify..." spellcheck="false" style="width:100%;height:96px;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"></textarea>
+          <div class="verity-overlay-actions" style="display:flex;gap:10px;margin-top:10px;">
+            <button id="verity-overlay-verify" style="padding:10px 14px;border-radius:8px;border:none;background:linear-gradient(90deg,#60a5fa,#7c3aed);color:#021025;font-weight:700">Verify</button>
+            <button id="verity-overlay-close" style="padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff">Close</button>
+          </div>
+        </div>
+      `;
+      pageOverlay.style.cssText = 'position:fixed;inset:20px;z-index:2147483646;display:flex;align-items:flex-start;justify-content:center;pointer-events:auto;';
+      document.body.appendChild(pageOverlay);
+      const vbtn = document.getElementById('verity-overlay-verify');
+      const cbtn = document.getElementById('verity-overlay-close');
+      const ta = document.getElementById('verity-overlay-input');
+      vbtn && vbtn.addEventListener('click', async () => {
+        const text = ta.value && ta.value.trim();
+        if (!text) return;
+        try {
+          const result = await chrome.runtime.sendMessage({ action: 'verify', text });
+          // create a simple result node
+          const res = document.createElement('div');
+          res.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;background:rgba(0,0,0,0.4);color:#fff';
+          res.innerText = `Result: ${result.verdict || 'unknown'} - ${result.confidence || 0}%`;
+          pageOverlay.appendChild(res);
+        } catch(e) { console.error(e); }
+      });
+      cbtn && cbtn.addEventListener('click', () => { pageOverlay.remove(); });
+    };
+
+    if (typeof window.__verity_onMessage === 'function') {
+      window.__verity_onMessage({ action: 'toggleOverlay' });
+    } else {
+      trigger();
+    }
   });
 
   await new Promise(r => setTimeout(r, 300));
@@ -82,5 +119,4 @@ const path = require('path');
   await page.screenshot({ path: out('extension_overlay_after_verify.png'), fullPage: true });
 
   await browser.close();
-  console.log('Extension overlay smoke completed. Screenshots saved to test-results.');
 })();

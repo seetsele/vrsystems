@@ -42,7 +42,7 @@ from fastapi import FastAPI, HTTPException, Request, Depends, Header, status, Up
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 from dotenv import load_dotenv
 from pathlib import Path
 import stripe
@@ -180,6 +180,77 @@ def save_prompt_templates(overrides: dict):
 
 # Load at startup
 load_prompt_templates()
+
+
+# =============================================================================
+# Security & Rate Limiting Helpers
+# =============================================================================
+from collections import deque
+
+# Simple in-memory rate limiter store: key -> deque[timestamps]
+_rate_limit_store: Dict[str, deque] = defaultdict(lambda: deque())
+
+def _now_ts() -> float:
+    return time.time()
+
+async def require_api_key(authorization: Optional[str] = Header(None), x_api_key: Optional[str] = Header(None)):
+    """Dependency that enforces API key if configured.
+
+    Accepts either `Authorization: Bearer <key>` or `X-API-Key: <key>`.
+    """
+    if not Config.REQUIRE_API_KEY:
+        return True
+    key = None
+    if x_api_key:
+        key = x_api_key
+    elif authorization and authorization.lower().startswith('bearer '):
+        key = authorization.split(' ', 1)[1].strip()
+    if not key or key not in Config.API_KEYS:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='invalid or missing API key')
+    return True
+
+async def rate_limiter(request: Request):
+    """Simple sliding-window rate limiter dependency using client IP or API key.
+
+    Raises HTTP 429 when limit exceeded.
+    """
+    identifier = None
+    # Prefer API key if supplied
+    key = request.headers.get('x-api-key') or None
+    if not key:
+        auth = request.headers.get('authorization')
+        if auth and auth.lower().startswith('bearer '):
+            key = auth.split(' ', 1)[1].strip()
+    if key:
+        identifier = f'key:{key}'
+    else:
+        client = getattr(request, 'client', None)
+        identifier = f'ip:{client.host if client else "unknown"}'
+
+    window = Config.RATE_LIMIT_WINDOW
+    limit = Config.RATE_LIMIT_REQUESTS
+    dq = _rate_limit_store[identifier]
+    now = _now_ts()
+    # Evict old
+    while dq and dq[0] <= now - window:
+        dq.popleft()
+    if len(dq) >= limit:
+        raise HTTPException(status_code=429, detail='rate limit exceeded')
+    dq.append(now)
+    return True
+
+
+# =============================================================================
+# Pydantic request models for hardened endpoints
+# =============================================================================
+
+class ModerateRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=20000)
+
+
+class WaitlistRequest(BaseModel):
+    email: EmailStr
+
 
 
 # =============================================================================
@@ -3331,14 +3402,14 @@ async def rate_limit_middleware(request: Request, call_next):
 
 # --- Minimal stub endpoints to satisfy integration tests ---
 @app.post('/api/moderate')
-async def api_moderate(payload: dict):
+async def api_moderate(payload: ModerateRequest, _auth=Depends(require_api_key), _rl=Depends(rate_limiter)):
     """Content moderation: lightweight local implementation.
 
     - Accepts JSON `{'text': "..."}`.
     - Returns JSON with `flagged` (bool), `categories`, and `score` (0..1).
     This is deterministic and file-backed free; suitable for tests and local use.
     """
-    text = (payload.get('text') if isinstance(payload, dict) else None) or ""
+    text = payload.text or ""
     # Simple profanity/blacklist check
     blacklist = ["spamword", "scam", "terror", "bomb", "malware"]
     categories = []
@@ -3450,25 +3521,9 @@ async def api_waitlist_get():
 
 
 @app.post('/api/waitlist')
-async def api_waitlist_post(request: Request):
-    """Add an email to the waitlist. Accepts JSON or form-encoded `email`."""
-    email = None
-    try:
-        payload = await request.json()
-        email = payload.get('email')
-    except Exception:
-        # Try form-encoded body without depending on python-multipart
-        try:
-            body = await request.body()
-            qs = body.decode('utf-8', errors='ignore')
-            # simple parse like email=...
-            m = re.search(r'email=([^&\n\r]+)', qs)
-            if m:
-                email = m.group(1)
-        except Exception:
-            pass
-    if not email:
-        raise HTTPException(status_code=400, detail='email required')
+async def api_waitlist_post(payload: WaitlistRequest, _auth=Depends(require_api_key), _rl=Depends(rate_limiter)):
+    """Add an email to the waitlist. Accepts JSON `{'email':...}`."""
+    email = payload.email
     db_path = Path(__file__).parent / 'verity_data.sqlite'
     try:
         import sqlite3
