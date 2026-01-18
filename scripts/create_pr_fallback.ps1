@@ -7,11 +7,14 @@ Param(
 
 $owner = "seetsele"
 $repo = "vrsystems"
-$url = "https://github.com/$owner/$repo/pull/new/$branch?base=$base&title=$(uricomponent $title)&body=$(uricomponent $body)"
-
+$functionDef = @'
 function uricomponent([string]$s) {
     return [uri]::EscapeDataString($s)
 }
+'@
+Invoke-Expression $functionDef
+
+$url = "https://github.com/$owner/$repo/pull/new/" + $branch + "?base=" + $base + "&title=" + (uricomponent $title) + "&body=" + (uricomponent $body)
 
 Write-Output "gh CLI not found. Open this URL to create the PR in your browser:"
 Write-Output $url
