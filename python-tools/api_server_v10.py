@@ -42,7 +42,7 @@ from fastapi import FastAPI, HTTPException, Request, Depends, Header, status, Up
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, Field, field_validator, EmailStr
+from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 from pathlib import Path
 import stripe
@@ -77,6 +77,9 @@ class Config:
     # API Keys for authentication
     API_KEYS = set(filter(None, os.getenv("API_KEYS", "demo-key-12345,test-key-67890").split(",")))
     REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "false").lower() == "true"
+    # Optional API key scopes mapping: JSON object {"key":"scope1,scope2"} or semicolon-separated pairs
+    API_KEY_SCOPES_RAW = os.getenv("API_KEY_SCOPES", "")
+    # parsed mapping will be built at runtime
     
     # ==========================================================================
     # ALL AI PROVIDER API KEYS
@@ -199,7 +202,7 @@ async def require_api_key(authorization: Optional[str] = Header(None), x_api_key
     Accepts either `Authorization: Bearer <key>` or `X-API-Key: <key>`.
     """
     if not Config.REQUIRE_API_KEY:
-        return True
+        return {'key': None, 'scopes': set()}
     key = None
     if x_api_key:
         key = x_api_key
@@ -207,9 +210,39 @@ async def require_api_key(authorization: Optional[str] = Header(None), x_api_key
         key = authorization.split(' ', 1)[1].strip()
     if not key or key not in Config.API_KEYS:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='invalid or missing API key')
-    return True
+    # parse scopes mapping lazily
+    scopes_map = {}
+    raw = Config.API_KEY_SCOPES_RAW or ''
+    try:
+        # allow JSON or semicolon-separated pairs
+        if raw.strip().startswith('{'):
+            scopes_map = json.loads(raw)
+        else:
+            for pair in raw.split(';'):
+                if not pair.strip():
+                    continue
+                k, v = pair.split(':', 1) if ':' in pair else (pair, '')
+                scopes_map[k.strip()] = v.strip()
+    except Exception:
+        scopes_map = {}
 
-async def rate_limiter(request: Request):
+    key_scopes = set()
+    if key in scopes_map and scopes_map[key]:
+        key_scopes = set(s.strip() for s in scopes_map[key].split(',') if s.strip())
+
+    return {'key': key, 'scopes': key_scopes}
+
+
+def require_scope(required_scope: Optional[str]):
+    def _dep(keyinfo=Depends(require_api_key)):
+        if not required_scope:
+            return True
+        if required_scope in keyinfo.get('scopes', set()):
+            return True
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='insufficient scope')
+    return _dep
+
+async def rate_limit_check(request: Request):
     """Simple sliding-window rate limiter dependency using client IP or API key.
 
     Raises HTTP 429 when limit exceeded.
@@ -249,7 +282,7 @@ class ModerateRequest(BaseModel):
 
 
 class WaitlistRequest(BaseModel):
-    email: EmailStr
+    email: str = Field(..., min_length=3, max_length=254)
 
 
 
@@ -3402,7 +3435,7 @@ async def rate_limit_middleware(request: Request, call_next):
 
 # --- Minimal stub endpoints to satisfy integration tests ---
 @app.post('/api/moderate')
-async def api_moderate(payload: ModerateRequest, _auth=Depends(require_api_key), _rl=Depends(rate_limiter)):
+async def api_moderate(payload: ModerateRequest, _auth=Depends(require_scope('moderate')), _rl=Depends(rate_limit_check)):
     """Content moderation: lightweight local implementation.
 
     - Accepts JSON `{'text': "..."}`.
@@ -3430,6 +3463,12 @@ async def api_moderate(payload: ModerateRequest, _auth=Depends(require_api_key),
             score = 0.4
         else:
             score = 0.02
+
+    # Structured audit log for moderation event
+    try:
+        record_event('moderation', {'text': text[:2000], 'flagged': bool(flagged), 'categories': categories, 'score': score})
+    except Exception:
+        logger.debug('audit record failed for moderation')
 
     return JSONResponse({'flagged': flagged, 'categories': categories, 'score': score, 'text': text})
 
@@ -3521,9 +3560,12 @@ async def api_waitlist_get():
 
 
 @app.post('/api/waitlist')
-async def api_waitlist_post(payload: WaitlistRequest, _auth=Depends(require_api_key), _rl=Depends(rate_limiter)):
+async def api_waitlist_post(payload: WaitlistRequest, _auth=Depends(require_scope('write:waitlist')), _rl=Depends(rate_limit_check)):
     """Add an email to the waitlist. Accepts JSON `{'email':...}`."""
     email = payload.email
+    # Basic email validation to avoid requiring external packages
+    if not re.match(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+        raise HTTPException(status_code=400, detail='invalid email')
     db_path = Path(__file__).parent / 'verity_data.sqlite'
     try:
         import sqlite3
@@ -3540,6 +3582,12 @@ async def api_waitlist_post(payload: WaitlistRequest, _auth=Depends(require_api_
             conn.close()
         except Exception:
             pass
+
+    # Audit the waitlist add
+    try:
+        record_event('waitlist.add', {'email': email})
+    except Exception:
+        logger.debug('audit record failed for waitlist')
     return JSONResponse({'ok': True, 'email': email})
 
 # --- End stubs ---

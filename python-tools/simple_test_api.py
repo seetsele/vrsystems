@@ -1145,7 +1145,9 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def run():
-    addr = ('127.0.0.1', 8010)
+    # allow overriding the bind port via env for local dev (avoids conflicts)
+    port = int(os.environ.get('SIMPLE_TEST_API_PORT', os.environ.get('PORT', '8010')))
+    addr = ('127.0.0.1', port)
     init_db()
     # start webhook worker
     try:

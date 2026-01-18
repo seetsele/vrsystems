@@ -28,7 +28,7 @@ async function capture() {
       if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
       const outPath = path.join(outDir, 'overlay_electron_capture.png');
       fs.writeFileSync(outPath, image.toPNG());
-      console.log('Saved overlay capture to', outPath);
+      console.debug('Saved overlay capture to', outPath);
     } catch (err) {
       console.error('Capture failed', err);
     } finally {

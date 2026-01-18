@@ -145,15 +145,15 @@ const NAV_ITEMS = [
     },
     {
         section: 'AI Tools',
-        requiresPro: true,
+        requiresPro: false,
         items: [
-            { id: 'source-checker', icon: 'source', label: 'Source Checker', premium: true },
-            { id: 'content-mod', icon: 'moderate', label: 'Content Moderator', premium: true },
-            { id: 'research', icon: 'research', label: 'Research Assistant', premium: true },
-            { id: 'social', icon: 'social', label: 'Social Monitor', premium: true },
-            { id: 'stats', icon: 'stats', label: 'Stats Validator', premium: true },
-            { id: 'misinfo-map', icon: 'map', label: 'Misinfo Map', premium: true },
-            { id: 'realtime', icon: 'realtime', label: 'Realtime Stream', premium: true }
+            { id: 'source-checker', icon: 'source', label: 'Source Checker', premium: false },
+            { id: 'content-mod', icon: 'moderate', label: 'Content Moderator', premium: false },
+            { id: 'research', icon: 'research', label: 'Research Assistant', premium: false },
+            { id: 'social', icon: 'social', label: 'Social Monitor', premium: false },
+            { id: 'stats', icon: 'stats', label: 'Stats Validator', premium: false },
+            { id: 'misinfo-map', icon: 'map', label: 'Misinfo Map', premium: false },
+            { id: 'realtime', icon: 'realtime', label: 'Realtime Stream', premium: false }
         ]
     },
     {
@@ -4213,33 +4213,137 @@ function setupAuth() {
         });
     });
 
-    // Sign in form
-    document.getElementById('signin-form')?.addEventListener('submit', (e) => {
+    // Sign in form - prefer backend auth (VerityAuth) if available, otherwise demo fallback
+    document.getElementById('signin-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('signin-email')?.value;
-        if (email) {
+        const pass = document.getElementById('signin-pass')?.value;
+
+        if (!email || !pass) {
+            toast('Please enter email and password', 'warning');
+            return;
+        }
+
+        try {
+            if (window.VerityAuth && typeof window.VerityAuth.signIn === 'function' && window.VerityAuth.isConfigured()) {
+                toast('Signing in...', 'info');
+                const { data, error } = await window.VerityAuth.signIn(email, pass);
+                if (error) {
+                    console.error('Sign in error:', error);
+                    toast(error.message || 'Sign in failed', 'error');
+                    return;
+                }
+                // If Supabase returns session/user
+                const user = (data && data.user) ? data.user : { email };
+                state.user = { name: user.user_metadata?.full_name || user.name || (user.email ? user.email.split('@')[0] : ''), email: user.email || email };
+                state.authenticated = true;
+                saveState();
+                closeModal();
+                buildNavigation();
+                document.dispatchEvent(new CustomEvent('auth:signin', { detail: { method: 'email' } }));
+                toast('Signed in successfully!', 'success');
+                return;
+            }
+
+            // Fallback demo/local behaviour
             state.user = { name: email.split('@')[0], email };
             state.authenticated = true;
             saveState();
             closeModal();
             buildNavigation();
-            toast('Signed in successfully!', 'success');
+            document.dispatchEvent(new CustomEvent('auth:signin', { detail: { method: 'demo' } }));
+            toast('Signed in (demo mode)', 'success');
+        } catch (err) {
+            console.error('Sign in exception:', err);
+            toast('Sign in failed. Check your connection.', 'error');
         }
     });
 
-    // Sign up form
-    document.getElementById('signup-form')?.addEventListener('submit', (e) => {
+    // Sign up form - prefer backend auth (VerityAuth) if available
+    document.getElementById('signup-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('signup-name')?.value;
         const email = document.getElementById('signup-email')?.value;
-        if (name && email) {
+        const pass = document.getElementById('signup-pass')?.value || document.getElementById('signup-password')?.value;
+
+        if (!name || !email || !pass) {
+            toast('Please complete all fields', 'warning');
+            return;
+        }
+
+        try {
+            if (window.VerityAuth && typeof window.VerityAuth.signUp === 'function' && window.VerityAuth.isConfigured()) {
+                toast('Creating account...', 'info');
+                const { data, error } = await window.VerityAuth.signUp(email, pass, { full_name: name });
+                if (error) {
+                    console.error('Sign up error:', error);
+                    toast(error.message || 'Sign up failed', 'error');
+                    return;
+                }
+                // Some providers require email confirmation; show notice
+                if (data && data.user && data.user.email) {
+                    state.user = { name: data.user.user_metadata?.full_name || name, email: data.user.email };
+                    state.authenticated = true;
+                    saveState();
+                    closeModal();
+                    buildNavigation();
+                    document.dispatchEvent(new CustomEvent('auth:signup', { detail: { method: 'email' } }));
+                    toast('Account created!', 'success');
+                    return;
+                }
+                toast('Check your email to confirm account', 'info');
+                return;
+            }
+
+            // Fallback demo/local behaviour
             state.user = { name, email };
             state.authenticated = true;
             saveState();
             closeModal();
             buildNavigation();
-            toast('Account created!', 'success');
+            document.dispatchEvent(new CustomEvent('auth:signup', { detail: { method: 'demo' } }));
+            toast('Account created (demo mode)', 'success');
+        } catch (err) {
+            console.error('Sign up exception:', err);
+            toast('Account creation failed. Check your connection.', 'error');
         }
+    });
+
+    // Social/OAuth buttons (google/github) - desktop renderer will attempt to use VerityAuth if available
+    modal.querySelectorAll('.social-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const provider = btn.dataset.provider;
+            if (!provider) return;
+            // If apple was left somewhere, ignore it
+            if (provider.toLowerCase() === 'apple') {
+                toast('Apple sign-in is no longer supported.', 'warning');
+                return;
+            }
+
+            if (window.VerityAuth && typeof window.VerityAuth.signInWithOAuth === 'function' && window.VerityAuth.isConfigured()) {
+                try {
+                    toast(`Connecting to ${provider}...`, 'info');
+                    const { data, error } = await window.VerityAuth.signInWithOAuth(provider);
+                    if (error) {
+                        console.error('OAuth error:', error);
+                        toast(error.message || `${provider} sign-in failed`, 'error');
+                        return;
+                    }
+                    if (data && data.url) {
+                        // Redirect to OAuth url
+                        window.location.href = data.url;
+                    } else {
+                        toast('OAuth flow started. Complete sign-in in the browser.', 'info');
+                    }
+                } catch (err) {
+                    console.error('OAuth exception:', err);
+                    toast(`${provider} sign-in failed.`, 'error');
+                }
+                return;
+            }
+
+            toast('Authentication service not available. Please use the website.', 'warning');
+        });
     });
 
     // Start listening for key traps when open

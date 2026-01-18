@@ -102,7 +102,7 @@
             - img [ref=e173]
             - generic [ref=e176]: Settings
       - generic [ref=e177]:
-        - generic [ref=e180]: API v6 Online
+        - generic [ref=e180]: Demo Mode (Start API)
         - generic [ref=e181]: v3.0.0 Enterprise
     - main [ref=e182]:
       - generic [ref=e183]:

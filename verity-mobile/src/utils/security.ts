@@ -4,6 +4,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import supabaseLib from '../lib/supabaseClient';
 
 // ==========================================
 // Security Constants
@@ -87,6 +88,33 @@ export async function authenticateUser(email: string, password: string): Promise
   const normalizedEmail = email.toLowerCase().trim();
 
   try {
+    // If Supabase is configured in environment, prefer using it for auth
+    if (supabaseLib.isSupabaseConfigured()) {
+      const supabase = supabaseLib.getSupabase();
+      if (supabase) {
+        const { data, error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
+        if (error) {
+          await recordFailedAttempt();
+          const attempts = await getLoginAttempts();
+          const remaining = MAX_LOGIN_ATTEMPTS - attempts;
+          return { success: false, error: error.message || `Invalid credentials. ${remaining} attempts remaining.` };
+        }
+        // Successful sign in
+        await clearLoginAttempts();
+        const sessionToken = data.session?.access_token || generateSessionToken();
+        await storeSession(sessionToken);
+        const rawUser = data.user || null;
+        const userObj = rawUser ? {
+          id: (rawUser.id as string) || 'unknown',
+          email: rawUser.email || normalizedEmail,
+          tier: (rawUser.user_metadata && rawUser.user_metadata.tier) || 'free',
+          name: (rawUser.user_metadata && (rawUser.user_metadata.full_name || rawUser.user_metadata.name)) || undefined,
+        } : { id: 'unknown', email: normalizedEmail, tier: 'free' };
+        await AsyncStorage.setItem('verity_user', JSON.stringify(userObj));
+        return { success: true, sessionToken, user: userObj };
+      }
+    }
+
     // Authenticate via API
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { fonts as appFonts } from '../../App';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Switch, Alert, ActivityIndicator, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Defs, LinearGradient as SvgGradient, Stop, Polyline, Text as SvgText } from 'react-native-svg';
@@ -452,6 +453,7 @@ const styles = StyleSheet.create({
     fontWeight: '500', 
     color: colors.text,
     letterSpacing: 0.1,
+    fontFamily: appFonts.mono,
   },
   profileEmail: { 
     fontSize: 13, 
@@ -499,6 +501,7 @@ const styles = StyleSheet.create({
     fontWeight: '500', 
     color: colors.text,
     letterSpacing: 0.1,
+    fontFamily: appFonts.mono,
   },
   signInDesc: { 
     fontSize: 13, 
@@ -512,7 +515,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { 
     fontSize: 11, 
-    fontWeight: '500', 
+    fontWeight: '600', 
     color: colors.textSubtle, 
     textTransform: 'uppercase', 
     letterSpacing: 1.5, 

@@ -14,5 +14,5 @@ const fs = require('fs');
   await new Promise(r=>setTimeout(r,400));
   await page.screenshot({path: out('renderer_capture.png'), fullPage:true});
   await browser.close();
-  console.log('Saved renderer screenshot to', out('renderer_capture.png'));
+  console.debug('Saved renderer screenshot to', out('renderer_capture.png'));
 })();

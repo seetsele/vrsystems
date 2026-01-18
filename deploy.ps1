@@ -57,14 +57,14 @@ Write-Step "Cleaning Up Existing Processes"
 
 # Kill Python processes on our ports
 $ports = @(8081, 3000, 8085)
-foreach ($port in $ports) {
+    foreach ($port in $ports) {
     $process = netstat -ano | Select-String ":$port " | Select-Object -First 1
     if ($process) {
-        $pid = ($process -split '\s+')[-1]
-        if ($pid -match '^\d+$') {
+        $foundPid = ($process -split '\s+')[-1]
+        if ($foundPid -match '^\d+$') {
             try {
-                Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
-                Write-Info "Killed process on port $port (PID: $pid)"
+                Stop-Process -Id $foundPid -Force -ErrorAction SilentlyContinue
+                Write-Info "Killed process on port $port (PID: $foundPid)"
             } catch {}
         }
     }

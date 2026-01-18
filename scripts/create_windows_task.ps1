@@ -6,6 +6,8 @@ param(
     [string]$TaskName = "VerityProviderMonitor"
 )
 
-$action = "powershell -NoProfile -WindowStyle Hidden -Command \"python '$PathToScript'\""
+# Build a properly escaped command string for schtasks. Use single-quoted PowerShell literal
+# so we can include inner double-quotes for the command to run.
+$action = 'powershell -NoProfile -WindowStyle Hidden -Command "python ''{0}''"' -f $PathToScript
 schtasks /Create /SC MINUTE /MO 5 /TN $TaskName /TR $action /F | Out-Null
 Write-Output "Scheduled task '$TaskName' created to run $PathToScript every 5 minutes."

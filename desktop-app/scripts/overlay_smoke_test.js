@@ -8,7 +8,7 @@ const path = require('path');
     if (!fs.existsSync('./test-results')) fs.mkdirSync('./test-results');
     const filePath = path.join(__dirname, '..', 'overlay', 'index.html');
     const url = 'file://' + filePath.replace(/\\/g, '/');
-    console.log('Opening overlay file at', url);
+    console.debug('Opening overlay file at', url);
 
     const browser = await puppeteer.launch({args:['--no-sandbox','--disable-setuid-sandbox']});
     const page = await browser.newPage();
@@ -40,7 +40,7 @@ const path = require('path');
     await page.screenshot({ path: out('overlay_after_click.png') });
 
     await browser.close();
-    console.log('Overlay smoke test completed.');
+    console.debug('Overlay smoke test completed.');
     process.exit(0);
   } catch (err) {
     console.error('Overlay smoke test failed:', err);

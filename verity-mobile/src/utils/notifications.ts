@@ -11,10 +11,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configure notification handling
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
+  handleNotification: async (notification: Notifications.Notification) => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -137,7 +139,7 @@ class NotificationService {
   private setupListeners(): void {
     // Handle received notifications
     this.notificationListener = Notifications.addNotificationReceivedListener(
-      (notification) => {
+      (notification: Notifications.Notification) => {
         console.debug('Notification received:', notification);
         this.handleNotification(notification);
       }
@@ -145,7 +147,7 @@ class NotificationService {
 
     // Handle notification taps
     this.responseListener = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
+      (response: Notifications.NotificationResponse) => {
         console.debug('Notification tapped:', response);
         this.handleNotificationTap(response);
       }
@@ -156,7 +158,7 @@ class NotificationService {
    * Handle incoming notification
    */
   private handleNotification(notification: Notifications.Notification): void {
-    const data = notification.request.content.data as NotificationPayload;
+    const data = notification.request.content.data as unknown as NotificationPayload;
     
     // Custom handling based on type
     switch (data?.type) {
@@ -176,7 +178,7 @@ class NotificationService {
    * Handle notification tap
    */
   private handleNotificationTap(response: Notifications.NotificationResponse): void {
-    const data = response.notification.request.content.data as NotificationPayload;
+    const data = response.notification.request.content.data as unknown as NotificationPayload;
     
     // Navigate based on notification type
     // This would typically use navigation ref
@@ -268,6 +270,7 @@ class NotificationService {
         data: { type: 'daily_digest' },
       },
       trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
         hour,
         minute: 0,
         repeats: true,
@@ -392,11 +395,11 @@ class NotificationService {
    * Cleanup listeners
    */
   cleanup(): void {
-    if (this.notificationListener) {
-      Notifications.removeNotificationSubscription(this.notificationListener);
+    if (this.notificationListener && typeof this.notificationListener.remove === 'function') {
+      this.notificationListener.remove();
     }
-    if (this.responseListener) {
-      Notifications.removeNotificationSubscription(this.responseListener);
+    if (this.responseListener && typeof this.responseListener.remove === 'function') {
+      this.responseListener.remove();
     }
   }
 }

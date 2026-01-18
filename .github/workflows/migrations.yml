@@ -13,6 +13,8 @@ jobs:
     name: Backup and Migrate (${{ github.event.inputs.environment }})
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     permissions:
       contents: read
       actions: read
@@ -34,15 +36,13 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -r python-tools/requirements.txt
 
       - name: Create DB backup (artifact)
-        if: ${{ secrets.DATABASE_URL != '' }}
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        if: env.DATABASE_URL != ''
         run: |
           echo "Creating DB dump to artifact..."
           pg_dump $DATABASE_URL -Fc -f verity_backup.dump
 
       - name: Upload DB backup artifact
-        if: ${{ secrets.DATABASE_URL != '' }}
+        if: env.DATABASE_URL != ''
         uses: actions/upload-artifact@v4
         with:
           name: verity-backup-${{ github.run_id }}

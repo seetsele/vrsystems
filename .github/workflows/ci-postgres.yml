@@ -43,6 +43,10 @@ jobs:
         run: |
           for i in {1..30}; do pg_isready -h localhost -p 5432 -U verity && exit 0 || sleep 1; done
 
+      - name: Apply Alembic migrations
+        run: |
+          python -m alembic -c python-tools/alembic.ini upgrade head
+
       - name: Run tests
         working-directory: python-tools
         run: |
