@@ -1,4 +1,17 @@
 {
+  "name": "verity-sdk-node",
+  "version": "0.1.0",
+  "description": "Minimal Verity Node SDK",
+  "main": "verity.js",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "scripts": {
+    "test": "node -e \"console.log('no tests')\""
+  }
+}
+{
   "name": "@verity-systems/sdk",
   "version": "0.0.1",
   "main": "index.js",
