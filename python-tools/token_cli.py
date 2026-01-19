@@ -14,14 +14,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--subject', required=True)
     parser.add_argument('--scopes', default='')
+    parser.add_argument('--secret', default=None, help='Optional raw secret to sign with (overrides env)')
     parser.add_argument('--expires', type=int, default=3600)
     args = parser.parse_args()
-
-    secret = os.environ.get('TOKEN_SECRET')
+    secret = args.secret or os.environ.get('TOKEN_SECRET')
     if not secret:
-        raise SystemExit('TOKEN_SECRET not set in environment')
+        raise SystemExit('TOKEN_SECRET not set in environment and --secret not provided')
 
-    svc = TokenService(secret)
+    svc = TokenService(secret=secret)
     scopes = [s.strip() for s in args.scopes.split(',') if s.strip()]
     token = svc.create_token(args.subject, scopes, expires_in=args.expires)
     print(token)
