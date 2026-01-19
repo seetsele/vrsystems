@@ -1,0 +1,7 @@
+{
+  "title": "desktop renderer search dropdown snapshot",
+  "status": "failed",
+  "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mBuffer\u001b[39m\u001b[2m).\u001b[22mtoMatchSnapshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  Expected an image 419px by 60px, received 419px by 66px. 2835 pixels (ratio 0.11 of all image pixels) are different.\n\n  Snapshot: search-dropdown.png\n",
+  "url": "file:///C:/Users/lawm/Desktop/verity-systems/desktop-app/renderer/index.html",
+  "timestamp": 1768727881266
+}

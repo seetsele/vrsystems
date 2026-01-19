@@ -18,16 +18,17 @@
     ]
   },
   "dependencies": {
-    "@expo/vector-icons": "^15.0.3"
+    "@expo/vector-icons": "^15.0.3",
+    "verity-sdk-node": "file:sdk/nodejs/verity-sdk-node-0.1.0.tgz"
   },
   "devDependencies": {
-    "md-to-pdf": "^5.2.5",
-    "pg": "^8.16.3",
-    "puppeteer": "^24.34.0",
+    "@playwright/test": "^1.40.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.0.5",
-"@playwright/test": "^1.40.0",
+    "md-to-pdf": "^5.2.5",
+    "pg": "^8.16.3",
     "pixelmatch": "^5.3.0",
-    "pngjs": "^6.0.0"
+    "pngjs": "^6.0.0",
+    "puppeteer": "^24.34.0"
   }
 }

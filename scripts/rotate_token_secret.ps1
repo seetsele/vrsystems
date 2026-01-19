@@ -4,9 +4,11 @@ param(
 )
 
 Write-Output "Generating new TOKEN_SECRET..."
-$rnd = [System.Convert]::ToBase64String((New-Object System.Security.Cryptography.RNGCryptoServiceProvider).GetBytes($SecretBytes))
-Write-Output "New secret (base64):"
-Write-Output $rnd
+$rng = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
+$bytes = New-Object byte[] $SecretBytes
+$rng.GetBytes($bytes)
+$rnd = [System.Convert]::ToBase64String($bytes)
+Write-Output "New secret (base64): [REDACTED]"
 
 if (Test-Path $EnvFile) {
     (Get-Content $EnvFile) -replace 'TOKEN_SECRET=.*', "TOKEN_SECRET=$rnd" | Set-Content $EnvFile
