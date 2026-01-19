@@ -11,10 +11,3 @@
     "test": "node -e \"console.log('no tests')\""
   }
 }
-{
-  "name": "@verity-systems/sdk",
-  "version": "0.0.1",
-  "main": "index.js",
-  "license": "MIT",
-  "dependencies": {}
-}
