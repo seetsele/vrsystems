@@ -4,106 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings | Verity</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/verity-theme.css">
     <style>
-        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--gold:#fbbf24;--green:#10b981;--green-soft:rgba(16,185,129,0.12);--red:#ef4444;--red-soft:rgba(239,68,68,0.12);--violet:#8b5cf6;--sidebar-w:260px}
-        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
-        ::selection{background:rgba(245,158,11,0.3)}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-        
-        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
-        .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border)}
-        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text)}
-        .logo svg{width:32px;height:36px}
-        .logo span{font-family:'Newsreader',Georgia,serif;font-size:1.4rem;font-weight:500}
-        .logo .dot{color:var(--amber)}
-        .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
-        .nav-section{margin-bottom:1.5rem}
-        .nav-section-title{padding:0 1.25rem;margin-bottom:.5rem;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
-        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.25rem;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;border-left:2px solid transparent;margin:2px 0}
-        .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02)}
-        .nav-item.active{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
-        .nav-item svg{width:18px;height:18px;flex-shrink:0}
-        .nav-badge{margin-left:auto;padding:.15rem .5rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:10px}
-        .nav-badge.live{background:var(--red);color:#fff;animation:pulse 2s infinite}
-        .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
-        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px}
-        .tier-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.25rem}
-        .tier-name{font-family:'Newsreader',Georgia,serif;font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
-        .tier-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
-        .tier-fill{height:100%;background:var(--amber);border-radius:4px}
-        .tier-text{font-size:.75rem;color:var(--muted);margin-top:.35rem}
-        
+        /* Settings-specific small overrides mapped to site vars for exact parity */
+        :root{--sidebar-w:260px}
+        body{font-family:var(--font-sans);color:#e6eef8}
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:linear-gradient(180deg,var(--panel),#0b1220);border-right:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column;z-index:100}
+        .logo span{font-family:Inter,system-ui,serif}
         .main{margin-left:var(--sidebar-w);min-height:100vh;padding:2rem}
-        
-        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;animation:fadeIn .4s ease}
-        .header-left h1{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:.25rem}
-        .header-left p{color:var(--muted);font-size:.95rem}
-        
         .settings-layout{display:grid;grid-template-columns:220px 1fr;gap:2rem}
-        @media(max-width:900px){.settings-layout{grid-template-columns:1fr}}
-        
-        .settings-tabs{display:flex;flex-direction:column;gap:.25rem}
-        .settings-tab{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;border-radius:10px;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;cursor:pointer;border:none;background:none;text-align:left}
-        .settings-tab:hover{color:var(--text);background:rgba(255,255,255,0.03)}
-        .settings-tab.active{color:var(--amber);background:var(--amber-soft)}
-        .settings-tab svg{width:18px;height:18px}
-        
-        .settings-content{animation:fadeIn .4s ease .1s backwards}
-        .settings-section{display:none}
-        .settings-section.active{display:block}
-        
-        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.5rem}
-        .card-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
-        .card-header h3{font-size:1rem;font-weight:600}
-        .card-header p{color:var(--muted);font-size:.85rem;margin-top:.25rem}
-        .card-body{padding:1.5rem}
-        
-        .form-group{margin-bottom:1.5rem}
-        .form-group:last-child{margin-bottom:0}
-        .form-group label{display:block;font-size:.85rem;font-weight:500;margin-bottom:.5rem}
-        .form-group .help{color:var(--muted);font-size:.8rem;margin-top:.35rem}
-        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-        @media(max-width:600px){.form-row{grid-template-columns:1fr}}
-        input[type="text"],input[type="email"],input[type="password"],select,textarea{width:100%;padding:.8rem 1rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;font-family:inherit;transition:all .2s}
-        input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber)}
-        select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
-        textarea{min-height:100px;resize:vertical}
-        
-        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid var(--border)}
-        .toggle-row:last-child{border-bottom:none}
-        .toggle-info h4{font-size:.9rem;font-weight:500;margin-bottom:.2rem}
-        .toggle-info p{color:var(--muted);font-size:.8rem}
-        .toggle{position:relative;width:48px;height:26px;background:var(--elevated);border-radius:50px;border:none;cursor:pointer;transition:all .2s}
-        .toggle.active{background:var(--amber)}
-        .toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:all .2s}
-        .toggle.active::after{left:25px}
-        
-        .btn{padding:.75rem 1.5rem;border-radius:10px;font-size:.9rem;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
-        .btn-primary{background:linear-gradient(135deg,var(--amber),#d97706);color:#000}
-        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.3)}
-        .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
-        .btn-outline:hover{border-color:var(--amber);color:var(--amber)}
-        .btn-danger{background:var(--red-soft);border:1px solid var(--red);color:var(--red)}
-        .btn-danger:hover{background:var(--red);color:#fff}
-        
-        .avatar-section{display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem}
-        .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d97706);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:600;color:#000;background-size:cover;background-position:center}
-        .avatar-actions{display:flex;gap:.75rem}
-        
-        .danger-zone{background:linear-gradient(135deg,var(--red-soft),rgba(239,68,68,0.03));border-color:rgba(239,68,68,0.3)}
-        .danger-zone .card-header h3{color:var(--red)}
-        
-        .toast{position:fixed;right:1rem;bottom:1rem;background:var(--card);border:1px solid var(--border);padding:.75rem 1rem;border-radius:10px;color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,0.5)}
-        
-        @media(max-width:768px){
-            .sidebar{transform:translateX(-100%)}
-            .main{margin-left:0}
-        }
+        .settings-tab{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;border-radius:10px;color:var(--muted);background:transparent;border:none;text-align:left}
+        .settings-tab.active{color:var(--accent);background:rgba(245,158,11,0.08)}
+        .card{background:linear-gradient(180deg,var(--panel),#0b1220);border-radius:var(--card-radius);overflow:hidden;margin-bottom:1.5rem;border:1px solid rgba(255,255,255,0.04);box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+        input,textarea,select{background:#061226;border:1px solid rgba(255,255,255,0.03);color:#e6eef8;border-radius:12px;padding:.8rem 1rem}
+        input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+        .btn-primary{background:linear-gradient(135deg,var(--accent),#f97316);color:#fff;box-shadow:none}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.25)}
+        .avatar{background:linear-gradient(135deg,var(--accent),#d97706);color:#000}
+        .toast{position:fixed;right:1rem;bottom:1rem;background:linear-gradient(180deg,var(--panel),#0b1220);border:1px solid rgba(255,255,255,0.04);padding:.75rem 1rem;border-radius:10px;color:#e6eef8;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
     </style>
 </head>
 <body>
@@ -151,10 +69,22 @@
         
         <div class="settings-layout">
             <div class="settings-tabs">
-                <button class="settings-tab active" onclick="showTab('profile', this)">Profile</button>
-                <button class="settings-tab" onclick="showTab('notifications', this)">Notifications</button>
-                <button class="settings-tab" onclick="showTab('appearance', this)">Appearance</button>
-                <button class="settings-tab" onclick="showTab('security', this)">Security</button>
+                <button class="settings-tab active" onclick="showTab('profile', this)">
+                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M12 12a5 5 0 100-10 5 5 0 000 10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 21a9 9 0 0118 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Profile</span>
+                </button>
+                <button class="settings-tab" onclick="showTab('notifications', this)">
+                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M18 8A6 6 0 106 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Notifications</span>
+                </button>
+                <button class="settings-tab" onclick="showTab('appearance', this)">
+                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M12 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 18v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4.2 7.2l2.1 2.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M17.7 16.7l2.1 2.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+                    <span>Appearance</span>
+                </button>
+                <button class="settings-tab" onclick="showTab('security', this)">
+                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 11V8a5 5 0 0110 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Security</span>
+                </button>
             </div>
             
             <div class="settings-content">
