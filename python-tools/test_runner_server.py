@@ -9,6 +9,11 @@ import xml.etree.ElementTree as ET
 import json
 import os
 
+# integration adapters (optional)
+try:
+    from python_tools import integrations
+except Exception:
+    integrations = None
 ROOT = Path(__file__).resolve().parents[1]
 
 # import helpers from the simple_test_api fallback so features are consistent
@@ -192,6 +197,98 @@ def analytics():
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
     raise HTTPException(status_code=404, detail='analytics backend not available')
+
+
+class TextPayload(BaseModel):
+    text: str
+
+
+class TextsPayload(BaseModel):
+    texts: List[str]
+
+
+@app.post('/api/moderate', dependencies=[Depends(verify_api_key)])
+def api_moderate(body: TextPayload):
+    if not integrations:
+        raise HTTPException(status_code=503, detail='integrations not available')
+    try:
+        res = integrations.moderation.moderate(body.text)
+        return {'result': res}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post('/api/embed', dependencies=[Depends(verify_api_key)])
+def api_embed(body: TextsPayload):
+    if not integrations:
+        raise HTTPException(status_code=503, detail='integrations not available')
+    try:
+        vecs = integrations.embeddings.embed(body.texts)
+        return {'vectors': vecs}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class LLMRequest(BaseModel):
+    prompt: str
+    max_tokens: Optional[int] = 256
+
+
+@app.post('/api/llm', dependencies=[Depends(verify_api_key)])
+def api_llm(req: LLMRequest):
+    if not integrations:
+        raise HTTPException(status_code=503, detail='integrations not available')
+    try:
+        out = integrations.llm.generate(req.prompt, max_new_tokens=req.max_tokens)
+        return {'text': out}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post('/api/maps/geocode')
+def api_geocode(body: TextPayload):
+    if not integrations:
+        raise HTTPException(status_code=503, detail='integrations not available')
+    try:
+        out = integrations.maps.geocode_nominatim(body.text)
+        return {'result': out}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class StreamRequest(BaseModel):
+    provider: str
+    target: Optional[str] = None
+
+
+@app.post('/api/stream/fetch', dependencies=[Depends(verify_api_key)])
+def api_stream_fetch(req: StreamRequest):
+    if not integrations:
+        raise HTTPException(status_code=503, detail='integrations not available')
+    try:
+        if req.provider == 'reddit':
+            # fetch small sample via reddit RSS fallback
+            import requests
+            sub = req.target or 'all'
+            feed = f'https://www.reddit.com/r/{sub}/new/.rss'
+            r = requests.get(feed, headers={'User-Agent': 'verity-stream'}, timeout=10)
+            return {'rss': r.text[:2000]}
+        elif req.provider == 'mastodon':
+            # attempt to call Mastodon timeline if mastodon.py installed
+            try:
+                from mastodon import Mastodon
+                instance = req.target or os.environ.get('MASTODON_INSTANCE')
+                if not instance:
+                    raise RuntimeError('no mastodon instance configured')
+                m = Mastodon(api_base_url=instance, access_token=os.environ.get('MASTODON_TOKEN'))
+                timeline = m.timeline_home(limit=10)
+                return {'items': timeline}
+            except Exception as e:
+                raise
+        else:
+            raise HTTPException(status_code=400, detail='unknown provider')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get('/audit', dependencies=[Depends(verify_api_key)])

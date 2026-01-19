@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Content Moderation</title>
+  <style>body{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;padding:24px;color:#111}</style>
+</head>
+<body>
+  <h1>Content Moderation</h1>
+  <p>This page documents the local content moderation endpoint used for integrations and tests.</p>
+  <pre>
+POST /api/moderate
+Request JSON: { "text": "..." }
+Response JSON: { "flagged": false, "categories": [], "score": 0.02 }
+  </pre>
+</body>
+</html>

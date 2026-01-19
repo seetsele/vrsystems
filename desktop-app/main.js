@@ -48,7 +48,7 @@ const store = new Store({
     defaults: {
         windowBounds: { width: 1400, height: 900 },
         windowState: { maximized: false },
-        apiEndpoint: 'http://localhost:8081',
+        apiEndpoint: 'http://localhost:8000',
         theme: 'dark',
         sidebar: { collapsed: false, width: 280 },
         alwaysOnTop: false,

@@ -5,14 +5,14 @@ const fs = require('fs');
   const out = (name) => `./test-results/${name}`;
   try {
     if (!fs.existsSync('./test-results')) fs.mkdirSync('./test-results');
-    console.log('Launching headless browser...');
+    console.debug('Launching headless browser...');
     const browser = await puppeteer.launch({args: ['--no-sandbox','--disable-setuid-sandbox']});
     const page = await browser.newPage();
     page.setDefaultTimeout(20000);
       const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
     const url = process.env.VERITY_URL || 'http://127.0.0.1:3001/verify.html';
-    console.log('Opening', url);
+    console.debug('Opening', url);
     let resp = null;
     try {
       resp = await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
@@ -20,7 +20,7 @@ const fs = require('fs');
       console.warn('First goto failed, retrying with domcontentloaded:', e && e.message);
       resp = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     }
-    console.log('Page response status:', resp && resp.status());
+    console.debug('Page response status:', resp && resp.status());
 
     // Save initial snapshot for debugging
     await page.screenshot({ path: out('initial.png'), fullPage: true });
@@ -34,7 +34,7 @@ const fs = require('fs');
       if (await page.$(s)) { inputSel = s; break; }
     }
     if (!inputSel) throw new Error('No input selector found on page');
-    console.log('Using input selector:', inputSel);
+    console.debug('Using input selector:', inputSel);
 
     // Type a sample claim and click extract
     await page.focus(inputSel);
@@ -44,7 +44,7 @@ const fs = require('fs');
     for (const b of extractBtnCandidates) {
       if (await page.$(b)) {
         await page.evaluate((sel) => { const el = document.querySelector(sel); if (el) el.click(); }, b);
-        console.log('Clicked extract button:', b);
+        console.debug('Clicked extract button:', b);
         await delay(800);
         await page.screenshot({ path: out('after-extract.png') });
         break;
@@ -56,7 +56,7 @@ const fs = require('fs');
     for (const b of verifyBtnCandidates) {
       if (await page.$(b)) {
         await page.evaluate((sel) => { const el = document.querySelector(sel); if (el) el.click(); }, b);
-        console.log('Clicked verify button:', b);
+        console.debug('Clicked verify button:', b);
         await delay(1500);
         await page.screenshot({ path: out('after-verify.png') });
         break;
@@ -87,7 +87,7 @@ const fs = require('fs');
     }
 
     await browser.close();
-    console.log('Smoke test completed — screenshots saved to ./test-results/');
+    console.debug('Smoke test completed — screenshots saved to ./test-results/');
     process.exit(0);
   } catch (err) {
     console.error('Smoke test failed:', err);

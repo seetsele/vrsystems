@@ -79,6 +79,25 @@ cp .env.example .env
 python python-tools/api_server_ultimate.py
 ```
 
+## Launch Readiness (local/CI)
+
+This repository includes lightweight, launch-ready local endpoints and CI integration to make testing and verification reproducible:
+
+- Local, file-backed endpoints for development and tests: `POST /api/moderate`, `GET /api/analyze-image/health`, `GET/POST /api/waitlist`, `GET /api/stats`.
+- API key enforcement is available via `REQUIRE_API_KEY=true` and keys set in the `API_KEYS` env var. Scopes can be configured with `API_KEY_SCOPES`.
+- CI runs tests against a Postgres service and applies the SQL migrations automatically via `psql`.
+- To run a local Postgres for integration tests:
+
+```bash
+docker compose -f docker-compose.postgres.yml up -d
+export DATABASE_URL=postgresql://verity:veritypass@localhost:5432/verity_test
+psql "$DATABASE_URL" -f python-tools/migrations/001_create_waitlist_and_stats.sql
+python -m pytest -q -r s
+```
+
+Use these steps in CI or local dev to ensure the database-backed tests run the same way as on CI.
+
+
 ### Option 2: Docker
 
 ```bash

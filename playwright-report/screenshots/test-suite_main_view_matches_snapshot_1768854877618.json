@@ -1,0 +1,7 @@
+{
+  "title": "test-suite main view matches snapshot",
+  "status": "failed",
+  "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mBuffer\u001b[39m\u001b[2m).\u001b[22mtoMatchSnapshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  Expected an image 1264px by 2769px, received 1264px by 2982px. 1341298 pixels (ratio 0.36 of all image pixels) are different.\n\n  Snapshot: test-suite-main.png\n",
+  "url": "http://127.0.0.1:3000/test-suite.html",
+  "timestamp": 1768854877618
+}

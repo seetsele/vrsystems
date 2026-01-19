@@ -4,22 +4,49 @@ Param(
 
 # Bringup helper for local development (PowerShell)
 Set-StrictMode -Version Latest
-$root = Split-Path -Parent $MyInvocation.MyCommand.Definition
+# Determine repository root (one level above the scripts directory)
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$root = Resolve-Path (Join-Path $scriptDir '..') | Select-Object -ExpandProperty Path
 Set-Location $root
+
+# Resolve python-tools path early so multiple functions can use it
+if (Test-Path (Join-Path $root 'python-tools')) {
+    $pythonToolsDir = (Resolve-Path (Join-Path $root 'python-tools')).Path
+} else {
+    $pythonToolsDir = $null
+}
 
 function Start-Static {
     Write-Output "Starting static server on port 3001..."
-    Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m http.server 3001" -WorkingDirectory (Join-Path $root 'public')
+    $publicDir = (Resolve-Path (Join-Path $root 'public') -ErrorAction SilentlyContinue)
+    if ($publicDir) {
+        $publicPath = $publicDir.Path
+        Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m http.server 3001" -WorkingDirectory $publicPath
+    } else {
+        Write-Output "public directory not found; skipping static server start."
+    }
 }
 
 function Start-Fallback {
     Write-Output "Starting fallback runner..."
-    Start-Process -NoNewWindow -FilePath "python" -ArgumentList "python-tools\simple_test_api.py" -WorkingDirectory $root
+    if (-not $pythonToolsDir) { Write-Output "python-tools folder not found; skipping fallback runner."; return }
+    $fallbackScript = Join-Path $pythonToolsDir 'simple_test_api.py'
+    if (Test-Path $fallbackScript) {
+        Start-Process -NoNewWindow -FilePath "python" -ArgumentList "$fallbackScript" -WorkingDirectory $pythonToolsDir
+    } else {
+        Write-Output "Fallback script not found: $fallbackScript"
+    }
 }
 
 function Start-FastAPI {
     Write-Output "Starting FastAPI runner on 8011..."
-    Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m uvicorn test_runner_server:app --host 127.0.0.1 --port 8011" -WorkingDirectory (Join-Path $root 'python-tools')
+    if (-not $pythonToolsDir) { Write-Output "python-tools folder not found; skipping FastAPI runner."; return }
+    $fastApiModule = Join-Path $pythonToolsDir 'test_runner_server.py'
+    if (Test-Path $fastApiModule) {
+        Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m uvicorn test_runner_server:app --host 127.0.0.1 --port 8011" -WorkingDirectory $pythonToolsDir
+    } else {
+        Write-Output "FastAPI module not found in python-tools; skipping FastAPI start."
+    }
 }
 
 if ($withDocker) {

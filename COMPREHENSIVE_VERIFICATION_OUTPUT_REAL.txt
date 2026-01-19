@@ -1,0 +1,17 @@
+{
+  "id": "ver_1768855405_4319",
+  "claim": "The Eiffel Tower is taller than the Empire State Building.",
+  "verdict": "UNKNOWN",
+  "confidence": 50.0,
+  "explanation": "No external providers configured; returning local fallback result.",
+  "sources": [],
+  "providers_used": [],
+  "models_used": [],
+  "cross_validation": {},
+  "nuance_analysis": {},
+  "content_analysis": {},
+  "tier": "pro",
+  "cached": false,
+  "timestamp": "2026-01-19T20:43:26.471076",
+  "processing_time_ms": 1111.54
+}

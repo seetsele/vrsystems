@@ -1,5 +1,5 @@
 param(
-    [string]$ComposeFile = "..\docker-compose.yml"
+    [string]$ComposeFile = "docker-compose.yml"
 )
 
 function Check-Command($name){
@@ -14,8 +14,15 @@ if (-not (Check-Command docker)){
 $root = (Resolve-Path "$(Join-Path $PSScriptRoot '..')").Path
 Push-Location $root
 
-Write-Output "Starting compose from $ComposeFile..."
-docker compose -f $ComposeFile up -d
+# Resolve compose file path relative to repo root
+$composePath = Join-Path $root $ComposeFile
+if (-not (Test-Path $composePath)) {
+    Write-Warning "Compose file not found at $composePath; falling back to provided path: $ComposeFile"
+    $composePath = $ComposeFile
+}
+
+Write-Output "Starting compose from $composePath..."
+docker compose -f $composePath up -d
 
 Write-Output "Waiting for services to become healthy (timeout 120s)..."
 $deadline = (Get-Date).AddSeconds(120)

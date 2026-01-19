@@ -1,0 +1,51 @@
+{"version":8,"type":"context-options","origin":"testRunner","browserName":"","playwrightVersion":"1.57.0","options":{},"platform":"win32","wallTime":1768859655256,"monotonicTime":29824.879,"sdkLanguage":"javascript"}
+{"type":"before","callId":"hook@1","stepId":"hook@1","startTime":29826.303,"class":"Test","method":"hook","title":"Before Hooks","params":{},"stack":[]}
+{"type":"before","callId":"fixture@21","stepId":"fixture@21","parentId":"hook@1","startTime":29832.765,"class":"Test","method":"fixture","title":"Fixture \"context\"","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@22","stepId":"pw:api@22","parentId":"fixture@21","startTime":29833.365,"class":"Test","method":"pw:api","title":"Create context","params":{"acceptDownloads":"accept","bypassCSP":"false","colorScheme":"light","deviceScaleFactor":"1","hasTouch":"false","ignoreHTTPSErrors":"true","isMobile":"false","javaScriptEnabled":"true","locale":"en-US","offline":"false","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.7499.4 Safari/537.36","viewport":"Object","baseURL":"http://127.0.0.1:3000","serviceWorkers":"allow","selectorEngines":"[]","testIdAttributeName":"data-testid","noDefaultViewport":"false","extraHTTPHeaders":"undefined","storageState":"undefined","reducedMotion":"undefined","forcedColors":"undefined","contrast":"undefined","clientCertificates":"undefined"},"stack":[]}
+{"type":"after","callId":"pw:api@22","endTime":29839.009,"annotations":[]}
+{"type":"after","callId":"fixture@21","endTime":29841.703,"annotations":[]}
+{"type":"before","callId":"fixture@23","stepId":"fixture@23","parentId":"hook@1","startTime":29842.15,"class":"Test","method":"fixture","title":"Fixture \"page\"","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@24","stepId":"pw:api@24","parentId":"fixture@23","startTime":29843.429,"class":"Test","method":"pw:api","title":"Create page","params":{},"stack":[]}
+{"type":"after","callId":"pw:api@24","endTime":32449.425,"annotations":[]}
+{"type":"after","callId":"fixture@23","endTime":32449.549,"annotations":[]}
+{"type":"after","callId":"hook@1","endTime":32449.609,"annotations":[]}
+{"type":"before","callId":"pw:api@25","stepId":"pw:api@25","startTime":32451.458,"class":"Test","method":"pw:api","title":"Add init script","params":{"source":"(() => {\n      window.require = name => ({\n        info: () => {},\n        warn: () => {},\n        error: () => {}\n      });\n      window.verity = window.verity || {};\n      window.verity.settings = window.verity.settings || {\n        getAll: async () => ({}),\n        save: async () => {}\n      };\n      window.verity.recent = window.verity.recent || {\n        get: async () => []\n      };\n      const style = document.createElement('style');\n      style.innerHTML = `*{animation:none!important;transition:none!important!important} .animated-bg, .orb, .glow-lines, .bg-noise { display:none!important }`;\n      document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));\n    })(undefined)"},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":75,"column":5}],"group":"configuration"}
+{"type":"after","callId":"pw:api@25","endTime":32455.66,"annotations":[]}
+{"type":"before","callId":"pw:api@26","stepId":"pw:api@26","startTime":32458.093,"class":"Test","method":"pw:api","title":"Navigate to \"/C:/Users/lawm/Desktop/verity-systems/desktop-app/renderer/index.html\"","params":{"url":"file:///C:\\Users\\lawm\\Desktop\\verity-systems\\desktop-app\\renderer\\index.html","waitUntil":"load","timeout":"0"},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":84,"column":16}]}
+{"type":"after","callId":"pw:api@26","endTime":35415.85,"annotations":[]}
+{"type":"before","callId":"pw:api@27","stepId":"pw:api@27","startTime":35420.779,"class":"Test","method":"pw:api","title":"Wait for selector locator('#loading-screen')","params":{"selector":"#loading-screen","state":"hidden","timeout":"10000"},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":85,"column":16}]}
+{"type":"after","callId":"pw:api@27","endTime":35521.881,"annotations":[]}
+{"type":"before","callId":"pw:api@28","stepId":"pw:api@28","startTime":35525.593,"class":"Test","method":"pw:api","title":"Wait for selector locator('.app-root, .main-window, .container, header')","params":{"selector":".app-root, .main-window, .container, header","timeout":"10000"},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":86,"column":16}]}
+{"type":"after","callId":"pw:api@28","endTime":35596.775,"annotations":[]}
+{"type":"before","callId":"pw:api@29","stepId":"pw:api@29","startTime":35600.083,"class":"Test","method":"pw:api","title":"Wait for load state \"networkidle\"","params":{"info":"Object"},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":87,"column":16}]}
+{"type":"after","callId":"pw:api@29","endTime":36321.01,"annotations":[]}
+{"type":"before","callId":"pw:api@30","stepId":"pw:api@30","startTime":36324.272,"class":"Test","method":"pw:api","title":"Evaluate","params":{"expression":"() => document.fonts ? document.fonts.ready : Promise.resolve()","isFunction":"true","arg":"Object"},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":88,"column":16}]}
+{"type":"after","callId":"pw:api@30","endTime":36348.737,"annotations":[]}
+{"type":"before","callId":"pw:api@31","stepId":"pw:api@31","startTime":36351.005,"class":"Test","method":"pw:api","title":"Screenshot locator('body')","params":{"selector":"body","strict":"true","state":"attached","timeout":"0"},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":90,"column":23}]}
+{"type":"after","callId":"pw:api@31","endTime":36619.609,"annotations":[]}
+{"type":"before","callId":"expect@32","stepId":"expect@32","startTime":36621.933,"class":"Test","method":"expect","title":"Expect \"toMatchSnapshot\"","params":{"expected":"desktop-renderer.png"},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":90,"column":37}]}
+{"type":"after","callId":"expect@32","endTime":36961.092,"annotations":[]}
+{"type":"before","callId":"hook@33","stepId":"hook@33","startTime":36961.719,"class":"Test","method":"hook","title":"After Hooks","params":{},"stack":[]}
+{"type":"before","callId":"hook@34","stepId":"hook@34","parentId":"hook@33","startTime":36962.254,"class":"Test","method":"hook","title":"afterEach hook","params":{},"stack":[{"file":"C:\\Users\\lawm\\Desktop\\verity-systems\\tests\\visual\\test-visual.spec.ts","line":8,"column":6}]}
+{"type":"after","callId":"hook@34","endTime":36962.547,"annotations":[]}
+{"type":"before","callId":"fixture@35","stepId":"fixture@35","parentId":"hook@33","startTime":36963.03,"class":"Test","method":"fixture","title":"Fixture \"page\"","params":{},"stack":[]}
+{"type":"after","callId":"fixture@35","endTime":36963.127,"annotations":[]}
+{"type":"before","callId":"fixture@36","stepId":"fixture@36","parentId":"hook@33","startTime":36963.453,"class":"Test","method":"fixture","title":"Fixture \"context\"","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@37","stepId":"pw:api@37","parentId":"fixture@36","startTime":37062.423,"class":"Test","method":"pw:api","title":"Close context","params":{"reason":"Test ended."},"stack":[]}
+{"type":"after","callId":"pw:api@37","endTime":37070.316,"annotations":[]}
+{"type":"after","callId":"fixture@36","endTime":37070.495,"annotations":[]}
+{"type":"before","callId":"fixture@46","stepId":"fixture@46","parentId":"hook@33","startTime":37075.218,"class":"Test","method":"fixture","title":"Fixture \"baseURL\"","params":{},"stack":[{"file":"project#chromium","line":1,"column":1}],"group":"configuration"}
+{"type":"after","callId":"fixture@46","endTime":37075.296,"annotations":[]}
+{"type":"before","callId":"fixture@47","stepId":"fixture@47","parentId":"hook@33","startTime":37075.732,"class":"Test","method":"fixture","title":"Fixture \"userAgent\"","params":{},"stack":[{"file":"project#chromium","line":1,"column":1}],"group":"configuration"}
+{"type":"after","callId":"fixture@47","endTime":37075.808,"annotations":[]}
+{"type":"before","callId":"fixture@49","stepId":"fixture@49","parentId":"hook@33","startTime":37076.583,"class":"Test","method":"fixture","title":"Fixture \"viewport\"","params":{},"stack":[{"file":"project#chromium","line":1,"column":1}],"group":"configuration"}
+{"type":"after","callId":"fixture@49","endTime":37076.633,"annotations":[]}
+{"type":"before","callId":"fixture@56","stepId":"fixture@56","parentId":"hook@33","startTime":37079.375,"class":"Test","method":"fixture","title":"Fixture \"isMobile\"","params":{},"stack":[{"file":"project#chromium","line":1,"column":1}],"group":"configuration"}
+{"type":"after","callId":"fixture@56","endTime":37079.456,"annotations":[]}
+{"type":"before","callId":"fixture@57","stepId":"fixture@57","parentId":"hook@33","startTime":37079.879,"class":"Test","method":"fixture","title":"Fixture \"ignoreHTTPSErrors\"","params":{},"stack":[{"file":"project#chromium","line":1,"column":1}],"group":"configuration"}
+{"type":"after","callId":"fixture@57","endTime":37079.934,"annotations":[]}
+{"type":"before","callId":"fixture@60","stepId":"fixture@60","parentId":"hook@33","startTime":37081.16,"class":"Test","method":"fixture","title":"Fixture \"hasTouch\"","params":{},"stack":[{"file":"project#chromium","line":1,"column":1}],"group":"configuration"}
+{"type":"after","callId":"fixture@60","endTime":37081.204,"annotations":[]}
+{"type":"before","callId":"fixture@62","stepId":"fixture@62","parentId":"hook@33","startTime":37082.007,"class":"Test","method":"fixture","title":"Fixture \"deviceScaleFactor\"","params":{},"stack":[{"file":"project#chromium","line":1,"column":1}],"group":"configuration"}
+{"type":"after","callId":"fixture@62","endTime":37082.058,"annotations":[]}
+{"type":"after","callId":"hook@33","endTime":37084.603,"annotations":[]}

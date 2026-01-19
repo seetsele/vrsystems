@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
+const log = require('electron-log');
 
 (async ()=>{
   const out = (n)=>path.join(__dirname,'..','test-results',n);
@@ -14,5 +15,5 @@ const fs = require('fs');
   await new Promise(r=>setTimeout(r,400));
   await page.screenshot({path: out('renderer_capture.png'), fullPage:true});
   await browser.close();
-  console.log('Saved renderer screenshot to', out('renderer_capture.png'));
+  log.info('Saved renderer screenshot to', out('renderer_capture.png'));
 })();

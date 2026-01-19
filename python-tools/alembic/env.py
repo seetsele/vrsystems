@@ -1,34 +1,48 @@
+"""Alembic env.py tailored to use DATABASE_URL if present.
+
+This file configures Alembic to read `DATABASE_URL` from the environment
+and fall back to the value in `alembic.ini`.
+"""
+from __future__ import annotations
 import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
-
 from alembic import context
 
-import sys
-sys.path.insert(0, os.path.dirname(__file__))
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from db import get_engine
-from models import Base
-
+# Alembic Config object
 config = context.config
+
+# Interpret the config file for Python logging.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Base.metadata
+# Prefer DATABASE_URL from environment when present
+env_db_url = os.environ.get("DATABASE_URL")
+if env_db_url:
+    config.set_main_option("sqlalchemy.url", env_db_url)
 
-def run_migrations_offline():
-    url = os.getenv('DATABASE_URL', config.get_main_option("sqlalchemy.url"))
+target_metadata = None
+
+
+def run_migrations_offline() -> None:
+    url = config.get_main_option("sqlalchemy.url")
     context.configure(url=url, target_metadata=target_metadata, literal_binds=True)
     with context.begin_transaction():
         context.run_migrations()
 
-def run_migrations_online():
-    connectable = get_engine()
+
+def run_migrations_online() -> None:
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

@@ -1,0 +1,144 @@
+{
+  "generated_at": "2026-01-19T22:00:44.611485Z",
+  "claim": "Vaccines cause autism",
+  "result": {
+    "verdict": "false",
+    "confidence": 0.69,
+    "veriscore": 79.1,
+    "confidence_interval": [
+      71.1,
+      87.1
+    ],
+    "explanation": "VERDICT: false\nCONFIDENCE: 0.95\nEXPLANATION: Large epidemiological studies find no causal link.\n\n[21-POINT VERIFICATION: VeriScore (TM) 79.1% (Grade: C)]\n[CROSS-VALIDATION: 4/4 providers agree (100.0% consensus). Verification loops: 4/12. Providers: perplexity, openai, perplexity_pass2, openai_pass2]",
+    "verification_pillars": {
+      "claim_parsing": {
+        "score": 85.0,
+        "checks": {
+          "extraction": 95.0,
+          "classification": 90.0,
+          "nuance": 70.0
+        },
+        "weight": 0.1
+      },
+      "temporal": {
+        "score": 90.0,
+        "checks": {
+          "currency": 80.0,
+          "freshness": 95.0,
+          "context": 95.0
+        },
+        "weight": 0.1
+      },
+      "source_quality": {
+        "score": 60.0,
+        "checks": {
+          "primary": 50.0,
+          "authority": 50.0,
+          "bias": 80.0
+        },
+        "weight": 0.2
+      },
+      "evidence": {
+        "score": 81.7,
+        "checks": {
+          "corroboration": 50.0,
+          "counter": 95.0,
+          "consensus": 100.0
+        },
+        "weight": 0.2
+      },
+      "ai_consensus": {
+        "score": 78.3,
+        "checks": {
+          "large_models": 50.0,
+          "specialized": 85.0,
+          "ensemble": 100.0
+        },
+        "weight": 0.2
+      },
+      "logical": {
+        "score": 88.3,
+        "checks": {
+          "consistency": 90.0,
+          "statistical": 90.0,
+          "causal": 85.0
+        },
+        "weight": 0.1
+      },
+      "synthesis": {
+        "score": 88.0,
+        "checks": {
+          "calibration": 69.0,
+          "quality": 100.0,
+          "summary": 95.0
+        },
+        "weight": 0.1
+      }
+    },
+    "providers_used": [
+      "perplexity",
+      "openai",
+      "perplexity_pass2",
+      "openai_pass2"
+    ],
+    "models_used": [
+      "unknown"
+    ],
+    "cross_validation": {
+      "agreement_percentage": 100.0,
+      "agreeing_providers": 4,
+      "total_providers": 4,
+      "verification_loops": 4,
+      "max_loops": 12,
+      "verdict_breakdown": [
+        {
+          "provider": "perplexity",
+          "verdict": "false",
+          "confidence": 0.95,
+          "weight": 1.4
+        },
+        {
+          "provider": "openai",
+          "verdict": "false",
+          "confidence": 0.92,
+          "weight": 1.2
+        },
+        {
+          "provider": "perplexity",
+          "verdict": "false",
+          "confidence": 0.95,
+          "weight": 1.4
+        },
+        {
+          "provider": "openai",
+          "verdict": "false",
+          "confidence": 0.92,
+          "weight": 1.2
+        }
+      ],
+      "search_sources_found": 0
+    },
+    "nuance_analysis": {
+      "is_nuanced": false,
+      "nuance_score": 0.0,
+      "nuanced_topic": null,
+      "absolute_language": [],
+      "override_applied": false,
+      "override_reason": null
+    },
+    "source_authority": {
+      "primary_sources": 0,
+      "high_authority": 0,
+      "avg_authority": 0.5,
+      "bias_detected": false
+    },
+    "content_analysis": {
+      "content_type": "text",
+      "urls_extracted": 0,
+      "research_papers": 0
+    },
+    "sources": [],
+    "verification_system": "21-Point Verification (TM)",
+    "processing_time_seconds": 0.44
+  }
+}

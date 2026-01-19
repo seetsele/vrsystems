@@ -4,102 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings | Verity</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/verity-theme.css">
     <style>
-        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        :root{--bg:#0a0a0b;--card:#111113;--elevated:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;--muted:#a3a3a3;--dim:#525252;--amber:#f59e0b;--amber-soft:rgba(245,158,11,0.12);--gold:#fbbf24;--green:#10b981;--green-soft:rgba(16,185,129,0.12);--red:#ef4444;--red-soft:rgba(239,68,68,0.12);--violet:#8b5cf6;--sidebar-w:260px}
-        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
-        ::selection{background:rgba(245,158,11,0.3)}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-        
-        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
-        .sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border)}
-        .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text)}
-        .logo svg{width:32px;height:36px}
-        .logo span{font-family:'Newsreader',Georgia,serif;font-size:1.4rem;font-weight:500}
-        .logo .dot{color:var(--amber)}
-        .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
-        .nav-section{margin-bottom:1.5rem}
-        .nav-section-title{padding:0 1.25rem;margin-bottom:.5rem;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
-        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.25rem;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;border-left:2px solid transparent;margin:2px 0}
-        .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02)}
-        .nav-item.active{color:var(--amber);background:var(--amber-soft);border-left-color:var(--amber)}
-        .nav-item svg{width:18px;height:18px;flex-shrink:0}
-        .nav-badge{margin-left:auto;padding:.15rem .5rem;background:var(--amber);color:#000;font-size:.65rem;font-weight:700;border-radius:10px}
-        .nav-badge.live{background:var(--red);color:#fff;animation:pulse 2s infinite}
-        .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
-        .tier-card{padding:1rem;background:linear-gradient(135deg,var(--amber-soft),rgba(251,191,36,0.08));border:1px solid rgba(245,158,11,0.2);border-radius:12px}
-        .tier-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--amber);margin-bottom:.25rem}
-        .tier-name{font-family:'Newsreader',Georgia,serif;font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
-        .tier-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
-        .tier-fill{height:100%;background:var(--amber);border-radius:4px}
-        .tier-text{font-size:.75rem;color:var(--muted);margin-top:.35rem}
-        
-        .main{margin-left:var(--sidebar-w);min-height:100vh;padding:2rem}
-        
-        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;animation:fadeIn .4s ease}
-        .header-left h1{font-family:'Newsreader',Georgia,serif;font-size:2rem;font-weight:400;margin-bottom:.25rem}
-        .header-left p{color:var(--muted);font-size:.95rem}
-        
+        /* Settings-specific small overrides mapped to site vars for exact parity */
+        :root{--sidebar-w:260px}
+        html,body{height:100%}
+        body{font-family:var(--font-sans);color:#e6eef8;background:var(--bg)}
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:linear-gradient(180deg,var(--panel),#0b1220);border-right:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column;z-index:100}
+        .logo span{font-family:Inter,system-ui,serif}
+        .main{margin-left:var(--sidebar-w);min-height:100vh;padding:2rem;background:transparent}
         .settings-layout{display:grid;grid-template-columns:220px 1fr;gap:2rem}
-        @media(max-width:900px){.settings-layout{grid-template-columns:1fr}}
-        
-        .settings-tabs{display:flex;flex-direction:column;gap:.25rem}
-        .settings-tab{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;border-radius:10px;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:450;transition:all .2s;cursor:pointer;border:none;background:none;text-align:left}
-        .settings-tab:hover{color:var(--text);background:rgba(255,255,255,0.03)}
-        .settings-tab.active{color:var(--amber);background:var(--amber-soft)}
-        .settings-tab svg{width:18px;height:18px}
-        
-        .settings-content{animation:fadeIn .4s ease .1s backwards}
-        
-        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.5rem}
-        .card-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
-        .card-header h3{font-size:1rem;font-weight:600}
-        .card-header p{color:var(--muted);font-size:.85rem;margin-top:.25rem}
-        .card-body{padding:1.5rem}
-        
-        .form-group{margin-bottom:1.5rem}
-        .form-group:last-child{margin-bottom:0}
-        .form-group label{display:block;font-size:.85rem;font-weight:500;margin-bottom:.5rem}
-        .form-group .help{color:var(--muted);font-size:.8rem;margin-top:.35rem}
-        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-        @media(max-width:600px){.form-row{grid-template-columns:1fr}}
-        input[type="text"],input[type="email"],input[type="password"],select,textarea{width:100%;padding:.8rem 1rem;background:var(--elevated);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;font-family:inherit;transition:all .2s}
-        input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber)}
-        select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
-        textarea{min-height:100px;resize:vertical}
-        
-        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid var(--border)}
-        .toggle-row:last-child{border-bottom:none}
-        .toggle-info h4{font-size:.9rem;font-weight:500;margin-bottom:.2rem}
-        .toggle-info p{color:var(--muted);font-size:.8rem}
-        .toggle{position:relative;width:48px;height:26px;background:var(--elevated);border-radius:50px;border:none;cursor:pointer;transition:all .2s}
-        .toggle.active{background:var(--amber)}
-        .toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:all .2s}
-        .toggle.active::after{left:25px}
-        
-        .btn{padding:.75rem 1.5rem;border-radius:10px;font-size:.9rem;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
-        .btn-primary{background:linear-gradient(135deg,var(--amber),#d97706);color:#000}
-        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.3)}
-        .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
-        .btn-outline:hover{border-color:var(--amber);color:var(--amber)}
-        .btn-danger{background:var(--red-soft);border:1px solid var(--red);color:var(--red)}
-        .btn-danger:hover{background:var(--red);color:#fff}
-        
-        .avatar-section{display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem}
-        .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d97706);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:600;color:#000}
-        .avatar-actions{display:flex;gap:.75rem}
-        
-        .danger-zone{background:linear-gradient(135deg,var(--red-soft),rgba(239,68,68,0.03));border-color:rgba(239,68,68,0.3)}
-        .danger-zone .card-header h3{color:var(--red)}
-        
-        @media(max-width:768px){
-            .sidebar{transform:translateX(-100%)}
-            .main{margin-left:0}
-        }
+        .settings-tab{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;border-radius:10px;color:var(--muted);background:transparent;border:none;text-align:left}
+        .settings-tab.active{color:var(--accent);background:rgba(245,158,11,0.06)}
+        .card{background:linear-gradient(180deg,var(--panel),#0b1220);border-radius:var(--card-radius);overflow:hidden;margin-bottom:1.5rem;border:1px solid rgba(255,255,255,0.04);box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+        input,textarea,select{background:#061226;border:1px solid rgba(255,255,255,0.03);color:#e6eef8;border-radius:12px;padding:.8rem 1rem}
+        input::placeholder, textarea::placeholder{color:rgba(230,238,248,0.45)}
+        input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+        .btn-primary{background:linear-gradient(135deg,var(--accent),#f97316);color:#fff;box-shadow:none;border-radius:10px;padding:.6rem 1rem}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(245,158,11,0.18)}
+        .btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:.5rem .8rem;border-radius:10px}
+        .btn-outline:hover{color:#e6eef8;border-color:rgba(255,255,255,0.12)}
+        .btn-danger{background:transparent;border:1px solid rgba(239,68,68,0.12);color:var(--danger);padding:.6rem .9rem;border-radius:10px}
+        .avatar{background:linear-gradient(135deg,var(--accent),#d97706);color:#000;border-radius:10px;width:84px;height:84px;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:inset 0 -6px 18px rgba(0,0,0,0.35);background-size:cover;background-position:center}
+        .avatar img{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block}
+        .toast{position:fixed;right:1rem;bottom:1rem;background:linear-gradient(180deg,var(--panel),#0b1220);border:1px solid rgba(255,255,255,0.04);padding:.75rem 1rem;border-radius:10px;color:#e6eef8;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+        /* Toggle pill styles */
+        .toggle{width:56px;height:32px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.03);position:relative;cursor:pointer}
+        .toggle::after{content:'';position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:999px;background:#0b1220;transition:all 160ms cubic-bezier(.2,.9,.25,1);box-shadow:0 2px 8px rgba(2,6,23,0.6)}
+        .toggle.active{background:linear-gradient(90deg,var(--accent),#f97316)}
+        .toggle.active::after{left:28px;background:#fff}
     </style>
 </head>
 <body>
@@ -113,20 +46,19 @@
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
-                <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a>
-                <a href="verify.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Verify<span class="nav-badge">+</span></a>
-                <a href="verify.html?quick=1" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Verify</a>
-                <a href="history.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
-                <a href="realtime-stream.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>Live Stream<span class="nav-badge live">●</span></a>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="verify.html" class="nav-item">Verify</a>
+                <a href="verify.html?quick=1" class="nav-item">Quick Verify</a>
+                <a href="history.html" class="nav-item">History</a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Settings</div>
-                <a href="api-keys.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778z"/></svg>API Keys</a>
-                <a href="provider-setup.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Provider Setup</a>
-                <a href="billing.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Billing</a>
-                <a href="settings.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+                <a href="api-keys.html" class="nav-item">API Keys</a>
+                <a href="provider-setup.html" class="nav-item">Provider Setup</a>
+                <a href="billing.html" class="nav-item">Billing</a>
+                <a href="settings.html" class="nav-item active">Settings</a>
             </div>
-            <div class="nav-section"><a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Back to Home</a></div>
+            <div class="nav-section"><a href="index.html" class="nav-item">Back to Home</a></div>
         </nav>
         <div class="sidebar-footer">
             <div class="tier-card">
@@ -148,103 +80,172 @@
         
         <div class="settings-layout">
             <div class="settings-tabs">
-                <button class="settings-tab active" onclick="showTab('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</button>
-                <button class="settings-tab" onclick="showTab('notifications')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notifications</button>
-                <button class="settings-tab" onclick="showTab('appearance')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Appearance</button>
-                <button class="settings-tab" onclick="showTab('security')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Security</button>
+                <button class="settings-tab active" onclick="showTab('profile', this)">
+                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M12 12a5 5 0 100-10 5 5 0 000 10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 21a9 9 0 0118 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Profile</span>
+                </button>
+                <button class="settings-tab" onclick="showTab('notifications', this)">
+                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M18 8A6 6 0 106 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Notifications</span>
+                </button>
+                <button class="settings-tab" onclick="showTab('appearance', this)">
+                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M12 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 18v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4.2 7.2l2.1 2.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M17.7 16.7l2.1 2.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+                    <span>Appearance</span>
+                </button>
+                <button class="settings-tab" onclick="showTab('security', this)">
+                    <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 11V8a5 5 0 0110 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Security</span>
+                </button>
             </div>
             
             <div class="settings-content">
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h3>Profile Information</h3>
-                            <p>Update your personal details and profile picture.</p>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="avatar-section">
-                            <div class="avatar">JD</div>
-                            <div class="avatar-actions">
-                                <button class="btn btn-outline">Change Photo</button>
-                                <button class="btn btn-outline">Remove</button>
+                <div id="settings-profile" class="settings-section active">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Profile Information</h3>
+                                <p>Update your personal details and profile picture.</p>
                             </div>
                         </div>
-                        <div class="form-row">
+                        <div class="card-body">
+                            <div class="avatar-section">
+                                <div id="avatar" class="avatar">JD</div>
+                                <div class="avatar-actions">
+                                    <button id="change-photo" class="btn btn-outline">Change Photo</button>
+                                    <button id="remove-photo" class="btn btn-outline">Remove</button>
+                                    <input id="avatar-file" type="file" accept="image/*" style="display:none">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name</label>
+                                    <input id="first-name" type="text" value="John" placeholder="First name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name</label>
+                                    <input id="last-name" type="text" value="Doe" placeholder="Last name">
+                                </div>
+                            </div>
                             <div class="form-group">
-                                <label>First Name</label>
-                                <input type="text" value="John" placeholder="First name">
+                                <label>Email Address</label>
+                                <input id="email" type="email" value="john@example.com" placeholder="Email address">
                             </div>
                             <div class="form-group">
-                                <label>Last Name</label>
-                                <input type="text" value="Doe" placeholder="Last name">
+                                <label>Bio</label>
+                                <textarea id="bio" placeholder="Write a short bio...">Fact-checking enthusiast and journalist. Using Verity to combat misinformation.</textarea>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" value="john@example.com" placeholder="Email address">
-                        </div>
-                        <div class="form-group">
-                            <label>Bio</label>
-                            <textarea placeholder="Write a short bio...">Fact-checking enthusiast and journalist. Using Verity to combat misinformation.</textarea>
-                        </div>
-                        <button class="btn btn-primary">Save Changes</button>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h3>Notification Preferences</h3>
-                            <p>Control how and when you receive notifications.</p>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="toggle-row">
-                            <div class="toggle-info">
-                                <h4>Email Notifications</h4>
-                                <p>Receive email updates about your verifications</p>
-                            </div>
-                            <button class="toggle active" onclick="this.classList.toggle('active')"></button>
-                        </div>
-                        <div class="toggle-row">
-                            <div class="toggle-info">
-                                <h4>Weekly Digest</h4>
-                                <p>Get a weekly summary of trending misinformation</p>
-                            </div>
-                            <button class="toggle active" onclick="this.classList.toggle('active')"></button>
-                        </div>
-                        <div class="toggle-row">
-                            <div class="toggle-info">
-                                <h4>API Usage Alerts</h4>
-                                <p>Notify when approaching usage limits</p>
-                            </div>
-                            <button class="toggle active" onclick="this.classList.toggle('active')"></button>
-                        </div>
-                        <div class="toggle-row">
-                            <div class="toggle-info">
-                                <h4>Marketing Emails</h4>
-                                <p>Receive news about new features and updates</p>
-                            </div>
-                            <button class="toggle" onclick="this.classList.toggle('active')"></button>
+                            <button id="save-profile" class="btn btn-primary">Save Changes</button>
                         </div>
                     </div>
                 </div>
-                
-                <div class="card danger-zone">
-                    <div class="card-header">
-                        <div>
-                            <h3>Danger Zone</h3>
-                            <p>Irreversible actions that affect your account.</p>
+
+                <div id="settings-notifications" class="settings-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Notification Preferences</h3>
+                                <p>Control how and when you receive notifications.</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <h4>Email Notifications</h4>
+                                    <p>Receive email updates about your verifications</p>
+                                </div>
+                                <button class="toggle" data-key="email_notifications"></button>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <h4>Weekly Digest</h4>
+                                    <p>Get a weekly summary of trending misinformation</p>
+                                </div>
+                                <button class="toggle" data-key="weekly_digest"></button>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <h4>API Usage Alerts</h4>
+                                    <p>Notify when approaching usage limits</p>
+                                </div>
+                                <button class="toggle" data-key="api_alerts"></button>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <h4>Marketing Emails</h4>
+                                    <p>Receive news about new features and updates</p>
+                                </div>
+                                <button class="toggle" data-key="marketing_emails"></button>
+                            </div>
+                            <div style="margin-top:1rem"><button id="save-notifications" class="btn btn-primary">Save Notification Settings</button></div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="toggle-row">
-                            <div class="toggle-info">
-                                <h4>Delete Account</h4>
-                                <p>Permanently delete your account and all associated data.</p>
+                </div>
+
+                <div id="settings-appearance" class="settings-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Appearance</h3>
+                                <p>Customize the look and feel of Verity (local preview).</p>
                             </div>
-                            <button class="btn btn-danger">Delete Account</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <h4>Dark Mode</h4>
+                                    <p>Use the site's dark theme.</p>
+                                </div>
+                                <button class="toggle" data-key="dark_mode"></button>
+                            </div>
+                            <div class="form-group" style="margin-top:1rem">
+                                <label>Font Size</label>
+                                <select id="font-size">
+                                    <option value="14">Small</option>
+                                    <option value="16" selected>Default</option>
+                                    <option value="18">Large</option>
+                                </select>
+                            </div>
+                            <div style="margin-top:1rem"><button id="save-appearance" class="btn btn-primary">Apply Appearance</button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settings-security" class="settings-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Security</h3>
+                                <p>Manage account security settings.</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Change Password</label>
+                                <input type="password" id="new-password" placeholder="New password">
+                            </div>
+                            <div class="form-group">
+                                <label>Two-factor Authentication</label>
+                                <p class="help">Enable or disable two-factor authentication (demo).</p>
+                                <button class="toggle" data-key="two_factor"></button>
+                            </div>
+                            <div style="margin-top:1rem"><button id="save-security" class="btn btn-primary">Save Security Settings</button></div>
+                        </div>
+                    </div>
+                    <div class="card danger-zone">
+                        <div class="card-header">
+                            <div>
+                                <h3>Danger Zone</h3>
+                                <p>Irreversible actions that affect your account.</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <h4>Delete Account</h4>
+                                    <p>Permanently delete your account and all associated data.</p>
+                                </div>
+                                <button id="delete-account" class="btn btn-danger">Delete Account</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -252,11 +253,120 @@
         </div>
     </main>
     
+    <div id="toast-wrap" aria-live="polite"></div>
     <script>
-        function showTab(tabName) {
+        function showTab(tabName, el) {
             document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
-            event.target.closest('.settings-tab').classList.add('active');
+            if (el) el.classList.add('active');
+            document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById('settings-' + tabName);
+            if (target) target.classList.add('active');
         }
+
+        // Utility: show a small toast
+        function toast(message, timeout = 3000) {
+            const wrap = document.getElementById('toast-wrap');
+            const el = document.createElement('div');
+            el.className = 'toast';
+            el.textContent = message;
+            wrap.appendChild(el);
+            setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, timeout);
+        }
+
+        // Avatar change/remove
+        document.getElementById('change-photo')?.addEventListener('click', () => document.getElementById('avatar-file').click());
+        document.getElementById('avatar-file')?.addEventListener('change', (e) => {
+            const f = e.target.files && e.target.files[0];
+            if (!f) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const avatar = document.getElementById('avatar');
+                avatar.style.backgroundImage = `url(${reader.result})`;
+                avatar.textContent = '';
+                localStorage.setItem('profile_avatar', reader.result);
+                toast('Profile photo updated');
+            };
+            reader.readAsDataURL(f);
+        });
+        document.getElementById('remove-photo')?.addEventListener('click', () => {
+            const avatar = document.getElementById('avatar');
+            avatar.style.backgroundImage = '';
+            avatar.textContent = 'JD';
+            localStorage.removeItem('profile_avatar');
+            toast('Profile photo removed');
+        });
+
+        // Toggles: initialize and persist
+        function initToggles() {
+            document.querySelectorAll('.toggle').forEach(btn => {
+                const key = btn.getAttribute('data-key');
+                if (!key) return;
+                const stored = localStorage.getItem('settings_' + key);
+                if (stored === '1') btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    btn.classList.toggle('active');
+                    localStorage.setItem('settings_' + key, btn.classList.contains('active') ? '1' : '0');
+                });
+            });
+        }
+
+        // Save buttons - demo persistence
+        document.getElementById('save-profile')?.addEventListener('click', () => {
+            const profile = {
+                firstName: document.getElementById('first-name').value,
+                lastName: document.getElementById('last-name').value,
+                email: document.getElementById('email').value,
+                bio: document.getElementById('bio').value,
+            };
+            localStorage.setItem('profile_info', JSON.stringify(profile));
+            toast('Profile saved (local demo)');
+        });
+
+        document.getElementById('save-notifications')?.addEventListener('click', () => {
+            toast('Notification settings saved');
+        });
+        document.getElementById('save-appearance')?.addEventListener('click', () => {
+            const size = document.getElementById('font-size').value;
+            document.documentElement.style.fontSize = size + 'px';
+            localStorage.setItem('settings_font_size', size);
+            toast('Appearance applied');
+        });
+        document.getElementById('save-security')?.addEventListener('click', () => {
+            const pw = document.getElementById('new-password').value;
+            if (pw && pw.length < 8) { toast('Password must be at least 8 characters'); return; }
+            toast('Security settings saved (demo)');
+        });
+
+        document.getElementById('delete-account')?.addEventListener('click', () => {
+            if (!confirm('Delete your account? This action cannot be undone.')) return;
+            // Demo: clear local profile and redirect to home
+            localStorage.clear();
+            toast('Account deleted (demo). Redirecting...');
+            setTimeout(() => window.location.href = 'index.html', 1200);
+        });
+
+        // Restore mini-state on load
+        window.addEventListener('load', () => {
+            const p = localStorage.getItem('profile_info');
+            if (p) {
+                try {
+                    const obj = JSON.parse(p);
+                    document.getElementById('first-name').value = obj.firstName || '';
+                    document.getElementById('last-name').value = obj.lastName || '';
+                    document.getElementById('email').value = obj.email || '';
+                    document.getElementById('bio').value = obj.bio || '';
+                } catch(e){ }
+            }
+            const av = localStorage.getItem('profile_avatar');
+            if (av) {
+                const avatar = document.getElementById('avatar');
+                avatar.style.backgroundImage = `url(${av})`;
+                avatar.textContent = '';
+            }
+            const font = localStorage.getItem('settings_font_size');
+            if (font) document.documentElement.style.fontSize = font + 'px';
+            initToggles();
+        });
     </script>
 </body>
 </html>

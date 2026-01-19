@@ -39,6 +39,11 @@ const state = {
         notifications: true,
         sounds: false,
         autoSave: true
+        ,
+        compact: false,
+        emailDigest: false,
+        breakingNews: true,
+        analytics: true
     }
 };
 
@@ -551,6 +556,32 @@ function attachPageHandlers(page) {
             document.querySelectorAll('.settings-card input[type="checkbox"]').forEach(toggle => {
                 toggle.addEventListener('change', handleSettingChange);
             });
+
+            // Populate profile fields & avatar from state
+            if (state.user) {
+                const names = (state.user.name || '').split(' ');
+                document.getElementById('settings-first-name').value = names[0] || '';
+                document.getElementById('settings-last-name').value = names.slice(1).join(' ') || '';
+                document.getElementById('settings-email').value = state.user.email || '';
+                document.getElementById('settings-bio').value = state.user.bio || '';
+                if (state.user.avatar) {
+                    const avatar = document.getElementById('settings-avatar');
+                    avatar.style.backgroundImage = `url(${state.user.avatar})`;
+                    avatar.textContent = '';
+                } else if (state.user.name) {
+                    document.getElementById('settings-avatar').textContent = state.user.name[0] || '';
+                }
+            }
+
+            // Ensure non-state-bound toggles reflect current state
+            const mapIds = ['setting-email-digest','setting-breaking-news','setting-analytics','setting-compact'];
+            mapIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const keyMap = { 'setting-email-digest':'emailDigest', 'setting-breaking-news':'breakingNews', 'setting-analytics':'analytics', 'setting-compact':'compact' };
+                const k = keyMap[id];
+                el.checked = !!state.settings[k];
+            });
             
             // Export data button
             document.getElementById('export-data-btn')?.addEventListener('click', () => {
@@ -585,6 +616,86 @@ function attachPageHandlers(page) {
             document.getElementById('check-updates-btn')?.addEventListener('click', () => {
                 toast('You\'re running the latest version!', 'success');
             });
+
+                // Profile photo + save handlers
+                document.getElementById('settings-change-photo')?.addEventListener('click', () => {
+                    document.getElementById('settings-avatar-file')?.click();
+                });
+                document.getElementById('settings-avatar-file')?.addEventListener('change', (e) => {
+                    const f = e.target.files && e.target.files[0];
+                    if (!f) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const avatar = document.getElementById('settings-avatar');
+                        avatar.style.backgroundImage = `url(${reader.result})`;
+                        avatar.textContent = '';
+                        state.user = state.user || {};
+                        state.user.avatar = reader.result;
+                        saveState();
+                        toast('Profile photo updated', 'success');
+                    };
+                    reader.readAsDataURL(f);
+                });
+                document.getElementById('settings-remove-photo')?.addEventListener('click', () => {
+                    const avatar = document.getElementById('settings-avatar');
+                    avatar.style.backgroundImage = '';
+                    avatar.textContent = (state.user && state.user.name) ? (state.user.name[0] || '') : 'JD';
+                    if (state.user) delete state.user.avatar;
+                    saveState();
+                    toast('Profile photo removed', 'success');
+                });
+                document.getElementById('settings-save-profile')?.addEventListener('click', () => {
+                    state.user = state.user || {};
+                    state.user.name = (document.getElementById('settings-first-name')?.value || '') + ' ' + (document.getElementById('settings-last-name')?.value || '');
+                    state.user.email = document.getElementById('settings-email')?.value || state.user.email;
+                    state.user.bio = document.getElementById('settings-bio')?.value || '';
+                    saveState();
+                    buildNavigation();
+                    toast('Profile saved', 'success');
+                });
+
+                // Security handlers
+                document.getElementById('settings-save-security')?.addEventListener('click', async () => {
+                    const pw = document.getElementById('settings-new-password')?.value;
+                    if (pw && pw.length < 8) { toast('Password must be at least 8 characters', 'warning'); return; }
+                    if (window.VerityAuth && typeof window.VerityAuth.updatePassword === 'function') {
+                        try {
+                            await window.VerityAuth.updatePassword(pw);
+                            toast('Password updated', 'success');
+                        } catch (e) { toast('Password update failed', 'error'); }
+                    } else {
+                        toast('Security settings saved (demo)', 'success');
+                    }
+                    saveState();
+                });
+                document.getElementById('settings-delete-account')?.addEventListener('click', () => {
+                    if (!confirm('Delete your account? This action cannot be undone.')) return;
+                    // If backend supports account deletion, call it; otherwise clear local demo state
+                    if (window.VerityAuth && typeof window.VerityAuth.deleteAccount === 'function') {
+                        try { window.VerityAuth.deleteAccount(); } catch (e) { /* ignore */ }
+                    }
+                    state.user = null;
+                    state.authenticated = false;
+                    state.history = [];
+                    saveState();
+                    buildNavigation();
+                    toast('Account deleted (demo). Redirecting...', 'success');
+                    setTimeout(() => navigate('dashboard'), 900);
+                });
+
+                // Logout handler
+                document.getElementById('settings-logout')?.addEventListener('click', async () => {
+                    if (!confirm('Sign out?')) return;
+                    if (window.VerityAuth && typeof window.VerityAuth.signOut === 'function') {
+                        try { await window.VerityAuth.signOut(); } catch (e) { /* ignore */ }
+                    }
+                    state.user = null;
+                    state.authenticated = false;
+                    saveState();
+                    buildNavigation();
+                    toast('Signed out', 'success');
+                    navigate('dashboard');
+                });
             break;
         case 'billing':
             // Billing period toggle
@@ -3273,39 +3384,75 @@ function renderSettings() {
         <div class="page-header animate-fade-in">
             <h1>${ICONS.settings} Settings</h1>
             <p>Customize your Verity experience and manage your preferences.</p>
+            ${state.authenticated ? `<div class="settings-header-actions"><button id="settings-logout" class="btn btn-outline">Sign Out</button></div>` : ''}
         </div>
 
         <div class="settings-layout animate-slide-up">
             <!-- Settings Navigation Sidebar -->
             <div class="settings-sidebar">
                 <nav class="settings-nav-list">
-                    <button class="settings-nav-btn active" data-section="appearance">
-                        <span class="nav-icon">${ICONS.settings}</span>
-                        <span class="nav-text">Appearance</span>
+                    <button class="settings-nav-btn active" data-section="profile">
+                        <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M12 12a5 5 0 100-10 5 5 0 000 10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="nav-text">Profile</span>
                     </button>
                     <button class="settings-nav-btn" data-section="notifications">
-                        <span class="nav-icon">${ICONS.bell}</span>
+                        <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M18 8A6 6 0 106 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         <span class="nav-text">Notifications</span>
                     </button>
-                    <button class="settings-nav-btn" data-section="privacy">
-                        <span class="nav-icon">${ICONS.shield}</span>
-                        <span class="nav-text">Privacy & Data</span>
+                    <button class="settings-nav-btn" data-section="appearance">
+                        <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><path d="M12 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 18v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4.2 7.2l2.1 2.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M17.7 16.7l2.1 2.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+                        <span class="nav-text">Appearance</span>
                     </button>
-                    <button class="settings-nav-btn" data-section="api">
-                        <span class="nav-icon">${ICONS.api}</span>
-                        <span class="nav-text">API Settings</span>
-                    </button>
-                    <button class="settings-nav-btn" data-section="about">
-                        <span class="nav-icon">${ICONS.info}</span>
-                        <span class="nav-text">About</span>
+                    <button class="settings-nav-btn" data-section="security">
+                        <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 11V8a5 5 0 0110 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="nav-text">Security</span>
                     </button>
                 </nav>
             </div>
 
             <!-- Settings Content Area -->
             <div class="settings-main">
+                <!-- Profile Section -->
+                <div class="settings-section active" id="settings-profile">
+                    <div class="settings-section-header">
+                        <h2>Profile</h2>
+                        <p>Update your personal details and profile picture.</p>
+                    </div>
+                    <div class="settings-cards">
+                        <div class="card settings-card">
+                            <div class="avatar-row">
+                                <div id="settings-avatar" class="avatar">JD</div>
+                                <div class="avatar-actions">
+                                    <button class="btn btn-outline" id="settings-change-photo">Change Photo</button>
+                                    <button class="btn btn-outline" id="settings-remove-photo">Remove</button>
+                                    <input id="settings-avatar-file" type="file" accept="image/*" style="display:none">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name</label>
+                                    <input id="settings-first-name" type="text" placeholder="First name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name</label>
+                                    <input id="settings-last-name" type="text" placeholder="Last name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input id="settings-email" type="email" placeholder="Email address">
+                            </div>
+                            <div class="form-group">
+                                <label>Bio</label>
+                                <textarea id="settings-bio" placeholder="Write a short bio..."></textarea>
+                            </div>
+                            <div style="margin-top:8px"><button id="settings-save-profile" class="btn btn-primary">Save Changes</button></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Appearance Section -->
-                <div class="settings-section active" id="settings-appearance">
+                <div class="settings-section" id="settings-appearance">
                     <div class="settings-section-header">
                         <h2>Appearance</h2>
                         <p>Customize the look and feel of the application</p>
@@ -3355,6 +3502,45 @@ function renderSettings() {
                     </div>
                 </div>
 
+                <!-- Security Section -->
+                <div class="settings-section" id="settings-security">
+                    <div class="settings-section-header">
+                        <h2>Security</h2>
+                        <p>Manage account security settings.</p>
+                    </div>
+                    <div class="settings-cards">
+                        <div class="card settings-card">
+                            <div class="form-group">
+                                <label>Change Password</label>
+                                <input type="password" id="settings-new-password" placeholder="New password">
+                            </div>
+                            <div class="form-group">
+                                <label>Two-factor Authentication</label>
+                                <p class="help">Enable or disable two-factor authentication (demo).</p>
+                                <label class="toggle-switch"><input type="checkbox" id="settings-two-factor"><span class="toggle-slider"></span></label>
+                            </div>
+                            <div style="margin-top:8px"><button id="settings-save-security" class="btn btn-primary">Save Security Settings</button></div>
+                        </div>
+                        <div class="card danger-zone">
+                            <div class="card-header">
+                                <div>
+                                    <h3>Danger Zone</h3>
+                                    <p>Irreversible actions that affect your account.</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-row">
+                                    <div class="setting-info">
+                                        <div class="setting-title">Delete Account</div>
+                                        <div class="setting-desc">Permanently delete your account and all associated data.</div>
+                                    </div>
+                                    <button id="settings-delete-account" class="btn btn-danger">Delete Account</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Notifications Section -->
                 <div class="settings-section" id="settings-notifications">
                     <div class="settings-section-header">
@@ -3398,7 +3584,7 @@ function renderSettings() {
                                     </div>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox" id="setting-email-digest">
+                                    <input type="checkbox" id="setting-email-digest" ${state.settings.emailDigest ? 'checked' : ''}>
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -3411,7 +3597,7 @@ function renderSettings() {
                                     </div>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox" id="setting-breaking-news" checked>
+                                    <input type="checkbox" id="setting-breaking-news" ${state.settings.breakingNews ? 'checked' : ''}>
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -3449,7 +3635,7 @@ function renderSettings() {
                                     </div>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox" id="setting-analytics" checked>
+                                    <input type="checkbox" id="setting-analytics" ${state.settings.analytics ? 'checked' : ''}>
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -4056,7 +4242,11 @@ function handleSettingChange(e) {
         'setting-animations': 'animations',
         'setting-notifications': 'notifications',
         'setting-sounds': 'sounds',
-        'setting-auto-save': 'autoSave'
+        'setting-compact': 'compact',
+        'setting-email-digest': 'emailDigest',
+        'setting-breaking-news': 'breakingNews',
+        'setting-autosave': 'autoSave',
+        'setting-analytics': 'analytics'
     };
     
     const settingKey = settingMap[settingId];
@@ -4068,6 +4258,21 @@ function handleSettingChange(e) {
         applySettings();
         
         toast(`${settingKey.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())} ${isChecked ? 'enabled' : 'disabled'}`, 'success');
+
+        // Extra behaviors for specific settings
+        if (settingKey === 'notifications' && isChecked) {
+            // Request permission for desktop notifications
+            if (window.Notification && Notification.permission !== 'granted') {
+                Notification.requestPermission().then(p => {
+                    if (p === 'granted') new Notification('Notifications enabled', { body: 'You will receive alerts from Verity.' });
+                }).catch(() => {});
+            } else if (window.Notification && Notification.permission === 'granted') {
+                new Notification('Notifications enabled', { body: 'You will receive alerts from Verity.' });
+            }
+        }
+        if (settingKey === 'sounds' && isChecked) {
+            playBeep();
+        }
     }
 }
 
@@ -4088,6 +4293,29 @@ function applySettings() {
     } else {
         body.classList.add('light-mode');
     }
+
+    // Compact mode
+    if (state.settings.compact) {
+        body.classList.add('compact-mode');
+    } else {
+        body.classList.remove('compact-mode');
+    }
+}
+
+// Small beep to indicate sound toggles
+function playBeep() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = 880;
+        g.gain.value = 0.05;
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start();
+        setTimeout(() => { o.stop(); try { ctx.close(); } catch(e){} }, 120);
+    } catch (e) { /* ignore */ }
 }
 
 // ===== SETUP FUNCTIONS =====

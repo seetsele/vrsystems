@@ -433,11 +433,11 @@
         
         /* 21-Point Bars */
         .result-9pt{margin-bottom:1rem;padding:1rem;background:rgba(0,0,0,.2);border-radius:10px}
-        .pt-header{display:flex;justify-content:space-between;margin-bottom:.75rem;font-size:.85rem}
-        .pt-header span:first-child{color:var(--muted)}
-        .pt-score{font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600}
-        .pt-bars{display:flex;gap:4px;flex-wrap:wrap}
-        .pt-bar{flex:1;height:6px;border-radius:3px;background:var(--border);transition:all .3s}
+        .pt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;font-size:.9rem}
+        .pt-header span:first-child{color:var(--muted);font-family:var(--font-sans)}
+        .pt-score{font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:700}
+        .pt-bars{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+        .pt-bar{flex:1 1 4%;min-width:22px;height:8px;border-radius:999px;background:var(--border);transition:transform 280ms var(--ease-out), background-color 220ms}
         .pt-bar.passed{background:var(--green)}
         .pt-bar.failed{background:#ef4444}
         .pt-bar.partial{background:#eab308}

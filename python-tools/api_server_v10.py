@@ -42,7 +42,7 @@ from fastapi import FastAPI, HTTPException, Request, Depends, Header, status, Up
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, Field, field_validator, EmailStr
+from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 from pathlib import Path
 import stripe
@@ -77,6 +77,23 @@ class Config:
     # API Keys for authentication
     API_KEYS = set(filter(None, os.getenv("API_KEYS", "demo-key-12345,test-key-67890").split(",")))
     REQUIRE_API_KEY = os.getenv("REQUIRE_API_KEY", "false").lower() == "true"
+    # Optional API key scopes mapping: JSON object {"key":"scope1,scope2"} or semicolon-separated pairs
+    API_KEY_SCOPES_RAW = os.getenv("API_KEY_SCOPES", "")
+    # If not set in environment, attempt to read from a local .env file for dev convenience
+    if not API_KEY_SCOPES_RAW:
+        try:
+            env_path = Path(__file__).parent / '.env'
+            if env_path.exists():
+                for line in env_path.read_text().splitlines():
+                    if line.strip().startswith('API_KEY_SCOPES='):
+                        val = line.split('=', 1)[1].strip()
+                        if val.startswith('"') and val.endswith('"'):
+                            val = val[1:-1]
+                        API_KEY_SCOPES_RAW = val
+                        break
+        except Exception:
+            API_KEY_SCOPES_RAW = API_KEY_SCOPES_RAW
+    # parsed mapping will be built at runtime
     
     # ==========================================================================
     # ALL AI PROVIDER API KEYS
@@ -124,6 +141,8 @@ class Config:
     STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
     STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
     STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+    # Development helpers
+    ALLOW_WS_INSECURE = os.getenv('ALLOW_WS_INSECURE', 'false').lower() in ('1', 'true', 'yes')
 
 
 # =============================================================================
@@ -199,7 +218,7 @@ async def require_api_key(authorization: Optional[str] = Header(None), x_api_key
     Accepts either `Authorization: Bearer <key>` or `X-API-Key: <key>`.
     """
     if not Config.REQUIRE_API_KEY:
-        return True
+        return {'key': None, 'scopes': set()}
     key = None
     if x_api_key:
         key = x_api_key
@@ -207,9 +226,39 @@ async def require_api_key(authorization: Optional[str] = Header(None), x_api_key
         key = authorization.split(' ', 1)[1].strip()
     if not key or key not in Config.API_KEYS:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='invalid or missing API key')
-    return True
+    # parse scopes mapping lazily
+    scopes_map = {}
+    raw = Config.API_KEY_SCOPES_RAW or ''
+    try:
+        # allow JSON or semicolon-separated pairs
+        if raw.strip().startswith('{'):
+            scopes_map = json.loads(raw)
+        else:
+            for pair in raw.split(';'):
+                if not pair.strip():
+                    continue
+                k, v = pair.split(':', 1) if ':' in pair else (pair, '')
+                scopes_map[k.strip()] = v.strip()
+    except Exception:
+        scopes_map = {}
 
-async def rate_limiter(request: Request):
+    key_scopes = set()
+    if key in scopes_map and scopes_map[key]:
+        key_scopes = set(s.strip() for s in scopes_map[key].split(',') if s.strip())
+
+    return {'key': key, 'scopes': key_scopes}
+
+
+def require_scope(required_scope: Optional[str]):
+    def _dep(keyinfo=Depends(require_api_key)):
+        if not required_scope:
+            return True
+        if required_scope in keyinfo.get('scopes', set()):
+            return True
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='insufficient scope')
+    return _dep
+
+async def rate_limit_check(request: Request):
     """Simple sliding-window rate limiter dependency using client IP or API key.
 
     Raises HTTP 429 when limit exceeded.
@@ -249,7 +298,7 @@ class ModerateRequest(BaseModel):
 
 
 class WaitlistRequest(BaseModel):
-    email: EmailStr
+    email: str = Field(..., min_length=3, max_length=254)
 
 
 
@@ -2993,6 +3042,26 @@ async def websocket_stream(ws: WebSocket):
         except Exception:
             pass
 
+
+@app.websocket('/ws')
+async def websocket_ws(ws: WebSocket):
+    """Compatibility endpoint: mirror `/stream` so older clients can connect to `/ws`."""
+    # If insecure WS is allowed for local testing, accept without extra auth.
+    if Config.ALLOW_WS_INSECURE:
+        await websocket_stream(ws)
+        return
+
+    # Otherwise enforce API key or origin checks (basic enforcement)
+    try:
+        origin = ws.headers.get('origin') if hasattr(ws, 'headers') else None
+        if origin and not any(o in origin for o in Config.CORS_ORIGINS if o):
+            await ws.close(code=1008)
+            return
+    except Exception:
+        pass
+
+    await websocket_stream(ws)
+
 # Configure Stripe if available
 if Config.STRIPE_SECRET_KEY:
     try:
@@ -3402,7 +3471,7 @@ async def rate_limit_middleware(request: Request, call_next):
 
 # --- Minimal stub endpoints to satisfy integration tests ---
 @app.post('/api/moderate')
-async def api_moderate(payload: ModerateRequest, _auth=Depends(require_api_key), _rl=Depends(rate_limiter)):
+async def api_moderate(payload: ModerateRequest, _auth=Depends(require_scope('moderate')), _rl=Depends(rate_limit_check)):
     """Content moderation: lightweight local implementation.
 
     - Accepts JSON `{'text': "..."}`.
@@ -3430,6 +3499,12 @@ async def api_moderate(payload: ModerateRequest, _auth=Depends(require_api_key),
             score = 0.4
         else:
             score = 0.02
+
+    # Structured audit log for moderation event
+    try:
+        record_event('moderation', {'text': text[:2000], 'flagged': bool(flagged), 'categories': categories, 'score': score})
+    except Exception:
+        logger.debug('audit record failed for moderation')
 
     return JSONResponse({'flagged': flagged, 'categories': categories, 'score': score, 'text': text})
 
@@ -3521,9 +3596,12 @@ async def api_waitlist_get():
 
 
 @app.post('/api/waitlist')
-async def api_waitlist_post(payload: WaitlistRequest, _auth=Depends(require_api_key), _rl=Depends(rate_limiter)):
+async def api_waitlist_post(payload: WaitlistRequest, _auth=Depends(require_scope('write:waitlist')), _rl=Depends(rate_limit_check)):
     """Add an email to the waitlist. Accepts JSON `{'email':...}`."""
     email = payload.email
+    # Basic email validation to avoid requiring external packages
+    if not re.match(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+        raise HTTPException(status_code=400, detail='invalid email')
     db_path = Path(__file__).parent / 'verity_data.sqlite'
     try:
         import sqlite3
@@ -3540,6 +3618,12 @@ async def api_waitlist_post(payload: WaitlistRequest, _auth=Depends(require_api_
             conn.close()
         except Exception:
             pass
+
+    # Audit the waitlist add
+    try:
+        record_event('waitlist.add', {'email': email})
+    except Exception:
+        logger.debug('audit record failed for waitlist')
     return JSONResponse({'ok': True, 'email': email})
 
 # --- End stubs ---
@@ -3630,7 +3714,7 @@ async def get_stats():
 
 
 @app.post("/verify")
-async def verify_claim_endpoint(request: ClaimRequest):
+async def verify_claim_endpoint(claim_req: ClaimRequest, http_request: Request = None):
     """
     Verify a claim using enhanced multi-loop AI verification.
     
@@ -3645,23 +3729,23 @@ async def verify_claim_endpoint(request: ClaimRequest):
     request_id = f"ver_{int(time.time())}_{secrets.randbelow(10000)}"
     
     # Sanitize input
-    claim = sanitize_claim(request.claim)
+    claim = sanitize_claim(claim_req.claim)
     
     # Check for injection
     if detect_injection(claim):
         logger.warning(f"[{request_id}] Potential injection detected")
     
-    logger.info(f"[{request_id}] Verifying ({request.tier} tier): {claim[:80]}...")
+    logger.info(f"[{request_id}] Verifying ({claim_req.tier} tier): {claim[:80]}...")
     
     # Check cache
-    cached_result = claim_cache.get(claim, request.tier)
+    cached_result = claim_cache.get(claim, claim_req.tier)
     if cached_result:
         processing_time = time.time() - start_time
         return {
             "id": request_id,
             "claim": claim,
             **cached_result,
-            "tier": request.tier,
+            "tier": claim_req.tier,
             "cached": True,
             "timestamp": datetime.utcnow().isoformat(),
             "processing_time_ms": round(processing_time * 1000, 2)
@@ -3670,7 +3754,7 @@ async def verify_claim_endpoint(request: ClaimRequest):
     # Run verification (best-effort). If provider subsystem fails, fall back to local heuristic.
     try:
         async with AIProviders() as providers:
-            result = await providers.verify_claim(claim, tier=request.tier)
+            result = await providers.verify_claim(claim, tier=claim_req.tier)
     except Exception as e:
         logger.exception('Provider subsystem failed, using local fallback: %s', e)
         result = {
@@ -3688,7 +3772,7 @@ async def verify_claim_endpoint(request: ClaimRequest):
     processing_time = time.time() - start_time
     
     # Cache result
-    claim_cache.set(claim, request.tier, result)
+    claim_cache.set(claim, claim_req.tier, result)
     # Record tamper-evident audit entry (best-effort)
     try:
         audit_payload = {
@@ -3697,7 +3781,7 @@ async def verify_claim_endpoint(request: ClaimRequest):
             'verdict': result.get('verdict'),
             'confidence': result.get('confidence'),
             'providers_used': result.get('providers_used', []),
-            'tier': request.tier
+            'tier': claim_req.tier
         }
         record_event('verification', audit_payload)
     except Exception:
@@ -3715,6 +3799,77 @@ async def verify_claim_endpoint(request: ClaimRequest):
     except Exception:
         logger.debug('Broadcast failed or no clients connected')
     
+    # Fire-and-forget usage tracking (best-effort)
+    try:
+        import upstash_redis as _up
+        # Resolve user id: prefer API key, fall back to client IP
+        user_id = 'anonymous'
+        if http_request is not None:
+            api_key = http_request.headers.get('x-api-key') or ''
+            if not api_key:
+                auth = http_request.headers.get('authorization')
+                if auth and auth.lower().startswith('bearer '):
+                    api_key = auth.split(' ', 1)[1].strip()
+            if api_key:
+                try:
+                    user_id = f"key:{_up.hash_api_key(api_key)}"
+                except Exception:
+                    user_id = f"key:{api_key[:8]}"
+            else:
+                client = getattr(http_request, 'client', None)
+                user_id = f"ip:{client.host if client else 'unknown'}"
+
+        # Map tier to verification type used for pricing
+        tier_lower = (claim_req.tier or '').lower()
+        if 'verify_plus' in tier_lower or 'plus' in tier_lower:
+            vtype = 'verify_plus'
+        elif 'premium' in tier_lower:
+            vtype = 'premium'
+        elif 'bulk' in tier_lower:
+            vtype = 'bulk'
+        else:
+            vtype = 'standard'
+
+        asyncio.create_task(_up.usage_tracker.track_usage(user_id, vtype))
+    except Exception:
+        logger.debug('Usage tracking failed or Upstash unavailable')
+
+    # Record usage into Supabase (best-effort)
+    try:
+        from supabase_billing import get_user_id_from_api_key, record_api_usage_via_rpc
+        # Only attempt DB billing for authenticated API keys (must map to a UUID user_id)
+        if http_request is not None:
+            api_key_val = http_request.headers.get('x-api-key') or ''
+            if not api_key_val:
+                auth = http_request.headers.get('authorization')
+                if auth and auth.lower().startswith('bearer '):
+                    api_key_val = auth.split(' ', 1)[1].strip()
+
+            if api_key_val:
+                async def _record():
+                    try:
+                        user_uuid = await get_user_id_from_api_key(api_key_val)
+                        if user_uuid:
+                            await record_api_usage_via_rpc(
+                                p_user_id=user_uuid,
+                                p_api_key_id=None,
+                                p_verification_type=vtype,
+                                p_base_cost_cents=6,
+                                p_endpoint='/verify',
+                                p_method='POST',
+                                p_status_code=200,
+                                p_response_time_ms=int(round(processing_time * 1000)),
+                                p_claim_hash=None,
+                                p_ip_address=(http_request.client.host if getattr(http_request, 'client', None) else None),
+                                p_user_agent=http_request.headers.get('user-agent')
+                            )
+                    except Exception:
+                        logger.debug('Supabase record_api_usage failed')
+
+                asyncio.create_task(_record())
+    except Exception:
+        logger.debug('Supabase billing helper not available')
+
     return {
         "id": request_id,
         "claim": claim,
@@ -3727,7 +3882,7 @@ async def verify_claim_endpoint(request: ClaimRequest):
         "cross_validation": result.get("cross_validation", {}),
         "nuance_analysis": result.get("nuance_analysis", {}),
         "content_analysis": result.get("content_analysis", {}),
-        "tier": request.tier,
+        "tier": claim_req.tier,
         "cached": False,
         "timestamp": datetime.utcnow().isoformat(),
         "processing_time_ms": round(processing_time * 1000, 2)
@@ -3741,27 +3896,27 @@ async def verify_claim_v3(request: ClaimRequest):
 
 
 @app.post("/v3/batch-verify")
-async def batch_verify(request: BatchRequest):
+async def batch_verify(batch_req: BatchRequest, http_request: Request = None):
     """
     Verify up to 50 claims in parallel.
     """
     start_time = time.time()
     job_id = f"batch_{int(time.time())}_{secrets.randbelow(10000)}"
     
-    logger.info(f"[{job_id}] Batch verification: {len(request.claims)} claims")
+    logger.info(f"[{job_id}] Batch verification: {len(batch_req.claims)} claims")
     
     results = []
     
     async with AIProviders() as providers:
         batch_size = 5
         
-        for i in range(0, len(request.claims), batch_size):
-            batch = request.claims[i:i + batch_size]
+        for i in range(0, len(batch_req.claims), batch_size):
+            batch = batch_req.claims[i:i + batch_size]
             sanitized_batch = [sanitize_claim(c) for c in batch]
             
             tasks = []
             for claim in sanitized_batch:
-                cached = claim_cache.get(claim, request.tier)
+                cached = claim_cache.get(claim, batch_req.tier)
                 if cached:
                     results.append({
                         "claim": claim,
@@ -3769,7 +3924,7 @@ async def batch_verify(request: BatchRequest):
                         "cached": True
                     })
                 else:
-                    tasks.append((claim, providers.verify_claim(claim, tier=request.tier)))
+                    tasks.append((claim, providers.verify_claim(claim, tier=batch_req.tier)))
             
             if tasks:
                 task_results = await asyncio.gather(*[t[1] for t in tasks], return_exceptions=True)
@@ -3783,12 +3938,45 @@ async def batch_verify(request: BatchRequest):
                             "cached": False
                         })
                     else:
-                        claim_cache.set(claim, request.tier, response)
+                        claim_cache.set(claim, batch_req.tier, response)
                         results.append({
                             "claim": claim,
                             "result": response,
                             "cached": False
                         })
+                        # Track usage per claim (best-effort)
+                        try:
+                            import upstash_redis as _up
+                            # resolve user id similar to single endpoint
+                            user_id = 'anonymous'
+                            if http_request is not None:
+                                api_key = http_request.headers.get('x-api-key') or ''
+                                if not api_key:
+                                    auth = http_request.headers.get('authorization')
+                                    if auth and auth.lower().startswith('bearer '):
+                                        api_key = auth.split(' ', 1)[1].strip()
+                                if api_key:
+                                    try:
+                                        user_id = f"key:{_up.hash_api_key(api_key)}"
+                                    except Exception:
+                                        user_id = f"key:{api_key[:8]}"
+                                else:
+                                    client = getattr(http_request, 'client', None)
+                                    user_id = f"ip:{client.host if client else 'unknown'}"
+
+                            tier_lower = (batch_req.tier or '').lower()
+                            if 'verify_plus' in tier_lower or 'plus' in tier_lower:
+                                vtype = 'verify_plus'
+                            elif 'premium' in tier_lower:
+                                vtype = 'premium'
+                            elif 'bulk' in tier_lower:
+                                vtype = 'bulk'
+                            else:
+                                vtype = 'standard'
+
+                            asyncio.create_task(_up.usage_tracker.track_usage(user_id, vtype))
+                        except Exception:
+                            logger.debug('Batch usage tracking failed or Upstash unavailable')
     
     processing_time = time.time() - start_time
     
@@ -3800,10 +3988,10 @@ async def batch_verify(request: BatchRequest):
     
     return {
         "job_id": job_id,
-        "total_claims": len(request.claims),
+        "total_claims": len(batch_req.claims),
         "successful": sum(1 for r in results if r["result"].get("verdict") != "error"),
         "cached": sum(1 for r in results if r.get("cached")),
-        "tier": request.tier,
+        "tier": batch_req.tier,
         "verdict_summary": verdicts,
         "results": results,
         "processing_time_ms": round(processing_time * 1000, 2),
