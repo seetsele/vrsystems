@@ -1,0 +1,14 @@
+{
+  "endpoints": [
+    {
+      "name": "Local API (verify)",
+      "url": "http://127.0.0.1:8000/health",
+      "restartCommand": "cd \"c:\\Users\\lawm\\Desktop\\verity-systems\\python-tools\"; C:/Python314/python.exe -m uvicorn api_server_v9:app --app-dir . --host 127.0.0.1 --port 8000"
+    },
+    {
+      "name": "Public API (prod)",
+      "url": "https://veritysystems-production.up.railway.app/health",
+      "restartCommand": "echo 'No automatic restart configured for remote API'"
+    }
+  ]
+}
