@@ -46,10 +46,17 @@ function applyDarkMode() {
 
 // Listen for messages from background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  switch (request.action) {
-    case 'verificationStarted':
-      showLoadingIndicator(request.text);
-      break;
+  try {
+    (globalThis.verityLogger || console).info('content onMessage', request, sender);
+  } catch (e) {
+    console.error('Failed logging content onMessage', e);
+  }
+
+  try {
+    switch (request.action) {
+      case 'verificationStarted':
+        showLoadingIndicator(request.text);
+        break;
     case 'verificationComplete':
       hideLoadingIndicator();
       showVerificationResult(request.result);
@@ -429,4 +436,4 @@ function removeAllVerityElements() {
 }
 
 // Log when content script loads
-(this.verityLogger || console).info('Verity content script loaded');
+(globalThis.verityLogger || console).info('Verity content script loaded');

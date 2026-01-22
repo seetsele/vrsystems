@@ -34,6 +34,17 @@ chrome.storage.sync.get(['config'], (result) => {
   }
 });
 
+// Log current permissions for diagnostics
+try {
+  if (chrome.permissions && chrome.permissions.getAll) {
+    chrome.permissions.getAll((perms) => {
+      (globalThis.verityLogger || console).info('Extension permissions:', perms);
+    });
+  }
+} catch (e) {
+  console.error('Failed to read permissions:', e);
+}
+
 // Create context menu on install
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -48,12 +59,12 @@ chrome.runtime.onInstalled.addListener(() => {
     contexts: ['link']
   });
   
-  (this.verityLogger || console).info('Verity extension installed');
+  (globalThis.verityLogger || console).info('Verity extension installed');
 });
 
 // Handle keyboard shortcuts
 chrome.commands.onCommand.addListener(async (command) => {
-  (this.verityLogger || console).info('Command received:', command);
+  (globalThis.verityLogger || console).info('Command received:', command);
   
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab) return;
@@ -104,7 +115,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
 // Handle messages from popup and content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'verify') {
+  try {
+    (globalThis.verityLogger || console).info('background onMessage', request, sender);
+  } catch (e) {
+    console.error('Failed logging onMessage', e);
+  }
+
+  try {
+    if (request.action === 'verify') {
     verifyText(request.text, sender.tab?.id)
       .then(result => sendResponse(result))
       .catch(error => sendResponse({ error: error.message }));
@@ -118,15 +136,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
   
-  if (request.action === 'getConfig') {
-    sendResponse(config);
-    return false;
-  }
+    if (request.action === 'getConfig') {
+      sendResponse(config);
+      return false;
+    }
   
-  if (request.action === 'updateConfig') {
-    config = { ...config, ...request.config };
-    chrome.storage.sync.set({ config });
-    sendResponse({ success: true });
+    if (request.action === 'updateConfig') {
+      try {
+        config = { ...config, ...request.config };
+        chrome.storage.sync.set({ config });
+        sendResponse({ success: true });
+      } catch (e) {
+        console.error('Failed to update config:', e);
+        sendResponse({ error: e.message });
+      }
+      return false;
+    }
+  } catch (e) {
+    console.error('onMessage handler error:', e);
+    try { sendResponse({ error: e.message }); } catch (ex) {}
     return false;
   }
 });
@@ -316,7 +344,7 @@ function connectWebSocket() {
     ws = new WebSocket(`${wsUrl}/ws`);
     
     ws.onopen = () => {
-      (this.verityLogger || console).info('WebSocket connected');
+      (globalThis.verityLogger || console).info('WebSocket connected');
       wsReconnectAttempts = 0;
     };
     
@@ -330,7 +358,7 @@ function connectWebSocket() {
     };
     
     ws.onclose = () => {
-      (this.verityLogger || console).info('WebSocket disconnected');
+      (globalThis.verityLogger || console).info('WebSocket disconnected');
       if (wsReconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
         wsReconnectAttempts++;
         setTimeout(connectWebSocket, 1000 * wsReconnectAttempts);
