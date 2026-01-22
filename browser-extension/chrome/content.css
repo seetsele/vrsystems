@@ -376,6 +376,47 @@
   animation: verity-slide-up 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* subtle full-viewport backdrop (non-interactive) to emulate Cluely glassy aura */
+#verity-page-overlay.cluely::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(800px 300px at 50% 80%, rgba(2,6,23,0.55), transparent 30%), linear-gradient(180deg, rgba(2,6,23,0.12), transparent 30%);
+  pointer-events: none;
+  backdrop-filter: blur(6px) saturate(110%);
+  opacity: 0.95;
+}
+
+/* top centered handle */
+#verity-page-overlay.cluely .verity-overlay-top::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 6px;
+  width: 68px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+}
+
+/* panel entrance subtle scale for perceived depth */
+.verity-overlay { transform-origin: center bottom; }
+
+/* accessibility: visible focus outline for control buttons */
+#verity-page-overlay.cluely .ctrl-btn:focus { outline: 2px solid rgba(245,158,11,0.18); outline-offset: 2px; }
+
+/* small polish for send button icon spacing */
+#verity-page-overlay.cluely .verity-send { display:inline-flex; align-items:center; gap:8px; }
+
+/* responsive tightening */
+@media (max-width: 520px) {
+  #verity-page-overlay.cluely { bottom: 14px; }
+  #verity-page-overlay.cluely .verity-overlay { padding:10px; border-radius:14px }
+  #verity-page-overlay.cluely .verity-overlay-top::after { width:44px }
+}
+
 @keyframes verity-slide-up {
   from { transform: translateY(8px) scale(.995); opacity: 0; }
   to { transform: translateY(0) scale(1); opacity: 1; }

@@ -181,6 +181,20 @@ function togglePageOverlay() {
       pageOverlay.classList.toggle('cluely');
     });
   }
+
+  // close when clicking outside the overlay (on the pageOverlay backdrop)
+  pageOverlay.addEventListener('pointerdown', (ev) => {
+    // if the click target is the overlay container itself (not the inner .verity-overlay), close
+    if (ev.target === pageOverlay) {
+      pageOverlay.remove(); pageOverlay = null;
+    }
+  });
+
+  // trap focus to the input when the overlay opens
+  if (inputEl) {
+    inputEl.focus();
+    setTimeout(() => inputEl.select && inputEl.select(), 120);
+  }
 }
 
 // Handle text selection
