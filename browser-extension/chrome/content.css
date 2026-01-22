@@ -1,5 +1,5 @@
 /* Verity Browser Extension - Content Styles */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&family=Newsreader:wght@400;500;600&display=swap');
 
 /* Base tooltip */
 .verity-tooltip {
@@ -29,7 +29,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
   color: white;
 }
 
@@ -131,7 +131,7 @@
 
 .verity-sources a {
   font-size: 13px;
-  color: #4F46E5;
+  color: #f59e0b;
   text-decoration: none;
 }
 
@@ -149,7 +149,7 @@
 
 .verity-tooltip-footer a {
   font-size: 12px;
-  color: #4F46E5;
+  color: #f59e0b;
   text-decoration: none;
   font-weight: 500;
 }
@@ -170,7 +170,7 @@
   width: 32px;
   height: 32px;
   border: 3px solid #E5E7EB;
-  border-top-color: #4F46E5;
+  border-top-color: #f59e0b;
   border-radius: 50%;
   animation: verity-spin 0.8s linear infinite;
   margin-bottom: 12px;
@@ -194,7 +194,7 @@
 }
 
 .verity-retry-btn {
-  background: #4F46E5;
+  background: #f59e0b;
   color: white;
   border: none;
   padding: 8px 14px;
@@ -202,15 +202,15 @@
   font-size: 13px;
   cursor: pointer;
   transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth), background 160ms;
-  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.18);
+  box-shadow: 0 6px 14px rgba(245,158,11,0.18);
   display: inline-flex;
   align-items: center;
 }
 
 .verity-retry-btn:hover {
   transform: translateY(-2px);
-  background: #4338CA;
-  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.22);
+  background: #d97706;
+  box-shadow: 0 8px 18px rgba(245,158,11,0.22);
 }
 
 /* Verify button */
@@ -218,7 +218,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
   color: white;
   border: none;
   padding: 8px 12px;
@@ -226,7 +226,7 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.22);
+  box-shadow: 0 6px 14px rgba(245,158,11,0.22);
   transition: transform 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth);
   font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   animation: verity-fade-in 0.2s ease-out;
@@ -234,7 +234,7 @@
 
 .verity-verify-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 10px 24px rgba(245,158,11,0.3);
 }
 
 .verity-verify-btn svg {
@@ -268,4 +268,167 @@
   .verity-confidence {
     color: #9CA3AF;
   }
+}
+
+/* Page overlay (full-page modal) */
+#verity-page-overlay {
+  position: fixed;
+  inset: 20px;
+  z-index: 2147483646;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+#verity-page-overlay .verity-overlay {
+  max-width: 820px;
+  width: calc(100% - 80px);
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.95);
+  color: #0b1220;
+  box-shadow: 0 12px 40px rgba(2,6,23,0.32);
+  border: 1px solid rgba(2,6,23,0.06);
+  backdrop-filter: none;
+}
+
+#verity-page-overlay .verity-overlay textarea {
+  width: 100%;
+  height: 120px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(15,23,42,0.06);
+  background: #fff;
+  color: #0b1220;
+  resize: vertical;
+  font-size: 14px;
+}
+
+#verity-page-overlay .verity-overlay .verity-overlay-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+#verity-page-overlay .verity-overlay button {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+#verity-page-overlay .verity-overlay .verify-primary {
+  background: linear-gradient(90deg,#f59e0b,#fbbf24);
+  color: #021025;
+}
+
+#verity-page-overlay .verity-overlay .verify-secondary {
+  background: transparent;
+  color: inherit;
+  border: 1px solid rgba(2,6,23,0.06);
+}
+
+#verity-page-overlay .verity-overlay .verity-overlay-controls {
+  display:flex; align-items:center; gap:8px; margin-left:auto;
+}
+
+#verity-page-overlay .verity-overlay .verity-overlay-controls button {
+  padding:6px 10px; border-radius:8px; border:1px solid rgba(2,6,23,0.06); background:transparent; color:inherit; cursor:pointer; font-size:13px;
+}
+
+#verity-page-overlay.cluely .verity-overlay .verity-overlay-controls button {
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+/* Cluely-style translucent overlay variant (floating chat HUD) */
+#verity-page-overlay.cluely {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  inset: auto;
+  z-index: 2147483647;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#verity-page-overlay.cluely .verity-overlay {
+  width: min(820px, calc(100% - 48px));
+  max-width: 820px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: rgba(2,6,23,0.45);
+  color: #e6eef8;
+  backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 12px 48px rgba(2,6,23,0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-size: 15px; /* close to site's base */
+  line-height: 1.45;
+  animation: verity-slide-up 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes verity-slide-up {
+  from { transform: translateY(8px) scale(.995); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Top small control bar (icons) */
+#verity-page-overlay.cluely .verity-overlay .verity-overlay-top {
+  display:flex; align-items:center; gap:8px; justify-content:space-between;
+  padding: 4px 2px 0 2px;
+}
+
+#verity-page-overlay.cluely .verity-overlay .verity-overlay-controls {
+  display:flex; align-items:center; gap:8px;
+}
+
+#verity-page-overlay.cluely .verity-overlay .ctrl-btn {
+  width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.03); color:#e6eef8;
+  cursor:pointer; transition:transform .12s ease, background .12s ease; font-size:14px;
+  line-height:1;
+}
+
+#verity-page-overlay.cluely .verity-overlay .ctrl-btn:hover { transform:translateY(-2px); background:rgba(255,255,255,0.06); }
+
+/* Chat input row */
+#verity-page-overlay.cluely .verity-overlay .verity-chat-row {
+  display:flex; align-items:center; gap:10px; width:100%;
+}
+
+#verity-page-overlay.cluely .verity-overlay .verity-input {
+  flex:1; min-height:44px; max-height:160px; padding:10px 12px; border-radius:12px;
+  background: rgba(255,255,255,0.02); color:#e6eef8; border: 1px solid rgba(255,255,255,0.03);
+  resize:vertical; outline:none; font-size:15px; font-weight:500; letter-spacing: -0.01em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+#verity-page-overlay.cluely .verity-overlay .verity-input::placeholder { color: rgba(230,238,248,0.6); }
+
+#verity-page-overlay.cluely .verity-overlay .verity-send {
+  background: linear-gradient(90deg,#f59e0b,#fbbf24); color:#021025; border:none; padding:8px 12px; border-radius:10px; cursor:pointer;
+  font-weight:700; font-size:14px; box-shadow: 0 8px 24px rgba(245,158,11,0.18);
+}
+
+#verity-page-overlay.cluely .verity-overlay .verity-logo {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px; font-weight: 600; letter-spacing: -0.02em; color: #e6eef8;
+}
+
+@media (max-width: 520px) {
+  #verity-page-overlay.cluely .verity-overlay { width: calc(100% - 32px); border-radius:14px; bottom:18px; }
+  #verity-page-overlay.cluely .verity-overlay .ctrl-btn { width:30px; height:30px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  #verity-page-overlay .verity-overlay { background: rgba(17,24,39,0.94); color: #e6eef8 }
 }

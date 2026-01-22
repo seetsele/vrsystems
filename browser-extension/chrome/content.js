@@ -35,7 +35,7 @@ function applyDarkMode() {
         border-color: #334155 !important;
       }
       .verity-tooltip.verity-dark .verity-sources a {
-        color: #818cf8 !important;
+        color: #f59e0b !important;
       }
     `;
     document.head.appendChild(darkStyles);
@@ -54,6 +54,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   try {
     switch (request.action) {
+      case 'getSelection':
+        try {
+          const sel = window.getSelection()?.toString() || '';
+          sendResponse({ text: sel });
+        } catch (e) {
+          sendResponse({ text: '' });
+        }
+        return true;
       case 'verificationStarted':
         showLoadingIndicator(request.text);
         break;
@@ -115,31 +123,64 @@ function togglePageOverlay() {
   pageOverlay.id = 'verity-page-overlay';
   pageOverlay.innerHTML = `
     <div class="verity-overlay">
-      <textarea id="verity-overlay-input" placeholder="Paste or type text to verify..." spellcheck="false"></textarea>
-      <div class="verity-overlay-actions">
-        <button id="verity-overlay-verify">Verify</button>
-        <button id="verity-overlay-close">Close</button>
+      <div class="verity-overlay-top">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="verity-logo" style="font-size:13px">Verity</div>
+        </div>
+        <div class="verity-overlay-controls">
+          <button id="verity-overlay-toggle-style" class="ctrl-btn" title="Toggle transparent style" aria-label="Toggle style">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button id="verity-overlay-pause" class="ctrl-btn" title="Pause" aria-label="Pause">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+          </button>
+          <button id="verity-overlay-close" class="ctrl-btn" title="Close" aria-label="Close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="verity-chat-row">
+        <input id="verity-overlay-input" class="verity-input" placeholder="Ask about your screen or conversation, or ⌘↵ for Assist" spellcheck="false" />
+        <button id="verity-overlay-send" class="verity-send">Ask</button>
       </div>
     </div>
   `;
-  pageOverlay.style.cssText = `position:fixed;inset:20px;z-index:2147483646;display:flex;align-items:flex-start;justify-content:center;pointer-events:auto;`;
+
   document.body.appendChild(pageOverlay);
 
-  const ta = document.getElementById('verity-overlay-input');
-  const vbtn = document.getElementById('verity-overlay-verify');
-  const cbtn = document.getElementById('verity-overlay-close');
-  if (ta) ta.focus();
+  const inputEl = document.getElementById('verity-overlay-input');
+  const sendBtn = document.getElementById('verity-overlay-send');
+  const closeBtn = document.getElementById('verity-overlay-close');
+  const styleToggle = document.getElementById('verity-overlay-toggle-style');
 
-  vbtn.addEventListener('click', async () => {
-    const text = ta.value && ta.value.trim();
-    if (!text) return;
-    try {
-      const result = await chrome.runtime.sendMessage({ action: 'verify', text });
-      // Show result via existing UI
-    } catch (e) { console.error(e); }
-  });
+  if (inputEl) {
+    inputEl.focus();
+    inputEl.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        if (sendBtn) sendBtn.click();
+      }
+    });
+  }
 
-  cbtn.addEventListener('click', () => { pageOverlay.remove(); pageOverlay = null; });
+  if (sendBtn) {
+    sendBtn.addEventListener('click', async () => {
+      const text = inputEl && inputEl.value && inputEl.value.trim();
+      if (!text) return;
+      try {
+        await chrome.runtime.sendMessage({ action: 'verify', text });
+      } catch (e) { console.error(e); }
+    });
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', () => { pageOverlay.remove(); pageOverlay = null; });
+
+  if (styleToggle) {
+    if (darkMode) pageOverlay.classList.add('cluely');
+    styleToggle.addEventListener('click', () => {
+      pageOverlay.classList.toggle('cluely');
+    });
+  }
 }
 
 // Handle text selection
@@ -234,7 +275,7 @@ function showLoadingIndicator(text) {
   indicator.innerHTML = `
     <div class="verity-tooltip-header">
       <div class="verity-logo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
           <path d="M9 12l2 2 4-4"/>
           <circle cx="12" cy="12" r="10"/>
         </svg>
@@ -300,7 +341,7 @@ function showVerificationResult(result) {
   tooltip.innerHTML = `
     <div class="verity-tooltip-header">
       <div class="verity-logo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
           <path d="M9 12l2 2 4-4"/>
           <circle cx="12" cy="12" r="10"/>
         </svg>

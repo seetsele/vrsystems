@@ -3,35 +3,17 @@
  * Updated for v10.0.0 with tabs, tier-based features, and animations
  */
 
-// Elements
-const claimInput = document.getElementById('claim');
-const verifyBtn = document.getElementById('verify-btn');
-const btnText = document.getElementById('btn-text');
-const resultDiv = document.getElementById('result');
-const verdictBadge = document.getElementById('verdict-badge');
-const confidenceDiv = document.getElementById('confidence');
-const explanationDiv = document.getElementById('explanation');
-const sourcesDiv = document.getElementById('sources');
-const sourcesListDiv = document.getElementById('sources-list');
-const providerTagsDiv = document.getElementById('provider-tags');
-const errorDiv = document.getElementById('error');
-const charCountSpan = document.getElementById('char-count');
-const tierBadge = document.getElementById('tier-badge');
-const tierName = document.getElementById('tier-name');
-const usageText = document.getElementById('usage-text');
-const usageFill = document.getElementById('usage-fill');
+// Elements (will be assigned on DOMContentLoaded)
+let claimInput, verifyBtn, btnText, resultDiv, verdictBadge, confidenceDiv, explanationDiv, sourcesDiv, sourcesListDiv, providerTagsDiv, errorDiv, charCountSpan, tierBadge, tierName, usageText, usageFill;
 
 // Tab elements
-const tabBtns = document.querySelectorAll('.tab-btn');
-const tabPanels = document.querySelectorAll('.tab-panel');
-const historyList = document.getElementById('history-list');
-const historyEmpty = document.getElementById('history-empty');
+let tabBtns, tabPanels, historyList, historyEmpty;
 
 // Settings toggles
-const toggles = document.querySelectorAll('.toggle');
+let toggles;
 
 // Model selector
-const modelChips = document.querySelectorAll('.model-chip');
+let modelChips;
 let selectedModel = 'quick';
 
 // User state
@@ -79,24 +61,85 @@ const providerNames = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  // Assign DOM elements now that DOM is ready
+  claimInput = document.getElementById('claim');
+  verifyBtn = document.getElementById('verify-btn');
+  btnText = document.getElementById('btn-text');
+  resultDiv = document.getElementById('result');
+  verdictBadge = document.getElementById('verdict-badge');
+  confidenceDiv = document.getElementById('confidence');
+  explanationDiv = document.getElementById('explanation');
+  sourcesDiv = document.getElementById('sources');
+  sourcesListDiv = document.getElementById('sources-list');
+  providerTagsDiv = document.getElementById('provider-tags');
+  errorDiv = document.getElementById('error');
+  charCountSpan = document.getElementById('char-count');
+  tierBadge = document.getElementById('tier-badge');
+  tierName = document.getElementById('tier-name');
+  usageText = document.getElementById('usage-text');
+  usageFill = document.getElementById('usage-fill');
+
+  tabBtns = document.querySelectorAll('.tab-btn');
+  tabPanels = document.querySelectorAll('.tab-panel');
+  historyList = document.getElementById('history-list');
+  historyEmpty = document.getElementById('history-empty');
+
+  toggles = document.querySelectorAll('.toggle');
+  modelChips = document.querySelectorAll('.model-chip');
+
   // Load saved settings and history
   loadSettings();
   loadHistory();
   updateTierDisplay();
-  
+
   // Initialize tab navigation
   initTabs();
-  
+
   // Initialize model selector
   initModelSelector();
-  
+
   // Initialize settings toggles
   initToggles();
-  
+
   // Character counter
-  claimInput.addEventListener('input', () => {
-    charCountSpan.textContent = claimInput.value.length;
+  if (claimInput) claimInput.addEventListener('input', () => {
+    if (charCountSpan) charCountSpan.textContent = claimInput.value.length;
   });
+
+  // Verify button click (attach after elements exist)
+  if (verifyBtn) {
+    verifyBtn.addEventListener('click', async () => {
+      const claim = (claimInput && claimInput.value ? claimInput.value.trim() : '');
+
+      if (!claim) {
+        showError('Please enter a claim to verify');
+        return;
+      }
+
+      if (claim.length < 10) {
+        showError('Please enter a longer claim (at least 10 characters)');
+        return;
+      }
+
+      // Check usage limit
+      const limit = tierLimits[userTier] || 300;
+      if (usedVerifications >= limit) {
+        showError('Verification limit reached. Please upgrade your plan.');
+        return;
+      }
+
+      await verifyClaim(claim);
+    });
+  }
+
+  // Enter key to verify
+  if (claimInput) {
+    claimInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        if (verifyBtn) verifyBtn.click();
+      }
+    });
+  }
   
   // Try to get selected text from active tab
   try {
@@ -112,6 +155,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (e) {
     // Ignore - just don't prefill
   }
+
+  // Add overlay toggle button to header-right if present
+  try {
+    const headerRight = document.querySelector('.header-right');
+    if (headerRight) {
+      const btn = document.createElement('button');
+      btn.id = 'popup-toggle-overlay';
+      btn.title = 'Toggle overlay';
+      btn.className = 'tier-badge';
+      btn.style.cursor = 'pointer';
+      btn.textContent = 'Overlay';
+      headerRight.insertBefore(btn, headerRight.firstChild);
+      btn.addEventListener('click', async () => {
+        try {
+          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+          if (tab && tab.id) {
+            chrome.tabs.sendMessage(tab.id, { action: 'toggleOverlay' });
+          }
+        } catch (err) {
+          console.error('Failed to send toggleOverlay message', err);
+        }
+      });
+    }
+  } catch (e) { /* ignore */ }
 });
 
 // Tab navigation
@@ -267,36 +334,7 @@ function updateTierDisplay() {
   tierBadge.className = `tier-badge ${userTier}`;
 }
 
-// Verify button click
-verifyBtn.addEventListener('click', async () => {
-  const claim = claimInput.value.trim();
-  
-  if (!claim) {
-    showError('Please enter a claim to verify');
-    return;
-  }
-  
-  if (claim.length < 10) {
-    showError('Please enter a longer claim (at least 10 characters)');
-    return;
-  }
-  
-  // Check usage limit
-  const limit = tierLimits[userTier] || 300;
-  if (usedVerifications >= limit) {
-    showError('Verification limit reached. Please upgrade your plan.');
-    return;
-  }
-  
-  await verifyClaim(claim);
-});
-
-// Enter key to verify
-claimInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && e.ctrlKey) {
-    verifyBtn.click();
-  }
-});
+// Verify button click listeners are attached after DOMContentLoaded
 
 /**
  * Verify a claim
