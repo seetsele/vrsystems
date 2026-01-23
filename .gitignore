@@ -1,3 +1,8 @@
+# Ignore generated test screenshots and local artifacts
+desktop-app/test-results/
+test-results/
+artifacts/
+python-tools/.email_sent_cache.json
 # ===========================================
 # VERITY SYSTEMS - GIT IGNORE
 # ===========================================
