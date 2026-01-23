@@ -1,0 +1,28 @@
+name: Capture Extension Overlay GIF
+
+on:
+  workflow_dispatch:
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install deps
+        run: |
+          cd desktop-app
+          npm ci
+          npm install gifencoder canvas --no-audit --no-fund || true
+      - name: Run capture script
+        run: |
+          cd desktop-app
+          node scripts/extension_capture_gif.js
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: overlay-capture
+          path: desktop-app/test-results/

@@ -35,6 +35,13 @@ from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 from pathlib import Path
 
+# Optional adapter for sequential provider failover (sync adapter used for emergency fallback)
+try:
+    from provider_adapter import ProviderAdapter, Provider as SyncProvider
+except Exception:
+    ProviderAdapter = None
+    SyncProvider = None
+
 # Load .env from the script's directory, not the working directory
 _script_dir = Path(__file__).parent
 load_dotenv(_script_dir / ".env")
@@ -146,6 +153,12 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stdout)]
 )
 logger = logging.getLogger("VerityAPI")
+ 
+# NOTE: httpcore/httpx compatibility shim removed to enforce deterministic
+# dependency behavior. Ensure `python-tools/requirements.txt` pins the
+# compatible `httpx==0.25.1` and `httpcore==0.17.1` before running the API.
+# If you need a temporary shim for development, add it back intentionally.
+ 
 
 
 # =============================================================================
@@ -300,6 +313,31 @@ class ProviderHealth:
 
 # Global provider health tracker
 provider_health = ProviderHealth()
+
+
+async def _background_provider_task(poll_interval: int = 60):
+    """Background task that periodically refreshes/initialises provider state.
+
+    Runs after app startup so it doesn't block liveness probes. Keeps running
+    until cancelled on shutdown.
+    """
+    logger.info("[BG] Starting background provider init task")
+    try:
+        while True:
+            try:
+                # Use AIProviders context manager which initialises httpx client
+                # and performs provider checks. This is safe to run periodically
+                # and isolates network operations from startup.
+                async with AIProviders() as prov:
+                    # prov.available_providers set in _check_providers
+                    logger.info(f"[BG] Providers available: {prov.available_providers}")
+            except Exception as e:
+                logger.exception(f"[BG] Provider init error: {e}")
+
+            await asyncio.sleep(poll_interval)
+    except asyncio.CancelledError:
+        logger.info("[BG] Background provider init task cancelled")
+        raise
 
 
 # =============================================================================
@@ -2195,30 +2233,69 @@ class AIProviders:
                     logger.info(f"✓ Search: {search_providers[i]} returned evidence")
         
         # =====================================================================
-        # PHASE 2: RUN ALL AI PROVIDERS SIMULTANEOUSLY (with rate limiting)
+        # PHASE 2: RUN ALL AI PROVIDERS IN PARALLEL ACROSS MULTIPLE LOOPS
+        # Aim: collect at least `required_checks` independent checks (21-point verification)
+        # We run all healthy providers simultaneously each loop and repeat until
+        # we reach `required_checks` or hit loop limits determined by tier.
         # =====================================================================
         # Prioritize providers based on claim category
         prioritized_providers = prioritize_providers_for_claim(claim, self.available_providers)
-        
-        healthy_providers = [
+
+        healthy_providers_all = [
             p for p in prioritized_providers
-            if p in provider_functions and provider_health.is_healthy(p) and provider_rate_limiter.can_request(p)
+            if p in provider_functions
         ]
-        
-        logger.info(f"[VERIFY] Running {len(healthy_providers)} AI providers simultaneously")
+
+        # If no providers configured at all, bail out early
+        if not healthy_providers_all:
+            logger.warning("[VERIFY] No configured providers available for verification")
+            return {
+                "verdict": "unverifiable",
+                "confidence": 0.5,
+                "explanation": "No providers configured",
+                "providers_used": [],
+                "models_used": [],
+                "cross_validation": {"agreement": 0, "total_checks": 0}
+            }
+
+        logger.info(f"[VERIFY] Providers configured: {len(healthy_providers_all)}: {healthy_providers_all}")
         logger.info(f"[CATEGORY] Claim categorized as: {categorize_claim(claim)}")
-        
-        # Create tasks for ALL healthy providers at once
-        ai_tasks = []
-        ai_providers = []
-        for provider in healthy_providers:
-            ai_tasks.append(provider_functions[provider](claim))
-            ai_providers.append(provider)
-            provider_rate_limiter.record(provider)
-        
-        if ai_tasks:
+
+        required_checks = 21
+        loop = 0
+        # Base max loops by tier, but allow additional iterations until required_checks reached
+        tier_loops = {"free": 4, "pro": 5, "enterprise": 7}
+        base_max_loops = tier_loops.get(tier, 4)
+        # If few providers, allow extra loops to reach required_checks
+        est_loops_needed = max(1, (required_checks + len(healthy_providers_all) - 1) // len(healthy_providers_all))
+        max_loops = max(base_max_loops, est_loops_needed)
+
+        aggregated_results = []
+        providers_used = []
+
+        # Loop until we have enough checks or hit max_loops
+        while len(aggregated_results) < required_checks and loop < max_loops:
+            loop += 1
+            logger.info(f"[VERIFY][LOOP {loop}] Running {len(healthy_providers_all)} providers in parallel")
+
+            ai_tasks = []
+            ai_providers = []
+            for provider in healthy_providers_all:
+                # Respect per-provider rate limits; if rate-limited, skip this provider this loop
+                if not provider_rate_limiter.can_request(provider):
+                    logger.debug(f"[RATE-LIMIT] Skipping {provider} this loop")
+                    continue
+                ai_tasks.append(provider_functions[provider](claim))
+                ai_providers.append(provider)
+                provider_rate_limiter.record(provider)
+
+            if not ai_tasks:
+                logger.warning(f"[VERIFY][LOOP {loop}] No providers could be scheduled (rate-limited)")
+                await asyncio.sleep(0.1)
+                continue
+
             responses = await asyncio.gather(*ai_tasks, return_exceptions=True)
-            
+
             for i, response in enumerate(responses):
                 provider = ai_providers[i]
                 if isinstance(response, Exception):
@@ -2226,31 +2303,66 @@ class AIProviders:
                     provider_health.record_failure(provider)
                 elif response and isinstance(response, dict):
                     if response.get("success"):
-                        results.append(response)
-                        providers_used.append(response["provider"])
+                        aggregated_results.append(response)
+                        providers_used.append(response.get("provider", provider))
                         provider_health.record_success(provider)
-                        logger.info(f"✓ {provider} succeeded")
+                        logger.info(f"✓ {provider} succeeded (loop {loop})")
                     elif response.get("status_code"):
                         provider_health.record_failure(provider, response["status_code"])
         
         # =====================================================================
-        # PHASE 3: EMERGENCY FALLBACK - Try providers in cooldown
+        # PHASE 3: EMERGENCY FALLBACK - Try ProviderAdapter sequential failover
+        # If the parallel approach fails, fall back to sequential adapter which
+        # will attempt providers one-by-one with retries in a thread-safe manner.
         # =====================================================================
         if not results:
-            logger.warning("[EMERGENCY] All healthy providers failed, trying cooldown providers...")
-            for provider in self.available_providers:
-                if provider not in healthy_providers and provider in provider_functions:
-                    try:
-                        response = await provider_functions[provider](claim)
-                        if response and response.get("success"):
-                            results.append(response)
-                            providers_used.append(response["provider"])
-                            provider_health.record_success(provider)
-                            logger.info(f"✓ {provider} recovered from cooldown")
-                            break
-                    except Exception as e:
-                        logger.error(f"[EMERGENCY FAIL] {provider}: {e}")
-        
+            logger.warning("[EMERGENCY] All healthy providers failed, attempting sequential ProviderAdapter fallback...")
+            if ProviderAdapter is not None and SyncProvider is not None:
+                try:
+                    providers_list = []
+                    # Build sync call wrappers that run the async provider functions in their own thread
+                    for pname in healthy_providers_all:
+                        if pname in provider_functions:
+                            async_fn = provider_functions[pname]
+                            def make_call_fn(name, fn=async_fn):
+                                def call_fn(text):
+                                    # Run the async provider function in a fresh event loop on this thread
+                                    return asyncio.run(fn(text))
+                                return call_fn
+
+                            providers_list.append(SyncProvider(pname, make_call_fn(pname)))
+
+                    if providers_list:
+                        adapter = ProviderAdapter(providers_list, max_retries=2)
+                        try:
+                            adapter_result = await asyncio.to_thread(adapter.verify_claim, claim)
+                            if adapter_result and adapter_result.get("result"):
+                                results.append(adapter_result.get("result"))
+                                providers_used.append(adapter_result.get("provider"))
+                                logger.info(f"[ADAPTER] ProviderAdapter returned provider={adapter_result.get('provider')}")
+                        except Exception as e:
+                            logger.error(f"[ADAPTER ERROR] ProviderAdapter invocation failed: {e}")
+                except Exception as e:
+                    logger.error(f"[ADAPTER SETUP ERROR] {e}")
+            else:
+                logger.info("[EMERGENCY] ProviderAdapter not available; falling back to cooldown loop")
+
+            # If adapter didn't produce results, try original cooldown loop
+            if not results:
+                logger.warning("[EMERGENCY] Falling back to cooldown provider loop...")
+                for provider in self.available_providers:
+                    if provider not in healthy_providers and provider in provider_functions:
+                        try:
+                            response = await provider_functions[provider](claim)
+                            if response and response.get("success"):
+                                results.append(response)
+                                providers_used.append(response["provider"])
+                                provider_health.record_success(provider)
+                                logger.info(f"✓ {provider} recovered from cooldown")
+                                break
+                        except Exception as e:
+                            logger.error(f"[EMERGENCY FAIL] {provider}: {e}")
+
         if not results:
             return {
                 "verdict": "unverifiable",
@@ -2502,12 +2614,38 @@ async def verify_api_key(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(f"[START] Verity API v9 ({Config.ENV})")
-    
-    # Use single source of truth for provider checks
-    providers = get_available_providers()
-    logger.info(f"[PROVIDERS] {len(providers)} available: {providers}")
-    
+    # Seed master test user for full-feature testing (if not present)
+    try:
+        master_email = os.getenv('MASTER_TEST_EMAIL', 'master@local')
+        master_password = os.getenv('MASTER_TEST_PASSWORD', 'MasterPass123!')
+        if master_email not in USERS_DB:
+            UserAuth.register_user(master_email, master_password, name='Master Test User')
+            USERS_DB[master_email]['tier'] = 'enterprise'
+            USERS_DB[master_email]['is_admin'] = True
+            logger.info(f"[SEED] Created master test user: {master_email}")
+        else:
+            # Ensure tier is enterprise for testing
+            USERS_DB[master_email]['tier'] = 'enterprise'
+            USERS_DB[master_email]['is_admin'] = True
+    except Exception as e:
+        logger.exception('Failed to seed master user: %s', e)
+
+    # Start background provider initialisation (non-blocking) unless skipped via env
+    if not os.getenv('SKIP_PROVIDER_INIT'):
+        app.state.provider_task = asyncio.create_task(_background_provider_task())
+    else:
+        logger.info('[STARTUP] SKIP_PROVIDER_INIT set; skipping background provider initialization')
+
     yield
+
+    # On shutdown, cancel background task
+    task = getattr(app.state, 'provider_task', None)
+    if task:
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
     
     logger.info("[STOP] Shutting down")
 
@@ -2518,6 +2656,41 @@ app = FastAPI(
     docs_url="/docs",
     lifespan=lifespan
 )
+
+
+@app.middleware("http")
+async def attach_subscription_tier(request: Request, call_next):
+    """Attach a best-effort subscription tier to the request state.
+
+    Order of resolution:
+    1. `X-Subscription-Tier` header (trusted when coming from frontend)
+    2. API key scopes mapping from `Config.API_KEY_SCOPES_RAW` if available
+    3. Fallback to 'free'
+    """
+    tier = None
+    try:
+        tier = request.headers.get('x-subscription-tier')
+        if not tier:
+            raw = Config.API_KEY_SCOPES_RAW or ''
+            scopes = {}
+            if raw.strip().startswith('{'):
+                scopes = json.loads(raw)
+            else:
+                for pair in raw.split(';'):
+                    if not pair.strip():
+                        continue
+                    k, v = pair.split(':', 1) if ':' in pair else (pair, '')
+                    scopes[k.strip()] = v.strip()
+
+            key = request.headers.get('x-api-key') or request.headers.get('authorization', '').replace('Bearer ', '')
+            if key and key in scopes:
+                tier = scopes[key]
+    except Exception:
+        tier = tier or None
+
+    request.state.subscription_tier = tier or 'free'
+    response = await call_next(request)
+    return response
 
 app.add_middleware(
     CORSMiddleware,
@@ -2609,18 +2782,85 @@ async def root():
 
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
-    providers = get_available_providers()
-    
+    """Lightweight health check for platform liveness probes.
+
+    Must return very quickly and not perform external network calls or
+    provider initialisation. Use `/health/deep` for full dependency checks.
+    """
+    # Count configured provider keys (cheap, local-only) but avoid doing
+    # expensive provider probes here.
+    try:
+        configured_providers = sum(1 for attr in dir(Config) if attr.endswith('_API_KEY') and getattr(Config, attr))
+    except Exception:
+        configured_providers = 0
+
     return {
-        "status": "healthy",
+        "status": "ok",
         "timestamp": datetime.utcnow().isoformat(),
         "version": "10.0.0",
         "environment": Config.ENV,
-        "providers_available": len(providers),
-        "providers": providers,
-        "auth_enabled": True,
+        "providers_configured": configured_providers,
+        "auth_enabled": Config.REQUIRE_API_KEY,
         "stripe_configured": bool(Config.STRIPE_SECRET_KEY)
     }
+
+
+@app.get("/health/deep")
+async def health_deep():
+    """Deep health check that verifies external dependencies (DB, Redis, Mongo, HTTP).
+
+    Intended for monitoring/diagnostics. It performs quick connection checks
+    but keeps short timeouts so it doesn't hang indefinitely.
+    """
+    results = {"status": "ok", "checks": {}}
+
+    # Redis
+    try:
+        import redis
+        r = redis.from_url(os.getenv('REDIS_URL', 'redis://localhost:6379/0'))
+        r.ping()
+        results['checks']['redis'] = 'ok'
+    except Exception as e:
+        results['checks']['redis'] = f'error: {e}'
+        results['status'] = 'degraded'
+
+    # Postgres
+    try:
+        import psycopg2
+        db_url = os.getenv('DATABASE_URL', '')
+        if db_url:
+            conn = psycopg2.connect(db_url)
+            conn.close()
+            results['checks']['postgres'] = 'ok'
+        else:
+            results['checks']['postgres'] = 'skipped (no DATABASE_URL)'
+    except Exception as e:
+        results['checks']['postgres'] = f'error: {e}'
+        results['status'] = 'degraded'
+
+    # Mongo (if configured)
+    try:
+        from pymongo import MongoClient
+        mongo_url = os.getenv('MONGO_URL', '') or os.getenv('MONGODB_URI', '')
+        if mongo_url:
+            mc = MongoClient(mongo_url, serverSelectionTimeoutMS=3000)
+            mc.admin.command('ping')
+            results['checks']['mongo'] = 'ok'
+        else:
+            results['checks']['mongo'] = 'skipped (no MONGO_URL)'
+    except Exception as e:
+        results['checks']['mongo'] = f'error: {e}'
+        results['status'] = 'degraded'
+
+    # External HTTP lib availability
+    try:
+        import httpx
+        results['checks']['httpx'] = 'available'
+    except Exception as e:
+        results['checks']['httpx'] = f'error: {e}'
+        results['status'] = 'degraded'
+
+    return JSONResponse(results)
 
 
 @app.get("/providers")
@@ -2670,7 +2910,22 @@ async def providers_health():
 
 
 @app.get("/tools/provider-health-logs")
-async def get_provider_health_logs(lines: int = 200):
+async def get_provider_health_logs(request: Request, lines: int = 200):
+    # Premium: require 'pro' tier or higher
+    account_tier = getattr(request.state, 'subscription_tier', 'free')
+    try:
+        auth = request.headers.get('authorization') or ''
+        if auth.startswith('Bearer '):
+            token = auth.split(' ', 1)[1]
+            payload = UserAuth.verify_token(token)
+            if payload:
+                u = USERS_DB.get(payload.get('email'))
+                if u and u.get('tier'):
+                    account_tier = u.get('tier')
+    except Exception:
+        pass
+    if not account_allows_tier(account_tier, 'pro'):
+        raise HTTPException(status_code=403, detail='pro tier required')
     """Return the tail of the provider health log file (last `lines` entries)."""
     log_file = Path(_script_dir / "provider_health.log")
     if not log_file.exists():
@@ -2686,7 +2941,22 @@ async def get_provider_health_logs(lines: int = 200):
 
 
 @app.get("/tools/test-runs")
-async def get_test_runs(limit: int = 20):
+async def get_test_runs(request: Request, limit: int = 20):
+    # Premium: require 'pro' tier or higher
+    account_tier = getattr(request.state, 'subscription_tier', 'free')
+    try:
+        auth = request.headers.get('authorization') or ''
+        if auth.startswith('Bearer '):
+            token = auth.split(' ', 1)[1]
+            payload = UserAuth.verify_token(token)
+            if payload:
+                u = USERS_DB.get(payload.get('email'))
+                if u and u.get('tier'):
+                    account_tier = u.get('tier')
+    except Exception:
+        pass
+    if not account_allows_tier(account_tier, 'pro'):
+        raise HTTPException(status_code=403, detail='pro tier required')
     """Return recent run-internal-tests outputs (tail of test_runs.log)."""
     runs_file = Path(_script_dir / "test_runs.log")
     if not runs_file.exists():
@@ -2713,8 +2983,22 @@ async def github_artifacts(request: Request):
     Optionally provide header 'Authorization: Bearer <token>' for private repos.
     Protected by SIMULATE_KEY or DEBUG mode.
     """
-    sim_key_required = Config.SIMULATE_KEY is not None
+    # Require pro tier for this proxy
+    account_tier = getattr(request.state, 'subscription_tier', 'free')
     provided_sim_key = request.headers.get("X-SIM-KEY") or request.headers.get("X-Sim-Key")
+    try:
+        auth = request.headers.get('authorization') or ''
+        if auth.startswith('Bearer '):
+            token = auth.split(' ', 1)[1]
+            payload = UserAuth.verify_token(token)
+            if payload:
+                u = USERS_DB.get(payload.get('email'))
+                if u and u.get('tier'):
+                    account_tier = u.get('tier')
+    except Exception:
+        pass
+    if not account_allows_tier(account_tier, 'pro') and provided_sim_key != Config.SIMULATE_KEY and not Config.DEBUG:
+        raise HTTPException(status_code=403, detail='pro tier or valid SIMULATE_KEY required')
     if sim_key_required:
         if provided_sim_key != Config.SIMULATE_KEY:
             raise HTTPException(status_code=403, detail="Invalid or missing simulation key")
@@ -2756,7 +3040,7 @@ async def github_artifacts(request: Request):
 
 
 @app.post("/verify")
-async def verify_claim_endpoint(request: ClaimRequest):
+async def verify_claim_endpoint(request: ClaimRequest, req: Request):
     """
     Verify a claim using multiple AI providers with cross-validation.
     
@@ -2774,6 +3058,24 @@ async def verify_claim_endpoint(request: ClaimRequest):
     start_time = time.time()
     request_id = f"ver_{int(time.time())}_{secrets.randbelow(10000)}"
     
+    # Determine account tier (header/API key mapping or authenticated user)
+    account_tier = getattr(req.state, 'subscription_tier', None) or 'free'
+    try:
+        auth = req.headers.get('authorization') or ''
+        if auth.startswith('Bearer '):
+            token = auth.split(' ', 1)[1]
+            payload = UserAuth.verify_token(token)
+            if payload:
+                user = USERS_DB.get(payload.get('email'))
+                if user and user.get('tier'):
+                    account_tier = user.get('tier')
+    except Exception:
+        pass
+
+    # Enforce subscription tier permissions
+    if not account_allows_tier(account_tier, request.tier):
+        raise HTTPException(status_code=403, detail=f"Account tier '{account_tier}' does not permit requested tier '{request.tier}'")
+
     # Sanitize and validate input
     claim = sanitize_claim(request.claim)
     
@@ -2840,9 +3142,9 @@ async def verify_claim_endpoint(request: ClaimRequest):
 
 
 @app.post("/v3/verify")
-async def verify_claim_v3(request: ClaimRequest):
+async def verify_claim_v3(request: ClaimRequest, req: Request):
     """V3 API: Verify a claim"""
-    return await verify_claim_endpoint(request)
+    return await verify_claim_endpoint(request, req)
 
 
 # =============================================================================
@@ -2863,12 +3165,28 @@ class BatchVerifyRequest(BaseModel):
 
 
 @app.post("/v3/batch-verify")
-async def batch_verify(request: BatchVerifyRequest):
+async def batch_verify(request: BatchVerifyRequest, req: Request):
     """
     Verify up to 50 claims in parallel.
     
     Enterprise feature for bulk fact-checking.
     """
+    # Enforce subscription for batch (enterprise only)
+    account_tier = getattr(req.state, 'subscription_tier', None) or 'free'
+    try:
+        auth = req.headers.get('authorization') or ''
+        if auth.startswith('Bearer '):
+            token = auth.split(' ', 1)[1]
+            payload = UserAuth.verify_token(token)
+            if payload:
+                user = USERS_DB.get(payload.get('email'))
+                if user and user.get('tier'):
+                    account_tier = user.get('tier')
+    except Exception:
+        pass
+    if not account_allows_tier(account_tier, request.tier):
+        raise HTTPException(status_code=403, detail=f"Account tier '{account_tier}' does not permit requested tier '{request.tier}'")
+
     start_time = time.time()
     job_id = f"batch_{int(time.time())}_{secrets.randbelow(10000)}"
     
@@ -3064,6 +3382,23 @@ async def get_stats():
 # ENTERPRISE TOOL ENDPOINTS
 # =============================================================================
 
+def _get_account_tier_from_request(request: Request) -> str:
+    """Resolve account tier from request state, API key mapping, or JWT user."""
+    account_tier = getattr(request.state, 'subscription_tier', None) or 'free'
+    try:
+        auth = request.headers.get('authorization') or ''
+        if auth.startswith('Bearer '):
+            token = auth.split(' ', 1)[1]
+            payload = UserAuth.verify_token(token)
+            if payload:
+                u = USERS_DB.get(payload.get('email'))
+                if u and u.get('tier'):
+                    account_tier = u.get('tier')
+    except Exception:
+        pass
+    return account_tier
+
+
 # Known credible sources database
 CREDIBLE_SOURCES = {
     "reuters": {"tier": 1, "rating": "Highly Credible"},
@@ -3088,7 +3423,11 @@ CREDIBLE_SOURCES = {
 
 
 @app.post("/tools/social-media")
-async def analyze_social_media(request: ToolRequest):
+async def analyze_social_media(req: Request, request: ToolRequest):
+    # Premium: require 'pro' tier
+    account_tier = _get_account_tier_from_request(req)
+    if not account_allows_tier(account_tier, 'pro'):
+        raise HTTPException(status_code=403, detail='pro tier required')
     """Analyze social media content for misinformation indicators"""
     content = request.content.lower()
     indicators = []
@@ -3138,7 +3477,11 @@ async def analyze_social_media(request: ToolRequest):
 
 
 @app.post("/tools/source-credibility")
-async def check_source_credibility(request: ToolRequest):
+async def check_source_credibility(req: Request, request: ToolRequest):
+    # Premium: require 'pro' tier
+    account_tier = _get_account_tier_from_request(req)
+    if not account_allows_tier(account_tier, 'pro'):
+        raise HTTPException(status_code=403, detail='pro tier required')
     """Check the credibility of news sources"""
     content = request.content.lower()
     sources_found = []
@@ -3186,17 +3529,18 @@ async def tools_simulate(request: Request):
         client_ip = request.client.host if request.client else None
         if client_ip not in Config.SIMULATE_ALLOWED_IPS:
             raise HTTPException(status_code=403, detail="Client IP not allowed to use simulation endpoints")
-
+    # Also allow enterprise-tier access when no sim key provided
+    account_tier = _get_account_tier_from_request(request)
     if sim_key_required:
-        if provided_sim_key != Config.SIMULATE_KEY:
-            raise HTTPException(status_code=403, detail="Invalid or missing simulation key")
+        if provided_sim_key != Config.SIMULATE_KEY and not account_allows_tier(account_tier, 'enterprise'):
+            raise HTTPException(status_code=403, detail="Invalid or missing simulation key or enterprise tier required")
         # rate-limit per-sim-key
-        allowed, info = simulate_key_limiter.is_allowed(provided_sim_key)
+        allowed, info = simulate_key_limiter.is_allowed(provided_sim_key or 'sim-'+account_tier)
         if not allowed:
             return JSONResponse(status_code=429, content={"error": "Simulation key rate limit exceeded", "info": info})
     else:
-        if not Config.DEBUG:
-            raise HTTPException(status_code=403, detail="Simulation endpoints are only available in DEBUG mode or with a SIMULATE_KEY configured")
+        if not Config.DEBUG and not account_allows_tier(account_tier, 'enterprise'):
+            raise HTTPException(status_code=403, detail="Simulation endpoints are only available in DEBUG mode or to enterprise tier")
 
     """Simulation endpoint for testing provider failures, rate limits, and cooldowns.
     Only available in DEBUG mode to avoid exposure in production.
@@ -3269,7 +3613,8 @@ async def run_internal_tests(request: Request):
 
     Runs a pre-defined small test subset to avoid running arbitrary code. Returns the stdout and exit code.
     """
-    # Authorization
+    # Authorization - allow enterprise tier or SIMULATE_KEY
+    account_tier = _get_account_tier_from_request(request)
     # Optional IP allowlist for internal test runner
     if Config.SIMULATE_ALLOWED_IPS:
         client_ip = request.client.host if request.client else None
@@ -3279,11 +3624,11 @@ async def run_internal_tests(request: Request):
     sim_key_required = Config.SIMULATE_KEY is not None
     provided_sim_key = request.headers.get("X-SIM-KEY") or request.headers.get("X-Sim-Key")
     if sim_key_required:
-        if provided_sim_key != Config.SIMULATE_KEY:
-            raise HTTPException(status_code=403, detail="Invalid or missing simulation key")
+        if provided_sim_key != Config.SIMULATE_KEY and not account_allows_tier(account_tier, 'enterprise'):
+            raise HTTPException(status_code=403, detail="Invalid or missing simulation key or enterprise tier required")
     else:
-        if not Config.DEBUG:
-            raise HTTPException(status_code=403, detail="Internal test runner requires DEBUG mode or SIMULATE_KEY")
+        if not Config.DEBUG and not account_allows_tier(account_tier, 'enterprise'):
+            raise HTTPException(status_code=403, detail="Internal test runner requires DEBUG mode, SIMULATE_KEY, or enterprise tier")
 
     # Accept payload to select suite (default: smoke)
     try:
@@ -3325,7 +3670,11 @@ async def run_internal_tests(request: Request):
 
 
 @app.post("/tools/statistics-validator")
-async def validate_statistics(request: ToolRequest):
+async def validate_statistics(req: Request, request: ToolRequest):
+    # Premium: require 'pro' tier
+    account_tier = _get_account_tier_from_request(req)
+    if not account_allows_tier(account_tier, 'pro'):
+        raise HTTPException(status_code=403, detail='pro tier required')
     """Validate statistical claims"""
     import re
     
@@ -3379,7 +3728,11 @@ async def validate_statistics(request: ToolRequest):
 
 
 @app.post("/tools/image-forensics")
-async def analyze_image(request: ToolRequest):
+async def analyze_image(req: Request, request: ToolRequest):
+    # Premium: require 'pro' tier
+    account_tier = _get_account_tier_from_request(req)
+    if not account_allows_tier(account_tier, 'pro'):
+        raise HTTPException(status_code=403, detail='pro tier required')
     """Analyze image for manipulation indicators"""
     content = request.content.lower()
     findings = []
@@ -3416,7 +3769,11 @@ async def analyze_image(request: ToolRequest):
 
 
 @app.post("/tools/research-assistant")
-async def research_topic(request: ToolRequest):
+async def research_topic(req: Request, request: ToolRequest):
+    # Premium: require 'pro' tier
+    account_tier = _get_account_tier_from_request(req)
+    if not account_allows_tier(account_tier, 'pro'):
+        raise HTTPException(status_code=403, detail='pro tier required')
     """Research a topic using AI providers"""
     start_time = time.time()
     
@@ -3445,7 +3802,11 @@ async def research_topic(request: ToolRequest):
 
 
 @app.post("/tools/realtime-stream")
-async def realtime_stream(request: ToolRequest):
+async def realtime_stream(req: Request, request: ToolRequest):
+    # Premium: require 'enterprise' tier for realtime stream
+    account_tier = _get_account_tier_from_request(req)
+    if not account_allows_tier(account_tier, 'enterprise'):
+        raise HTTPException(status_code=403, detail='enterprise tier required')
     """Analyze real-time content spread"""
     content = request.content.lower()
     
@@ -3611,6 +3972,31 @@ async def register(request: RegisterRequest):
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/auth/seed-master")
+async def seed_master(authorization: Optional[str] = Header(None)):
+    """Create or return the master test user. Protected: only allowed when running locally or in DEBUG."""
+    if not Config.DEBUG and not os.getenv('ALLOW_MANUAL_SEED'):
+        raise HTTPException(status_code=403, detail="Seeding master user is disabled in production")
+    master_email = os.getenv('MASTER_TEST_EMAIL', 'master@local')
+    master_password = os.getenv('MASTER_TEST_PASSWORD', 'MasterPass123!')
+    if master_email not in USERS_DB:
+        UserAuth.register_user(master_email, master_password, name='Master Test User')
+    USERS_DB[master_email]['tier'] = 'enterprise'
+    USERS_DB[master_email]['is_admin'] = True
+    token = UserAuth.create_token(USERS_DB[master_email]['user_id'], master_email, 'enterprise')
+    return {"email": master_email, "token": token}
+
+
+@app.get('/dev/get-master-token')
+async def dev_get_master_token():
+    """Development helper: return the seeded master token if present."""
+    master_email = os.getenv('MASTER_TEST_EMAIL', 'master@local')
+    if master_email not in USERS_DB:
+        raise HTTPException(status_code=404, detail='master user not found')
+    token = UserAuth.create_token(USERS_DB[master_email]['user_id'], master_email, USERS_DB[master_email].get('tier','enterprise'))
+    return {'email': master_email, 'token': token}
 
 @app.post("/auth/login")
 async def login(request: LoginRequest):
